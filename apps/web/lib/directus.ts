@@ -68,12 +68,7 @@ export async function getPersonaje(slug: string, locale?: string): Promise<Perso
           "simbolismo",
           "origen",
           "publicadoEn",
-          // Relaciones
-          "variantes.*",
-          "variantes.ubicacion.*",
-          "testimonios.*",
-          "tags.tag.*",
-          "multimedia.media.*",
+          "imagenPortada",
         ],
         filter: {
           slug: { _eq: slug },
@@ -89,14 +84,12 @@ export async function getPersonaje(slug: string, locale?: string): Promise<Perso
 
     return {
       ...(raw as unknown as Personaje),
-      tags: ((raw.tags as Array<{ tag: unknown }>) ?? []).map((t) => t.tag) as Personaje["tags"],
-      multimedia: ((raw.multimedia as Array<{ media: unknown }>) ?? []).map(
-        (m) => m.media
-      ) as Personaje["multimedia"],
-      variantes: (raw.variantes ?? []) as Personaje["variantes"],
+      tags: [],
+      multimedia: [],
+      variantes: [],
       elementos: [],
       apariciones: [],
-      testimonios: (raw.testimonios ?? []) as Personaje["testimonios"],
+      testimonios: [],
     };
   } catch (error) {
     console.error(`Error cargando personaje "${slug}":`, error);
