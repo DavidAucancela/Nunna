@@ -4,7 +4,7 @@ import Link from "next/link";
 import { PersonajeCard } from "@/components/personajes/PersonajeCard";
 import { getPersonajes } from "@/lib/directus";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 interface HomePageProps {
   params: Promise<{ locale: string }>;

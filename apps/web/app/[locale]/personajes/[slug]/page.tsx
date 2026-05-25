@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { setRequestLocale } from "next-intl/server";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 import { getPersonaje, getPersonajes } from "@/lib/directus";
 import { PersonajeCard } from "@/components/personajes/PersonajeCard";
 

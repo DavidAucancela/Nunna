@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { PersonajeCard } from "@/components/personajes/PersonajeCard";
 import { getPersonajes } from "@/lib/directus";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 interface PersonajesPageProps {
   params: Promise<{ locale: string }>;
