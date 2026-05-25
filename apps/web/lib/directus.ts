@@ -68,8 +68,6 @@ export async function getPersonaje(slug: string, locale?: string): Promise<Perso
           "simbolismo",
           "origen",
           "publicadoEn",
-          "createdAt",
-          "updatedAt",
           // Relaciones
           "variantes.*",
           "variantes.ubicacion.*",
@@ -87,10 +85,10 @@ export async function getPersonaje(slug: string, locale?: string): Promise<Perso
 
     if (!items.length) return null;
 
-    const raw = items[0] as Record<string, unknown>;
+    const raw = items[0] as unknown as Record<string, unknown>;
 
     return {
-      ...(raw as Personaje),
+      ...(raw as unknown as Personaje),
       tags: ((raw.tags as Array<{ tag: unknown }>) ?? []).map((t) => t.tag) as Personaje["tags"],
       multimedia: ((raw.multimedia as Array<{ media: unknown }>) ?? []).map(
         (m) => m.media

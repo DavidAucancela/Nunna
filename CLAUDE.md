@@ -1,7 +1,22 @@
 # CLAUDE.md — Seres del Pase
 
-Catálogo digital + experiencia inmersiva sobre los personajes de los pases riobambeños.
+Catálogo digital + experiencia de desempaque para llaveros 3D de personajes ecuatorianos.
+El comprador escanea el QR del llavero → aterriza en la ficha del personaje.
 Autor: Jonathan David Aucancela Maguana.
+
+---
+
+## Modelo de negocio
+
+**Producto físico:** llaveros 3D de personajes de los pases riobambeños (Aya Uma, Curiquingue, etc.)
+**QR en el llavero** → dirige a `/es/personajes/[slug]`
+**La página de detalle del personaje es el producto digital** — es lo que justifica la compra.
+
+Implicaciones técnicas:
+- **Mobile-first absoluto** — el QR se escanea con el teléfono
+- **La página de detalle debe cargar rápido y verse impresionante al primer render**
+- **Cross-sell al pie de cada personaje** — "Conoce a los otros seres" → más llaveros
+- **OpenGraph rico** — si el comprador comparte en WhatsApp, la preview tiene que lucir bien
 
 ---
 
@@ -12,49 +27,50 @@ Autor: Jonathan David Aucancela Maguana.
 | Frontend | Next.js 15.1 (App Router) + TypeScript | `apps/web/` |
 | Estilos | Tailwind CSS v3 + PostCSS | `apps/web/tailwind.config.js` |
 | i18n | next-intl v3 (es / qu / en) | `apps/web/i18n/` + `apps/web/messages/` |
-| CMS | Directus headless (Railway o Docker local) | `directus/` |
+| CMS | Directus headless (Railway) | `directus/` |
 | Backend | NestJS (búsqueda semántica + webhooks) | `apps/api/` |
 | Base de datos | PostgreSQL 16 (Supabase) | `prisma/schema.prisma` |
 | Monorepo | Turborepo + pnpm workspaces | `turbo.json`, `pnpm-workspace.yaml` |
 
 ---
 
+## Infraestructura de producción
+
+| Servicio | Plataforma | URL |
+|---------|------------|-----|
+| CMS (Directus) | Railway | `https://directus-production-d593.up.railway.app` |
+| Frontend (Next.js) | Railway | pendiente deploy |
+| Base de datos | Supabase | `https://dhhesajpexcyainibwvl.supabase.co` |
+
+**Todo en Railway.** No usar Vercel — decisión tomada para centralizar infraestructura.
+
+---
+
 ## Cómo correr el proyecto
 
 ### Prerrequisitos
-- Node.js ≥ 20, pnpm ≥ 9, Docker Desktop (para Directus local)
-
-### Setup inicial (una sola vez)
-```bash
-cp .env.example apps/web/.env.local    # Rellenar con credenciales reales
-pnpm install
-```
+- Node.js ≥ 20, pnpm ≥ 9
 
 ### Desarrollo
 ```bash
-# Todo el monorepo en paralelo
-pnpm dev
+pnpm install
 
-# Solo el frontend (el más usado)
+# Frontend (puerto 3030)
 pnpm --filter @seres-del-pase/web dev --port 3030
 
-# Solo la API NestJS
+# Solo API NestJS
 pnpm --filter @seres-del-pase/api dev
-
-# Directus CMS local
-docker compose -f directus/docker-compose.yml up -d
 ```
 
-El frontend queda en **http://localhost:3000** (o 3030 si 3000 está ocupado).
-Directus en **http://localhost:8055**.
+Frontend: **http://localhost:3030/es** · Directus admin: **https://directus-production-d593.up.railway.app/admin**
 
-### Variables de entorno requeridas (`apps/web/.env.local`)
+### Variables de entorno (`apps/web/.env.local`) — ya configurado
 ```
-DIRECTUS_URL=http://localhost:8055
-DIRECTUS_STATIC_TOKEN=<token de Directus>
-NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-NEXT_REVALIDATE_TOKEN=<string secreto>
+DIRECTUS_URL=https://directus-production-d593.up.railway.app
+DIRECTUS_STATIC_TOKEN=<token>
+NEXT_PUBLIC_SUPABASE_URL=https://dhhesajpexcyainibwvl.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<JWT>
+NEXT_REVALIDATE_TOKEN=seres-del-pase-revalidate-2026
 ```
 
 ---
@@ -63,34 +79,28 @@ NEXT_REVALIDATE_TOKEN=<string secreto>
 
 ```
 apps/web/
-├── app/[locale]/           → Rutas localizadas (SSG)
-│   ├── layout.tsx          → Layout raíz con Header/Footer
-│   ├── page.tsx            → Landing page
+├── app/[locale]/
+│   ├── layout.tsx
+│   ├── page.tsx                    → Landing
 │   ├── personajes/
-│   │   ├── page.tsx        → Listado de personajes
-│   │   └── [slug]/page.tsx → Detalle de personaje (SSG con generateStaticParams)
-│   ├── pases/page.tsx      → Listado de pases agrupados por mes
-│   └── glosario/page.tsx   → Glosario kichwa A-Z
+│   │   ├── page.tsx                → Grid de personajes
+│   │   └── [slug]/page.tsx         → ★ PANTALLA PRINCIPAL DEL QR
+│   ├── pases/page.tsx
+│   └── glosario/page.tsx
 ├── components/
-│   ├── layout/Header.tsx   → Header fijo con nav y menú móvil
-│   ├── layout/Footer.tsx   → Footer con 3 columnas
-│   └── personajes/PersonajeCard.tsx → Card de personaje con imagen
-├── lib/directus.ts         → Cliente SDK Directus (getPersonajes, getPersonaje, getPases, getGlosario)
-├── i18n/
-│   ├── routing.ts          → Locales (es/qu/en) y pathnames localizados
-│   └── request.ts          → getRequestConfig para next-intl
-├── messages/               → Traducciones JSON (es, qu, en)
-├── styles/globals.css      → @tailwind base/components/utilities + fuente Fraunces
-├── tailwind.config.js      → Config Tailwind v3 (CommonJS, NO .ts)
-├── postcss.config.js       → tailwindcss + autoprefixer
-└── next.config.ts          → next-intl plugin + image domains Supabase
+│   ├── layout/Header.tsx
+│   ├── layout/Footer.tsx
+│   └── personajes/PersonajeCard.tsx
+├── lib/directus.ts                 → Cliente SDK Directus
+├── i18n/routing.ts                 → Locales + pathnames
+├── i18n/request.ts                 → next-intl config
+├── messages/                       → es.json / qu.json / en.json
+├── tailwind.config.js              → CommonJS, NO .ts
+└── next.config.ts
 
-apps/api/src/
-├── busqueda/               → Full-text search (Fase 1) + semántico pgvector (Fase 2)
-└── webhooks/               → Invalida caché Next.js cuando Directus actualiza
-
-packages/types/src/index.ts → Tipos TypeScript del dominio completo
-prisma/schema.prisma        → Schema PostgreSQL (sin pgvector activo, añadir en Fase 2)
+scripts/
+├── setup-directus.mjs             → Crea 13 colecciones (idempotente, ya ejecutado)
+└── seed-personajes.mjs            → Carga 8 personajes base (ya ejecutado)
 ```
 
 ---
@@ -98,125 +108,121 @@ prisma/schema.prisma        → Schema PostgreSQL (sin pgvector activo, añadir 
 ## Diseño — paleta y tipografía
 
 ```
-Fondo oscuro:   #0F0E0C   → bg-fondo-oscuro
-Fondo claro:    #F5F1EA   → bg-fondo-claro
-Acento rojo:    #B8312F   → bg-acento-rojo / text-acento-rojo
-Acento dorado:  #C89B3C   → text-acento-dorado (etiquetas, subtítulos)
-Acento jade:    #1F4D3F   → bg-acento-jade
-Texto claro:    #EFEAE0   → text-texto-claro
-Borde sutil:    #2A2724   → border-borde-sutil
+Fondo oscuro:  #0F0E0C  → bg-fondo-oscuro
+Fondo claro:   #F5F1EA  → bg-fondo-claro
+Acento rojo:   #B8312F  → text-acento-rojo
+Acento dorado: #C89B3C  → text-acento-dorado
+Acento jade:   #1F4D3F  → bg-acento-jade
+Texto claro:   #EFEAE0  → text-texto-claro
+Borde sutil:   #2A2724  → border-borde-sutil
 
-Tipografía serif: Fraunces (Google Fonts) → font-serif
-Tipografía sans:  Inter / system-ui       → font-sans
+Serif: Fraunces (Google Fonts) → font-serif
+Sans:  Inter / system-ui       → font-sans
 ```
 
-Modo oscuro por defecto — `<html class="dark">` en layout.tsx.
+Modo oscuro por defecto.
 
 ---
 
-## Decisiones técnicas clave (no obvias)
+## Estado actual
+
+### ✅ Completado
+- Monorepo Turborepo + pnpm funcional
+- Frontend: todas las páginas base con estilos
+- i18n es/qu/en con rutas localizadas
+- Directus en Railway + Supabase conectados
+- 13 colecciones creadas en Directus
+- 8 personajes con fichas completas + 8 entradas glosario + 1 pase
+- Build de producción sin errores
+
+### 🔄 Siguiente
+- Deploy Next.js en Railway
+- Optimizar página de detalle para móvil (experiencia QR)
+- Redefinir landing page orientada al producto
+
+### ⏳ Fase 2
+- Imágenes de personajes en Directus
+- Sección cross-sell al pie de cada personaje
+- Modo claro/oscuro
+
+### ⏳ Fase 3
+- Scroll narrativo (Lenis + Framer Motion)
+- Hotspots interactivos en el traje
+- Búsqueda semántica (pgvector + OpenAI)
+- Mapa y calendario
+
+---
+
+## Decisiones técnicas clave
 
 ### Tailwind CSS
-- **Usar v3, no v4.** Tailwind v4 con Next.js 15.1 en pnpm monorepo no genera utilities correctamente.
-- **tailwind.config.js debe ser CommonJS** (`.js` con `module.exports`), NO TypeScript. PostCSS no puede cargar `.ts` config.
-- **postcss debe instalarse como dependencia directa**: `pnpm add -D postcss` en `apps/web`. Sin esto los `@tailwind` directives pasan sin procesar.
-- **Turbopack desactivado**: `experimental.typedRoutes` no es compatible con Turbopack. El dev script usa `next dev` sin `--turbopack`.
+- **v3, no v4** — v4 no genera utilities en pnpm monorepo + Next.js 15.1
+- **tailwind.config.js CommonJS** — PostCSS no carga `.ts`
+- **postcss como dep directa** en `apps/web`
+- **Turbopack desactivado** — incompatible con `experimental.typedRoutes`
 
 ### Prisma
-- **Prisma v5, no v6/v7.** v6+ cambió la API de datasource y rompe el workflow estándar.
-- **MediaRelacion es polimórfica**: Prisma no soporta FKs tipadas a múltiples modelos con el mismo campo. La tabla existe en DB pero se consulta con `$queryRaw`.
-- **pgvector desactivado en Fase 1**: el campo `embedding` se añade en Fase 2 manualmente con `ALTER TABLE personajes ADD COLUMN embedding vector(1536);`.
+- **v5, no v6/v7** — v6 cambió API de datasource
+- **pgvector en Fase 3** — `ALTER TABLE personajes ADD COLUMN embedding vector(1536)`
 
 ### next-intl
-- `messages` en `i18n/request.ts` debe usar `.default` al hacer import dinámico: `(await import(...)).default`. Sin esto, se pasa el módulo completo y React tira error de serialización.
-- Pathnames localizados configurados en `i18n/routing.ts` para las 3 lenguas.
+- `i18n/request.ts` usa `.default` en dynamic import — sin esto React tira error de serialización
 
-### Directus como CMS
-- Los datos fluyen: Directus (Railway) → SDK en `lib/directus.ts` → Server Components de Next.js.
-- `publicadoEn: { _nnull: true }` en las queries — si un ítem no tiene fecha de publicación, no aparece en el sitio.
-- Multimedia usa relaciones polimórficas (M2M con `entidadTipo` + `entidadId`). En Directus se configura como una relación Many-to-Many con campo extra.
+### Directus
+- `publicadoEn: { _nnull: true }` en todas las queries
+- Campos `createdAt`/`updatedAt` NO existen — Directus usa `date_created`/`date_updated`
+- Campo `origen` en personajes: código corto `prehispanico | colonial | mestizo | mixto`
+
+### Infraestructura
+- **Todo en Railway** — no Vercel
+- Railway hobby plan tiene cold starts (~8s si inactivo). Monitorear impacto en experiencia QR
 
 ---
 
-## Estado actual del proyecto
+## Colecciones Directus (ya creadas — no recrear)
 
-### Fase 0 → 1 (en progreso)
-- [x] Monorepo configurado (Turborepo + pnpm)
-- [x] Schema Prisma completo
-- [x] Frontend base: landing, personajes, pases, glosario, layout
-- [x] i18n (es/qu/en) con rutas localizadas
-- [x] Componentes: Header, Footer, PersonajeCard, Badge
-- [x] Sistema de diseño: paleta andina, Fraunces serif, modo oscuro
-- [x] Cliente Directus configurado
-- [x] CI/CD con GitHub Actions
-- [ ] Supabase configurado (necesita credenciales reales)
-- [ ] Directus levantado con colecciones creadas
-- [ ] Primer personaje cargado con contenido real
-- [ ] Deploy en Vercel
+`ubicaciones` → `tags` → `glosario_kichwa` → `media` → `personajes` → `variantes_personaje` → `elementos_traje` → `pases` → `testimonios` → `personaje_elementos` → `pase_personajes` → `media_relaciones` → `personaje_tags`
 
-### Pendiente Fase 2
-- [ ] Mapa con MapLibre
-- [ ] Calendario de festividades
-- [ ] Búsqueda semántica con pgvector
-- [ ] Audios de narraciones
-- [ ] Modo claro/oscuro con next-themes
+Para recrear desde cero: `node scripts/setup-directus.mjs`
 
-### Pendiente Fase 3
-- [ ] Scroll narrativo con Lenis + Framer Motion
-- [ ] Hotspots interactivos en imágenes del traje
-- [ ] Línea de tiempo histórica
+---
+
+## Personajes en producción
+
+| Slug | Nombre | Origen |
+|------|--------|--------|
+| aya-uma | Aya Uma | prehispanico |
+| curiquingue | Curiquingue | prehispanico |
+| sacha-runa | Sacha Runa | prehispanico |
+| payaso | Payaso | mixto |
+| rey-moro | Rey Moro | colonial |
+| capitan | Capitán | colonial |
+| angel | Ángel | colonial |
+| perro | Perro | prehispanico |
+
+---
+
+## Ética y contenido
+
+- **Kichwa primero**: "Aya Uma" antes que "Diablo Huma"
+- **`altText` obligatorio** en todas las imágenes
+- **Citar fuentes** en cada testimonio
+- **`publicadoEn: null`** = borrador, no aparece en el sitio
+- **Licencia**: código MIT, contenido CC BY-NC-SA 4.0
 
 ---
 
 ## Comandos frecuentes
 
 ```bash
-# Instalar dependencias
-pnpm install
+pnpm --filter @seres-del-pase/web dev --port 3030   # desarrollo
+pnpm build                                            # build completo
+pnpm type-check                                       # verificar tipos
 
-# Desarrollo frontend
-pnpm --filter @seres-del-pase/web dev
+node scripts/setup-directus.mjs    # recrear colecciones (idempotente)
+node scripts/seed-personajes.mjs   # cargar personajes base
 
-# Build completo
-pnpm build
-
-# Type check
-pnpm type-check
-
-# Directus local
-docker compose -f directus/docker-compose.yml up -d
-docker compose -f directus/docker-compose.yml down
-
-# Prisma (desde raíz del monorepo)
+# Prisma
 ./apps/api/node_modules/.bin/prisma generate --schema=prisma/schema.prisma
 ./apps/api/node_modules/.bin/prisma migrate dev --schema=prisma/schema.prisma --name <nombre>
 ```
-
----
-
-## Colecciones a crear en Directus (orden de dependencias)
-
-1. `ubicaciones`
-2. `tags`
-3. `glosario_kichwa`
-4. `media`
-5. `personajes`
-6. `variantes_personaje` (M2O → personajes)
-7. `elementos_traje`
-8. `pases`
-9. `testimonios`
-10. `personaje_elementos` (M2M: personajes ↔ elementos_traje)
-11. `pase_personajes` (M2M: pases ↔ personajes)
-12. `media_relaciones` (polimórfica: media → personajes | pases | elementos_traje)
-13. `personaje_tags` (M2M: personajes ↔ tags)
-
----
-
-## Ética y contenido
-
-- **Kichwa primero**: "Aya Uma" antes que "Diablo Huma". Nunca castellanizar como nombre principal.
-- **`altText` obligatorio** en todas las imágenes. No negociable.
-- **Citar fuentes** en cada `Testimonio`. El proyecto se distingue por el rigor académico.
-- **`publicadoEn: null`** = borrador, no aparece en el sitio.
-- **Fotos de personas**: solo con máscara/traje puestos, o con consentimiento escrito.
-- **Licencia**: código MIT, contenido CC BY-NC-SA 4.0.

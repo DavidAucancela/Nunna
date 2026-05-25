@@ -45,35 +45,29 @@ Una plataforma web pública que documenta, explica y celebra los personajes (ser
 ### 2.1 Stack final
 
 **Frontend**
-- Next.js 15 (App Router) + TypeScript estricto
-- Tailwind CSS v4 + shadcn/ui (base de componentes)
-- Framer Motion (animaciones narrativas)
-- Lenis (smooth scroll para secciones inmersivas)
-- next-intl (internacionalización es/kichwa/en)
-- MapLibre GL JS (mapas open-source, sin costo)
+- Next.js 15.1 (App Router) + TypeScript estricto ✅
+- Tailwind CSS **v3** (no v4 — incompatible con el monorepo) ✅
+- Framer Motion (animaciones narrativas) — Fase 3
+- Lenis (smooth scroll) — Fase 3
+- next-intl v3 (es/qu/en) ✅
+- MapLibre GL JS (mapas) — Fase 3
 
 **Backend / Datos**
-- PostgreSQL 16 vía Supabase (Free → Pro cuando escale)
-- pgvector para búsqueda semántica
-- Directus (headless CMS, self-hosted en Railway) — admin panel listo, te ahorras 4-6 semanas de trabajo
-- NestJS solo para endpoints que Directus no cubra bien (búsqueda semántica custom, agregaciones complejas)
+- PostgreSQL 16 vía Supabase ✅
+- pgvector — Fase 3
+- Directus en Railway (CMS headless) ✅ desplegado
+- NestJS — esqueleto listo, deploy en Fase 3
 
 **Media**
-- Supabase Storage para imágenes y audios subidos
-- next/image + Sharp para optimización automática
-- Cloudinary opcional si el catálogo crece >500 fotos de alta resolución
+- Supabase Storage para imágenes y audios
+- next/image + Sharp para optimización automática ✅
 
-**Infraestructura**
-- Vercel: frontend (free tier suficiente al inicio)
-- Railway: Directus + NestJS + Postgres si decides salir de Supabase
-- Cloudflare: DNS + cache + protección
-- Plausible Analytics (privacidad por diseño, ~$9/mes) — alternativa libre: Umami self-hosted
+**Infraestructura (decisión final)**
+- **Railway: frontend + Directus** — todo centralizado ✅
+- Supabase: solo base de datos ✅
+- GitHub Actions: CI ✅
 
-**DevOps / Calidad**
-- GitHub Actions: CI (lint, type-check, tests, build)
-- Sentry: error tracking
-- Husky + lint-staged: pre-commit hooks
-- Conventional commits + changesets
+> ⚠️ **Decisión tomada:** Todo en Railway, no Vercel. Ver `docs/IMPLEMENTACION.md`.
 
 ### 2.2 Por qué Directus en lugar de admin propio
 
@@ -90,7 +84,7 @@ Tu tiempo es finito. Construir un admin con CRUD, roles, permisos, subida de arc
                │                         │
                ▼                         ▼
 ┌──────────────────────────┐  ┌──────────────────────────┐
-│      Next.js 15 (Vercel)  │  │   NestJS API (Railway)   │
+│     Next.js 15 (Railway)  │  │   NestJS API (Railway)   │
 │  - SSG personajes         │  │   - Búsqueda semántica   │
 │  - ISR pases              │  │   - Endpoints públicos   │
 │  - Storytelling           │  │   - Webhooks Directus    │
@@ -500,59 +494,48 @@ Foco en el **Pase del Niño Rey de Reyes de Riobamba** (6 de enero) por ser el m
 
 ## 7. Roadmap por fases
 
-### Fase 0 — Investigación y preparación (2 semanas)
+> Estado actualizado al 2026-05-25.
 
-- [ ] Reunir bibliografía y digitalizarla en Zotero u Obsidian
-- [ ] Lista definitiva de 10 personajes con su contenido borrador en Notion
-- [ ] Conseguir/tomar fotos base (mínimo 3 por personaje)
-- [ ] Wireframes en Figma de las 5 páginas clave
-- [ ] Validar identidad visual (paleta, tipografía) con 2-3 personas de confianza
+### ✅ Fase 0+1 — COMPLETADA
 
-**Entregable:** documento de contenido + Figma navegable.
+- [x] Monorepo Turborepo + pnpm
+- [x] Schema Prisma v5 completo
+- [x] Directus desplegado en Railway + conectado a Supabase
+- [x] 13 colecciones creadas en Directus
+- [x] 8 personajes con fichas completas (Aya Uma, Curiquingue, Sacha Runa, Payaso, Rey Moro, Capitán, Ángel, Perro)
+- [x] Páginas: landing, listado personajes, detalle personaje, pases, glosario
+- [x] i18n es/qu/en con rutas localizadas
+- [x] Build de producción sin errores
+- [x] Decisión de infraestructura: todo en Railway (no Vercel)
 
-### Fase 1 — MVP técnico (4-6 semanas)
+**Modelo de negocio definido:** llaveros 3D con QR → ficha del personaje
 
-- [ ] Setup monorepo (Turborepo + pnpm)
-- [ ] Schema en Supabase + Directus levantado en Railway
-- [ ] Carga de 10 personajes + 2 pases en Directus
-- [ ] Páginas: landing, listado personajes, detalle personaje, listado pases, detalle pase, sobre, glosario
-- [ ] Búsqueda básica (full-text Postgres)
-- [ ] SEO técnico: sitemap, robots, OpenGraph, JSON-LD (`@type: "DefinedTerm"` para personajes, `"Event"` para pases)
-- [ ] Deploy a Vercel + dominio
-- [ ] Analytics + Sentry
+### 🔄 Fase 2 — Producto QR (en curso)
 
-**Entregable:** sitio público funcional con contenido real, 10 personajes navegables.
+Prioridad redefinida por el modelo de negocio. El QR dirige a la ficha del personaje.
 
-### Fase 2 — Profundidad (3-4 semanas)
-
-- [ ] Mapa interactivo con MapLibre
-- [ ] Calendario de festividades
-- [ ] Búsqueda semántica con pgvector (genera embeddings con OpenAI o un modelo local Ollama — esto encaja con tu setup)
-- [ ] Audio de narraciones (graba con buen mic o consigue voluntario hablante de kichwa)
-- [ ] i18n: completar kichwa e inglés
-- [ ] Página de elementos del traje con galería filtrable
+- [ ] **Deploy en Railway** — urgente, los llaveros están en producción
+- [ ] Página de detalle del personaje optimizada para móvil (experiencia QR)
+- [ ] Landing page orientada al concepto: "escanea el QR de tu llavero"
+- [ ] Sección cross-sell al pie de cada personaje ("Conoce los otros seres")
+- [ ] Imágenes de personajes en Directus
+- [ ] OpenGraph rico para compartir en redes
 - [ ] Modo claro/oscuro
 
-**Entregable:** sitio rico, autosuficiente, listo para difundir.
+### ⏳ Fase 3 — Storytelling inmersivo
 
-### Fase 3 — Storytelling inmersivo (4 semanas)
-
-- [ ] Scroll narrativo en página de personaje principal (Aya Uma como showcase)
+- [ ] Scroll narrativo (Lenis + Framer Motion)
 - [ ] Hotspots interactivos sobre imágenes del traje
-- [ ] Animaciones con Framer Motion
-- [ ] Línea de tiempo histórica (prehispánico → colonial → contemporáneo)
-- [ ] Videos cortos embebidos (entrevistas, fragmentos de pase)
-- [ ] Mejoras de accesibilidad WCAG AA
+- [ ] Búsqueda semántica con pgvector (requiere OPENAI_API_KEY)
+- [ ] Audio de narraciones (pronunciación kichwa + historia)
+- [ ] Mapa interactivo con MapLibre
+- [ ] Calendario de festividades
 
-**Entregable:** experiencia de portafolio-grade.
-
-### Fase 4 — Comunidad y difusión (opcional, ongoing)
+### ⏳ Fase 4 — Comunidad y difusión
 
 - [ ] API pública documentada (Swagger)
-- [ ] Submissions de contenido por usuarios registrados (moderado)
 - [ ] Sección académica con PDFs descargables
-- [ ] Newsletter mensual con próximo pase
-- [ ] Eventualmente: AR con WebXR para "ver" la máscara en tu cámara
+- [ ] AR con WebXR — ver la máscara en tu cámara
 
 ---
 
@@ -600,7 +583,7 @@ Este sitio puede dominar Google para búsquedas como "Diablo Huma significado", 
 ## 10. Seguridad y operación
 
 - Auth de Directus protegido con 2FA en cuentas admin
-- Variables de entorno nunca en repo (usa Doppler o el secret manager de Railway/Vercel)
+- Variables de entorno nunca en repo (usa el secret manager de Railway)
 - Backups automáticos de Supabase (Pro plan los incluye diarios) o script propio a S3 si te quedas en Free
 - Rate limiting en API pública (Upstash Redis o middleware de NestJS)
 - CSP headers configurados
@@ -610,16 +593,14 @@ Este sitio puede dominar Google para búsquedas como "Diablo Huma significado", 
 
 ## 11. Costos estimados (USD/mes)
 
-| Servicio | Free tier suficiente | Cuando crezca |
-|----------|----------------------|---------------|
-| Vercel | ✅ Hobby | $20 Pro |
-| Supabase | ✅ Free (500MB DB, 1GB storage) | $25 Pro |
-| Railway | $5 crédito inicial → ~$10-15 | ~$20 |
-| Dominio | — | $12/año |
-| Plausible | — | $9 (o Umami self-hosted gratis) |
-| **Total inicial** | **~$0-15/mes** | **~$70/mes** |
+| Servicio | Costo actual | Cuando crezca |
+|----------|-------------|---------------|
+| Railway (Directus + Next.js) | ~$10-15/mes Hobby | $20 Pro (sin cold starts) |
+| Supabase (PostgreSQL) | ✅ Free (500MB DB) | $25 Pro |
+| Dominio | — | ~$15/año |
+| **Total actual** | **~$10-15/mes** | **~$40-60/mes** |
 
-Perfectamente sostenible como proyecto personal.
+> Railway Hobby tiene cold starts (~8s sin tráfico). Si afecta la experiencia QR, pasar a Pro.
 
 ---
 
