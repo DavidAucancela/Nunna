@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { useTranslations } from "next-intl";
 import { PersonajeCard } from "@/components/personajes/PersonajeCard";
 import { getPersonajes } from "@/lib/directus";
+
+export const revalidate = 3600;
 
 interface PersonajesPageProps {
   params: Promise<{ locale: string }>;
