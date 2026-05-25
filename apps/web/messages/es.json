@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "personajes": "Personajes",
+    "pases": "Pases y fiestas",
+    "mapa": "Mapa",
+    "calendario": "Calendario",
+    "glosario": "Glosario",
+    "buscar": "Buscar",
+    "sobre": "Sobre el proyecto"
+  },
+  "home": {
+    "hero": {
+      "titulo": "Seres del Pase",
+      "subtitulo": "Los personajes sagrados y festivos de los pases riobambeños",
+      "cta_principal": "Conocer los seres",
+      "cta_secundario": "Ver el calendario"
+    },
+    "intro": {
+      "titulo": "Un mundo de símbolos vivos",
+      "texto": "Los pases de Riobamba son mucho más que fiestas. Son un universo de personajes que sintetizan siglos de cosmovisión andina, fe colonial y creatividad mestiza. Aquí los documentamos con el rigor que merecen."
+    }
+  },
+  "personajes": {
+    "titulo": "Los Seres",
+    "descripcion": "Cada personaje lleva siglos de historia, simbolismo y transformación cultural.",
+    "filtro_origen": "Filtrar por origen",
+    "ver_detalle": "Conocer este ser",
+    "sin_resultados": "No se encontraron personajes con ese criterio."
+  },
+  "pases": {
+    "titulo": "Pases y Festividades",
+    "descripcion": "Los pases son el escenario donde los seres cobran vida.",
+    "fecha_fija": "Fecha fija",
+    "fecha_movil": "Fecha variable"
+  },
+  "error": {
+    "404": "Página no encontrada",
+    "500": "Error del servidor",
+    "volver_inicio": "Volver al inicio"
+  },
+  "comun": {
+    "cargando": "Cargando…",
+    "origen": {
+      "prehispanico": "Prehispánico",
+      "colonial": "Colonial",
+      "mestizo": "Mestizo",
+      "mixto": "Mixto"
+    },
+    "leer_mas": "Leer más",
+    "fuente": "Fuente",
+    "fotografia": "Fotografía",
+    "licencia": "Licencia"
+  }
+}

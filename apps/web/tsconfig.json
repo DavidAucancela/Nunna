@@ -1,0 +1,13 @@
+{
+  "extends": "@seres-del-pase/config/tsconfig/nextjs",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@seres-del-pase/types": ["../../packages/types/src/index.ts"],
+      "@seres-del-pase/ui": ["../../packages/ui/src/index.ts"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

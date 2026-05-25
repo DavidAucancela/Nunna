@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "personajes": "Characters",
+    "pases": "Celebrations",
+    "mapa": "Map",
+    "calendario": "Calendar",
+    "glosario": "Glossary",
+    "buscar": "Search",
+    "sobre": "About"
+  },
+  "home": {
+    "hero": {
+      "titulo": "Seres del Pase",
+      "subtitulo": "The sacred and festive characters of Riobamba's traditional celebrations",
+      "cta_principal": "Meet the characters",
+      "cta_secundario": "View the calendar"
+    },
+    "intro": {
+      "titulo": "A world of living symbols",
+      "texto": "Riobamba's pases are far more than festivals. They are a universe of characters that synthesize centuries of Andean worldview, colonial faith, and mestizo creativity. We document them with the rigor they deserve."
+    }
+  },
+  "personajes": {
+    "titulo": "The Characters",
+    "descripcion": "Each character carries centuries of history, symbolism, and cultural transformation.",
+    "filtro_origen": "Filter by origin",
+    "ver_detalle": "Learn about this character",
+    "sin_resultados": "No characters found with that criteria."
+  },
+  "pases": {
+    "titulo": "Celebrations & Festivities",
+    "descripcion": "The pases are the stage where the characters come to life.",
+    "fecha_fija": "Fixed date",
+    "fecha_movil": "Variable date"
+  },
+  "error": {
+    "404": "Page not found",
+    "500": "Server error",
+    "volver_inicio": "Back to home"
+  },
+  "comun": {
+    "cargando": "Loading…",
+    "origen": {
+      "prehispanico": "Pre-Hispanic",
+      "colonial": "Colonial",
+      "mestizo": "Mestizo",
+      "mixto": "Mixed"
+    },
+    "leer_mas": "Read more",
+    "fuente": "Source",
+    "fotografia": "Photography",
+    "licencia": "License"
+  }
+}

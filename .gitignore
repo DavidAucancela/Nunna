@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+.next/
+out/
+build/
+
+# Environment files — NUNCA en el repo
+.env
+.env.local
+.env.*.local
+
+# Turbo
+.turbo/
+
+# Misc
+.DS_Store
+*.pem
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# IDE
+.idea/
+.vscode/settings.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Vercel
+.vercel/
+
+# Sentry
+.sentryclirc

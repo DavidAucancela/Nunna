@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "personajes": "Runakuna",
+    "pases": "Raymi Pachakunamanta",
+    "mapa": "Mapa",
+    "calendario": "Watapura",
+    "glosario": "Rimasikuna",
+    "buscar": "Maskanakuy",
+    "sobre": "Ima Mantamanta"
+  },
+  "home": {
+    "hero": {
+      "titulo": "Seres del Pase",
+      "subtitulo": "Riobamba raymikuna ukupi causak runakunamanta",
+      "cta_principal": "Runakunata riksiy",
+      "cta_secundario": "Watapurata qhaway"
+    },
+    "intro": {
+      "titulo": "Kawsak señalkunamanta",
+      "texto": "Riobamba raymikuna mana anchuchan fiestakuna kankichu. Paykunaka pachamamawan, catolicismo nina, mestizo yachaywanpis tinkuy."
+    }
+  },
+  "personajes": {
+    "titulo": "Runakuna",
+    "descripcion": "Sapa runa pachak watakunata yachaykunata, señalkunata apan.",
+    "filtro_origen": "Pakarimumanta maskay",
+    "ver_detalle": "Kay runamanta yachay",
+    "sin_resultados": "Mana imapas tarirkanchu."
+  },
+  "pases": {
+    "titulo": "Raymikuna",
+    "descripcion": "Raymikuna ukupi runakunaqa kawsarinku.",
+    "fecha_fija": "Sapa wata chay punchaw",
+    "fecha_movil": "Hukchasqa punchaw"
+  },
+  "error": {
+    "404": "Mana tarirkanchu",
+    "500": "Llakiwa tiyarqan",
+    "volver_inicio": "Qallariymanmi kutiy"
+  },
+  "comun": {
+    "cargando": "Yaykumuchkani…",
+    "origen": {
+      "prehispanico": "Inkas ñawpaq",
+      "colonial": "Colonia pachapi",
+      "mestizo": "Mestizo",
+      "mixto": "Tinkuy"
+    },
+    "leer_mas": "Astawan liy",
+    "fuente": "Pachaqa",
+    "fotografia": "Resqui",
+    "licencia": "Simi"
+  }
+}

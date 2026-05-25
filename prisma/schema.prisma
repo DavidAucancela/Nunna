@@ -1,0 +1,244 @@
+// Seres del Pase — Schema de base de datos
+// Gestor: PostgreSQL 16 en Supabase
+// ORM: Prisma (para NestJS API; Directus tiene su propia capa sobre el mismo Postgres)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("API_DATABASE_URL")
+}
+
+// ── Personajes ────────────────────────────────────────────────────────────────
+
+model Personaje {
+  id           String    @id @default(cuid())
+  slug         String    @unique
+  nombre       String
+  nombreKichwa String?
+  nombresAlt   String[]
+  resumen      String
+  descripcion  String
+  simbolismo   String?
+  origen       Origen?
+  // embedding — añadir en Fase 2 con: ALTER TABLE personajes ADD COLUMN embedding vector(1536);
+
+  variantes    VariantePersonaje[]
+  elementos    PersonajeElemento[]
+  apariciones  PasePersonaje[]
+  testimonios  Testimonio[]
+  tags         PersonajeTag[]
+
+  publicadoEn  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([origen])
+  @@map("personajes")
+}
+
+model VariantePersonaje {
+  id          String     @id @default(cuid())
+  personajeId String
+  personaje   Personaje  @relation(fields: [personajeId], references: [id], onDelete: Cascade)
+  nombre      String
+  region      String
+  diferencias String
+  ubicacionId String?
+  ubicacion   Ubicacion? @relation(fields: [ubicacionId], references: [id])
+
+  @@map("variantes_personaje")
+}
+
+// ── Elementos del traje ───────────────────────────────────────────────────────
+
+model ElementoTraje {
+  id           String              @id @default(cuid())
+  slug         String              @unique
+  nombre       String
+  nombreKichwa String?
+  descripcion  String
+  material     String?
+  significado  String?
+  personajes   PersonajeElemento[]
+
+  @@map("elementos_traje")
+}
+
+model PersonajeElemento {
+  personajeId String
+  elementoId  String
+  obligatorio Boolean       @default(true)
+  notas       String?
+  personaje   Personaje     @relation(fields: [personajeId], references: [id], onDelete: Cascade)
+  elemento    ElementoTraje @relation(fields: [elementoId], references: [id], onDelete: Cascade)
+
+  @@id([personajeId, elementoId])
+  @@map("personaje_elementos")
+}
+
+// ── Pases / Festividades ──────────────────────────────────────────────────────
+
+model Pase {
+  id               String         @id @default(cuid())
+  slug             String         @unique
+  nombre           String
+  fechaTipo        FechaTipo
+  fechaDescripcion String
+  mes              Int?
+  dia              Int?
+  resumen          String
+  historia         String
+  ubicacionId      String?
+  ubicacion        Ubicacion?     @relation(fields: [ubicacionId], references: [id])
+  personajes       PasePersonaje[]
+  testimonios      Testimonio[]
+
+  @@index([mes, dia])
+  @@map("pases")
+}
+
+model PasePersonaje {
+  paseId      String
+  personajeId String
+  rol         RolEnPase?
+  notas       String?
+  pase        Pase      @relation(fields: [paseId], references: [id], onDelete: Cascade)
+  personaje   Personaje @relation(fields: [personajeId], references: [id], onDelete: Cascade)
+
+  @@id([paseId, personajeId])
+  @@map("pase_personajes")
+}
+
+// ── Ubicaciones ───────────────────────────────────────────────────────────────
+
+model Ubicacion {
+  id          String              @id @default(cuid())
+  nombre      String
+  parroquia   String?
+  canton      String?             @default("Riobamba")
+  provincia   String?             @default("Chimborazo")
+  pais        String?             @default("Ecuador")
+  latitud     Float
+  longitud    Float
+  descripcion String?
+  pases       Pase[]
+  variantes   VariantePersonaje[]
+
+  @@map("ubicaciones")
+}
+
+// ── Multimedia ────────────────────────────────────────────────────────────────
+
+model Media {
+  id          String          @id @default(cuid())
+  tipo        TipoMedia
+  url         String
+  urlThumb    String?
+  titulo      String?
+  descripcion String?
+  altText     String
+  autor       String?
+  licencia    String?
+  fecha       DateTime?
+  relaciones  MediaRelacion[]
+
+  @@map("media")
+}
+
+// MediaRelacion usa relaciones polimórficas (entidadTipo + entidadId) que Prisma
+// no soporta como FK tipadas. La tabla existe en DB y se maneja con $queryRaw.
+model MediaRelacion {
+  mediaId     String
+  entidadTipo String
+  entidadId   String
+  orden       Int    @default(0)
+  media       Media  @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@id([mediaId, entidadTipo, entidadId])
+  @@map("media_relaciones")
+}
+
+// ── Testimonios ───────────────────────────────────────────────────────────────
+
+model Testimonio {
+  id                 String     @id @default(cuid())
+  texto              String
+  autor              String
+  cargo              String?
+  fecha              DateTime?
+  fuente             String?
+  url                String?
+  citaBibliografica  String?
+  personajeId        String?
+  paseId             String?
+  personaje          Personaje? @relation(fields: [personajeId], references: [id])
+  pase               Pase?      @relation(fields: [paseId], references: [id])
+
+  @@map("testimonios")
+}
+
+// ── Tags ──────────────────────────────────────────────────────────────────────
+
+model Tag {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  nombre      String
+  descripcion String?
+  personajes  PersonajeTag[]
+
+  @@map("tags")
+}
+
+model PersonajeTag {
+  personajeId String
+  tagId       String
+  personaje   Personaje @relation(fields: [personajeId], references: [id], onDelete: Cascade)
+  tag         Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([personajeId, tagId])
+  @@map("personaje_tags")
+}
+
+// ── Glosario kichwa ───────────────────────────────────────────────────────────
+
+model GlosarioKichwa {
+  id            String   @id @default(cuid())
+  palabra       String   @unique
+  traduccion    String
+  pronunciacion String?
+  contexto      String?
+  ejemplos      String[]
+
+  @@map("glosario_kichwa")
+}
+
+// ── Enums ─────────────────────────────────────────────────────────────────────
+
+enum Origen {
+  prehispanico
+  colonial
+  mestizo
+  mixto
+}
+
+enum FechaTipo {
+  fija
+  movil
+}
+
+enum TipoMedia {
+  imagen
+  audio
+  video
+}
+
+enum RolEnPase {
+  principal
+  acompanante
+  musical
+  ceremonial
+}
