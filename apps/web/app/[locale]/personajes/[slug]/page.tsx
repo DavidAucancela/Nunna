@@ -103,9 +103,10 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
           <h2 className="font-serif text-xl font-bold text-texto-claro sm:text-2xl">
             Historia y significado
           </h2>
-          <div className="prose prose-invert mt-5 max-w-none text-stone-400 sm:mt-6">
-            <p>{personaje.descripcion}</p>
-          </div>
+          <div
+            className="prose prose-invert mt-5 max-w-none text-stone-400 sm:mt-6"
+            dangerouslySetInnerHTML={{ __html: personaje.descripcion }}
+          />
         </section>
 
         {/* Simbolismo */}

@@ -32,9 +32,10 @@ interface GetPersonajesOptions {
 export async function getPersonajes(options: GetPersonajesOptions): Promise<PersonajeListItem[]> {
   try {
     const client = getDirectusClient();
+    const directusUrl = process.env.DIRECTUS_URL ?? "";
     const items = await client.request(
       readItems("personajes", {
-        fields: ["id", "slug", "nombre", "nombreKichwa", "resumen", "origen", "publicadoEn"],
+        fields: ["id", "slug", "nombre", "nombreKichwa", "resumen", "origen", "publicadoEn", "imagenPortada"],
         filter: { publicadoEn: { _nnull: true } },
         sort: ["nombre"],
         limit: options.limit ?? 100,
@@ -42,10 +43,21 @@ export async function getPersonajes(options: GetPersonajesOptions): Promise<Pers
       })
     );
 
-    return (items as PersonajeListItem[]).map((item) => ({
-      ...item,
-      totalPases: 0, // Se puede enriquecer con una query adicional
-    }));
+    return (items as (PersonajeListItem & { imagenPortada?: string })[]).map((item) => {
+      const base: PersonajeListItem = {
+        id: item.id,
+        slug: item.slug,
+        nombre: item.nombre,
+        resumen: item.resumen,
+        totalPases: 0,
+        ...(item.nombreKichwa !== undefined && { nombreKichwa: item.nombreKichwa }),
+        ...(item.origen !== undefined && { origen: item.origen }),
+        ...(item.imagenPortada !== undefined && {
+          imagenPortada: `${directusUrl}/assets/${item.imagenPortada}`,
+        }),
+      };
+      return base;
+    });
   } catch (error) {
     console.error("Error cargando personajes:", error);
     return [];
@@ -81,11 +93,25 @@ export async function getPersonaje(slug: string, locale?: string): Promise<Perso
     if (!items.length) return null;
 
     const raw = items[0] as unknown as Record<string, unknown>;
+    const directusUrl = process.env.DIRECTUS_URL ?? "";
+
+    const multimedia =
+      raw.imagenPortada
+        ? [
+            {
+              id: raw.imagenPortada as string,
+              tipo: "imagen" as const,
+              url: `${directusUrl}/assets/${raw.imagenPortada}`,
+              altText: `${raw.nombre} — Seres del Pase`,
+              orden: 0,
+            },
+          ]
+        : [];
 
     return {
       ...(raw as unknown as Personaje),
       tags: [],
-      multimedia: [],
+      multimedia,
       variantes: [],
       elementos: [],
       apariciones: [],
