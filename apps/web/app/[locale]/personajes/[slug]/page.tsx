@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import { setRequestLocale } from "next-intl/server";
 import { getPersonaje, getPersonajes } from "@/lib/directus";
 
 interface PersonajePageProps {
@@ -14,6 +15,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PersonajePageProps): Promise<Metadata> {
   const { slug, locale } = await params;
+  setRequestLocale(locale);
   const personaje = await getPersonaje(slug, locale);
 
   if (!personaje) return { title: "No encontrado" };
@@ -33,6 +35,7 @@ export async function generateMetadata({ params }: PersonajePageProps): Promise<
 
 export default async function PersonajePage({ params }: PersonajePageProps) {
   const { slug, locale } = await params;
+  setRequestLocale(locale);
   const personaje = await getPersonaje(slug, locale);
 
   if (!personaje) notFound();
