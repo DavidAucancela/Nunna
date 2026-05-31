@@ -27,20 +27,21 @@ Implicaciones técnicas:
 | Frontend | Next.js 15.1 (App Router) + TypeScript | `apps/web/` |
 | Estilos | Tailwind CSS v3 + PostCSS | `apps/web/tailwind.config.js` |
 | i18n | next-intl v3 (es / qu / en) | `apps/web/i18n/` + `apps/web/messages/` |
-| CMS | Directus headless (Railway) | `directus/` |
-| Backend | NestJS (búsqueda semántica + webhooks) | `apps/api/` |
-| Base de datos | PostgreSQL 16 (Supabase) | `prisma/schema.prisma` |
+| Datos | JSON estático en repo | `apps/web/lib/data/` |
+| Backend | NestJS (búsqueda semántica — Fase 3) | `apps/api/` |
+| Base de datos | PostgreSQL 16 (Supabase — Fase 3) | `prisma/schema.prisma` |
 | Monorepo | Turborepo + pnpm workspaces | `turbo.json`, `pnpm-workspace.yaml` |
+
+> **Sin CMS.** Directus fue eliminado (2026-05-31) por costo. Los datos viven en JSON versionados en el repo.
 
 ---
 
 ## Infraestructura de producción
 
-| Servicio | Plataforma | URL |
-|---------|------------|-----|
-| CMS (Directus) | Railway | `https://directus-production-d593.up.railway.app` |
-| Frontend (Next.js) | Railway | pendiente deploy |
-| Base de datos | Supabase | `https://dhhesajpexcyainibwvl.supabase.co` |
+| Servicio | Plataforma | Notas |
+|---------|------------|-------|
+| Frontend (Next.js) | Railway | Único servicio activo |
+| Base de datos | Supabase | Reservada para Fase 3 (búsqueda semántica) |
 
 **Todo en Railway.** No usar Vercel — decisión tomada para centralizar infraestructura.
 
@@ -62,16 +63,16 @@ pnpm --filter @seres-del-pase/web dev --port 3030
 pnpm --filter @seres-del-pase/api dev
 ```
 
-Frontend: **http://localhost:3030/es** · Directus admin: **https://directus-production-d593.up.railway.app/admin**
+Frontend: **http://localhost:3030/es**
 
-### Variables de entorno (`apps/web/.env.local`) — ya configurado
+### Variables de entorno (`apps/web/.env.local`)
 ```
-DIRECTUS_URL=https://directus-production-d593.up.railway.app
-DIRECTUS_STATIC_TOKEN=<token>
+# Reservadas para Fase 3 (búsqueda semántica con pgvector)
 NEXT_PUBLIC_SUPABASE_URL=https://dhhesajpexcyainibwvl.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<JWT>
-NEXT_REVALIDATE_TOKEN=seres-del-pase-revalidate-2026
 ```
+
+No se necesitan variables de entorno para correr el frontend en desarrollo — los datos vienen del JSON.
 
 ---
 
@@ -86,22 +87,45 @@ apps/web/
 │   │   ├── page.tsx                → Grid de personajes
 │   │   └── [slug]/page.tsx         → ★ PANTALLA PRINCIPAL DEL QR
 │   ├── pases/page.tsx
+│   ├── calendario/page.tsx
 │   └── glosario/page.tsx
 ├── components/
 │   ├── layout/Header.tsx
-│   ├── layout/Footer.tsx
-│   └── personajes/PersonajeCard.tsx
-├── lib/directus.ts                 → Cliente SDK Directus
+│   ├── calendario/CalendarioGrid.tsx
+│   ├── glosario/GlosarioClient.tsx
+│   ├── home/HeroSection.tsx
+│   ├── personajes/PersonajeCard.tsx
+│   ├── personajes/PersonajeCardProximo.tsx
+│   └── ui/                         → FadeUp, AnimatedCounter, ScrollProgress, WhatsAppShare, OrigenPlaceholder
+├── lib/
+│   ├── data.ts                     → ★ Acceso a datos (reemplaza Directus)
+│   ├── data/
+│   │   ├── personajes.json         → 9 personajes completos
+│   │   ├── glosario.json           → 16 entradas kichwa
+│   │   └── pases.json              → 7 pases con fechas y rutas
+│   └── origen-styles.ts            → Estilos por tipo de origen
+├── public/
+│   ├── personajes/                 → Imágenes de personajes (aya-uma, payaso, perro, diablos-de-lata)
+│   └── pases/                      → Imágenes de los pases
 ├── i18n/routing.ts                 → Locales + pathnames
 ├── i18n/request.ts                 → next-intl config
 ├── messages/                       → es.json / qu.json / en.json
 ├── tailwind.config.js              → CommonJS, NO .ts
 └── next.config.ts
-
-scripts/
-├── setup-directus.mjs             → Crea 13 colecciones (idempotente, ya ejecutado)
-└── seed-personajes.mjs            → Carga 8 personajes base (ya ejecutado)
 ```
+
+---
+
+## Capa de datos — `lib/data.ts`
+
+Todas las páginas importan de `@/lib/data` (nunca de Directus ni de APIs externas).
+
+```ts
+import { getPersonajes, getPersonaje, getPases, getGlosario } from "@/lib/data";
+```
+
+Para agregar o editar contenido: editar directamente los archivos JSON en `lib/data/` y hacer commit.
+Las páginas son **SSG puro** — se prerenderizan en build, sin requests en runtime.
 
 ---
 
@@ -128,32 +152,40 @@ Modo oscuro por defecto.
 
 ### ✅ Completado
 - Monorepo Turborepo + pnpm funcional
-- Frontend: todas las páginas base con estilos
+- Frontend: todas las páginas con estilos completos (landing, personajes, detalle, pases, calendario, glosario, sobre, mapa)
 - i18n es/qu/en con rutas localizadas
-- Directus en Railway + Supabase conectados
-- 13 colecciones creadas en Directus
-- 8 personajes con fichas completas + 8 entradas glosario + 1 pase
-- Build de producción sin errores
+- Datos estáticos: 9 personajes, 16 entradas glosario, 7 pases en JSON versionado
+- Imágenes de 4 personajes en `public/personajes/` (Aya Uma, Payaso, Perro, Diablos de lata)
+- Imágenes de 5 pases en `public/pases/`
+- Build de producción SSG sin errores — todas las rutas se prerenderizan estáticamente
+- Eliminación completa de Directus (CMS, Redis, PostGIS, Bucket dados de baja en Railway)
+- Favicons SVG
 
 ### 🔄 Siguiente
 - Deploy Next.js en Railway
 - Optimizar página de detalle para móvil (experiencia QR)
-- Redefinir landing page orientada al producto
+- Añadir imágenes a los 5 personajes que aún no las tienen
 
 ### ⏳ Fase 2
-- Imágenes de personajes en Directus
-- Sección cross-sell al pie de cada personaje
+- Imágenes para Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel
+- Sección cross-sell al pie de cada personaje (ya existe estructura)
 - Modo claro/oscuro
 
 ### ⏳ Fase 3
-- Scroll narrativo (Lenis + Framer Motion)
+- Scroll narrativo (Lenis + Framer Motion — dependencias ya instaladas)
 - Hotspots interactivos en el traje
-- Búsqueda semántica (pgvector + OpenAI)
-- Mapa y calendario
+- Búsqueda semántica (pgvector + Supabase + NestJS)
+- Mapa interactivo (MapLibre — dependencia ya instalada)
 
 ---
 
 ## Decisiones técnicas clave
+
+### Sin CMS — datos en JSON
+- **Directus eliminado** (2026-05-31) — Railway costaba ~$15-20/mes extra por Directus + Redis + PostGIS + Bucket
+- Los datos viven en `apps/web/lib/data/*.json`, versionados en git
+- Para editar contenido: editar el JSON y hacer `git push` → Railway redeploya automáticamente
+- Las páginas son SSG puro — `generateStaticParams` + sin `force-dynamic`
 
 ### Tailwind CSS
 - **v3, no v4** — v4 no genera utilities en pnpm monorepo + Next.js 15.1
@@ -164,41 +196,32 @@ Modo oscuro por defecto.
 ### Prisma
 - **v5, no v6/v7** — v6 cambió API de datasource
 - **pgvector en Fase 3** — `ALTER TABLE personajes ADD COLUMN embedding vector(1536)`
+- Supabase reservado exclusivamente para Fase 3
 
 ### next-intl
 - `i18n/request.ts` usa `.default` en dynamic import — sin esto React tira error de serialización
 
-### Directus
-- `publicadoEn: { _nnull: true }` en todas las queries
-- Campos `createdAt`/`updatedAt` NO existen — Directus usa `date_created`/`date_updated`
-- Campo `origen` en personajes: código corto `prehispanico | colonial | mestizo | mixto`
-
 ### Infraestructura
 - **Todo en Railway** — no Vercel
-- Railway hobby plan tiene cold starts (~8s si inactivo). Monitorear impacto en experiencia QR
-
----
-
-## Colecciones Directus (ya creadas — no recrear)
-
-`ubicaciones` → `tags` → `glosario_kichwa` → `media` → `personajes` → `variantes_personaje` → `elementos_traje` → `pases` → `testimonios` → `personaje_elementos` → `pase_personajes` → `media_relaciones` → `personaje_tags`
-
-Para recrear desde cero: `node scripts/setup-directus.mjs`
+- Un solo servicio activo: Next.js (antes eran 5: Next.js + Directus + Redis + PostGIS + Bucket)
 
 ---
 
 ## Personajes en producción
 
-| Slug | Nombre | Origen |
-|------|--------|--------|
-| aya-uma | Aya Uma | prehispanico |
-| curiquingue | Curiquingue | prehispanico |
-| sacha-runa | Sacha Runa | prehispanico |
-| payaso | Payaso | mixto |
-| rey-moro | Rey Moro | colonial |
-| capitan | Capitán | colonial |
-| angel | Ángel | colonial |
-| perro | Perro | prehispanico |
+| Slug | Nombre | Origen | Imagen |
+|------|--------|--------|--------|
+| aya-uma | Aya Uma | prehispanico | ✅ |
+| curiquingue | Curiquingue | prehispanico | ❌ |
+| sacha-runa | Sacha Runa | prehispanico | ❌ |
+| payaso | Payaso | mixto | ✅ |
+| rey-moro | Rey Moro | colonial | ❌ |
+| capitan | Capitán | colonial | ❌ |
+| angel | Ángel | colonial | ❌ |
+| perro | Perro | prehispanico | ✅ |
+| diablos-de-lata | Diablos de lata | mestizo | ✅ |
+
+Para agregar un personaje: editar `apps/web/lib/data/personajes.json` con la estructura existente.
 
 ---
 
@@ -207,7 +230,6 @@ Para recrear desde cero: `node scripts/setup-directus.mjs`
 - **Kichwa primero**: "Aya Uma" antes que "Diablo Huma"
 - **`altText` obligatorio** en todas las imágenes
 - **Citar fuentes** en cada testimonio
-- **`publicadoEn: null`** = borrador, no aparece en el sitio
 - **Licencia**: código MIT, contenido CC BY-NC-SA 4.0
 
 ---
@@ -219,10 +241,7 @@ pnpm --filter @seres-del-pase/web dev --port 3030   # desarrollo
 pnpm build                                            # build completo
 pnpm type-check                                       # verificar tipos
 
-node scripts/setup-directus.mjs    # recrear colecciones (idempotente)
-node scripts/seed-personajes.mjs   # cargar personajes base
-
-# Prisma
+# Prisma (Fase 3)
 ./apps/api/node_modules/.bin/prisma generate --schema=prisma/schema.prisma
 ./apps/api/node_modules/.bin/prisma migrate dev --schema=prisma/schema.prisma --name <nombre>
 ```
