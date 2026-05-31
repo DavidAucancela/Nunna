@@ -1,4 +1,4 @@
-# CLAUDE.md — Seres del Pase
+# CLAUDE.md — Nunna
 
 Catálogo digital + experiencia de desempaque para llaveros 3D de personajes ecuatorianos.
 El comprador escanea el QR del llavero → aterriza en la ficha del personaje.
@@ -15,7 +15,7 @@ Autor: Jonathan David Aucancela Maguana.
 Implicaciones técnicas:
 - **Mobile-first absoluto** — el QR se escanea con el teléfono
 - **La página de detalle debe cargar rápido y verse impresionante al primer render**
-- **Cross-sell al pie de cada personaje** — "Conoce a los otros seres" → más llaveros
+- **Cross-sell al pie de cada personaje** — "Conoce a los otros personajes" → más llaveros
 - **OpenGraph rico** — si el comprador comparte en WhatsApp, la preview tiene que lucir bien
 
 ---
@@ -86,16 +86,21 @@ apps/web/
 │   ├── personajes/
 │   │   ├── page.tsx                → Grid de personajes
 │   │   └── [slug]/page.tsx         → ★ PANTALLA PRINCIPAL DEL QR
-│   ├── pases/page.tsx
-│   ├── calendario/page.tsx
+│   ├── pases/page.tsx              → (sin enlace en nav — fusionado en calendario)
+│   ├── calendario/page.tsx         → Pases y Festividades (nav item activo)
 │   └── glosario/page.tsx
 ├── components/
-│   ├── layout/Header.tsx
+│   ├── layout/Header.tsx           → Nav: Personajes | Mapa | Pases y Festividades | Glosario
+│   ├── layout/Footer.tsx
 │   ├── calendario/CalendarioGrid.tsx
 │   ├── glosario/GlosarioClient.tsx
 │   ├── home/HeroSection.tsx
-│   ├── personajes/PersonajeCard.tsx
-│   ├── personajes/PersonajeCardProximo.tsx
+│   ├── personajes/
+│   │   ├── PersonajeCard.tsx
+│   │   ├── PersonajeCardProximo.tsx
+│   │   ├── ParallaxHero.tsx        → ★ Hero con parallax Framer Motion (Client)
+│   │   ├── SimbolismoSection.tsx   → Interlude cinematográfico del simbolismo (Client)
+│   │   └── GaleriaSection.tsx      → Galería 3 categorías con scroll horizontal (Client)
 │   └── ui/                         → FadeUp, AnimatedCounter, ScrollProgress, WhatsAppShare, OrigenPlaceholder
 ├── lib/
 │   ├── data.ts                     → ★ Acceso a datos (reemplaza Directus)
@@ -126,6 +131,33 @@ import { getPersonajes, getPersonaje, getPases, getGlosario } from "@/lib/data";
 
 Para agregar o editar contenido: editar directamente los archivos JSON en `lib/data/` y hacer commit.
 Las páginas son **SSG puro** — se prerenderizan en build, sin requests en runtime.
+
+---
+
+## Galería de personajes — convención de imágenes
+
+La ficha de cada personaje (`[slug]/page.tsx`) muestra una galería con 3 categorías.
+Las imágenes se guardan en el array `multimedia` del JSON de cada personaje.
+El campo `titulo` en cada objeto `Media` determina en qué categoría aparece:
+
+| `titulo` | Categoría en la galería |
+|----------|------------------------|
+| `undefined` / `"retrato"` | El personaje (incluye la imagen de portada) |
+| `"proceso"` | El llavero (proceso de creación artesanal) |
+| `"en-pase"` | En el pase (personaje en la festividad) |
+
+Ejemplo para agregar una imagen al JSON:
+```json
+{
+  "id": "aya-uma-proceso-1",
+  "tipo": "imagen",
+  "url": "/personajes/aya-uma-proceso.jpg",
+  "altText": "Artesano trabajando la máscara del Aya Uma",
+  "titulo": "proceso",
+  "descripcion": "Tallado de la máscara en madera de balsa",
+  "orden": 1
+}
+```
 
 ---
 
@@ -160,16 +192,19 @@ Modo oscuro por defecto.
 - Build de producción SSG sin errores — todas las rutas se prerenderizan estáticamente
 - Eliminación completa de Directus (CMS, Redis, PostGIS, Bucket dados de baja en Railway)
 - Favicons SVG
+- **Renombrado marca a "Nunna"** — títulos, metadata OG, footer, WhatsApp share, altText
+- **"seres" → "personajes"** en todos los textos visibles (es/en/qu)
+- **Nav fusionado** — "Pases y fiestas" eliminado, "Calendario" → "Pases y Festividades", todos los links apuntan a `/calendario`
+- **Rediseño ficha de personaje** — parallax real en hero, lead editorial grande, simbolismo cinematográfico, galería con 3 categorías (El personaje / El llavero / En el pase)
 
 ### 🔄 Siguiente
 - Deploy Next.js en Railway
-- Optimizar página de detalle para móvil (experiencia QR)
-- Añadir imágenes a los 5 personajes que aún no las tienen
+- Añadir imágenes a los 5 personajes sin foto (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
+- Fotografías reales del personaje, proceso de llavero y personaje en pase para la galería
 
 ### ⏳ Fase 2
-- Imágenes para Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel
-- Sección cross-sell al pie de cada personaje (ya existe estructura)
 - Modo claro/oscuro
+- Página de detalle de pase (`/pases/[slug]`) — actualmente la ruta existe pero no tiene slug page
 
 ### ⏳ Fase 3
 - Scroll narrativo (Lenis + Framer Motion — dependencias ya instaladas)
@@ -181,11 +216,23 @@ Modo oscuro por defecto.
 
 ## Decisiones técnicas clave
 
+### Marca: "Nunna"
+- El nombre público del sistema es **Nunna** (antes "Seres del Pase")
+- Los nombres de paquetes internos del monorepo (`@seres-del-pase/web`, `@seres-del-pase/types`, etc.) **no se cambian** — son identificadores técnicos, no afectan al usuario
+- Los comandos de desarrollo siguen usando `@seres-del-pase/web`
+
 ### Sin CMS — datos en JSON
 - **Directus eliminado** (2026-05-31) — Railway costaba ~$15-20/mes extra por Directus + Redis + PostGIS + Bucket
 - Los datos viven en `apps/web/lib/data/*.json`, versionados en git
 - Para editar contenido: editar el JSON y hacer `git push` → Railway redeploya automáticamente
 - Las páginas son SSG puro — `generateStaticParams` + sin `force-dynamic`
+
+### Parallax en la ficha de personaje
+- Implementado con Framer Motion `useScroll` + `useTransform` en `ParallaxHero.tsx`
+- El contenedor de imagen se extiende `-15%` arriba y abajo de la sección para cubrir el offset
+- `y` va de `"0%"` a `"25%"` → imagen más lenta que el scroll = profundidad
+- Respeta `prefers-reduced-motion` con `useReducedMotion()`
+- Funciona en iOS Safari (usa transforms GPU, no `background-attachment: fixed`)
 
 ### Tailwind CSS
 - **v3, no v4** — v4 no genera utilities en pnpm monorepo + Next.js 15.1
