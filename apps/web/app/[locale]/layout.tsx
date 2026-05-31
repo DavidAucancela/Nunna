@@ -28,6 +28,14 @@ export async function generateMetadata({ params }: LocaleLayoutProps): Promise<M
       default: t("titulo"),
     },
     description: t("subtitulo"),
+    icons: {
+      icon: [
+        { url: "/favicon.svg", type: "image/svg+xml" },
+      ],
+      apple: [
+        { url: "/apple-icon.svg", type: "image/svg+xml" },
+      ],
+    },
     openGraph: {
       type: "website",
       locale,
@@ -58,7 +66,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         </a>
         <NextIntlClientProvider messages={messages}>
           <Header />
-          <main id="main-content">{children}</main>
+          <main id="main-content" className="pt-16">{children}</main>
           <Footer />
         </NextIntlClientProvider>
       </body>

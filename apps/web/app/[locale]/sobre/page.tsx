@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Sobre el proyecto | Seres del Pase",
+  title: "Sobre el proyecto | Personajes del Pase",
   description:
-    "Seres del Pase es un catálogo digital de los personajes de los pases riobambeños — tradición viva de Riobamba, Chimborazo, Ecuador.",
+    "Personajes del Pase es un catálogo digital de los personajes de los pases riobambeños — tradición viva de Riobamba, Chimborazo, Ecuador.",
 };
 
 export default function SobrePage() {
@@ -19,7 +19,7 @@ export default function SobrePage() {
 
       <div className="space-y-8 text-lg leading-relaxed text-stone-400">
         <p>
-          <strong className="text-texto-claro">Seres del Pase</strong> es un catálogo digital
+          <strong className="text-texto-claro">Personajes del pase</strong> es un catálogo digital
           dedicado a los personajes de los pases riobambeños — una tradición festiva viva de
           Riobamba y la provincia de Chimborazo, Ecuador.
         </p>
@@ -70,7 +70,7 @@ export default function SobrePage() {
           href="/personajes"
           className="rounded-full bg-acento-rojo px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-red-700"
         >
-          Conoce a los seres →
+          Conoce a los personajes →
         </Link>
       </div>
     </div>

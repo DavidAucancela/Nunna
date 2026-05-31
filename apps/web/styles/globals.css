@@ -23,14 +23,91 @@
     }
   }
 
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: #0F0E0C; }
+  ::-webkit-scrollbar-thumb { background: #2A2724; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #C89B3C; transition: background 0.2s; }
+
   body {
     font-family: theme("fontFamily.sans");
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Grain sutil sobre toda la app */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
   [lang="qu"],
   .kichwa {
     font-style: italic;
   }
+}
+
+@layer utilities {
+  /* Gradiente de texto dorado para headings de impacto */
+  .text-gradient-dorado {
+    background: linear-gradient(135deg, #C89B3C 0%, #F0D98A 45%, #E8CB70 55%, #C89B3C 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Versión shimmer animada del gradiente dorado */
+  .text-shimmer {
+    background: linear-gradient(
+      90deg,
+      #C89B3C 0%,
+      #F0D98A 30%,
+      #EFEAE0 50%,
+      #F0D98A 70%,
+      #C89B3C 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* Drop cap ornamental para el primer párrafo de una ficha */
+  .prose-dropcap > p:first-of-type::first-letter {
+    font-family: theme("fontFamily.serif");
+    font-size: 4.5em;
+    line-height: 0.8;
+    float: left;
+    margin-right: 0.08em;
+    margin-bottom: -0.05em;
+    color: #C89B3C;
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  /* Divider andino decorativo — reemplaza el ✦ manual */
+  .divider-andino {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .divider-andino::before,
+  .divider-andino::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #2A2724 50%, transparent 100%);
+  }
+
+  /* Glow de color por origen — usable como box-shadow via style inline */
+  .card-glow-dorado { box-shadow: 0 0 30px -5px rgba(200, 155, 60, 0.25); }
+  .card-glow-jade   { box-shadow: 0 0 30px -5px rgba(52, 211, 153, 0.2); }
+  .card-glow-rojo   { box-shadow: 0 0 30px -5px rgba(248, 113, 113, 0.2); }
+  .card-glow-lila   { box-shadow: 0 0 30px -5px rgba(167, 139, 250, 0.2); }
 }

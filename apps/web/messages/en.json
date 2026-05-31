@@ -18,6 +18,22 @@
     "intro": {
       "titulo": "A world of living symbols",
       "texto": "Riobamba's pases are far more than festivals. They are a universe of characters that synthesize centuries of Andean worldview, colonial faith, and mestizo creativity. We document them with the rigor they deserve."
+    },
+    "stats": {
+      "seres": "Characters",
+      "historia": "Years of history",
+      "idiomas": "Languages"
+    },
+    "ritual": {
+      "titulo": "The ritual of the pase",
+      "subtitulo": "Living tradition",
+      "texto": "The Pase del Niño is Riobamba's most important celebration. Each December, the streets fill with characters who dance between the sacred and the festive, carrying centuries of Andean identity in every costume, every mask.",
+      "cta": "Explore the pases"
+    },
+    "qr": {
+      "titulo": "Do you have a keychain?",
+      "texto": "Scan the QR code to discover the full story of the character you hold in your hands.",
+      "cta": "View all characters"
     }
   },
   "personajes": {

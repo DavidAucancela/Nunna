@@ -18,6 +18,22 @@
     "intro": {
       "titulo": "Un mundo de símbolos vivos",
       "texto": "Los pases de Riobamba son mucho más que fiestas. Son un universo de personajes que sintetizan siglos de cosmovisión andina, fe colonial y creatividad mestiza. Aquí los documentamos con el rigor que merecen."
+    },
+    "stats": {
+      "seres": "Seres del pase",
+      "historia": "Años de historia",
+      "idiomas": "Idiomas"
+    },
+    "ritual": {
+      "titulo": "El ritual del pase",
+      "subtitulo": "Tradición viva",
+      "texto": "El pase del Niño es la celebración más importante de Riobamba. Cada diciembre, las calles se llenan de personajes que danzan entre lo sagrado y lo festivo, portando siglos de identidad andina en cada traje, en cada máscara.",
+      "cta": "Explorar los pases"
+    },
+    "qr": {
+      "titulo": "¿Tienes un llavero?",
+      "texto": "Escanea el código QR para descubrir la historia completa del ser que tienes en manos.",
+      "cta": "Ver todos los seres"
     }
   },
   "personajes": {

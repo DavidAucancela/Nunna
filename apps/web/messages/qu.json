@@ -18,6 +18,22 @@
     "intro": {
       "titulo": "Kawsak señalkunamanta",
       "texto": "Riobamba raymikuna mana anchuchan fiestakuna kankichu. Paykunaka pachamamawan, catolicismo nina, mestizo yachaywanpis tinkuy."
+    },
+    "stats": {
+      "seres": "Runakuna",
+      "historia": "Watakuna",
+      "idiomas": "Rimaykuna"
+    },
+    "ritual": {
+      "titulo": "Pase raymi",
+      "subtitulo": "Kawsak yachay",
+      "texto": "Niño Pase Riobambapi tukuy raymimanta hatun. Sapa diciembripi, llamkakuna llaktata huntanku, Andino kawsayta, sapa p'achapi, sapa maskarapi apanku.",
+      "cta": "Raymikunata qhaway"
+    },
+    "qr": {
+      "titulo": "¿Llavero charinkichu?",
+      "texto": "QR código liypa, kay runamanta tukuyta yachay.",
+      "cta": "Tukuy runakunata qhaway"
     }
   },
   "personajes": {
