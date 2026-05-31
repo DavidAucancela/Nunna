@@ -1,9 +1,8 @@
 {
   "nav": {
     "personajes": "Personajes",
-    "pases": "Pases y fiestas",
     "mapa": "Mapa",
-    "calendario": "Calendario",
+    "calendario": "Pases y Festividades",
     "glosario": "Glosario",
     "buscar": "Buscar",
     "sobre": "Sobre el proyecto"
@@ -28,7 +27,7 @@
       "titulo": "El ritual del pase",
       "subtitulo": "Tradición viva",
       "texto": "El pase del Niño es la celebración más importante de Riobamba. Cada diciembre, las calles se llenan de personajes que danzan entre lo sagrado y lo festivo, portando siglos de identidad andina en cada traje, en cada máscara.",
-      "cta": "Explorar los pases"
+      "cta": "Explorar pases y festividades"
     },
     "qr": {
       "titulo": "¿Tienes un llavero?",

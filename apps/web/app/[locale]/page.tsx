@@ -176,7 +176,7 @@ export default async function HomePage({ params }: HomePageProps) {
               <p className="mt-6 text-lg leading-relaxed text-stone-400">{t("ritual.texto")}</p>
               <div className="mt-8">
                 <Link
-                  href="/pases"
+                  href="/calendario"
                   className="inline-flex items-center gap-2 text-sm font-medium text-acento-dorado underline-offset-4 hover:underline"
                 >
                   {t("ritual.cta")} →

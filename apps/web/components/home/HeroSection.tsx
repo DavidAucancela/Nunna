@@ -79,7 +79,7 @@ export function HeroSection() {
             {t("hero.cta_principal")}
           </Link>
           <Link
-            href="/pases"
+            href="/calendario"
             className="rounded-full border border-stone-700 px-8 py-3.5 text-sm font-semibold text-stone-300 transition-all hover:border-acento-dorado/50 hover:text-texto-claro"
           >
             {t("hero.cta_secundario")}

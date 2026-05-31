@@ -1,9 +1,8 @@
 {
   "nav": {
     "personajes": "Characters",
-    "pases": "Celebrations",
     "mapa": "Map",
-    "calendario": "Calendar",
+    "calendario": "Celebrations & Calendar",
     "glosario": "Glossary",
     "buscar": "Search",
     "sobre": "About"
@@ -28,7 +27,7 @@
       "titulo": "The ritual of the pase",
       "subtitulo": "Living tradition",
       "texto": "The Pase del Niño is Riobamba's most important celebration. Each December, the streets fill with characters who dance between the sacred and the festive, carrying centuries of Andean identity in every costume, every mask.",
-      "cta": "Explore the pases"
+      "cta": "Explore celebrations & calendar"
     },
     "qr": {
       "titulo": "Do you have a keychain?",

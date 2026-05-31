@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_LINKS = [
   { key: "personajes", href: "/personajes" },
-  { key: "pases",      href: "/pases" },
   { key: "mapa",       href: "/mapa" },
   { key: "calendario", href: "/calendario" },
   { key: "glosario",   href: "/glosario" },
@@ -35,11 +34,7 @@ export function Header() {
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-2">
           <span className="font-serif text-lg font-bold text-texto-claro transition-colors group-hover:text-acento-dorado">
-            Seres
-          </span>
-          <span className="text-stone-600 select-none">·</span>
-          <span className="font-serif text-lg font-light text-stone-400 transition-colors group-hover:text-texto-claro">
-            del Pase
+            Nunna
           </span>
         </Link>
 
