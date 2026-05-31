@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { setRequestLocale } from "next-intl/server";
 
 import { getPersonaje, getPersonajes } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import { PersonajeCard } from "@/components/personajes/PersonajeCard";
-import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
-import { FadeUp, FadeUpGroup, FadeUpItem, StaggerLetters } from "@/components/ui/FadeUp";
+import { ParallaxHero } from "@/components/personajes/ParallaxHero";
+import { SimbolismoSection } from "@/components/personajes/SimbolismoSection";
+import { GaleriaSection } from "@/components/personajes/GaleriaSection";
+import { FadeUp, FadeUpGroup, FadeUpItem } from "@/components/ui/FadeUp";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { WhatsAppShare } from "@/components/ui/WhatsAppShare";
 
@@ -60,228 +61,145 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
     <article>
       <ScrollProgress color={style.accentColor} />
 
-      {/* ── Hero a pantalla completa ── */}
-      <section className="-mt-16 relative flex min-h-[100svh] items-end overflow-hidden">
-        {imagenPortada ? (
-          <Image
-            src={imagenPortada.url}
-            alt={imagenPortada.altText}
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-          />
-        ) : (
-          <OrigenPlaceholder
-            origen={personaje.origen}
-            nombre={personaje.nombre}
-            variant="hero"
-            className="absolute inset-0"
-          />
-        )}
+      {/* ── 1. Hero con parallax ── */}
+      <ParallaxHero
+        nombre={personaje.nombre}
+        nombreKichwa={personaje.nombreKichwa}
+        nombresAlt={personaje.nombresAlt}
+        origen={personaje.origen}
+        imagen={imagenPortada}
+        origenLabel={style.label}
+        accentColor={style.accentColor}
+      />
 
-        {/* Overlay gradiente más dramático */}
-        <div className="absolute inset-0 bg-gradient-to-t from-fondo-oscuro via-fondo-oscuro/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-fondo-oscuro/30 to-transparent" />
-
-        {/* Breadcrumb */}
-        <div className="absolute left-5 top-20 z-20 sm:left-6">
-          <Link
-            href="/personajes"
-            className="flex items-center gap-1.5 text-xs text-stone-400 transition-colors hover:text-acento-dorado"
-          >
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 14 14">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12L5 7l4-5" />
-            </svg>
-            Todos los personajes
-          </Link>
-        </div>
-
-        {/* Contenido del hero */}
-        <div className="relative z-10 mx-auto w-full max-w-4xl px-5 pb-14 sm:px-6 sm:pb-20">
-          {/* Nombre kichwa */}
-          {personaje.nombreKichwa && (
-            <p
-              className="font-serif text-base italic sm:text-lg"
-              style={{ color: style.accentColor }}
-            >
-              {personaje.nombreKichwa}
-            </p>
-          )}
-
-          {/* h1 con stagger de letras */}
-          <h1 className="mt-1 font-serif font-bold leading-none text-texto-claro" style={{ fontSize: "clamp(3rem, 10vw, 7rem)" }}>
-            <StaggerLetters text={personaje.nombre} delay={0.1} />
-          </h1>
-
-          {/* Badge origen */}
-          {personaje.origen && (
-            <span
-              className="mt-4 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs backdrop-blur-sm"
-              style={{
-                borderColor: `${style.accentColor}40`,
-                backgroundColor: `${style.accentColor}12`,
-                color: style.accentColor,
-              }}
-            >
-              <span
-                className="h-1.5 w-1.5 rounded-full"
-                style={{ backgroundColor: style.accentColor }}
-              />
-              {style.label}
-            </span>
-          )}
-        </div>
-      </section>
-
-      {/* ── Contenido principal ── */}
-      <div className="mx-auto max-w-4xl px-5 py-12 sm:px-6 sm:py-16">
-        {/* Resumen */}
-        <FadeUp>
-          <p className="text-lg font-light leading-relaxed text-texto-claro sm:text-xl">
+      {/* ── 2. Resumen — lead editorial grande ── */}
+      <FadeUp>
+        <section className="mx-auto max-w-3xl px-5 py-20 sm:px-6 sm:py-28">
+          <p className="font-serif text-2xl font-light leading-relaxed text-texto-claro sm:text-3xl">
             {personaje.resumen}
           </p>
-        </FadeUp>
+        </section>
+      </FadeUp>
 
-        {/* Simbolismo */}
-        {personaje.simbolismo && (
-          <FadeUp delay={0.1}>
-            <div
-              className="relative mt-12 rounded-2xl p-6 sm:p-8"
-              style={{
-                borderWidth: 1,
-                borderStyle: "solid",
-                borderColor: `${style.accentColor}35`,
-                backgroundColor: `${style.accentColor}08`,
-              }}
-            >
-              <span
-                className="absolute -top-3 left-6 bg-fondo-oscuro px-2 text-xs uppercase tracking-widest"
-                style={{ color: style.accentColor }}
-              >
-                Simbolismo
-              </span>
-              <p className="font-serif text-lg leading-relaxed text-texto-claro sm:text-xl">
-                {personaje.simbolismo}
-              </p>
-            </div>
-          </FadeUp>
-        )}
+      {/* ── 3. Simbolismo — interlude cinematográfico ── */}
+      {personaje.simbolismo && (
+        <SimbolismoSection
+          simbolismo={personaje.simbolismo}
+          accentColor={style.accentColor}
+        />
+      )}
 
-        {/* Divisor andino */}
-        <FadeUp delay={0.15}>
-          <div className="divider-andino mt-14 sm:mt-16">
-            <span className="text-acento-dorado select-none" aria-hidden="true">✦</span>
-          </div>
-        </FadeUp>
+      {/* ── 4. Historia y significado ── */}
+      <FadeUp>
+        <section className="mx-auto max-w-3xl px-5 pb-16 pt-16 sm:px-6 sm:pb-20 sm:pt-20">
+          <span
+            className="mb-6 block text-[9px] uppercase tracking-[0.32em]"
+            style={{ color: style.accentColor }}
+          >
+            Historia y significado
+          </span>
+          <div
+            className="prose prose-invert prose-stone max-w-none
+              prose-p:text-stone-400 prose-p:leading-relaxed
+              prose-headings:font-serif prose-headings:text-texto-claro
+              prose-headings:mt-10 prose-headings:mb-4
+              prose-a:text-acento-dorado
+              prose-h2:text-2xl prose-h3:text-xl"
+            dangerouslySetInnerHTML={{ __html: personaje.descripcion }}
+          />
+        </section>
+      </FadeUp>
 
-        {/* Historia y significado */}
-        <FadeUp delay={0.2}>
-          <section className="mt-6">
-            <h2 className="font-serif text-xl font-bold text-texto-claro sm:text-2xl">
-              Historia y significado
+      {/* ── 5. Galería ── */}
+      <GaleriaSection multimedia={personaje.multimedia} accentColor={style.accentColor} />
+
+      {/* ── 6. Testimonios ── */}
+      {personaje.testimonios.length > 0 && (
+        <FadeUp>
+          <section className="mx-auto max-w-3xl px-5 pb-16 sm:px-6">
+            <h2 className="mb-6 font-serif text-xl font-bold text-texto-claro sm:text-2xl">
+              Testimonios
             </h2>
-            <div
-              className="prose prose-invert prose-stone prose-dropcap mt-5 max-w-none prose-p:text-stone-400 prose-headings:font-serif prose-headings:text-texto-claro prose-a:text-acento-dorado sm:mt-6"
-              dangerouslySetInnerHTML={{ __html: personaje.descripcion }}
-            />
+            <div className="space-y-6">
+              {personaje.testimonios.map((t) => (
+                <div
+                  key={t.id}
+                  className="relative rounded-xl p-6 sm:p-7"
+                  style={{
+                    backgroundColor: "#1A1814",
+                    borderLeft: `3px solid ${style.accentColor}`,
+                  }}
+                >
+                  <span
+                    className="absolute right-5 top-4 font-serif text-6xl leading-none select-none pointer-events-none"
+                    style={{ color: style.accentColor, opacity: 0.12 }}
+                    aria-hidden="true"
+                  >
+                    &#8220;
+                  </span>
+                  <blockquote>
+                    <p className="text-base italic leading-relaxed text-stone-300 sm:text-lg">
+                      &ldquo;{t.texto}&rdquo;
+                    </p>
+                    <footer className="mt-4 flex flex-wrap items-center gap-1 text-sm text-stone-500">
+                      <span className="font-medium text-stone-400">{t.autor}</span>
+                      {t.cargo && (
+                        <>
+                          <span className="text-stone-700">·</span>
+                          <span>{t.cargo}</span>
+                        </>
+                      )}
+                      {t.fuente && (
+                        <>
+                          <span className="text-stone-700">—</span>
+                          {t.url ? (
+                            <a
+                              href={t.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-stone-600 transition-colors hover:text-stone-400"
+                            >
+                              {t.fuente}
+                            </a>
+                          ) : (
+                            <span className="text-stone-600">{t.fuente}</span>
+                          )}
+                        </>
+                      )}
+                    </footer>
+                  </blockquote>
+                </div>
+              ))}
+            </div>
           </section>
         </FadeUp>
+      )}
 
-        {/* Testimonios */}
-        {personaje.testimonios.length > 0 && (
-          <FadeUp delay={0.2}>
-            <section className="mt-14 sm:mt-16">
-              <div className="divider-andino mb-6">
-                <span className="text-acento-dorado select-none" aria-hidden="true">✦</span>
-              </div>
-              <h2 className="font-serif text-xl font-bold text-texto-claro sm:text-2xl">
-                Testimonios
-              </h2>
-              <div className="mt-6 space-y-6">
-                {personaje.testimonios.map((t) => (
-                  <div
-                    key={t.id}
-                    className="relative rounded-xl p-6 sm:p-7"
-                    style={{
-                      backgroundColor: "#1A1814",
-                      borderLeft: `3px solid ${style.accentColor}`,
-                    }}
-                  >
-                    {/* Comilla decorativa */}
-                    <span
-                      className="absolute right-5 top-4 font-serif text-6xl leading-none select-none pointer-events-none"
-                      style={{ color: style.accentColor, opacity: 0.15 }}
-                      aria-hidden="true"
-                    >
-                      "
-                    </span>
-                    <blockquote>
-                      <p className="text-base italic leading-relaxed text-stone-300 sm:text-lg">
-                        "{t.texto}"
-                      </p>
-                      <footer className="mt-4 flex flex-wrap items-center gap-1 text-sm text-stone-500">
-                        <span className="font-medium text-stone-400">{t.autor}</span>
-                        {t.cargo && (
-                          <>
-                            <span className="text-stone-700">·</span>
-                            <span>{t.cargo}</span>
-                          </>
-                        )}
-                        {t.fuente && (
-                          <>
-                            <span className="text-stone-700">—</span>
-                            {t.url ? (
-                              <a
-                                href={t.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-stone-600 hover:text-stone-400 transition-colors"
-                              >
-                                {t.fuente}
-                              </a>
-                            ) : (
-                              <span className="text-stone-600">{t.fuente}</span>
-                            )}
-                          </>
-                        )}
-                      </footer>
-                    </blockquote>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </FadeUp>
-        )}
-
-        {/* Tags */}
-        {personaje.tags.length > 0 && (
-          <FadeUp delay={0.25}>
-            <section className="mt-14 border-t border-borde-sutil pt-7 sm:mt-16 sm:pt-8">
-              <div className="flex flex-wrap gap-2">
-                {personaje.tags.map((tag) => (
-                  <span
-                    key={tag.id}
-                    className="rounded-full border border-stone-700 bg-stone-900 px-3 py-1 text-xs text-stone-400 transition-colors hover:border-stone-600 hover:text-stone-300"
-                  >
-                    {tag.nombre}
-                  </span>
-                ))}
-              </div>
-            </section>
-          </FadeUp>
-        )}
-
-        {/* Compartir */}
-        <FadeUp delay={0.3}>
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+      {/* ── 7. Tags + Compartir ── */}
+      <FadeUp>
+        <div className="mx-auto max-w-3xl px-5 pb-20 pt-4 sm:px-6">
+          {personaje.tags.length > 0 && (
+            <div className="mb-8 flex flex-wrap gap-2">
+              {personaje.tags.map((tag) => (
+                <span
+                  key={tag.id}
+                  className="rounded-full border border-stone-700 bg-stone-900 px-3 py-1 text-xs text-stone-400 transition-colors hover:border-stone-600 hover:text-stone-300"
+                >
+                  {tag.nombre}
+                </span>
+              ))}
+            </div>
+          )}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <WhatsAppShare nombre={personaje.nombre} />
-            <span className="text-xs text-stone-600">Comparte este ser con alguien especial</span>
+            <span className="text-xs text-stone-600">
+              Comparte este personaje con alguien especial
+            </span>
           </div>
-        </FadeUp>
-      </div>
+        </div>
+      </FadeUp>
 
-      {/* ── Cross-sell ── */}
+      {/* ── 8. Cross-sell ── */}
       {otrosPersonajes.length > 0 && (
         <section className="border-t border-borde-sutil px-5 py-14 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-7xl">
