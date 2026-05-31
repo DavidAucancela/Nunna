@@ -5,10 +5,8 @@ import { PersonajeCard } from "@/components/personajes/PersonajeCard";
 import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 import { FadeUp, FadeUpGroup, FadeUpItem } from "@/components/ui/FadeUp";
-import { getPersonajes } from "@/lib/directus";
+import { getPersonajes } from "@/lib/data";
 import type { PersonajeListItem } from "@seres-del-pase/types";
-
-export const dynamic = "force-dynamic";
 
 const FEATURED_SLUGS = ["aya-uma", "perro", "diablos-de-lata", "payaso"];
 

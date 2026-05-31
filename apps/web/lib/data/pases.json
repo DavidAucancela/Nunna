@@ -1,0 +1,79 @@
+[
+  {
+    "id": "cdi-gotitas-de-dulzura",
+    "slug": "cdi-gotitas-de-dulzura",
+    "nombre": "Pase del Niño — CDI Gotitas de Dulzura",
+    "fechaTipo": "fija",
+    "fechaDescripcion": "09:30–10:30 · Av. Antonio José de Sucre → Vicente Ramón Roca → Rocafuerte",
+    "mes": 12,
+    "dia": 20,
+    "imagenPortada": "/pases/gotitas-de-dulzura.jpg",
+    "totalPersonajes": 1
+  },
+  {
+    "id": "safpi",
+    "slug": "safpi",
+    "nombre": "Pase del Niño — SAFPI",
+    "fechaTipo": "fija",
+    "fechaDescripcion": "12:00–13:00 · Cuba / México → Juan Bernardo de León → La Paz → Colegio Cisneros",
+    "mes": 12,
+    "dia": 20,
+    "imagenPortada": "/pases/safpi.jpg",
+    "totalPersonajes": 1
+  },
+  {
+    "id": "mercado-santa-rosa",
+    "slug": "mercado-santa-rosa",
+    "nombre": "Pase del Niño — Mercado Santa Rosa",
+    "fechaTipo": "fija",
+    "fechaDescripcion": "13:00–14:00 · Carabobo / Villarroel → Rocafuerte → Colombia / Pichincha → García Moreno",
+    "mes": 12,
+    "dia": 20,
+    "imagenPortada": "/pases/mercado-santa-rosa.jpg",
+    "totalPersonajes": 1
+  },
+  {
+    "id": "unidad-educativa-la-salle",
+    "slug": "unidad-educativa-la-salle",
+    "nombre": "Pase del Niño — Unidad Educativa La Salle",
+    "fechaTipo": "fija",
+    "fechaDescripcion": "15:00–18:00 · Carabobo → Venezuela → España → Argentinos → Espejo → Colón / Nueva York",
+    "mes": 12,
+    "dia": 20,
+    "imagenPortada": "/pases/la-salle.jpg",
+    "totalPersonajes": 1
+  },
+  {
+    "id": "instituto-tecnologico-riobamba",
+    "slug": "instituto-tecnologico-riobamba",
+    "nombre": "Pase del Niño — Instituto Tecnológico Riobamba",
+    "fechaTipo": "fija",
+    "fechaDescripcion": "17:00–20:00 · Carlos Zambrano → Av. Daniel León Borja → 10 de Agosto → Iglesia La Catedral",
+    "mes": 12,
+    "dia": 20,
+    "imagenPortada": "/pases/instituto-tecnologico.jpg",
+    "totalPersonajes": 1
+  },
+  {
+    "id": "fiestas-riobamba",
+    "slug": "fiestas-riobamba",
+    "nombre": "Fiestas de Riobamba",
+    "fechaTipo": "fija",
+    "fechaDescripcion": "Fundación española de Riobamba (1534). Desfile de personajes por el centro histórico.",
+    "mes": 8,
+    "dia": 5,
+    "imagenPortada": null,
+    "totalPersonajes": 0
+  },
+  {
+    "id": "aya-marcay-quilla",
+    "slug": "aya-marcay-quilla",
+    "nombre": "Día de los Difuntos — Aya Marcay Quilla",
+    "fechaTipo": "fija",
+    "fechaDescripcion": "Mes de los difuntos en kichwa. El Perro Guardián del umbral cobra especial relevancia.",
+    "mes": 11,
+    "dia": 2,
+    "imagenPortada": null,
+    "totalPersonajes": 0
+  }
+]

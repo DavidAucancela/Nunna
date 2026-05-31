@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { getGlosario } from "@/lib/directus";
+import { getGlosario } from "@/lib/data";
 import { GlosarioClient } from "@/components/glosario/GlosarioClient";
 
 interface GlosarioPageProps {

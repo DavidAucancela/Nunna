@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { getPases } from "@/lib/directus";
+import { getPases } from "@/lib/data";
 import { CalendarioGrid } from "@/components/calendario/CalendarioGrid";
-
-export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {

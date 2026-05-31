@@ -4,8 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { setRequestLocale } from "next-intl/server";
 
-export const dynamic = "force-dynamic";
-import { getPersonaje, getPersonajes } from "@/lib/directus";
+import { getPersonaje, getPersonajes } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import { PersonajeCard } from "@/components/personajes/PersonajeCard";
 import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";

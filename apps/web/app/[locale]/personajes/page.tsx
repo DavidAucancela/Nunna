@@ -3,10 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { PersonajeCard } from "@/components/personajes/PersonajeCard";
 import { PersonajeCardProximo } from "@/components/personajes/PersonajeCardProximo";
 import { FadeUpGroup, FadeUpItem } from "@/components/ui/FadeUp";
-import { getPersonajes } from "@/lib/directus";
+import { getPersonajes } from "@/lib/data";
 import type { Origen } from "@/lib/origen-styles";
-
-export const dynamic = "force-dynamic";
 
 interface PersonajesPageProps {
   params: Promise<{ locale: string }>;

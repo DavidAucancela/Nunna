@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { getPases } from "@/lib/directus";
+import { getPases } from "@/lib/data";
 
 interface PasesPageProps {
   params: Promise<{ locale: string }>;
