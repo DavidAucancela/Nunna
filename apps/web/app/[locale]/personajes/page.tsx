@@ -10,7 +10,6 @@ interface PersonajesPageProps {
   params: Promise<{ locale: string }>;
 }
 
-// Próximamente — vacío porque todos los personajes ya están publicados en Directus
 const PROXIMOS: { slug: string; nombre: string; nombreKichwa?: string; origen: Origen }[] = [];
 
 export async function generateMetadata({ params }: PersonajesPageProps): Promise<Metadata> {
