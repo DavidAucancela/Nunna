@@ -26,7 +26,7 @@ function toPersonaje(p: PersonajeRaw): Personaje {
           id: p.id,
           tipo: "imagen" as const,
           url: p.imagenPortada,
-          altText: `${p.nombre} — Seres del Pase`,
+          altText: `${p.nombre} — Nunna`,
           orden: 0,
         },
       ]

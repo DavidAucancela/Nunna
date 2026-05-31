@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: PersonajePageProps): Promise<
     title: personaje.nombre,
     description: personaje.resumen,
     openGraph: {
-      title: `${personaje.nombre} | Seres del Pase`,
+      title: `${personaje.nombre} | Nunna`,
       description: personaje.resumen,
       images: imagenPortada ? [{ url: imagenPortada.url, alt: imagenPortada.altText }] : [],
     },
@@ -293,7 +293,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
                 Más personajes del pase
               </p>
               <h2 className="mt-2 text-center font-serif text-2xl font-bold text-texto-claro sm:text-3xl">
-                Conoce a los otros seres
+                Conoce a los otros personajes
               </h2>
             </FadeUp>
             <FadeUpGroup className="mt-8 grid gap-4 grid-cols-2 sm:gap-6 lg:grid-cols-4">

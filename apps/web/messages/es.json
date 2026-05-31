@@ -10,9 +10,9 @@
   },
   "home": {
     "hero": {
-      "titulo": "Seres del Pase",
+      "titulo": "Nunna",
       "subtitulo": "Los personajes sagrados y festivos de los pases riobambeños",
-      "cta_principal": "Conocer los seres",
+      "cta_principal": "Conocer los personajes",
       "cta_secundario": "Ver el calendario"
     },
     "intro": {
@@ -20,7 +20,7 @@
       "texto": "Los pases de Riobamba son mucho más que fiestas. Son un universo de personajes que sintetizan siglos de cosmovisión andina, fe colonial y creatividad mestiza. Aquí los documentamos con el rigor que merecen."
     },
     "stats": {
-      "seres": "Seres del pase",
+      "seres": "Personajes del pase",
       "historia": "Años de historia",
       "idiomas": "Idiomas"
     },
@@ -33,19 +33,19 @@
     "qr": {
       "titulo": "¿Tienes un llavero?",
       "texto": "Escanea el código QR para descubrir la historia completa del ser que tienes en manos.",
-      "cta": "Ver todos los seres"
+      "cta": "Ver todos los personajes"
     }
   },
   "personajes": {
-    "titulo": "Los Seres",
+    "titulo": "Los Personajes",
     "descripcion": "Cada personaje lleva siglos de historia, simbolismo y transformación cultural.",
     "filtro_origen": "Filtrar por origen",
-    "ver_detalle": "Conocer este ser",
+    "ver_detalle": "Conocer este personaje",
     "sin_resultados": "No se encontraron personajes con ese criterio."
   },
   "pases": {
     "titulo": "Pases y Festividades",
-    "descripcion": "Los pases son el escenario donde los seres cobran vida.",
+    "descripcion": "Los pases son el escenario donde los personajes cobran vida.",
     "fecha_fija": "Fecha fija",
     "fecha_movil": "Fecha variable"
   },

@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: LocaleLayoutProps): Promise<M
   return {
     metadataBase: new URL("https://seres-del-pase.ec"),
     title: {
-      template: "%s | Seres del Pase",
+      template: "%s | Nunna",
       default: t("titulo"),
     },
     description: t("subtitulo"),
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: LocaleLayoutProps): Promise<M
     openGraph: {
       type: "website",
       locale,
-      siteName: "Seres del Pase",
+      siteName: "Nunna",
     },
   };
 }

@@ -56,7 +56,7 @@ export default async function PersonajesPage({ params }: PersonajesPageProps) {
         <div className="mt-16 rounded-2xl border border-borde-sutil bg-stone-950/50 px-8 py-10 text-center">
           <span className="text-acento-dorado select-none text-lg" aria-hidden="true">✦</span>
           <h2 className="mt-3 font-serif text-2xl font-bold text-texto-claro">
-            Más seres del pase, próximamente
+            Más personajes del pase, próximamente
           </h2>
           <p className="mt-3 mx-auto max-w-md text-stone-400">
             El catálogo sigue creciendo. Estos personajes se revelarán en los próximos meses:
