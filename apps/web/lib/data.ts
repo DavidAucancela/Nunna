@@ -61,11 +61,13 @@ interface GetPersonajesOptions {
   locale?: string;
   limit?: number;
   offset?: number;
+  withImage?: boolean;
 }
 
 export async function getPersonajes(options: GetPersonajesOptions): Promise<PersonajeListItem[]> {
-  const { limit = 100, offset = 0 } = options;
-  return personajesRaw.slice(offset, offset + limit).map(toListItem);
+  const { limit = 100, offset = 0, withImage } = options;
+  const data = withImage ? personajesRaw.filter((p) => !!p.imagenPortada) : personajesRaw;
+  return data.slice(offset, offset + limit).map(toListItem);
 }
 
 export async function getPersonaje(slug: string, _locale?: string): Promise<Personaje | null> {

@@ -47,7 +47,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
 
   const [personaje, todosLosPersonajes] = await Promise.all([
     getPersonaje(slug, locale),
-    getPersonajes({ locale, limit: 8 }),
+    getPersonajes({ locale, withImage: true }),
   ]);
 
   if (!personaje) notFound();

@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { PersonajeCard } from "@/components/personajes/PersonajeCard";
-import { PersonajeCardProximo } from "@/components/personajes/PersonajeCardProximo";
-import { FadeUpGroup, FadeUpItem } from "@/components/ui/FadeUp";
+import { FadeUp, FadeUpGroup, FadeUpItem } from "@/components/ui/FadeUp";
 import { getPersonajes } from "@/lib/data";
-import type { Origen } from "@/lib/origen-styles";
 
 interface PersonajesPageProps {
   params: Promise<{ locale: string }>;
 }
-
-const PROXIMOS: { slug: string; nombre: string; nombreKichwa?: string; origen: Origen }[] = [];
 
 export async function generateMetadata({ params }: PersonajesPageProps): Promise<Metadata> {
   const { locale } = await params;
@@ -21,14 +17,19 @@ export async function generateMetadata({ params }: PersonajesPageProps): Promise
   };
 }
 
+const PROXIMOS = [
+  { nombre: "Curiquingue", nombreKichwa: "Kuriquingui" },
+  { nombre: "Sacha Runa", nombreKichwa: "Sacha Runa" },
+  { nombre: "Rey Moro", nombreKichwa: "Muru Inka" },
+  { nombre: "Capitán", nombreKichwa: "Kapitán" },
+  { nombre: "Ángel", nombreKichwa: "Ángel" },
+];
+
 export default async function PersonajesPage({ params }: PersonajesPageProps) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "personajes" });
 
-  const personajes = await getPersonajes({ locale });
-
-  const slugsPublicados = new Set(personajes.map((p) => p.slug));
-  const proximosFiltrados = PROXIMOS.filter((p) => !slugsPublicados.has(p.slug));
+  const personajes = await getPersonajes({ locale, withImage: true });
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-16">
@@ -43,28 +44,36 @@ export default async function PersonajesPage({ params }: PersonajesPageProps) {
       </header>
 
       <FadeUpGroup className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {/* Personajes publicados */}
         {personajes.map((personaje) => (
           <FadeUpItem key={personaje.id}>
             <PersonajeCard personaje={personaje} />
           </FadeUpItem>
         ))}
-
-        {/* Próximamente */}
-        {proximosFiltrados.map((p) => (
-          <FadeUpItem key={p.slug}>
-            <PersonajeCardProximo
-              nombre={p.nombre}
-              nombreKichwa={p.nombreKichwa}
-              origen={p.origen}
-            />
-          </FadeUpItem>
-        ))}
       </FadeUpGroup>
 
-      {personajes.length === 0 && proximosFiltrados.length === 0 && (
-        <p className="py-24 text-center text-stone-500">{t("sin_resultados")}</p>
-      )}
+      {/* Próximamente */}
+      <FadeUp delay={0.2}>
+        <div className="mt-16 rounded-2xl border border-borde-sutil bg-stone-950/50 px-8 py-10 text-center">
+          <span className="text-acento-dorado select-none text-lg" aria-hidden="true">✦</span>
+          <h2 className="mt-3 font-serif text-2xl font-bold text-texto-claro">
+            Más seres del pase, próximamente
+          </h2>
+          <p className="mt-3 mx-auto max-w-md text-stone-400">
+            El catálogo sigue creciendo. Estos personajes se revelarán en los próximos meses:
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            {PROXIMOS.map((p) => (
+              <span
+                key={p.nombre}
+                className="rounded-full border border-stone-800 bg-stone-900/60 px-4 py-1.5 text-sm text-stone-500"
+              >
+                <span className="font-serif italic text-stone-600 mr-1.5">{p.nombreKichwa}</span>
+                {p.nombre}
+              </span>
+            ))}
+          </div>
+        </div>
+      </FadeUp>
     </div>
   );
 }
