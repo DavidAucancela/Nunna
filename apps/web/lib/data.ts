@@ -1,4 +1,4 @@
-import type { Personaje, PersonajeListItem, PaseListItem, GlosarioKichwa, TipoOrigen } from "@seres-del-pase/types";
+import type { Personaje, PersonajeListItem, PaseListItem, GlosarioKichwa, TipoOrigen, Narrativa, Hotspot, Media } from "@seres-del-pase/types";
 import personajesRaw from "./data/personajes.json";
 import glosarioRaw from "./data/glosario.json";
 import pasesRaw from "./data/pases.json";
@@ -20,17 +20,10 @@ function toListItem(p: PersonajeRaw): PersonajeListItem {
 }
 
 function toPersonaje(p: PersonajeRaw): Personaje {
-  const multimedia = p.imagenPortada
-    ? [
-        {
-          id: p.id,
-          tipo: "imagen" as const,
-          url: p.imagenPortada,
-          altText: `${p.nombre} — Nunna`,
-          orden: 0,
-        },
-      ]
+  const multimediaDerived: Media[] = p.imagenPortada
+    ? [{ id: `${p.id}-portada`, tipo: "imagen", url: p.imagenPortada, altText: `${p.nombre} — Nunna`, orden: 0 }]
     : [];
+  const multimedia = [...multimediaDerived, ...(p.multimedia as Media[])];
 
   const personaje: Personaje = {
     id: p.id,
@@ -52,6 +45,9 @@ function toPersonaje(p: PersonajeRaw): Personaje {
   if (p.simbolismo) personaje.simbolismo = p.simbolismo;
   if (p.origen) personaje.origen = p.origen as TipoOrigen;
   if (p.publicadoEn) personaje.publicadoEn = p.publicadoEn;
+  if (p.narrativa) personaje.narrativa = p.narrativa as Narrativa;
+  if ("imagenBanner" in p && p.imagenBanner) personaje.imagenBanner = p.imagenBanner as string;
+  if (p.hotspots?.length) personaje.hotspots = p.hotspots as Hotspot[];
   return personaje;
 }
 

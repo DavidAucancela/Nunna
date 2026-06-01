@@ -53,6 +53,14 @@
     "500": "Server error",
     "volver_inicio": "Back to home"
   },
+  "historia": {
+    "saltar": "Skip",
+    "capitulo": "Chapter",
+    "secreto_titulo": "Only for those who hold this keychain",
+    "secreto_subtitulo": "A fact you won't find on the public page",
+    "cta": "Meet {nombre} in full",
+    "volver": "Back to characters"
+  },
   "comun": {
     "cargando": "Loading…",
     "origen": {

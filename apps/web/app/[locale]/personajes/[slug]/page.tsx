@@ -8,6 +8,8 @@ import { getOrigenStyle } from "@/lib/origen-styles";
 import { PersonajeCard } from "@/components/personajes/PersonajeCard";
 import { ParallaxHero } from "@/components/personajes/ParallaxHero";
 import { SimbolismoSection } from "@/components/personajes/SimbolismoSection";
+import { NarrativaSection } from "@/components/personajes/NarrativaSection";
+import { HotspotsViewer } from "@/components/personajes/HotspotsViewer";
 import { GaleriaSection } from "@/components/personajes/GaleriaSection";
 import { FadeUp, FadeUpGroup, FadeUpItem } from "@/components/ui/FadeUp";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
@@ -54,6 +56,9 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   if (!personaje) notFound();
 
   const imagenPortada = personaje.multimedia.find((m) => m.tipo === "imagen");
+  const imagenBanner = personaje.imagenBanner
+    ? { url: personaje.imagenBanner, altText: `${personaje.nombre} — Nunna` }
+    : undefined;
   const otrosPersonajes = todosLosPersonajes.filter((p) => p.slug !== slug).slice(0, 4);
   const style = getOrigenStyle(personaje.origen);
 
@@ -68,6 +73,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         nombresAlt={personaje.nombresAlt}
         origen={personaje.origen}
         imagen={imagenPortada}
+        imagenBanner={imagenBanner}
         origenLabel={style.label}
         accentColor={style.accentColor}
       />
@@ -89,31 +95,29 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         />
       )}
 
-      {/* ── 4. Historia y significado ── */}
-      <FadeUp>
-        <section className="mx-auto max-w-3xl px-5 pb-16 pt-16 sm:px-6 sm:pb-20 sm:pt-20">
-          <span
-            className="mb-6 block text-[9px] uppercase tracking-[0.32em]"
-            style={{ color: style.accentColor }}
-          >
-            Historia y significado
-          </span>
-          <div
-            className="prose prose-invert prose-stone max-w-none
-              prose-p:text-stone-400 prose-p:leading-relaxed
-              prose-headings:font-serif prose-headings:text-texto-claro
-              prose-headings:mt-10 prose-headings:mb-4
-              prose-a:text-acento-dorado
-              prose-h2:text-2xl prose-h3:text-xl"
-            dangerouslySetInnerHTML={{ __html: personaje.descripcion }}
-          />
-        </section>
-      </FadeUp>
+      {/* ── 4. Hotspots — anatomía interactiva del traje ── */}
+      {imagenPortada && personaje.hotspots && personaje.hotspots.length > 0 && (
+        <HotspotsViewer
+          imagen={imagenPortada}
+          hotspots={personaje.hotspots}
+          accentColor={style.accentColor}
+        />
+      )}
 
-      {/* ── 5. Galería ── */}
+      {/* ── 5. Narrativa — scrollytelling ── */}
+      {personaje.narrativa && (
+        <NarrativaSection
+          leyenda={personaje.narrativa.leyenda}
+          secreto={personaje.narrativa.secreto}
+          capitulos={personaje.narrativa.capitulos}
+          accentColor={style.accentColor}
+        />
+      )}
+
+      {/* ── 6. Galería ── */}
       <GaleriaSection multimedia={personaje.multimedia} accentColor={style.accentColor} />
 
-      {/* ── 6. Testimonios ── */}
+      {/* ── 7. Testimonios ── */}
       {personaje.testimonios.length > 0 && (
         <FadeUp>
           <section className="mx-auto max-w-3xl px-5 pb-16 sm:px-6">

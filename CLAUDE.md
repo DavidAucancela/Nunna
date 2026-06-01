@@ -1,7 +1,7 @@
 # CLAUDE.md — Nunna
 
 Catálogo digital + experiencia de desempaque para llaveros 3D de personajes ecuatorianos.
-El comprador escanea el QR del llavero → aterriza en la ficha del personaje.
+El comprador escanea el QR del llavero → aterriza en la experiencia inmersiva del personaje.
 Autor: Jonathan David Aucancela Maguana.
 
 ---
@@ -9,13 +9,18 @@ Autor: Jonathan David Aucancela Maguana.
 ## Modelo de negocio
 
 **Producto físico:** llaveros 3D de personajes de los pases riobambeños (Aya Uma, Curiquingue, etc.)
-**QR en el llavero** → dirige a `/es/personajes/[slug]`
-**La página de detalle del personaje es el producto digital** — es lo que justifica la compra.
+**QR en el llavero** → dirige a `/es/personajes/[slug]/historia` (experiencia inmersiva "El Despertar")
+**La experiencia QR + la ficha del personaje son el producto digital** — justifican la compra.
+
+Flujo del comprador:
+1. Escanea QR → `/es/personajes/[slug]/historia`
+2. Vive "El Despertar": invocación → nombre → leyenda → capítulos → secreto exclusivo
+3. CTA al final → `/es/personajes/[slug]` (ficha completa pública)
 
 Implicaciones técnicas:
 - **Mobile-first absoluto** — el QR se escanea con el teléfono
-- **La página de detalle debe cargar rápido y verse impresionante al primer render**
-- **Cross-sell al pie de cada personaje** — "Conoce a los otros personajes" → más llaveros
+- **La experiencia historia debe cargar rápido y ser inmersiva**
+- **Cross-sell al pie de cada personaje** — "Conoce a los otros seres" → más llaveros
 - **OpenGraph rico** — si el comprador comparte en WhatsApp, la preview tiene que lucir bien
 
 ---
@@ -81,40 +86,46 @@ No se necesitan variables de entorno para correr el frontend en desarrollo — l
 ```
 apps/web/
 ├── app/[locale]/
-│   ├── layout.tsx
+│   ├── layout.tsx                  → usa MainContent (oculta header/footer en /historia)
 │   ├── page.tsx                    → Landing
 │   ├── personajes/
 │   │   ├── page.tsx                → Grid de personajes
-│   │   └── [slug]/page.tsx         → ★ PANTALLA PRINCIPAL DEL QR
-│   ├── pases/page.tsx              → (sin enlace en nav — fusionado en calendario)
-│   ├── calendario/page.tsx         → Pases y Festividades (nav item activo)
+│   │   └── [slug]/
+│   │       ├── page.tsx            → ★ Ficha pública del personaje
+│   │       └── historia/page.tsx   → ★★ PANTALLA QR — experiencia "El Despertar"
+│   ├── calendario/page.tsx         → Pases y Festividades
 │   └── glosario/page.tsx
 ├── components/
-│   ├── layout/Header.tsx           → Nav: Personajes | Mapa | Pases y Festividades | Glosario
-│   ├── layout/Footer.tsx
-│   ├── calendario/CalendarioGrid.tsx
-│   ├── glosario/GlosarioClient.tsx
-│   ├── home/HeroSection.tsx
+│   ├── layout/
+│   │   ├── Header.tsx              → se oculta en rutas /historia
+│   │   ├── Footer.tsx
+│   │   └── MainContent.tsx         → wrapper client que controla pt-16 y footer según ruta
+│   ├── historia/                   → ★ Experiencia inmersiva QR
+│   │   ├── HistoriaExperiencia.tsx → orquestador de fases (Client)
+│   │   ├── CapituloScroll.tsx      → sección de capítulo full-height (Client)
+│   │   ├── SecretoFinal.tsx        → sección dorada con secreto + CTAs (Client)
+│   │   └── fases/
+│   │       ├── FaseInvocacion.tsx  → negro + símbolo del origen girando (Client)
+│   │       ├── FaseNombre.tsx      → wipe reveal del nombre (Client)
+│   │       └── FaseLeyenda.tsx     → typewriter + imagen blur→nítida (Client)
 │   ├── personajes/
-│   │   ├── PersonajeCard.tsx
-│   │   ├── PersonajeCardProximo.tsx
-│   │   ├── ParallaxHero.tsx        → ★ Hero con parallax Framer Motion (Client)
-│   │   ├── SimbolismoSection.tsx   → Interlude cinematográfico del simbolismo (Client)
-│   │   └── GaleriaSection.tsx      → Galería 3 categorías con scroll horizontal (Client)
+│   │   ├── PersonajeCard.tsx       → usa imagenPortada (retrato)
+│   │   ├── ParallaxHero.tsx        → usa imagenBanner primero, fallback a imagen (Client)
+│   │   ├── SimbolismoSection.tsx
+│   │   └── GaleriaSection.tsx      → 3 tabs: El personaje / El llavero / En el pase (Client)
 │   └── ui/                         → FadeUp, AnimatedCounter, ScrollProgress, WhatsAppShare, OrigenPlaceholder
 ├── lib/
-│   ├── data.ts                     → ★ Acceso a datos (reemplaza Directus)
+│   ├── data.ts                     → ★ Acceso a datos — merge multimedia portada + JSON
 │   ├── data/
-│   │   ├── personajes.json         → 9 personajes completos
+│   │   ├── personajes.json         → 9 personajes con narrativa, hotspots, imagenBanner, multimedia
 │   │   ├── glosario.json           → 16 entradas kichwa
 │   │   └── pases.json              → 7 pases con fechas y rutas
 │   └── origen-styles.ts            → Estilos por tipo de origen
 ├── public/
-│   ├── personajes/                 → Imágenes de personajes (aya-uma, payaso, perro, diablos-de-lata)
+│   ├── personajes/                 → Imágenes (ver tabla de personajes más abajo)
 │   └── pases/                      → Imágenes de los pases
 ├── i18n/routing.ts                 → Locales + pathnames
-├── i18n/request.ts                 → next-intl config
-├── messages/                       → es.json / qu.json / en.json
+├── messages/                       → es.json / qu.json / en.json (incluye sección "historia")
 ├── tailwind.config.js              → CommonJS, NO .ts
 └── next.config.ts
 ```
@@ -129,35 +140,87 @@ Todas las páginas importan de `@/lib/data` (nunca de Directus ni de APIs extern
 import { getPersonajes, getPersonaje, getPases, getGlosario } from "@/lib/data";
 ```
 
+`toPersonaje()` construye el array `multimedia` mergeando:
+1. `imagenPortada` del JSON → como `multimedia[0]` con id `${slug}-portada`
+2. Las entradas adicionales del array `multimedia` del JSON (presentaciones, grupo, etc.)
+
 Para agregar o editar contenido: editar directamente los archivos JSON en `lib/data/` y hacer commit.
-Las páginas son **SSG puro** — se prerenderizan en build, sin requests en runtime.
+Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 
 ---
 
-## Galería de personajes — convención de imágenes
+## Imágenes — convenciones
 
-La ficha de cada personaje (`[slug]/page.tsx`) muestra una galería con 3 categorías.
-Las imágenes se guardan en el array `multimedia` del JSON de cada personaje.
-El campo `titulo` en cada objeto `Media` determina en qué categoría aparece:
+### Tipos de imagen por personaje
 
-| `titulo` | Categoría en la galería |
-|----------|------------------------|
-| `undefined` / `"retrato"` | El personaje (incluye la imagen de portada) |
-| `"proceso"` | El llavero (proceso de creación artesanal) |
-| `"en-pase"` | En el pase (personaje en la festividad) |
+| Campo / archivo | Uso | Formato |
+|----------------|-----|---------|
+| `imagenPortada` en JSON → `public/personajes/[slug].png` | Tarjetas del grid (`PersonajeCard`) | Retrato portrait |
+| `imagenBanner` en JSON → `public/personajes/[slug]-banner.png` | Hero de la ficha (`ParallaxHero`) + FaseLeyenda QR | Landscape 1376×768 |
+| `multimedia[].url` con `titulo:"proceso"` → `public/personajes/[slug]-presentacion.png` | Galería tab "El llavero" | Libre |
+| `multimedia[].url` con `titulo:"en-pase"` | Galería tab "En el pase" | Libre |
+| sin `titulo` / `titulo:"retrato"` | Galería tab "El personaje" | Libre |
 
-Ejemplo para agregar una imagen al JSON:
+### Galería — convención del campo `titulo`
+
 ```json
 {
-  "id": "aya-uma-proceso-1",
+  "id": "aya-uma-presentacion",
   "tipo": "imagen",
-  "url": "/personajes/aya-uma-proceso.jpg",
-  "altText": "Artesano trabajando la máscara del Aya Uma",
+  "url": "/personajes/aya-uma-presentacion.png",
+  "altText": "Llavero Aya Uma — presentación individual",
   "titulo": "proceso",
-  "descripcion": "Tallado de la máscara en madera de balsa",
+  "descripcion": "Texto que aparece en hover",
   "orden": 1
 }
 ```
+
+| `titulo` | Tab en galería |
+|----------|---------------|
+| `undefined` / `"retrato"` | El personaje |
+| `"proceso"` | El llavero |
+| `"en-pase"` | En el pase |
+
+---
+
+## Experiencia "El Despertar" — ruta `/historia`
+
+Al escanear el QR del llavero se abre `/es/personajes/[slug]/historia`. Es SSG puro (noindex).
+
+### Flujo de fases (auto-play → scroll)
+
+| Fase | Descripción | Duración |
+|------|-------------|----------|
+| 1 — Invocación | Negro + símbolo del origen (Chakana/Espiral/Rombo) con glow | 3.8s auto |
+| 2 — Nombre | Nombre en display-lg con clip-path wipe + StaggerLetters | 3.5s auto |
+| 3 — Leyenda | `narrativa.leyenda` con typewriter + `imagenBanner` emerge del blur | ~4s auto |
+| 4 — Capítulos | 3 secciones full-height scroll con gradiente del origen | scroll |
+| 5 — Secreto | Fondo dorado — `narrativa.secreto` exclusivo para llavero | scroll |
+| 6 — CTA | Botón → ficha del personaje | clic |
+
+Botón "Saltar" (X) fijo top-right durante las fases 1–3.
+
+### Datos necesarios en `personajes.json`
+
+```json
+"narrativa": {
+  "leyenda": "Frase poderosa de una línea.",
+  "secreto": "Dato exclusivo no publicado en la ficha.",
+  "capitulos": [
+    { "titulo": "Título del capítulo", "texto": "3–4 oraciones." },
+    { "titulo": "...", "texto": "..." },
+    { "titulo": "...", "texto": "..." }
+  ]
+}
+```
+
+### Header/Footer en `/historia`
+
+`MainContent.tsx` (client) detecta `pathname.endsWith("/historia")` y:
+- Elimina `pt-16` del `<main>` (sin header no hace falta)
+- Oculta el `<Footer>`
+
+`Header.tsx` retorna `null` cuando `pathname.endsWith("/historia")`.
 
 ---
 
@@ -186,29 +249,28 @@ Modo oscuro por defecto.
 - Monorepo Turborepo + pnpm funcional
 - Frontend: todas las páginas con estilos completos (landing, personajes, detalle, pases, calendario, glosario, sobre, mapa)
 - i18n es/qu/en con rutas localizadas
-- Datos estáticos: 9 personajes, 16 entradas glosario, 7 pases en JSON versionado
-- Imágenes de 4 personajes en `public/personajes/` (Aya Uma, Payaso, Perro, Diablos de lata)
-- Imágenes de 5 pases en `public/pases/`
-- Build de producción SSG sin errores — todas las rutas se prerenderizan estáticamente
-- Eliminación completa de Directus (CMS, Redis, PostGIS, Bucket dados de baja en Railway)
+- Datos estáticos: 9 personajes (con `narrativa`, `hotspots`, `imagenBanner`, `multimedia`), 16 entradas glosario, 7 pases
+- Build de producción SSG sin errores — 82 rutas prerrenderizadas (incluye 27 rutas `/historia`)
+- Eliminación completa de Directus
 - Favicons SVG
-- **Renombrado marca a "Nunna"** — títulos, metadata OG, footer, WhatsApp share, altText
-- **"seres" → "personajes"** en todos los textos visibles (es/en/qu)
-- **Nav fusionado** — "Pases y fiestas" eliminado, "Calendario" → "Pases y Festividades", todos los links apuntan a `/calendario`
-- **Rediseño ficha de personaje** — parallax real en hero, lead editorial grande, simbolismo cinematográfico, galería con 3 categorías (El personaje / El llavero / En el pase)
+- Renombrado marca a "Nunna"
+- Nav fusionado — "Pases y Festividades" en un solo punto
+- Rediseño ficha de personaje — parallax, lead editorial, simbolismo, galería
+- **Experiencia "El Despertar"** — 6 fases inmersivas para el QR del llavero
+- **Banners profesionales** en el hero de 4 personajes (Aya Uma, Diablos de lata, Payaso, Perro)
+- **Galería "El llavero"** con imágenes de presentación individual para 3 personajes
 
 ### 🔄 Siguiente
 - Deploy Next.js en Railway
-- Añadir imágenes a los 5 personajes sin foto (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
-- Fotografías reales del personaje, proceso de llavero y personaje en pase para la galería
+- Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
+- Fotografías reales "En el pase" para la galería (`titulo: "en-pase"`)
 
 ### ⏳ Fase 2
 - Modo claro/oscuro
-- Página de detalle de pase (`/pases/[slug]`) — actualmente la ruta existe pero no tiene slug page
+- Página de detalle de pase (`/pases/[slug]`)
 
 ### ⏳ Fase 3
-- Scroll narrativo (Lenis + Framer Motion — dependencias ya instaladas)
-- Hotspots interactivos en el traje
+- Hotspots interactivos en el traje (componente `HotspotsViewer.tsx` ya existe, datos en JSON)
 - Búsqueda semántica (pgvector + Supabase + NestJS)
 - Mapa interactivo (MapLibre — dependencia ya instalada)
 
@@ -217,32 +279,34 @@ Modo oscuro por defecto.
 ## Decisiones técnicas clave
 
 ### Marca: "Nunna"
-- El nombre público del sistema es **Nunna** (antes "Seres del Pase")
-- Los nombres de paquetes internos del monorepo (`@seres-del-pase/web`, `@seres-del-pase/types`, etc.) **no se cambian** — son identificadores técnicos, no afectan al usuario
-- Los comandos de desarrollo siguen usando `@seres-del-pase/web`
+- El nombre público del sistema es **Nunna**
+- Los paquetes internos del monorepo (`@seres-del-pase/web`, etc.) **no se cambian** — son identificadores técnicos
 
 ### Sin CMS — datos en JSON
-- **Directus eliminado** (2026-05-31) — Railway costaba ~$15-20/mes extra por Directus + Redis + PostGIS + Bucket
+- **Directus eliminado** (2026-05-31) — Railway costaba ~$15-20/mes extra
 - Los datos viven en `apps/web/lib/data/*.json`, versionados en git
 - Para editar contenido: editar el JSON y hacer `git push` → Railway redeploya automáticamente
 - Las páginas son SSG puro — `generateStaticParams` + sin `force-dynamic`
 
+### Imágenes — `imagenBanner` vs `imagenPortada`
+- `imagenPortada` → retrato portrait, para tarjetas pequeñas (`PersonajeCard`)
+- `imagenBanner` → landscape 1376×768 con texto de marca, para hero grande y FaseLeyenda
+- `ParallaxHero` usa `imagenBanner ?? imagen` (banner primero, retrato como fallback)
+- Personajes sin `imagenBanner` muestran `OrigenPlaceholder` artístico en el hero
+
 ### Parallax en la ficha de personaje
-- Implementado con Framer Motion `useScroll` + `useTransform` en `ParallaxHero.tsx`
-- El contenedor de imagen se extiende `-15%` arriba y abajo de la sección para cubrir el offset
-- `y` va de `"0%"` a `"25%"` → imagen más lenta que el scroll = profundidad
+- Framer Motion `useScroll` + `useTransform` en `ParallaxHero.tsx`
+- El contenedor de imagen se extiende `-15%` arriba y abajo
+- `y` va de `"0%"` a `"25%"` → imagen más lenta que el scroll
 - Respeta `prefers-reduced-motion` con `useReducedMotion()`
-- Funciona en iOS Safari (usa transforms GPU, no `background-attachment: fixed`)
 
 ### Tailwind CSS
 - **v3, no v4** — v4 no genera utilities en pnpm monorepo + Next.js 15.1
 - **tailwind.config.js CommonJS** — PostCSS no carga `.ts`
-- **postcss como dep directa** en `apps/web`
 - **Turbopack desactivado** — incompatible con `experimental.typedRoutes`
 
 ### Prisma
 - **v5, no v6/v7** — v6 cambió API de datasource
-- **pgvector en Fase 3** — `ALTER TABLE personajes ADD COLUMN embedding vector(1536)`
 - Supabase reservado exclusivamente para Fase 3
 
 ### next-intl
@@ -250,25 +314,25 @@ Modo oscuro por defecto.
 
 ### Infraestructura
 - **Todo en Railway** — no Vercel
-- Un solo servicio activo: Next.js (antes eran 5: Next.js + Directus + Redis + PostGIS + Bucket)
 
 ---
 
 ## Personajes en producción
 
-| Slug | Nombre | Origen | Imagen |
-|------|--------|--------|--------|
-| aya-uma | Aya Uma | prehispanico | ✅ |
-| curiquingue | Curiquingue | prehispanico | ❌ |
-| sacha-runa | Sacha Runa | prehispanico | ❌ |
-| payaso | Payaso | mixto | ✅ |
-| rey-moro | Rey Moro | colonial | ❌ |
-| capitan | Capitán | colonial | ❌ |
-| angel | Ángel | colonial | ❌ |
-| perro | Perro | prehispanico | ✅ |
-| diablos-de-lata | Diablos de lata | mestizo | ✅ |
+| Slug | Nombre | Origen | Retrato | Banner | Narrativa |
+|------|--------|--------|---------|--------|-----------|
+| aya-uma | Aya Uma | prehispanico | ✅ | ✅ | ✅ |
+| curiquingue | Curiquingue | prehispanico | ❌ | ❌ | ✅ |
+| sacha-runa | Sacha Runa | prehispanico | ❌ | ❌ | ✅ |
+| payaso | Payaso | mixto | ✅ | ✅ | ✅ |
+| rey-moro | Rey Moro | colonial | ❌ | ❌ | ✅ |
+| capitan | Capitán | colonial | ❌ | ❌ | ✅ |
+| angel | Ángel | colonial | ❌ | ❌ | ✅ |
+| perro | Perro | prehispanico | ✅ | ✅ | ✅ |
+| diablos-de-lata | Diablos de lata | mestizo | ✅ | ✅ | ✅ |
 
 Para agregar un personaje: editar `apps/web/lib/data/personajes.json` con la estructura existente.
+Para agregar imágenes: copiar a `public/personajes/` y actualizar `imagenPortada` / `imagenBanner` / `multimedia` en el JSON.
 
 ---
 
@@ -286,7 +350,7 @@ Para agregar un personaje: editar `apps/web/lib/data/personajes.json` con la est
 ```bash
 pnpm --filter @seres-del-pase/web dev --port 3030   # desarrollo
 pnpm build                                            # build completo
-pnpm type-check                                       # verificar tipos
+pnpm --filter @seres-del-pase/web type-check         # verificar tipos
 
 # Prisma (Fase 3)
 ./apps/api/node_modules/.bin/prisma generate --schema=prisma/schema.prisma

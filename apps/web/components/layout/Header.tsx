@@ -28,6 +28,9 @@ export function Header() {
 
   const isActive = (href: string) => pathname.includes(href);
 
+  // Ocultar completamente en la experiencia inmersiva QR
+  if (pathname.endsWith("/historia")) return null;
+
   return (
     <header className="fixed top-0 z-50 w-full border-b border-borde-sutil bg-fondo-oscuro/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">

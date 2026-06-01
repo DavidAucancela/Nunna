@@ -4,16 +4,88 @@
     "slug": "aya-uma",
     "nombre": "Aya Uma",
     "nombreKichwa": "Aya Uma",
-    "nombresAlt": ["Diablo Uma", "Cabeza del espíritu", "Señor de los vientos"],
+    "nombresAlt": [
+      "Diablo Uma",
+      "Cabeza del espíritu",
+      "Señor de los vientos"
+    ],
     "resumen": "El Aya Uma —«cabeza del espíritu» o «cabeza del muerto» en kichwa— es el personaje más icónico y complejo de los pases riobambeños. Con su máscara de doble rostro y sus doce cuernos que representan los meses del año, el Aya Uma actúa como intermediario entre el mundo de los vivos y el mundo de los ancestros, guiando la energía del pase con su danza interminable y su látigo de fuete que marca el ritmo de la celebración.\n\nEl Aya Uma no habla —su comunicación es solo corporal y musical. Danza sin descanso durante todo el recorrido del pase, girando, saltando, azotando el suelo con su fuete para ahuyentar energías negativas y abrir el camino para los demás personajes.",
     "descripcion": "<h2>El señor de los dos mundos</h2><p>El nombre Aya Uma proviene de dos palabras kichwa: <em>aya</em> (espíritu, alma, difunto) y <em>uma</em> (cabeza). Es literalmente «la cabeza del espíritu». Esta figura es el eje ritual de los pases riobambeños: su presencia garantiza que la comunicación entre el mundo de los vivos (Kay Pacha) y el mundo de los ancestros (Uku Pacha) esté abierta durante la celebración.</p><h2>La máscara de doble rostro</h2><p>La máscara del Aya Uma es la más elaborada de todos los personajes del pase. Tiene dos caras —una en la parte delantera y otra en la parte trasera de la cabeza— porque el Aya Uma ve en todas las direcciones simultáneamente: el pasado y el futuro, el mundo de arriba y el de abajo. Los doce cuernos que rodean la máscara representan los doce meses del año solar. Cada cuerno puede llevar cintas de colores con significados específicos: el rojo para la fuerza, el amarillo para la prosperidad, el verde para la naturaleza.</p><h2>El fuete y la danza sin fin</h2><p>El Aya Uma porta siempre un fuete (látigo) que golpea rítmicamente contra el suelo durante toda la danza. Este golpe no es violencia: es comunicación con la Pachamama, un llamado al que la tierra responde con fertilidad. La danza del Aya Uma no tiene coreografía fija —es improvisación constante alrededor de un eje de giro, con saltos, giros y movimientos que pueden durar horas sin pausa.</p><h2>El silencio como poder</h2><p>A diferencia del Payaso o el Sacha Runa, el Aya Uma nunca habla. Su poder ritual radica precisamente en ese silencio: lo que el espíritu comunica va más allá de las palabras humanas. Cuando el Aya Uma señala con el fuete hacia alguien en el público, ese momento tiene peso ritual —es una bendición o una advertencia.</p>",
     "simbolismo": "Representa la dualidad fundamental del cosmos andino: vida y muerte, pasado y futuro, Kay Pacha y Uku Pacha. Los doce cuernos symbolizan el ciclo anual completo. La doble máscara recuerda que el tiempo andino no es lineal sino circular: el futuro ya ocurrió en otro ciclo. El fuete que golpea la tierra es el pulso del pase, el corazón visible de la comunicación entre mundos.",
     "origen": "prehispanico",
     "imagenPortada": "/personajes/aya-uma.png",
+    "imagenBanner": "/personajes/aya-uma-banner.png",
+    "narrativa": {
+      "leyenda": "Donde el espíritu camina, la tierra responde.",
+      "secreto": "Los artesanos que tejen la máscara del Aya Uma nunca la firman. Según la tradición, al terminar el último cuerno, el espíritu ya habita la pieza — y lo que habita un espíritu ya no pertenece a quien lo hizo.",
+      "capitulos": [
+        {
+          "titulo": "El Nombre que lo Dice Todo",
+          "texto": "Aya: espíritu, alma, difunto. Uma: cabeza. El Aya Uma es literalmente la cabeza que contiene el mundo de los muertos. No es un disfraz: es un portal. Cada vez que alguien viste esta máscara en el pase, ese umbral se abre."
+        },
+        {
+          "titulo": "La Máscara que Ve Todo",
+          "texto": "Dos rostros, doce cuernos. Una cara mira al pasado, otra al futuro. Los doce cuernos son los doce meses del ciclo solar andino. El Aya Uma no ve lo que los humanos vemos — ve el tiempo completo, circular, sin principio ni fin."
+        },
+        {
+          "titulo": "El Silencio que Habla",
+          "texto": "El Aya Uma nunca pronuncia una palabra durante el pase. Su poder está en ese silencio. Cuando su fuete golpea el suelo, está hablando con la Pachamama en un idioma anterior a todas las lenguas humanas."
+        }
+      ]
+    },
+    "hotspots": [
+      {
+        "id": "cuernos",
+        "x": 50,
+        "y": 9,
+        "titulo": "Los 12 cuernos",
+        "cuerpo": "Representan los doce meses del año solar andino. Las cintas de colores tienen significados: rojo → fuerza, amarillo → prosperidad, verde → naturaleza."
+      },
+      {
+        "id": "mascara",
+        "x": 52,
+        "y": 26,
+        "titulo": "Máscara de doble rostro",
+        "cuerpo": "Dos caras: una delantera y una trasera. El Aya Uma ve en todas las direcciones simultáneamente — el pasado y el futuro, Kay Pacha y Uku Pacha."
+      },
+      {
+        "id": "traje",
+        "x": 34,
+        "y": 60,
+        "titulo": "El traje multicolor",
+        "cuerpo": "Confeccionado con tela bordada en colores primarios. Cada franja y color tiene su propio significado en la cosmovisión andina."
+      },
+      {
+        "id": "fuete",
+        "x": 74,
+        "y": 70,
+        "titulo": "El fuete",
+        "cuerpo": "Golpea rítmicamente el suelo durante toda la danza. No es violencia: es comunicación con la Pachamama. Cada golpe es un llamado al que la tierra responde."
+      }
+    ],
     "variantes": [],
     "elementos": [],
     "apariciones": [],
-    "multimedia": [],
+    "multimedia": [
+      {
+        "id": "aya-uma-presentacion",
+        "tipo": "imagen",
+        "url": "/personajes/aya-uma-presentacion.png",
+        "altText": "Llavero Aya Uma — presentación individual",
+        "titulo": "proceso",
+        "descripcion": "El llavero del Aya Uma, pieza artesanal única.",
+        "orden": 1
+      },
+      {
+        "id": "aya-uma-grupo",
+        "tipo": "imagen",
+        "url": "/personajes/aya-uma-grupo.jpeg",
+        "altText": "Colección de llaveros del Aya Uma",
+        "titulo": "proceso",
+        "descripcion": "Handcrafted, Spirit-Infused Collections.",
+        "orden": 2
+      }
+    ],
     "testimonios": [],
     "tags": [],
     "publicadoEn": "2026-05-25T12:00:00",
@@ -25,12 +97,34 @@
     "slug": "curiquingue",
     "nombre": "Curiquingue",
     "nombreKichwa": "Kuriquingui",
-    "nombresAlt": ["Caracara andino", "Cara-cara"],
+    "nombresAlt": [
+      "Caracara andino",
+      "Cara-cara"
+    ],
     "resumen": "El Curiquingue —cuyo nombre en kichwa significa «el dorado» o «el brillante»— es uno de los personajes más elegantes y simbólicos de los pases riobambeños. Representación ritual del Phalcoboenus carunculatus, el caracara andino declarado Ave Nacional del Ecuador, este personaje danza siempre en pareja evocando la dualidad complementaria (yanantin) del cosmos kichwa.\n\nEl Curiquingue es señal de buen augurio: su aparición en el pase anuncia prosperidad para la comunidad. Los danzantes imitan con precisión los movimientos del ave real —el caminar altivo, el vuelo rasante, el girar de cabeza— convirtiendo la danza en una forma de conocimiento ecológico transmitido corporalmente.",
     "descripcion": "<h2>El ave que anuncia la prosperidad</h2><p>El Curiquingue es uno de los pocos personajes del pase que representa directamente a un animal del ecosistema andino. El caracara andino (Phalcoboenus carunculatus) es un ave rapaz de las alturas del Chimborazo —vive entre los 3.000 y 4.800 metros sobre el nivel del mar— y en la cosmovisión kichwa actúa como mensajero entre los Apus (espíritus de las montañas) y el Kay Pacha (el mundo de los humanos).</p><h2>La danza en pareja</h2><p>El Curiquingue siempre danza en pareja —un danzante macho y uno hembra— con trajes diferenciados. El macho lleva tonos oscuros (negro y gris) con pecho blanco bordado; la hembra lleva blanco predominante con franjas de color. Ambos portan tocados con plumas largas que imitan la cresta característica del ave real. La danza reproduce los movimientos del apareamiento del caracara: giros, persecuciones, pasos sincronizados.</p><h2>El traje</h2><p>El traje del Curiquingue es una obra de bordado artesanal. La capa de plumas está confeccionada con tela bordada en punto de Cruz que simula el plumaje del ave. El tocado central —la cresta— puede superar los 40 centímetros de altura. La máscara representa el rostro del caracara con el característico carúnculo rojo alrededor del ojo, elaborado en papel maché pintado.</p><h2>Significado ecológico y cultural</h2><p>Que el Ecuador haya elegido al caracara andino como Ave Nacional no es ajeno a esta tradición. El Curiquingue del pase es una forma de reverencia al ecosistema del páramo: al incluirlo en la celebración, la comunidad reconoce al ave como parte del pacto entre humanos y naturaleza que la Pachamama sostiene.</p>",
     "simbolismo": "Representa el vínculo entre el mundo animal y el humano, y entre el mundo de los Apus y el Kay Pacha. La danza en pareja encarna el principio del yanantin (dualidad complementaria). Su aparición anuncia buen augurio y prosperidad agrícola. El caracara real, al volar sobre las chacras (parcelas de cultivo), señala dónde está la buena tierra.",
     "origen": "prehispanico",
     "imagenPortada": null,
+    "narrativa": {
+      "leyenda": "Dos alas, un solo vuelo: lo que el cielo une, la tierra celebra.",
+      "secreto": "En los pases donde el Curiquingue danza sobre el camino de una familia, se dice que ese año la cosecha será buena. Las familias del barrio aún guardan ese augurio como una verdad que no necesita prueba.",
+      "capitulos": [
+        {
+          "titulo": "El Ave del Chimborazo",
+          "texto": "Entre 3.000 y 4.800 metros de altura, el caracara andino reina. El Ecuador lo eligió como Ave Nacional — y las comunidades kichwa del Chimborazo lo eligieron mucho antes: como mensajero entre los Apus y los humanos, mucho antes de que hubiera una república que declarar."
+        },
+        {
+          "titulo": "El Principio del Yanantin",
+          "texto": "El Curiquingue siempre danza en pareja: macho y hembra, oscuro y claro, tierra y cielo. En kichwa, esto se llama yanantin — la dualidad complementaria. No existe el uno sin el otro. La danza lo recuerda cada vez que ocurre."
+        },
+        {
+          "titulo": "El Conocimiento que Vuela",
+          "texto": "Los danzantes del Curiquingue estudian al ave real durante meses antes del pase. El caminar altivo, el giro de la cabeza, el vuelo rasante. Cada movimiento es un conocimiento ecológico transmitido de cuerpo a cuerpo, sin libros, sin aulas."
+        }
+      ]
+    },
+    "hotspots": [],
     "variantes": [],
     "elementos": [],
     "apariciones": [],
@@ -46,12 +140,35 @@
     "slug": "sacha-runa",
     "nombre": "Sacha Runa",
     "nombreKichwa": "Sacha Runa",
-    "nombresAlt": ["Hombre del monte", "Salvaje", "Montarás"],
+    "nombresAlt": [
+      "Hombre del monte",
+      "Salvaje",
+      "Montarás"
+    ],
     "resumen": "El Sacha Runa —«persona del monte» o «ser del bosque» en kichwa— es el personaje que representa al mundo natural indómito, la frontera entre la comunidad humana y el territorio sagrado de la naturaleza. Cubierto de hojas, ramas y musgo, su presencia en el pase recuerda a los danzantes y espectadores que la civilización es frágil y que la Pachamama existía antes y después de los humanos.\n\nEl Sacha Runa actúa como el bufón del pase: interrumpe las danzas, persigue al público, imita a los otros personajes con exageración cómica. Pero detrás de la risa hay un mensaje serio: el monte no está sometido al orden humano, y olvidarlo tiene consecuencias.",
     "descripcion": "<h2>El que viene del monte</h2><p>En la cosmovisión andina, el sacha (monte, bosque, naturaleza no domesticada) no es un espacio vacío ni peligroso en sentido negativo: es el territorio de los espíritus, de los animales con poder y de las plantas medicinales. El Sacha Runa es el guardián de ese territorio y su embajador en el espacio ritual del pase.</p><h2>El traje</h2><p>El traje del Sacha Runa es el más orgánico de todos los personajes. Se confecciona con hojas frescas de achupalla (Tillandsia), ramas de árbol, musgo, helecho y raíces tejidas sobre una base de tela. El proceso de confección puede tardar varios días y el traje vivo se deteriora durante el pase —lo cual es intencional: la naturaleza tiene su propio ritmo, no el del calendario humano.</p><p>La máscara es especialmente expresiva: rasgos exagerados, cejas pobladas de musgo, cabello de paja. En algunas variantes lleva cornamenta de venado para reforzar la conexión con el mundo animal.</p><h2>El papel del bufón sagrado</h2><p>En muchas culturas del mundo, el bufón tiene un rol sagrado: puede decir verdades que nadie más puede pronunciar, puede transgredir normas que a otros les están vedadas. El Sacha Runa cumple esa función en el pase. Sus interrupciones, persecuciones y burlas no son desorden: son una forma de recordar que el orden establecido es convencional, temporal, y que existe un orden mayor —el de la naturaleza— que lo trasciende.</p>",
     "simbolismo": "Representa la naturaleza indómita y la frontera entre el mundo humano y el mundo salvaje. Su comportamiento disruptivo en el pase recuerda que el orden humano es frágil y que la Pachamama tiene sus propias leyes. El traje orgánico que se deteriora durante la danza es en sí mismo un símbolo: la naturaleza no se preserva, fluye.",
     "origen": "prehispanico",
     "imagenPortada": null,
+    "narrativa": {
+      "leyenda": "El monte no olvida. El monte solo espera.",
+      "secreto": "El traje del Sacha Runa se deteriora mientras danza — las hojas se marchitan, el musgo se cae, las ramas se rompen. Y eso es intencional: la naturaleza está reclamando lo suyo mientras el ser baila. Nadie lo repara.",
+      "capitulos": [
+        {
+          "titulo": "La Frontera que No Debes Cruzar",
+          "texto": "El sacha es el monte no domesticado. En la cosmovisión andina, ese territorio no es peligroso — es sagrado. Tiene sus propias leyes, sus propios espíritus, su propio tiempo. El Sacha Runa viene de ahí para recordarte que existen, aunque tú los hayas olvidado."
+        },
+        {
+          "titulo": "El Bufón que Dice Verdades",
+          "texto": "El Sacha Runa interrumpe las danzas, persigue al público, imita a los demás personajes con burla. No es desorden: es el recordatorio de que el orden humano es frágil. El monte ríe de nuestras reglas porque las conoce todas — y las sobrevivirá todas."
+        },
+        {
+          "titulo": "El Traje que Respira y Muere",
+          "texto": "Hojas de achupalla, musgo, helecho, raíces tejidas. El traje tarda días en hacerse y se destruye durante el pase. Nadie lo preserva. Es la naturaleza en su forma más honesta: no se queda, no se guarda, solo fluye hacia lo que sigue."
+        }
+      ]
+    },
+    "hotspots": [],
     "variantes": [],
     "elementos": [],
     "apariciones": [],
@@ -67,12 +184,36 @@
     "slug": "payaso",
     "nombre": "Payaso",
     "nombreKichwa": "Pukllakuk",
-    "nombresAlt": ["Pukllakuk", "Bufón", "Gracioso"],
+    "nombresAlt": [
+      "Pukllakuk",
+      "Bufón",
+      "Gracioso"
+    ],
     "resumen": "El Payaso del pase riobambeño —llamado Pukllakuk en kichwa, «el que juega»— no es el payaso de circo occidental: es un crítico social disfrazado de entretenimiento. Con su traje de colores estridentes, su máscara de rasgos exagerados y su habilidad para imitar a cualquier persona del público o de la élite local, el Payaso ejerce una función subversiva que las autoridades coloniales nunca lograron suprimir completamente.\n\nDetrás de cada chiste hay una verdad. El Payaso del pase se ríe del cura, del alcalde, del terrateniente, del médico. En el espacio ritual del pase, esa crítica está permitida —incluso celebrada— porque viene envuelta en risa.",
     "descripcion": "<h2>El crítico con máscara</h2><p>En los pases riobambeños, el Payaso no entretiene pasivamente: actúa, improvisa, interpela. Se acerca al público, lo imita, exagera sus gestos, parodia a las figuras de autoridad que aparecen en la celebración. Esta práctica tiene raíces profundas: en las culturas andinas prehispánicas existían figuras análogas (los llamados «indios gracioso» en documentos coloniales) que cumplían una función ritual de inversión del orden social.</p><h2>El traje</h2><p>El traje del Payaso es el más heterogéneo de todos: no existe un modelo único. Cada payaso construye su traje con retazos de tela de colores contrastantes —rojo, amarillo, verde, naranja— cosidos sin aparente orden estético. Los cascabeles en los bordes del traje y el sombrero de ala ancha son los elementos más constantes. La máscara tiene rasgos caricaturizados: nariz grande, mejillas rojizas, sonrisa fija.</p><h2>La improvisación como arte</h2><p>A diferencia de otros personajes cuya danza sigue coreografías tradicionales, el Payaso improvisa. Su actuación depende del contexto: qué está pasando en el pase ese día, quién es el público, qué noticias o conflictos sociales son relevantes en ese momento. Un buen payaso de pase es un cronista de su tiempo.</p>",
     "simbolismo": "Representa la función social de la crítica mediante la risa. En el espacio ritual del pase, el Payaso tiene licencia para decir lo que nadie más puede. Es el guardián de la verdad disfrazado de entretenimiento. Su máscara fija de sonrisa contrasta con la posibilidad de decir cosas dolorosas: la risa como estrategia de supervivencia cultural.",
     "origen": "mixto",
     "imagenPortada": "/personajes/payaso.png",
+    "imagenBanner": "/personajes/payaso-banner.png",
+    "narrativa": {
+      "leyenda": "La máscara sonríe fija. La verdad no necesita permiso para salir.",
+      "secreto": "El Payaso de pase nunca revela su identidad durante la celebración. Su poder ritual depende del anonimato total — al final del pase, muchos espectadores nunca saben quién los imitó ni de qué se rieron exactamente.",
+      "capitulos": [
+        {
+          "titulo": "La Risa como Resistencia",
+          "texto": "Los evangelizadores coloniales suprimieron muchas formas de expresión andina. Pero la risa era más difícil de prohibir. El Payaso usó la comedia para decir lo que el poder no podía callar: que el cura también comete errores, que el alcalde también tiene miedo."
+        },
+        {
+          "titulo": "El Crítico Sin Nombre",
+          "texto": "Cada actuación del Payaso es un comentario de su tiempo. No hay guión — hay contexto. Qué conflictos existen en el barrio, quién tiene poder, qué injusticia está sin resolver. El buen Payaso de pase es un cronista disfrazado que la historia nunca podrá citar."
+        },
+        {
+          "titulo": "El Arte de Improvisar",
+          "texto": "A diferencia del Aya Uma o el Curiquingue, el Payaso no tiene coreografía. Solo tiene intuición, memoria del público y timing. Ese es su virtuosismo — no el bordado del traje, sino la capacidad de hacer reír sobre algo que duele."
+        }
+      ]
+    },
+    "hotspots": [],
     "variantes": [],
     "elementos": [],
     "apariciones": [],
@@ -88,12 +229,34 @@
     "slug": "rey-moro",
     "nombre": "Rey Moro",
     "nombreKichwa": "Muru Inka",
-    "nombresAlt": ["Moro", "Rey Sarraceno"],
+    "nombresAlt": [
+      "Moro",
+      "Rey Sarraceno"
+    ],
     "resumen": "El Rey Moro es uno de los personajes que mejor evidencia la complejidad histórica de los pases riobambeños: su origen está en las representaciones coloniales de la «Danza de Moros y Cristianos», llevada a América por los evangelizadores españoles del siglo XVI. Sin embargo, en Riobamba, el personaje fue resignificado por las comunidades kichwa y hoy encarna algo muy distinto al enemigo musulmán que los frailes querían representar.\n\nCon su corona elaborada, su capa real y su bastón de mando, el Rey Moro se mueve con dignidad en el pase. Las comunidades lo ven menos como un «infiel» derrotado y más como un rey poderoso: un símbolo de que el poder también existe fuera de la lógica colonial cristiana.",
     "descripcion": "<h2>De la propaganda colonial a la resignificación kichwa</h2><p>La «Danza de Moros y Cristianos» fue uno de los instrumentos más eficaces de la evangelización colonial: representaba el triunfo del bien (cristiano) sobre el mal (musulmán) y se usaba para legitimar la conquista. Los frailes la llevaron a todas sus misiones en América. Pero algo inesperado ocurrió en las comunidades kichwa de Chimborazo: el personaje del «moro» fue vaciado de su carga negativa y rellenado con nuevos significados.</p><h2>El traje</h2><p>El traje del Rey Moro es el más elaborado y costoso de todos los personajes del pase. La corona —confeccionada en metal, cartón dorado o madera pintada— puede incorporar piedras de colores, plumas y espejos. La capa real está bordada en hilos de oro y plata. El bastón de mando, a veces llamado «cetro», está decorado con cintas de colores que representan los cuatro suyus. El conjunto puede costar varios miles de dólares y suele ser heredado de generación en generación.</p><h2>La danza y su protocolo</h2><p>En el pase, el Rey Moro tiene un protocolo específico: marcha con paso lento y deliberado, hace reverencias en puntos específicos del recorrido (las esquinas de la plaza, frente a la iglesia, frente a las casas de las familias organizadoras) y recibe saludos de los otros personajes. Su presencia da gravedad y solemnidad a la celebración.</p>",
     "simbolismo": "Representa la complejidad de la síntesis colonial: un personaje nacido como propaganda evangelizadora que fue resignificado por las mismas comunidades que se pretendía convertir. El Rey Moro en el pase riobambeño no es un enemigo derrotado sino un rey poderoso que coexiste con los personajes andinos. Símbolo de resistencia cultural a través de la apropiación.",
     "origen": "colonial",
     "imagenPortada": null,
+    "narrativa": {
+      "leyenda": "Lo que empezó como propaganda colonial terminó como símbolo de poder propio.",
+      "secreto": "El traje del Rey Moro puede costar más de $3.000 y en muchas familias es la herencia más preciada — más que la tierra, más que el dinero. Heredar la corona es heredar el compromiso de que la tradición continúe.",
+      "capitulos": [
+        {
+          "titulo": "El Instrumento Vuelto Contra su Dueño",
+          "texto": "Los frailes coloniales usaron la Danza de Moros y Cristianos para enseñar que el musulmán era el enemigo. Las comunidades kichwa de Chimborazo escucharon ese mensaje — y luego lo vaciaron de su carga negativa y lo rellenaron con algo completamente diferente."
+        },
+        {
+          "titulo": "Un Rey con Poder Propio",
+          "texto": "En Riobamba, el Rey Moro no es un derrotado ni un infiel. Es un rey poderoso que coexiste con los personajes andinos en igualdad ritual. Eso es resistencia cultural: no rechazar el símbolo del opresor sino transformarlo hasta que ya no le pertenezca."
+        },
+        {
+          "titulo": "La Corona que Hereda",
+          "texto": "La corona del Rey Moro — elaborada en metal, con piedras y plumas — es en muchas familias la joya más preciada. Quien la usa asume el compromiso de preservar la tradición. Un peso que va mucho más allá de una fiesta de diciembre."
+        }
+      ]
+    },
+    "hotspots": [],
     "variantes": [],
     "elementos": [],
     "apariciones": [],
@@ -109,12 +272,34 @@
     "slug": "capitan",
     "nombre": "Capitán",
     "nombreKichwa": "Kapitán",
-    "nombresAlt": ["El Capitán", "Capitán del Pase"],
+    "nombresAlt": [
+      "El Capitán",
+      "Capitán del Pase"
+    ],
     "resumen": "El Capitán es el personaje que coordina y lidera el desfile del pase. Con su uniforme militar elaborado —kepis, charreteras doradas, sable y capa— el Capitán abre el paso al resto de los personajes y marca el ritmo de la celebración. En apariencia es un militar español colonial; en la práctica, es la autoridad ritual de la comunidad que ha organizado el pase.\n\nEl cargo de Capitán es una de las dignidades más importantes de un pase. Quien lo asume —generalmente el prioste principal o su representante— ha invertido recursos considerables en la organización de la festividad y asume ante la comunidad la responsabilidad de que todo salga bien.",
     "descripcion": "<h2>La autoridad ritual</h2><p>En el pase riobambeño, el Capitán no es solo un personaje disfrazado: es la persona real que ha asumido el cargo de prioste (patrocinador) del pase ese año. El traje militar es la forma visible de ese compromiso ante la comunidad. Quitarse el traje antes del final del pase sería una falta grave.</p><h2>El traje</h2><p>El traje del Capitán es de inspiración militar del siglo XIX: kepis (gorra militar) adornado con plumas, casaca azul marino con galones dorados en los hombros, pantalón blanco con franja dorada lateral, botas de cuero lustradas y sable en el costado. Las charreteras —los adornos dorados de los hombros— son el elemento más identificatorio: a más elaboradas, mayor rango del Capitán.</p><h2>El sable y la vara de mando</h2><p>El Capitán porta dos objetos rituales: el sable (que no está afilado y se usa para marcar el ritmo de la marcha golpeándolo contra la vaina) y la vara de mando, un bastón decorado que en algunos pases se pasa de un prioste al siguiente como símbolo de la continuidad de la tradición.</p>",
     "simbolismo": "Representa la autoridad ritual de la comunidad y el compromiso del prioste. El uniforme militar colonial resignificado: quien lo viste no celebra la conquista española sino que asume la responsabilidad de preservar y transmitir la tradición. El sable marca el ritmo de la celebración — la autoridad aquí no es represión sino orden festivo.",
     "origen": "colonial",
     "imagenPortada": null,
+    "narrativa": {
+      "leyenda": "Quien viste el uniforme asume el peso de toda la comunidad.",
+      "secreto": "El prioste que encarna al Capitán no puede quitarse el traje durante todo el recorrido del pase — ni para comer, ni para descansar. Hacerlo sería una falta grave ante la comunidad y ante los ancestros que observan.",
+      "capitulos": [
+        {
+          "titulo": "El Militar que No Conquista",
+          "texto": "El uniforme es colonial — kepis, charreteras, sable. Pero quien lo viste no celebra la conquista española. Celebra el compromiso del prioste con su comunidad. La forma es europea; el contenido, profundamente andino."
+        },
+        {
+          "titulo": "El Prioste y la Promesa",
+          "texto": "Ser prioste de un pase es asumir un costo económico y emocional enorme: meses de organización, miles de dólares gastados, la responsabilidad de que todo salga bien. El traje de Capitán es la forma visible de ese compromiso ante todos."
+        },
+        {
+          "titulo": "El Sable que Ordena el Caos",
+          "texto": "El sable no está afilado — no es un arma. Es un instrumento rítmico. Cada golpe contra la vaina marca el paso de la comparsa. La autoridad del Capitán no es represión: es el orden que hace posible que la celebración exista."
+        }
+      ]
+    },
+    "hotspots": [],
     "variantes": [],
     "elementos": [],
     "apariciones": [],
@@ -130,12 +315,34 @@
     "slug": "angel",
     "nombre": "Ángel",
     "nombreKichwa": "Ángel",
-    "nombresAlt": ["Ángel del pase", "Ángel custodio"],
+    "nombresAlt": [
+      "Ángel del pase",
+      "Ángel custodio"
+    ],
     "resumen": "El Ángel es el único personaje del pase riobambeño que proviene exclusivamente del imaginario cristiano colonial. Con sus alas blancas, su túnica inmaculada y su corona de flores, el Ángel representa la presencia de lo sagrado cristiano en medio de la celebración. Sin embargo, en el contexto del pase, la figura del Ángel ha sido integrada en la cosmovisión andina de una manera particular: ya no es solo un mensajero de Dios sino un ser que pertenece al Hanan Pacha.\n\nGeneralmente el Ángel es interpretado por una niña o una adolescente, y su presencia en el pase confiere un aura de inocencia y pureza que contrasta y complementa la energía más intensa de personajes como el Aya Uma o el Sacha Runa.",
     "descripcion": "<h2>La figura cristiana en el cosmos andino</h2><p>Cuando los evangelizadores españoles introdujeron la figura del ángel en las festividades coloniales, buscaban representar la superioridad del dios cristiano sobre las deidades andinas. Pero las comunidades kichwa procesaron la figura de manera diferente: el Ángel fue integrado como un ser del Hanan Pacha —el mundo de arriba— equivalente a ciertos espíritus mensajeros de la tradición andina.</p><h2>El traje</h2><p>El traje del Ángel es el más elaborado en términos de trabajo artesanal femenino. La túnica blanca está bordada con motivos florales en hilo dorado. Las alas —el elemento central— están confeccionadas en tela o plumas de aves domésticas sobre una estructura de alambre. Pueden alcanzar un metro y medio de envergadura en las versiones más elaboradas. La corona es de flores naturales o de tela, generalmente blancas y doradas.</p><h2>El Ángel y el Niño</h2><p>En los pases del Niño (celebraciones navideñas), el Ángel tiene un rol específico: acompaña la imagen del Niño Jesús y actúa como su guardián simbólico durante el recorrido. En estos pases, el Ángel camina justo detrás de la imagen sagrada, con las manos unidas en posición de oración o extendidas en gesto de bendición.</p>",
     "simbolismo": "Representa la síntesis colonial-andina: una figura cristiana reinterpretada como habitante del Hanan Pacha. El Ángel da legitimidad cristiana a la celebración (importante durante siglos de control eclesiástico) y al mismo tiempo fue reabsorbido por la cosmovisión kichwa. Su blancura y pureza contrastan con la energía más oscura y compleja de otros personajes, creando el equilibrio que el pase necesita.",
     "origen": "colonial",
     "imagenPortada": null,
+    "narrativa": {
+      "leyenda": "Entre el cielo cristiano y el Hanan Pacha, el Ángel encontró su propio camino.",
+      "secreto": "Las alas del Ángel son tejidas por las madres y abuelas durante semanas antes del pase. Se dice que cada pluma cosida es una oración — y que las alas más elaboradas son las que más amor llevan, no las que más dinero cuestan.",
+      "capitulos": [
+        {
+          "titulo": "La Figura que Sobrevivió",
+          "texto": "Los evangelizadores introdujeron el ángel para mostrar la superioridad del Dios cristiano. Las comunidades kichwa lo escucharon — y luego lo convirtieron en algo suyo: un habitante del Hanan Pacha, el mundo de arriba, equivalente a los espíritus mensajeros que ya conocían."
+        },
+        {
+          "titulo": "La Pureza que Equilibra",
+          "texto": "El Aya Uma trae energía oscura y compleja del Uku Pacha. El Sacha Runa trae la fuerza indómita del monte. El Ángel trae blancura, inocencia, calma. El pase necesita ese equilibrio para que la energía fluya sin romper lo que toca."
+        },
+        {
+          "titulo": "La Guardiana del Niño",
+          "texto": "En los pases navideños, el Ángel camina exactamente detrás de la imagen del Niño Jesús, con las manos en oración o en gesto de bendición. Es el guardián de lo más sagrado de la celebración — y suele ser una niña quien lo encarna, porque la inocencia no se finge."
+        }
+      ]
+    },
+    "hotspots": [],
     "variantes": [],
     "elementos": [],
     "apariciones": [],
@@ -151,16 +358,58 @@
     "slug": "perro",
     "nombre": "Perro",
     "nombreKichwa": "Allku",
-    "nombresAlt": ["Allku", "Can del pase"],
+    "nombresAlt": [
+      "Allku",
+      "Can del pase"
+    ],
     "resumen": "El Perro —Allku en kichwa— es uno de los personajes más entrañables y menos estudiados de los pases riobambeños. Con su traje de tela que imita el pelaje de un perro y su comportamiento escénico de ladrar, perseguir y juguetear, el Allku introduce un tono doméstico y cotidiano en la celebración que contrasta con la majestuosidad de otros personajes.\n\nEn la cosmovisión andina, el perro tiene un lugar especial: es el compañero del ser humano en vida y, según algunas tradiciones, también en la muerte. El Allku del pase es fiel al Aya Uma —lo sigue, lo protege, lo anuncia— estableciendo entre ambos una relación que refleja la del perro real con su amo.",
     "descripcion": "<h2>El compañero del Aya Uma</h2><p>En los pases donde aparece, el Perro (Allku) siempre está cerca del Aya Uma. Esta proximidad no es casual: en la mitología kichwa, el perro es el guardián del umbral entre el mundo de los vivos y el mundo de los muertos, el mismo umbral que el Aya Uma transita ritualmente. El Allku del pase es el guardián de su guardián.</p><h2>El traje</h2><p>El traje del Perro es uno de los más artesanales del pase. Consiste en una mameluco (enterizo) de tela acolchada que cubre todo el cuerpo, pintado o bordado con manchas de colores que imitan el pelaje de un perro chusco (mestizo). La máscara representa el hocico del animal con orejas flácidas. La cola, cosida en la parte trasera del traje, es uno de los elementos más cómicos: el danzante la mueve con un mecanismo de hilo interno.</p><h2>La actuación del Allku</h2><p>El danzante que interpreta al Perro tiene libertad de improvisación similar al Payaso. Ladra, persigue al público (especialmente a los niños, que huyen y ríen a la vez), finge olisquear el suelo, levanta la «pata» en las esquinas. Su actuación es física y exigente: requiere moverse en cuatro patas durante periodos prolongados.</p>",
     "simbolismo": "Representa el mundo doméstico y la lealtad, en contraste con los personajes más solemnes o salvajes del pase. El Allku es el puente entre lo cotidiano y lo ritual: un animal familiar que en el contexto del pase adquiere dimensiones cósmicas. Su relación con el Aya Uma refleja el vínculo entre el guardián humano y su compañero animal.",
     "origen": "prehispanico",
     "imagenPortada": "/personajes/perro.png",
+    "imagenBanner": "/personajes/perro-banner.png",
+    "narrativa": {
+      "leyenda": "El Allku guarda el umbral que ningún humano puede cruzar solo.",
+      "secreto": "En la cosmovisión andina, el perro guía al difunto en su viaje al Uku Pacha. El Allku del pase lleva ese peso sin que la mayoría del público lo sepa — cada ladrido es también un saludo a los que ya no están.",
+      "capitulos": [
+        {
+          "titulo": "El Guardián del Umbral",
+          "texto": "En kichwa, el Allku es el ser que vive entre dos mundos. Conoce el olor de los vivos y el silencio de los muertos. En el pase, su relación con el Aya Uma es la relación entre el guardián y su compañero: uno abre el umbral, el otro lo cuida para que nadie caiga."
+        },
+        {
+          "titulo": "Lo Doméstico y lo Cósmico",
+          "texto": "El Perro del pase parece el personaje más simple: ladra, juega, persigue a los niños. Pero ese comportamiento doméstico dentro de un espacio ritual adquiere peso cósmico. Lo familiar también tiene su lugar en lo sagrado. El Allku lo recuerda."
+        },
+        {
+          "titulo": "La Cola que Vive",
+          "texto": "La cola del Allku tiene un mecanismo de hilo interno que el danzante mueve desde adentro. Parece un detalle cómico — pero en el pase, esa cola que se mueve es también una señal de vida, de alegría, de la presencia del animal que nunca abandona a quien quiere."
+        }
+      ]
+    },
+    "hotspots": [],
     "variantes": [],
     "elementos": [],
     "apariciones": [],
-    "multimedia": [],
+    "multimedia": [
+      {
+        "id": "perro-presentacion",
+        "tipo": "imagen",
+        "url": "/personajes/perro-presentacion.png",
+        "altText": "Llavero Perro — presentación individual",
+        "titulo": "proceso",
+        "descripcion": "El llavero del Allku en su presentación individual.",
+        "orden": 1
+      },
+      {
+        "id": "perro-presentacion-2",
+        "tipo": "imagen",
+        "url": "/personajes/perro-presentacion-2.png",
+        "altText": "Llavero Perro — retrato",
+        "titulo": "proceso",
+        "descripcion": "El Allku, guardián del umbral — llavero artesanal.",
+        "orden": 2
+      }
+    ],
     "testimonios": [],
     "tags": [],
     "publicadoEn": "2026-05-25T12:00:00",
@@ -172,16 +421,49 @@
     "slug": "diablos-de-lata",
     "nombre": "Diablos de lata",
     "nombreKichwa": "Supay",
-    "nombresAlt": ["Diablo de hojalata", "Supay del pase"],
+    "nombresAlt": [
+      "Diablo de hojalata",
+      "Supay del pase"
+    ],
     "resumen": "Los Diablos de lata son los líderes de las comparsas en los pases riobambeños. Con sus imponentes máscaras rojas confeccionadas en hojalata y sus sonajeros que llenan el aire de un ritmo metálico inconfundible, estos personajes encarnan la rebeldía y el sincretismo religioso que define a los pases chimboracenses: son diablos que no pertenecen al infierno cristiano sino al carnaval andino, figuras de poder que desafían el orden establecido desde adentro de la celebración.",
     "descripcion": "<h2>Los líderes de la comparsa</h2><p>En el pase riobambeño, los Diablos de lata no marchan al final —van al frente. Son quienes abren el espacio ritual: con sus sonajeros de metal anuncian que la comparsa llega y que el orden cotidiano va a ser interrumpido. Su liderazgo no es de autoridad formal sino de energía ritual: donde el Diablo de lata danza, la multitud se reorganiza.</p><h2>La máscara de hojalata</h2><p>La máscara roja de hojalata es el elemento más característico de este personaje y una obra maestra de la artesanía popular riobambeña. Confeccionada por artesanos especializados que trabajan el metal con martillo y punzón, cada máscara es única: lleva cuernos retorcidos, ojos de vidrio o botones y dientes tallados en el metal. El color rojo no es accidental —en la cosmovisión andina, el rojo es el color del fuego y de la sangre que da vida. El diablo rojo del pase no viene a llevarse almas sino a traer energía vital.</p><h2>Los sonajeros</h2><p>Los Diablos de lata llevan sonajeros en muñecas, tobillos y cintura —construidos con latas de metal, semillas secas o huesos. El sonido es inconfundible: metálico, rítmico, penetrante. Cumple una función ritual: el ruido ahuyenta espíritus negativos y limpia el espacio por donde pasa la comparsa.</p><h2>Ni diablo cristiano ni supay andino</h2><p>La figura del diablo en los pases riobambeños es una de las expresiones más fascinantes del sincretismo colonial andino. Los evangelizadores usaron la figura del diablo para representar todo lo que debía rechazarse. Pero las comunidades kichwa tomaron esa figura y la transformaron: el Diablo de lata heredó la máscara aterradora del diablo cristiano y la llenó con el poder del Supay andino, ser que en la cosmovisión original no era malo sino habitante del Uku Pacha, con poder sobre las fuerzas de la tierra.</p>",
     "simbolismo": "Representan la rebeldía y el sincretismo religioso. La máscara roja de hojalata combina el imaginario del diablo cristiano —introducido para intimidar a las comunidades— con el poder del Supay andino, habitante del Uku Pacha. Los Diablos de lata son la prueba de que la resistencia cultural no siempre toma la forma del rechazo: a veces consiste en tomar el símbolo del opresor y darle vuelta.",
     "origen": "mestizo",
     "imagenPortada": "/personajes/diablos-de-lata.png",
+    "imagenBanner": "/personajes/diablos-de-lata-banner.png",
+    "narrativa": {
+      "leyenda": "Tomaron el símbolo del miedo y lo convirtieron en el corazón de la fiesta.",
+      "secreto": "Cada máscara de hojalata tarda semanas en hacerse y es completamente única. Los artesanos dicen que la máscara nace cuando el martillo golpea el metal por primera vez y suena — ese primer sonido ya es el diablo despertando.",
+      "capitulos": [
+        {
+          "titulo": "La Máscara que Resistió",
+          "texto": "Los evangelizadores usaron la imagen del diablo para aterrorizar a las comunidades andinas. Las comunidades tomaron esa imagen, la fundieron en hojalata, le pusieron cuernos retorcidos y ojos de vidrio — y la pusieron al frente de sus celebraciones. Esa es la resistencia más audaz."
+        },
+        {
+          "titulo": "El Sonido que Limpia",
+          "texto": "Los sonajeros de lata en muñecas, tobillos y cintura llenan el aire de un ritmo metálico inconfundible. No es solo música: en la cosmovisión andina, el ruido ritual ahuyenta espíritus negativos y limpia el espacio para que la celebración pueda ocurrir sin interferencias."
+        },
+        {
+          "titulo": "El Supay Renacido",
+          "texto": "En la cosmología andina original, el Supay no era un ser malvado — era un habitante del Uku Pacha, con poder sobre las fuerzas de la tierra. El Diablo de lata lo recuperó: tomó la máscara del infierno cristiano y la llenó con la energía del Supay que siempre estuvo ahí, esperando."
+        }
+      ]
+    },
+    "hotspots": [],
     "variantes": [],
     "elementos": [],
     "apariciones": [],
-    "multimedia": [],
+    "multimedia": [
+      {
+        "id": "diablos-de-lata-presentacion",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata-presentacion.png",
+        "altText": "Llavero Diablos de lata — presentación individual",
+        "titulo": "proceso",
+        "descripcion": "El llavero del Diablo de lata, máscara roja de hojalata.",
+        "orden": 1
+      }
+    ],
     "testimonios": [],
     "tags": [],
     "publicadoEn": "2026-05-25T12:00:00",

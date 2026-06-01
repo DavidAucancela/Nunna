@@ -53,6 +53,14 @@
     "500": "Llakiwa tiyarqan",
     "volver_inicio": "Qallariymanmi kutiy"
   },
+  "historia": {
+    "saltar": "Rinay",
+    "capitulo": "Yachaykuna",
+    "secreto_titulo": "Kay llaverota charikkuna pilla",
+    "secreto_subtitulo": "Mana llaktapi willashkamanta",
+    "cta": "{nombre} tukuyta riy",
+    "volver": "Runakunaman kutiy"
+  },
   "comun": {
     "cargando": "Yaykumuchkani…",
     "origen": {

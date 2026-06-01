@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { MainContent } from "@/components/layout/MainContent";
+import { LenisProvider } from "@/components/ui/LenisProvider";
 import "@/styles/globals.css";
 
 interface LocaleLayoutProps {
@@ -65,9 +67,10 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           Saltar al contenido
         </a>
         <NextIntlClientProvider messages={messages}>
-          <Header />
-          <main id="main-content" className="pt-16">{children}</main>
-          <Footer />
+          <LenisProvider>
+            <Header />
+            <MainContent footer={<Footer />}>{children}</MainContent>
+          </LenisProvider>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -12,6 +12,25 @@ export type Locale = "es" | "qu" | "en";
 
 // ── Personaje ────────────────────────────────────────────────────────────────
 
+export interface CapituloNarrativa {
+  titulo: string;
+  texto: string;
+}
+
+export interface Narrativa {
+  leyenda: string;
+  secreto: string;
+  capitulos: CapituloNarrativa[];
+}
+
+export interface Hotspot {
+  id: string;
+  x: number;
+  y: number;
+  titulo: string;
+  cuerpo: string;
+}
+
 export interface Personaje {
   id: string;
   slug: string;
@@ -22,6 +41,9 @@ export interface Personaje {
   descripcion: string;
   simbolismo?: string;
   origen?: TipoOrigen;
+  imagenBanner?: string;
+  narrativa?: Narrativa;
+  hotspots?: Hotspot[];
   variantes: VariantePersonaje[];
   elementos: ElementoTraje[];
   apariciones: PasePersonaje[];

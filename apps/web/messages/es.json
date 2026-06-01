@@ -53,6 +53,14 @@
     "500": "Error del servidor",
     "volver_inicio": "Volver al inicio"
   },
+  "historia": {
+    "saltar": "Saltar",
+    "capitulo": "Capítulo",
+    "secreto_titulo": "Solo para quienes tienen este llavero",
+    "secreto_subtitulo": "Un dato que no encontrarás en la ficha pública",
+    "cta": "Conocer al {nombre} completo",
+    "volver": "Volver a los personajes"
+  },
   "comun": {
     "cargando": "Cargando…",
     "origen": {
