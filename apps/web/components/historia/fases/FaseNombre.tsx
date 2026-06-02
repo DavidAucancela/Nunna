@@ -9,16 +9,19 @@ import { StaggerLetters } from "@/components/ui/FadeUp";
 interface FaseNombreProps {
   nombre: string;
   nombreKichwa?: string | undefined;
+  nombresAlt?: string[] | undefined;
   origen?: TipoOrigen | undefined;
   onComplete: () => void;
 }
 
-export function FaseNombre({ nombre, nombreKichwa, origen, onComplete }: FaseNombreProps) {
+export function FaseNombre({ nombre, nombreKichwa, nombresAlt, origen, onComplete }: FaseNombreProps) {
   const style = getOrigenStyle(origen);
+  const significado = nombresAlt?.[0];
 
   useEffect(() => {
+    const haptic = setTimeout(() => navigator.vibrate?.([100, 50, 200]), 300);
     const timer = setTimeout(onComplete, 3500);
-    return () => clearTimeout(timer);
+    return () => { clearTimeout(haptic); clearTimeout(timer); };
   }, [onComplete]);
 
   return (
@@ -52,6 +55,16 @@ export function FaseNombre({ nombre, nombreKichwa, origen, onComplete }: FaseNom
         aria-hidden="true"
       />
 
+      {/* Flash de luz al revelar el nombre */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{ backgroundColor: "white" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 0.12, 0] }}
+        transition={{ duration: 0.35, delay: 1.2 }}
+        aria-hidden="true"
+      />
+
       {/* Nombre principal — wipe horizontal */}
       <div className="relative z-10 px-6 text-center overflow-hidden">
         <motion.div
@@ -81,10 +94,7 @@ export function FaseNombre({ nombre, nombreKichwa, origen, onComplete }: FaseNom
         {nombreKichwa && nombreKichwa !== nombre && (
           <motion.p
             className="mt-4 font-serif italic"
-            style={{
-              color: style.accentColor,
-              fontSize: "clamp(1.1rem, 4vw, 2rem)",
-            }}
+            style={{ color: style.accentColor, fontSize: "clamp(1.1rem, 4vw, 2rem)" }}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.2 }}
@@ -103,6 +113,19 @@ export function FaseNombre({ nombre, nombreKichwa, origen, onComplete }: FaseNom
         >
           {style.label}
         </motion.p>
+
+        {/* Significado del nombre */}
+        {significado && (
+          <motion.p
+            className="mt-2 text-xs italic"
+            style={{ color: `${style.accentColor}60` }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 1.8 }}
+          >
+            {significado}
+          </motion.p>
+        )}
       </div>
 
       {/* Barra de progreso */}

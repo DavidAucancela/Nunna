@@ -45,6 +45,7 @@ export default async function HistoriaPage({ params }: HistoriaPageProps) {
       <HistoriaExperiencia
         nombre={personaje.nombre}
         nombreKichwa={personaje.nombreKichwa}
+        nombresAlt={personaje.nombresAlt}
         origen={personaje.origen}
         imagenPortada={imagenPortada}
         imagenBanner={imagenBanner}
@@ -58,6 +59,12 @@ export default async function HistoriaPage({ params }: HistoriaPageProps) {
           secreto_subtitulo: t("secreto_subtitulo"),
           cta: t("cta"),
           volver: t("volver"),
+          espiritu_despierta: t("espiritu_despierta"),
+          scroll_hint: t("scroll_hint"),
+          copiar_secreto: t("copiar_secreto"),
+          copiado: t("copiado"),
+          compartir_whatsapp: t("compartir_whatsapp"),
+          compartir_mensaje: t("compartir_mensaje"),
         }}
       />
     </div>

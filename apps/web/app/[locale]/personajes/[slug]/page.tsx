@@ -1,19 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 
 import { getPersonaje, getPersonajes } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import { PersonajeCard } from "@/components/personajes/PersonajeCard";
 import { ParallaxHero } from "@/components/personajes/ParallaxHero";
-import { SimbolismoSection } from "@/components/personajes/SimbolismoSection";
-import { NarrativaSection } from "@/components/personajes/NarrativaSection";
-import { HotspotsViewer } from "@/components/personajes/HotspotsViewer";
 import { GaleriaSection } from "@/components/personajes/GaleriaSection";
 import { FadeUp, FadeUpGroup, FadeUpItem } from "@/components/ui/FadeUp";
-import { ScrollProgress } from "@/components/ui/ScrollProgress";
-import { WhatsAppShare } from "@/components/ui/WhatsAppShare";
 
 interface PersonajePageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -48,9 +43,10 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   const { slug, locale } = await params;
   setRequestLocale(locale);
 
-  const [personaje, todosLosPersonajes] = await Promise.all([
+  const [personaje, todosLosPersonajes, t] = await Promise.all([
     getPersonaje(slug, locale),
     getPersonajes({ locale, withImage: true }),
+    getTranslations({ locale, namespace: "historia" }),
   ]);
 
   if (!personaje) notFound();
@@ -64,8 +60,6 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
 
   return (
     <article>
-      <ScrollProgress color={style.accentColor} />
-
       {/* ── 1. Hero con parallax ── */}
       <ParallaxHero
         nombre={personaje.nombre}
@@ -78,132 +72,70 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         accentColor={style.accentColor}
       />
 
-      {/* ── 2. Resumen — lead editorial grande ── */}
+      {/* ── 2. Resumen — lead editorial ── */}
       <FadeUp>
-        <section className="mx-auto max-w-3xl px-5 py-20 sm:px-6 sm:py-28">
+        <section className="mx-auto max-w-3xl px-5 py-16 sm:px-6 sm:py-20">
           <p className="font-serif text-2xl font-light leading-relaxed text-texto-claro sm:text-3xl">
             {personaje.resumen}
           </p>
         </section>
       </FadeUp>
 
-      {/* ── 3. Simbolismo — interlude cinematográfico ── */}
-      {personaje.simbolismo && (
-        <SimbolismoSection
-          simbolismo={personaje.simbolismo}
-          accentColor={style.accentColor}
-        />
-      )}
-
-      {/* ── 4. Hotspots — anatomía interactiva del traje ── */}
-      {imagenPortada && personaje.hotspots && personaje.hotspots.length > 0 && (
-        <HotspotsViewer
-          imagen={imagenPortada}
-          hotspots={personaje.hotspots}
-          accentColor={style.accentColor}
-        />
-      )}
-
-      {/* ── 5. Narrativa — scrollytelling ── */}
-      {personaje.narrativa && (
-        <NarrativaSection
-          leyenda={personaje.narrativa.leyenda}
-          secreto={personaje.narrativa.secreto}
-          capitulos={personaje.narrativa.capitulos}
-          accentColor={style.accentColor}
-        />
-      )}
-
-      {/* ── 6. Galería ── */}
-      <GaleriaSection multimedia={personaje.multimedia} accentColor={style.accentColor} />
-
-      {/* ── 7. Testimonios ── */}
-      {personaje.testimonios.length > 0 && (
-        <FadeUp>
-          <section className="mx-auto max-w-3xl px-5 pb-16 sm:px-6">
-            <h2 className="mb-6 font-serif text-xl font-bold text-texto-claro sm:text-2xl">
-              Testimonios
-            </h2>
-            <div className="space-y-6">
-              {personaje.testimonios.map((t) => (
-                <div
-                  key={t.id}
-                  className="relative rounded-xl p-6 sm:p-7"
-                  style={{
-                    backgroundColor: "#1A1814",
-                    borderLeft: `3px solid ${style.accentColor}`,
-                  }}
-                >
-                  <span
-                    className="absolute right-5 top-4 font-serif text-6xl leading-none select-none pointer-events-none"
-                    style={{ color: style.accentColor, opacity: 0.12 }}
-                    aria-hidden="true"
-                  >
-                    &#8220;
-                  </span>
-                  <blockquote>
-                    <p className="text-base italic leading-relaxed text-stone-300 sm:text-lg">
-                      &ldquo;{t.texto}&rdquo;
-                    </p>
-                    <footer className="mt-4 flex flex-wrap items-center gap-1 text-sm text-stone-500">
-                      <span className="font-medium text-stone-400">{t.autor}</span>
-                      {t.cargo && (
-                        <>
-                          <span className="text-stone-700">·</span>
-                          <span>{t.cargo}</span>
-                        </>
-                      )}
-                      {t.fuente && (
-                        <>
-                          <span className="text-stone-700">—</span>
-                          {t.url ? (
-                            <a
-                              href={t.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-stone-600 transition-colors hover:text-stone-400"
-                            >
-                              {t.fuente}
-                            </a>
-                          ) : (
-                            <span className="text-stone-600">{t.fuente}</span>
-                          )}
-                        </>
-                      )}
-                    </footer>
-                  </blockquote>
-                </div>
-              ))}
-            </div>
-          </section>
-        </FadeUp>
-      )}
-
-      {/* ── 7. Tags + Compartir ── */}
+      {/* ── 3. Ficha básica — chips de datos ── */}
       <FadeUp>
-        <div className="mx-auto max-w-3xl px-5 pb-20 pt-4 sm:px-6">
-          {personaje.tags.length > 0 && (
-            <div className="mb-8 flex flex-wrap gap-2">
-              {personaje.tags.map((tag) => (
-                <span
-                  key={tag.id}
-                  className="rounded-full border border-stone-700 bg-stone-900 px-3 py-1 text-xs text-stone-400 transition-colors hover:border-stone-600 hover:text-stone-300"
-                >
-                  {tag.nombre}
-                </span>
-              ))}
-            </div>
-          )}
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <WhatsAppShare nombre={personaje.nombre} />
-            <span className="text-xs text-stone-600">
-              Comparte este personaje con alguien especial
+        <section className="mx-auto max-w-3xl px-5 pb-16 sm:px-6">
+          <div className="flex flex-wrap gap-2">
+            <span
+              className="rounded-full border px-4 py-1.5 text-xs font-medium uppercase tracking-wider"
+              style={{ borderColor: `${style.accentColor}50`, color: style.accentColor, backgroundColor: `${style.accentColor}10` }}
+            >
+              {style.label}
             </span>
+            <span className="rounded-full border border-stone-700 bg-stone-900/60 px-4 py-1.5 text-xs font-medium text-stone-400">
+              Personaje del pase riobambeño
+            </span>
+            {personaje.nombresAlt[0] && (
+              <span className="rounded-full border border-stone-700 bg-stone-900/60 px-4 py-1.5 text-xs font-medium italic text-stone-500">
+                {personaje.nombresAlt[0]}
+              </span>
+            )}
           </div>
-        </div>
+        </section>
       </FadeUp>
 
-      {/* ── 8. Cross-sell ── */}
+      {/* ── 4. Galería ── */}
+      <GaleriaSection multimedia={personaje.multimedia} accentColor={style.accentColor} />
+
+      {/* ── 5. CTA QR — teaser de la experiencia ── */}
+      <FadeUp>
+        <section
+          className="mx-5 my-14 rounded-2xl px-8 py-12 text-center sm:mx-6 sm:my-20 sm:px-12"
+          style={{ backgroundColor: `${style.accentColor}0D`, border: `1px solid ${style.accentColor}25` }}
+        >
+          <p
+            className="mb-1 text-[10px] uppercase tracking-[0.3em]"
+            style={{ color: `${style.accentColor}99` }}
+          >
+            Experiencia exclusiva
+          </p>
+          <h2 className="mt-3 font-serif text-xl font-bold text-texto-claro sm:text-2xl">
+            {t("cta_qr_titulo").replace("{nombre}", personaje.nombre)}
+          </h2>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-stone-500">
+            Escanea el QR de tu llavero para vivir el ritual completo — leyenda, historia y el secreto del artesano.
+          </p>
+          <Link
+            href={`/${locale}/personajes/${slug}/historia`}
+            className="mt-7 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold transition-all hover:opacity-90 active:scale-95"
+            style={{ backgroundColor: style.accentColor, color: "#0F0E0C" }}
+          >
+            {t("cta_qr_boton")}
+            <span aria-hidden="true">→</span>
+          </Link>
+        </section>
+      </FadeUp>
+
+      {/* ── 6. Cross-sell ── */}
       {otrosPersonajes.length > 0 && (
         <section className="border-t border-borde-sutil px-5 py-14 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-7xl">
