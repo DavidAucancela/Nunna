@@ -8,21 +8,22 @@ import { getOrigenStyle } from "@/lib/origen-styles";
 import { FaseInvocacion } from "@/components/historia/fases/FaseInvocacion";
 import { FaseNombre } from "@/components/historia/fases/FaseNombre";
 import { FaseLeyenda } from "@/components/historia/fases/FaseLeyenda";
+import { FaseTransicion } from "@/components/historia/FaseTransicion";
 import { CapituloScroll } from "@/components/historia/CapituloScroll";
 import { SecretoFinal } from "@/components/historia/SecretoFinal";
 
-type Fase = "invocacion" | "nombre" | "leyenda" | "scroll";
+type Fase = "invocacion" | "nombre" | "leyenda" | "transicion" | "scroll";
 
 interface HistoriaExperienciaProps {
   nombre: string;
   nombreKichwa?: string | undefined;
+  nombresAlt?: string[];
   origen?: TipoOrigen | undefined;
   imagenPortada?: string | undefined;
   imagenBanner?: string | undefined;
   narrativa: Narrativa;
   slugPersonaje: string;
   locale: string;
-  // traducciones
   t: {
     saltar: string;
     capitulo: string;
@@ -30,12 +31,19 @@ interface HistoriaExperienciaProps {
     secreto_subtitulo: string;
     cta: string;
     volver: string;
+    espiritu_despierta: string;
+    scroll_hint: string;
+    copiar_secreto: string;
+    copiado: string;
+    compartir_whatsapp: string;
+    compartir_mensaje: string;
   };
 }
 
 export function HistoriaExperiencia({
   nombre,
   nombreKichwa,
+  nombresAlt,
   origen,
   imagenPortada,
   imagenBanner,
@@ -45,21 +53,21 @@ export function HistoriaExperiencia({
   t,
 }: HistoriaExperienciaProps) {
   const [fase, setFase] = useState<Fase>("invocacion");
+  const [capituloActivo, setCapituloActivo] = useState(0);
   const [mounted, setMounted] = useState(false);
   const style = getOrigenStyle(origen);
+  const totalCapitulos = narrativa.capitulos.length;
 
   useEffect(() => { setMounted(true); }, []);
 
-  const avanzar = useCallback((siguiente: Fase) => {
-    setFase(siguiente);
-  }, []);
+  const avanzar = useCallback((siguiente: Fase) => { setFase(siguiente); }, []);
+  const saltarAlScroll = useCallback(() => { setFase("scroll"); }, []);
 
-  const saltarAlScrollo = useCallback(() => {
-    setFase("scroll");
+  const handleCapituloInView = useCallback((numero: number) => {
+    setCapituloActivo(numero - 1);
   }, []);
 
   if (!mounted) {
-    // SSR: mostrar negro para evitar flash
     return <div className="fixed inset-0 z-40 bg-black" aria-hidden="true" />;
   }
 
@@ -71,6 +79,7 @@ export function HistoriaExperiencia({
           <FaseInvocacion
             key="invocacion"
             origen={origen}
+            textoRitual={t.espiritu_despierta}
             onComplete={() => avanzar("nombre")}
           />
         )}
@@ -79,6 +88,7 @@ export function HistoriaExperiencia({
             key="nombre"
             nombre={nombre}
             nombreKichwa={nombreKichwa}
+            nombresAlt={nombresAlt}
             origen={origen}
             onComplete={() => avanzar("leyenda")}
           />
@@ -87,19 +97,28 @@ export function HistoriaExperiencia({
           <FaseLeyenda
             key="leyenda"
             leyenda={narrativa.leyenda}
+            palabrasClave={narrativa.palabrasClave}
             nombre={nombre}
             nombreKichwa={nombreKichwa}
             origen={origen}
             imagenPortada={imagenPortada}
             imagenBanner={imagenBanner}
+            textoScrollHint={t.scroll_hint}
+            onComplete={() => avanzar("transicion")}
+          />
+        )}
+        {fase === "transicion" && (
+          <FaseTransicion
+            key="transicion"
+            origen={origen}
             onComplete={() => avanzar("scroll")}
           />
         )}
       </AnimatePresence>
 
-      {/* ── Botón skip — visible durante las 3 fases ── */}
+      {/* ── Botón skip — visible durante las fases ── */}
       <AnimatePresence>
-        {fase !== "scroll" && (
+        {fase !== "scroll" && fase !== "transicion" && (
           <motion.div
             className="fixed top-4 right-4 z-50"
             initial={{ opacity: 0 }}
@@ -107,7 +126,7 @@ export function HistoriaExperiencia({
             exit={{ opacity: 0, transition: { duration: 0.25, delay: 0 } }}
           >
             <button
-              onClick={saltarAlScrollo}
+              onClick={saltarAlScroll}
               className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium backdrop-blur-sm transition-colors"
               style={{
                 borderColor: `${style.accentColor}55`,
@@ -134,7 +153,7 @@ export function HistoriaExperiencia({
             className="min-h-screen"
             style={{ backgroundColor: "#050403" }}
           >
-            {/* Header mínimo */}
+            {/* Header mínimo con dots de progreso */}
             <div
               className="sticky top-0 z-30 flex items-center justify-between px-5 py-3 backdrop-blur-md"
               style={{ backgroundColor: "rgba(5,4,3,0.85)", borderBottom: `1px solid ${style.accentColor}22` }}
@@ -146,12 +165,26 @@ export function HistoriaExperiencia({
               >
                 ← {t.volver}
               </Link>
-              <p
-                className="font-serif font-bold text-sm tracking-wide text-texto-claro"
-              >
+
+              <p className="font-serif font-bold text-sm tracking-wide text-texto-claro">
                 {nombre}
               </p>
-              <div className="w-16" aria-hidden="true" />
+
+              {/* Dots de progreso — capítulo activo */}
+              <div className="flex items-center gap-1.5" aria-hidden="true">
+                {Array.from({ length: totalCapitulos }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="rounded-full"
+                    animate={{
+                      width: capituloActivo === i ? 16 : 6,
+                      backgroundColor: capituloActivo === i ? style.accentColor : `${style.accentColor}40`,
+                    }}
+                    transition={{ duration: 0.3 }}
+                    style={{ height: 6 }}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Capítulos */}
@@ -162,6 +195,7 @@ export function HistoriaExperiencia({
                 titulo={cap.titulo}
                 texto={cap.texto}
                 origen={origen}
+                onInView={handleCapituloInView}
               />
             ))}
 
@@ -171,10 +205,15 @@ export function HistoriaExperiencia({
               nombre={nombre}
               slugPersonaje={slugPersonaje}
               locale={locale}
+              origen={origen}
               textoTitulo={t.secreto_titulo}
               textoSubtitulo={t.secreto_subtitulo}
               textoCta={t.cta}
               textoVolver={t.volver}
+              textoCopiar={t.copiar_secreto}
+              textoCopiado={t.copiado}
+              textoWhatsApp={t.compartir_whatsapp}
+              mensajeWhatsApp={t.compartir_mensaje}
             />
           </motion.div>
         )}

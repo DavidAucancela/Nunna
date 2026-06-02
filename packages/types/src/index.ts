@@ -21,6 +21,7 @@ export interface Narrativa {
   leyenda: string;
   secreto: string;
   capitulos: CapituloNarrativa[];
+  palabrasClave?: string[];
 }
 
 export interface Hotspot {

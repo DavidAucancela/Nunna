@@ -59,7 +59,15 @@
     "secreto_titulo": "Kay llaverota charikkuna pilla",
     "secreto_subtitulo": "Mana llaktapi willashkamanta",
     "cta": "{nombre} tukuyta riy",
-    "volver": "Runakunaman kutiy"
+    "volver": "Runakunaman kutiy",
+    "espiritu_despierta": "Aychaka rikcharimuchkan…",
+    "scroll_hint": "Paypa kawsayta tariy",
+    "copiar_secreto": "Pachata kopy",
+    "copiado": "¡Kopy rurashka!",
+    "compartir_whatsapp": "WhatsApp apiy",
+    "compartir_mensaje": "{nombre} paktay tarirqani 🔑\n\n\"{secreto}\"\n\n— Nunna llaverota charikkuna pilla ✨",
+    "cta_qr_titulo": "{nombre} tukuy pakta llaveropicha.",
+    "cta_qr_boton": "Tukuyta qhaway"
   },
   "comun": {
     "cargando": "Yaykumuchkani…",

@@ -59,7 +59,15 @@
     "secreto_titulo": "Solo para quienes tienen este llavero",
     "secreto_subtitulo": "Un dato que no encontrarás en la ficha pública",
     "cta": "Conocer al {nombre} completo",
-    "volver": "Volver a los personajes"
+    "volver": "Volver a los personajes",
+    "espiritu_despierta": "El espíritu despierta…",
+    "scroll_hint": "Descubre su historia",
+    "copiar_secreto": "Copiar secreto",
+    "copiado": "¡Copiado!",
+    "compartir_whatsapp": "Compartir en WhatsApp",
+    "compartir_mensaje": "Descubrí el secreto de {nombre} 🔑\n\n\"{secreto}\"\n\n— Solo para quienes tienen el llavero Nunna ✨",
+    "cta_qr_titulo": "La historia completa de {nombre} está en el llavero.",
+    "cta_qr_boton": "Ver la experiencia completa"
   },
   "comun": {
     "cargando": "Cargando…",
