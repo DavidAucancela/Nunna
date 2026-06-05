@@ -25,7 +25,7 @@ export default function SobrePage() {
         </p>
 
         <p>
-          Cada llavero 3D lleva grabado el QR de un personaje. Al escanearlo, el comprador accede
+          Cada imán lleva grabado el QR de un personaje. Al escanearlo, el comprador accede
           a la ficha completa del ser: su historia, simbolismo, traje y su lugar en la cosmovisión
           kichwa andina.
         </p>

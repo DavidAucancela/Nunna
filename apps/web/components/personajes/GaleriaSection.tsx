@@ -9,7 +9,7 @@ type Categoria = "retrato" | "proceso" | "en-pase";
 
 const CATEGORIAS: { id: Categoria; label: string; desc: string }[] = [
   { id: "retrato",  label: "El personaje", desc: "Fotografías del personaje real" },
-  { id: "proceso",  label: "El llavero",   desc: "Proceso de creación artesanal" },
+  { id: "proceso",  label: "El imán",      desc: "El imán artesanal del personaje" },
   { id: "en-pase",  label: "En el pase",   desc: "El personaje en la festividad" },
 ];
 
