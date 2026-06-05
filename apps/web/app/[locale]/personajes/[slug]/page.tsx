@@ -103,37 +103,65 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         </section>
       </FadeUp>
 
-      {/* ── 4. Galería ── */}
-      <GaleriaSection multimedia={personaje.multimedia} accentColor={style.accentColor} />
+      {/* ── 4. Historia ── */}
+      {personaje.narrativa && (
+        <FadeUp>
+          <section className="mx-auto max-w-3xl px-5 pb-20 sm:px-6 sm:pb-28">
+            <h2 className="font-serif text-2xl font-bold text-texto-claro sm:text-3xl mb-10">
+              {t("titulo_seccion")}
+            </h2>
 
-      {/* ── 5. CTA QR — teaser de la experiencia ── */}
-      <FadeUp>
-        <section
-          className="mx-5 my-14 rounded-2xl px-8 py-12 text-center sm:mx-6 sm:my-20 sm:px-12"
-          style={{ backgroundColor: `${style.accentColor}0D`, border: `1px solid ${style.accentColor}25` }}
-        >
-          <p
-            className="mb-1 text-[10px] uppercase tracking-[0.3em]"
-            style={{ color: `${style.accentColor}99` }}
-          >
-            Experiencia exclusiva
-          </p>
-          <h2 className="mt-3 font-serif text-xl font-bold text-texto-claro sm:text-2xl">
-            {t("cta_qr_titulo").replace("{nombre}", personaje.nombre)}
-          </h2>
-          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-stone-500">
-            Escanea el QR de tu llavero para vivir el ritual completo — leyenda, historia y el secreto del artesano.
-          </p>
-          <Link
-            href={`/${locale}/personajes/${slug}/historia`}
-            className="mt-7 inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold transition-all hover:opacity-90 active:scale-95"
-            style={{ backgroundColor: style.accentColor, color: "#0F0E0C" }}
-          >
-            {t("cta_qr_boton")}
-            <span aria-hidden="true">→</span>
-          </Link>
-        </section>
-      </FadeUp>
+            {/* Leyenda */}
+            <blockquote
+              className="border-l-2 pl-6 mb-14"
+              style={{ borderColor: style.accentColor }}
+            >
+              <p
+                className="font-serif text-xl italic leading-relaxed"
+                style={{ color: style.accentColor }}
+              >
+                &ldquo;{personaje.narrativa.leyenda}&rdquo;
+              </p>
+            </blockquote>
+
+            {/* Capítulos */}
+            <div className="space-y-10">
+              {personaje.narrativa.capitulos.map((cap, i) => (
+                <div key={i}>
+                  <h3
+                    className="font-serif text-lg font-semibold mb-3"
+                    style={{ color: style.accentColor }}
+                  >
+                    {cap.titulo}
+                  </h3>
+                  <p className="text-stone-400 leading-relaxed">
+                    {cap.texto}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Secreto */}
+            <div
+              className="mt-14 rounded-2xl px-8 py-8"
+              style={{ backgroundColor: `${style.accentColor}0D`, border: `1px solid ${style.accentColor}25` }}
+            >
+              <p
+                className="text-[10px] uppercase tracking-[0.3em] mb-4"
+                style={{ color: `${style.accentColor}99` }}
+              >
+                {t("secreto_label")}
+              </p>
+              <p className="text-stone-300 leading-relaxed">
+                {personaje.narrativa.secreto}
+              </p>
+            </div>
+          </section>
+        </FadeUp>
+      )}
+
+      {/* ── 5. Galería ── */}
+      <GaleriaSection multimedia={personaje.multimedia} accentColor={style.accentColor} />
 
       {/* ── 6. Cross-sell ── */}
       {otrosPersonajes.length > 0 && (

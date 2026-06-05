@@ -74,14 +74,14 @@
         "url": "/personajes/aya-uma-presentacion.png",
         "altText": "Llavero Aya Uma — presentación individual",
         "titulo": "proceso",
-        "descripcion": "El llavero del Aya Uma, pieza artesanal única.",
+        "descripcion": "El imán del Aya Uma, pieza artesanal única.",
         "orden": 1
       },
       {
         "id": "aya-uma-grupo",
         "tipo": "imagen",
         "url": "/personajes/aya-uma-grupo.jpeg",
-        "altText": "Colección de llaveros del Aya Uma",
+        "altText": "Colección de imanes del Aya Uma",
         "titulo": "proceso",
         "descripcion": "Handcrafted, Spirit-Infused Collections.",
         "orden": 2
@@ -405,7 +405,7 @@
         "url": "/personajes/perro-presentacion.png",
         "altText": "Llavero Perro — presentación individual",
         "titulo": "proceso",
-        "descripcion": "El llavero del Allku en su presentación individual.",
+        "descripcion": "El imán del Allku en su presentación individual.",
         "orden": 1
       },
       {
@@ -414,7 +414,7 @@
         "url": "/personajes/perro-presentacion-2.png",
         "altText": "Llavero Perro — retrato",
         "titulo": "proceso",
-        "descripcion": "El Allku, guardián del umbral — llavero artesanal.",
+        "descripcion": "El Allku, guardián del umbral — imán artesanal.",
         "orden": 2
       }
     ],
@@ -469,7 +469,7 @@
         "url": "/personajes/diablos-de-lata-presentacion.png",
         "altText": "Llavero Diablos de lata — presentación individual",
         "titulo": "proceso",
-        "descripcion": "El llavero del Diablo de lata, máscara roja de hojalata.",
+        "descripcion": "El imán del Diablo de lata, máscara roja de hojalata.",
         "orden": 1
       }
     ],
