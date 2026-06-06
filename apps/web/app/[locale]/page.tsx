@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { HeroSection } from "@/components/home/HeroSection";
-import { PersonajeCard } from "@/components/personajes/PersonajeCard";
+import { HeroSection } from "@/modules/home/components/HeroSection";
+import { PersonajeCard } from "@/modules/personajes/components/PersonajeCard";
 import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 import { FadeUp, FadeUpGroup, FadeUpItem } from "@/components/ui/FadeUp";

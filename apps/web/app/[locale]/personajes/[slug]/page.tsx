@@ -5,9 +5,9 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 
 import { getPersonaje, getPersonajes } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
-import { PersonajeCard } from "@/components/personajes/PersonajeCard";
-import { ParallaxHero } from "@/components/personajes/ParallaxHero";
-import { GaleriaSection } from "@/components/personajes/GaleriaSection";
+import { PersonajeCard } from "@/modules/personajes/components/PersonajeCard";
+import { ParallaxHero } from "@/modules/personajes/components/ParallaxHero";
+import { GaleriaSection } from "@/modules/personajes/components/GaleriaSection";
 import { FadeUp, FadeUpGroup, FadeUpItem } from "@/components/ui/FadeUp";
 
 interface PersonajePageProps {
