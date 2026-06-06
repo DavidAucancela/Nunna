@@ -24,6 +24,7 @@ export function PersonajeCard({ personaje }: PersonajeCardProps) {
     >
       <Link
         href={`/personajes/${personaje.slug}`}
+        onClick={() => window.scrollTo({ top: 0, behavior: "instant" })}
         className="group relative block aspect-[3/4] overflow-hidden rounded-2xl"
         style={{
           boxShadow: `0 4px 24px -4px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05)`,
