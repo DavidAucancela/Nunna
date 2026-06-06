@@ -72,7 +72,7 @@
         "id": "aya-uma-presentacion",
         "tipo": "imagen",
         "url": "/personajes/aya-uma/iman.png",
-        "altText": "Llavero Aya Uma — presentación individual",
+        "altText": "Imán Aya Uma — presentación individual",
         "titulo": "proceso",
         "descripcion": "El imán del Aya Uma, pieza artesanal única.",
         "orden": 1
@@ -85,6 +85,24 @@
         "titulo": "proceso",
         "descripcion": "Handcrafted, Spirit-Infused Collections.",
         "orden": 2
+      },
+      {
+        "id": "aya-uma-en-pase-1",
+        "tipo": "imagen",
+        "url": "/personajes/aya-uma/en-pase.webp",
+        "altText": "Aya Uma danzando en el Pase del Niño Riobambeño",
+        "titulo": "en-pase",
+        "descripcion": "El Aya Uma en plena danza durante el pase por las calles de Riobamba.",
+        "orden": 10
+      },
+      {
+        "id": "aya-uma-en-pase-2",
+        "tipo": "imagen",
+        "url": "/personajes/aya-uma/en-pase-2.jpg",
+        "altText": "Aya Uma en el Pase del Niño en plaza de Riobamba",
+        "titulo": "en-pase",
+        "descripcion": "El Aya Uma lidera la procesión durante el Pase del Niño.",
+        "orden": 11
       }
     ],
     "testimonios": [],
@@ -221,7 +239,44 @@
     "variantes": [],
     "elementos": [],
     "apariciones": [],
-    "multimedia": [],
+    "multimedia": [
+      {
+        "id": "payaso-en-pase-1",
+        "tipo": "imagen",
+        "url": "/personajes/payaso/en-pase.jpeg",
+        "altText": "Payaso en el Pase del Niño Riobambeño",
+        "titulo": "en-pase",
+        "descripcion": "El Payaso en acción durante el pase, interactuando con el público.",
+        "orden": 10
+      },
+      {
+        "id": "payaso-en-pase-2",
+        "tipo": "imagen",
+        "url": "/personajes/payaso/en-pase-2.jpeg",
+        "altText": "Payaso tradicional riobambeño en el pase",
+        "titulo": "en-pase",
+        "descripcion": "El Payaso Tradicional del Pase del Niño, con su traje característico.",
+        "orden": 11
+      },
+      {
+        "id": "payaso-en-pase-3",
+        "tipo": "imagen",
+        "url": "/personajes/payaso/en-pase-3.jpg",
+        "altText": "Payaso Tradicional en los Pases del Niño",
+        "titulo": "en-pase",
+        "descripcion": "El Pukllakuk, crítico social disfrazado de entretenimiento.",
+        "orden": 12
+      },
+      {
+        "id": "payaso-en-pase-4",
+        "tipo": "imagen",
+        "url": "/personajes/payaso/en-pase-4.jpg",
+        "altText": "Payaso riobambeño en la Plaza de Riobamba",
+        "titulo": "en-pase",
+        "descripcion": "El Payaso en la Plaza Roja de Riobamba, corazón de la celebración.",
+        "orden": 13
+      }
+    ],
     "testimonios": [],
     "tags": [],
     "publicadoEn": "2026-05-25T12:00:00",
@@ -412,10 +467,28 @@
         "id": "perro-presentacion-2",
         "tipo": "imagen",
         "url": "/personajes/perro/iman-2.png",
-        "altText": "Llavero Perro — retrato",
+        "altText": "Imán Perro — retrato",
         "titulo": "proceso",
         "descripcion": "El Allku, guardián del umbral — imán artesanal.",
         "orden": 2
+      },
+      {
+        "id": "perro-en-pase-1",
+        "tipo": "imagen",
+        "url": "/personajes/perro/en-pase.webp",
+        "altText": "Perro en el Pase del Niño Riobambeño",
+        "titulo": "en-pase",
+        "descripcion": "El Allku, guardián del umbral, en plena festividad.",
+        "orden": 10
+      },
+      {
+        "id": "perro-en-pase-2",
+        "tipo": "imagen",
+        "url": "/personajes/perro/en-pase-2.jpg",
+        "altText": "Los Perros en el Pase del Niño",
+        "titulo": "en-pase",
+        "descripcion": "Grupo de Allkus en el Pase del Niño Riobambeño.",
+        "orden": 11
       }
     ],
     "testimonios": [],
@@ -467,10 +540,19 @@
         "id": "diablos-de-lata-presentacion",
         "tipo": "imagen",
         "url": "/personajes/diablos-de-lata/iman.png",
-        "altText": "Llavero Diablos de lata — presentación individual",
+        "altText": "Imán Diablos de lata — presentación individual",
         "titulo": "proceso",
         "descripcion": "El imán del Diablo de lata, máscara roja de hojalata.",
         "orden": 1
+      },
+      {
+        "id": "diablos-de-lata-en-pase-1",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata/en-pase.jpg",
+        "altText": "Diablo de lata en el Pase del Niño Riobambeño",
+        "titulo": "en-pase",
+        "descripcion": "El Diablo de lata encabezando la comparsa en las calles de Riobamba.",
+        "orden": 10
       }
     ],
     "testimonios": [],
