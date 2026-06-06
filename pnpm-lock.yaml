@@ -155,6 +155,12 @@ importers:
         specifier: ^5.6.3
         version: 5.9.3
 
+  packages/database:
+    devDependencies:
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+
   packages/types:
     devDependencies:
       typescript:
@@ -173,6 +179,12 @@ importers:
       '@types/react':
         specifier: ^19.0.0
         version: 19.2.15
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+
+  packages/utils:
+    devDependencies:
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
