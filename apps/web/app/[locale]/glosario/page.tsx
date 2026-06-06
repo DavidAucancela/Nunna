@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { getGlosario } from "@/lib/data";
-import { GlosarioClient } from "@/components/glosario/GlosarioClient";
+import { GlosarioClient } from "@/modules/glosario/components/GlosarioClient";
 
 interface GlosarioPageProps {
   params: Promise<{ locale: string }>;

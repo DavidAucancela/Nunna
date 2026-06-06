@@ -1,19 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 
 import { getPersonaje, getPersonajes } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
-import { PersonajeCard } from "@/components/personajes/PersonajeCard";
-import { ParallaxHero } from "@/components/personajes/ParallaxHero";
-import { SimbolismoSection } from "@/components/personajes/SimbolismoSection";
-import { NarrativaSection } from "@/components/personajes/NarrativaSection";
-import { HotspotsViewer } from "@/components/personajes/HotspotsViewer";
-import { GaleriaSection } from "@/components/personajes/GaleriaSection";
-import { FadeUp, FadeUpGroup, FadeUpItem } from "@/components/ui/FadeUp";
-import { ScrollProgress } from "@/components/ui/ScrollProgress";
-import { WhatsAppShare } from "@/components/ui/WhatsAppShare";
+import { ParallaxHero } from "@/modules/personajes/components/ParallaxHero";
+import { GaleriaSection } from "@/modules/personajes/components/GaleriaSection";
+import { PersonajesCarrusel } from "@/modules/personajes/components/PersonajesCarrusel";
+import { FadeUp } from "@/components/ui/FadeUp";
 
 interface PersonajePageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -48,9 +42,10 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   const { slug, locale } = await params;
   setRequestLocale(locale);
 
-  const [personaje, todosLosPersonajes] = await Promise.all([
+  const [personaje, todosLosPersonajes, t] = await Promise.all([
     getPersonaje(slug, locale),
-    getPersonajes({ locale, withImage: true }),
+    getPersonajes({ locale }),
+    getTranslations({ locale, namespace: "historia" }),
   ]);
 
   if (!personaje) notFound();
@@ -59,14 +54,12 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   const imagenBanner = personaje.imagenBanner
     ? { url: personaje.imagenBanner, altText: `${personaje.nombre} — Nunna` }
     : undefined;
-  const otrosPersonajes = todosLosPersonajes.filter((p) => p.slug !== slug).slice(0, 4);
+  const otrosPersonajes = todosLosPersonajes.filter((p) => p.slug !== slug);
   const style = getOrigenStyle(personaje.origen);
 
   return (
     <article>
-      <ScrollProgress color={style.accentColor} />
-
-      {/* ── 1. Hero con parallax ── */}
+      {/* ── 1. Hero ── */}
       <ParallaxHero
         nombre={personaje.nombre}
         nombreKichwa={personaje.nombreKichwa}
@@ -78,165 +71,196 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         accentColor={style.accentColor}
       />
 
-      {/* ── 2. Resumen — lead editorial grande ── */}
+      {/* ── 2. Resumen editorial ── */}
       <FadeUp>
-        <section className="mx-auto max-w-3xl px-5 py-20 sm:px-6 sm:py-28">
-          <p className="font-serif text-2xl font-light leading-relaxed text-texto-claro sm:text-3xl">
-            {personaje.resumen}
-          </p>
+        <section className="mx-auto max-w-3xl px-5 py-16 sm:px-6 sm:py-24">
+          <div className="relative">
+            <span
+              className="absolute -top-4 -left-1 select-none font-serif text-8xl leading-none sm:-left-4"
+              style={{ color: style.accentColor, opacity: 0.15 }}
+              aria-hidden="true"
+            >
+              &ldquo;
+            </span>
+            <p className="relative font-serif text-2xl font-light leading-relaxed text-texto-claro sm:text-3xl">
+              {personaje.resumen}
+            </p>
+          </div>
         </section>
       </FadeUp>
 
-      {/* ── 3. Simbolismo — interlude cinematográfico ── */}
-      {personaje.simbolismo && (
-        <SimbolismoSection
-          simbolismo={personaje.simbolismo}
-          accentColor={style.accentColor}
-        />
-      )}
+      {/* ── 3. Ficha de datos ── */}
+      <FadeUp>
+        <section className="mx-auto max-w-3xl px-5 pb-16 sm:px-6">
+          <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-borde-sutil bg-borde-sutil sm:grid-cols-3">
 
-      {/* ── 4. Hotspots — anatomía interactiva del traje ── */}
-      {imagenPortada && personaje.hotspots && personaje.hotspots.length > 0 && (
-        <HotspotsViewer
-          imagen={imagenPortada}
-          hotspots={personaje.hotspots}
-          accentColor={style.accentColor}
-        />
-      )}
+            {/* Origen */}
+            <div className="bg-stone-900/40 px-6 py-5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-stone-600 mb-2">Origen</p>
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium"
+                style={{
+                  color: style.accentColor,
+                  borderColor: `${style.accentColor}40`,
+                  backgroundColor: `${style.accentColor}10`,
+                }}
+              >
+                <span className="h-1.5 w-1.5 rounded-full flex-none" style={{ backgroundColor: style.accentColor }} />
+                {style.label}
+              </span>
+            </div>
 
-      {/* ── 5. Narrativa — scrollytelling ── */}
+            {/* Festividad */}
+            <div className="bg-stone-900/40 px-6 py-5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-stone-600 mb-2">Festividad</p>
+              <p className="text-sm text-stone-300 leading-snug">Pase del Niño Riobambeño</p>
+            </div>
+
+            {/* Nombres alt */}
+            <div className="bg-stone-900/40 px-6 py-5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-stone-600 mb-2">
+                {personaje.nombresAlt.length > 1 ? "También conocido como" : "Nombre alternativo"}
+              </p>
+              {personaje.nombresAlt.length > 0 ? (
+                <p className="text-sm italic text-stone-400 leading-snug">
+                  {personaje.nombresAlt.join(", ")}
+                </p>
+              ) : (
+                <p className="text-sm text-stone-700">—</p>
+              )}
+            </div>
+          </div>
+        </section>
+      </FadeUp>
+
+      {/* ── 4. Historia ── */}
       {personaje.narrativa && (
-        <NarrativaSection
-          leyenda={personaje.narrativa.leyenda}
-          secreto={personaje.narrativa.secreto}
-          capitulos={personaje.narrativa.capitulos}
-          accentColor={style.accentColor}
-        />
-      )}
-
-      {/* ── 6. Galería ── */}
-      <GaleriaSection multimedia={personaje.multimedia} accentColor={style.accentColor} />
-
-      {/* ── 7. Testimonios ── */}
-      {personaje.testimonios.length > 0 && (
         <FadeUp>
-          <section className="mx-auto max-w-3xl px-5 pb-16 sm:px-6">
-            <h2 className="mb-6 font-serif text-xl font-bold text-texto-claro sm:text-2xl">
-              Testimonios
-            </h2>
-            <div className="space-y-6">
-              {personaje.testimonios.map((t) => (
-                <div
-                  key={t.id}
-                  className="relative rounded-xl p-6 sm:p-7"
-                  style={{
-                    backgroundColor: "#1A1814",
-                    borderLeft: `3px solid ${style.accentColor}`,
-                  }}
-                >
+          <section className="mx-auto max-w-3xl px-5 pb-20 sm:px-6 sm:pb-28">
+
+            {/* Título sección */}
+            <div className="mb-14 flex items-center gap-4">
+              <h2 className="font-serif text-2xl font-bold text-texto-claro sm:text-3xl">
+                {t("titulo_seccion")}
+              </h2>
+              <div className="h-px flex-1 bg-borde-sutil" />
+            </div>
+
+            {/* Leyenda — cita centrada */}
+            <div className="mb-16 text-center">
+              <span
+                className="-mb-5 block select-none font-serif text-7xl leading-none sm:text-8xl"
+                style={{ color: style.accentColor, opacity: 0.2 }}
+                aria-hidden="true"
+              >
+                &ldquo;
+              </span>
+              <p
+                className="font-serif text-xl italic leading-relaxed sm:text-2xl"
+                style={{ color: style.accentColor }}
+              >
+                {personaje.narrativa.leyenda}
+              </p>
+            </div>
+
+            {/* Capítulos con números */}
+            <div className="space-y-12">
+              {personaje.narrativa.capitulos.map((cap, i) => (
+                <div key={i} className="flex gap-5 sm:gap-8">
                   <span
-                    className="absolute right-5 top-4 font-serif text-6xl leading-none select-none pointer-events-none"
-                    style={{ color: style.accentColor, opacity: 0.12 }}
+                    className="select-none font-serif text-4xl font-bold leading-none text-stone-800 sm:text-5xl flex-none w-10 sm:w-14 text-right pt-1"
                     aria-hidden="true"
                   >
-                    &#8220;
+                    {String(i + 1).padStart(2, "0")}
                   </span>
-                  <blockquote>
-                    <p className="text-base italic leading-relaxed text-stone-300 sm:text-lg">
-                      &ldquo;{t.texto}&rdquo;
+                  <div className="min-w-0">
+                    <h3
+                      className="font-serif text-lg font-semibold mb-3 leading-snug"
+                      style={{ color: style.accentColor }}
+                    >
+                      {cap.titulo}
+                    </h3>
+                    <p className="text-stone-400 leading-relaxed text-base">
+                      {cap.texto}
                     </p>
-                    <footer className="mt-4 flex flex-wrap items-center gap-1 text-sm text-stone-500">
-                      <span className="font-medium text-stone-400">{t.autor}</span>
-                      {t.cargo && (
-                        <>
-                          <span className="text-stone-700">·</span>
-                          <span>{t.cargo}</span>
-                        </>
-                      )}
-                      {t.fuente && (
-                        <>
-                          <span className="text-stone-700">—</span>
-                          {t.url ? (
-                            <a
-                              href={t.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-stone-600 transition-colors hover:text-stone-400"
-                            >
-                              {t.fuente}
-                            </a>
-                          ) : (
-                            <span className="text-stone-600">{t.fuente}</span>
-                          )}
-                        </>
-                      )}
-                    </footer>
-                  </blockquote>
+                  </div>
                 </div>
               ))}
+            </div>
+
+            {/* Secreto — caja dramática */}
+            <div className="mt-16 overflow-hidden rounded-2xl">
+              {/* Header del secreto */}
+              <div
+                className="flex items-center gap-3 px-6 py-3.5"
+                style={{ backgroundColor: `${style.accentColor}22` }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  viewBox="0 0 24 24"
+                  style={{ color: style.accentColor }}
+                  aria-hidden="true"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+                <p
+                  className="text-[10px] uppercase tracking-[0.3em] font-medium"
+                  style={{ color: style.accentColor }}
+                >
+                  {t("secreto_label")}
+                </p>
+              </div>
+              {/* Cuerpo del secreto */}
+              <div
+                className="px-6 py-6"
+                style={{
+                  backgroundColor: `${style.accentColor}08`,
+                  borderLeft: `1px solid ${style.accentColor}20`,
+                  borderRight: `1px solid ${style.accentColor}20`,
+                  borderBottom: `1px solid ${style.accentColor}20`,
+                }}
+              >
+                <p className="text-stone-200 leading-relaxed text-base">
+                  {personaje.narrativa.secreto}
+                </p>
+              </div>
             </div>
           </section>
         </FadeUp>
       )}
 
-      {/* ── 7. Tags + Compartir ── */}
-      <FadeUp>
-        <div className="mx-auto max-w-3xl px-5 pb-20 pt-4 sm:px-6">
-          {personaje.tags.length > 0 && (
-            <div className="mb-8 flex flex-wrap gap-2">
-              {personaje.tags.map((tag) => (
-                <span
-                  key={tag.id}
-                  className="rounded-full border border-stone-700 bg-stone-900 px-3 py-1 text-xs text-stone-400 transition-colors hover:border-stone-600 hover:text-stone-300"
-                >
-                  {tag.nombre}
-                </span>
-              ))}
-            </div>
-          )}
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <WhatsAppShare nombre={personaje.nombre} />
-            <span className="text-xs text-stone-600">
-              Comparte este personaje con alguien especial
-            </span>
-          </div>
-        </div>
-      </FadeUp>
+      {/* ── 5. Galería ── */}
+      <GaleriaSection
+        multimedia={personaje.multimedia}
+        accentColor={style.accentColor}
+        nombre={personaje.nombre}
+      />
 
-      {/* ── 8. Cross-sell ── */}
+      {/* ── 6. Carrusel de personajes ── */}
       {otrosPersonajes.length > 0 && (
-        <section className="border-t border-borde-sutil px-5 py-14 sm:px-6 sm:py-20">
-          <div className="mx-auto max-w-7xl">
-            <FadeUp>
-              <p
-                className="text-center text-xs uppercase tracking-[0.2em]"
-                style={{ color: style.accentColor }}
-              >
-                Más personajes del pase
-              </p>
-              <h2 className="mt-2 text-center font-serif text-2xl font-bold text-texto-claro sm:text-3xl">
-                Conoce a los otros personajes
-              </h2>
-            </FadeUp>
-            <FadeUpGroup className="mt-8 grid gap-4 grid-cols-2 sm:gap-6 lg:grid-cols-4">
-              {otrosPersonajes.map((otro) => (
-                <FadeUpItem key={otro.id}>
-                  <PersonajeCard personaje={otro} />
-                </FadeUpItem>
-              ))}
-            </FadeUpGroup>
-            <FadeUp delay={0.3}>
-              <div className="mt-10 text-center">
-                <Link
-                  href="/personajes"
-                  className="text-sm font-medium text-acento-dorado underline-offset-4 hover:underline"
+        <FadeUp>
+          <section className="border-t border-borde-sutil px-5 py-16 sm:px-6 sm:py-20">
+            <div className="mx-auto max-w-7xl">
+              <div className="mb-8">
+                <p
+                  className="text-xs uppercase tracking-[0.2em] mb-1"
+                  style={{ color: style.accentColor }}
                 >
-                  Ver todos los personajes →
-                </Link>
+                  Más personajes del pase
+                </p>
+                <h2 className="font-serif text-2xl font-bold text-texto-claro sm:text-3xl">
+                  Conoce a los otros personajes
+                </h2>
               </div>
-            </FadeUp>
-          </div>
-        </section>
+
+              <PersonajesCarrusel personajes={otrosPersonajes} />
+            </div>
+          </section>
+        </FadeUp>
       )}
     </article>
   );

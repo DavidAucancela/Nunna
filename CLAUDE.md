@@ -1,26 +1,27 @@
 # CLAUDE.md — Nunna
 
-Catálogo digital + experiencia de desempaque para llaveros 3D de personajes ecuatorianos.
-El comprador escanea el QR del llavero → aterriza en la experiencia inmersiva del personaje.
+Catálogo digital de personajes ecuatorianos con imanes artesanales como producto físico.
+El comprador escanea el QR de la tarjeta del imán → aterriza directamente en la ficha del personaje.
 Autor: Jonathan David Aucancela Maguana.
 
 ---
 
 ## Modelo de negocio
 
-**Producto físico:** llaveros 3D de personajes de los pases riobambeños (Aya Uma, Curiquingue, etc.)
-**QR en el llavero** → dirige a `/es/personajes/[slug]/historia` (experiencia inmersiva "El Despertar")
-**La experiencia QR + la ficha del personaje son el producto digital** — justifican la compra.
+**Producto físico:** imanes (magnetos para refrigeradora) de personajes de los pases riobambeños (Aya Uma, Curiquingue, etc.)
+**Formato:** tarjeta temática — imagen del personaje en el frente, QR en el reverso
+**QR en la tarjeta** → dirige a `/es/personajes/[slug]` (ficha completa del personaje)
+**La ficha del personaje es el producto digital** — justifica la compra.
 
 Flujo del comprador:
-1. Escanea QR → `/es/personajes/[slug]/historia`
-2. Vive "El Despertar": invocación → nombre → leyenda → capítulos → secreto exclusivo
-3. CTA al final → `/es/personajes/[slug]` (ficha completa pública)
+1. Escanea QR de la tarjeta → `/es/personajes/[slug]`
+2. Ve la ficha completa: resumen → historia (leyenda + capítulos + dato del artesano) → galería
+3. Cross-sell al pie → más imanes de otros personajes
 
 Implicaciones técnicas:
 - **Mobile-first absoluto** — el QR se escanea con el teléfono
-- **La experiencia historia debe cargar rápido y ser inmersiva**
-- **Cross-sell al pie de cada personaje** — "Conoce a los otros seres" → más llaveros
+- **La ficha debe cargar rápido y mostrar todo el contenido narrativo**
+- **Cross-sell al pie de cada personaje** — "Conoce a los otros seres" → más imanes
 - **OpenGraph rico** — si el comprador comparte en WhatsApp, la preview tiene que lucir bien
 
 ---
@@ -86,38 +87,29 @@ No se necesitan variables de entorno para correr el frontend en desarrollo — l
 ```
 apps/web/
 ├── app/[locale]/
-│   ├── layout.tsx                  → usa MainContent (oculta header/footer en /historia)
+│   ├── layout.tsx                  → usa MainContent
 │   ├── page.tsx                    → Landing
 │   ├── personajes/
 │   │   ├── page.tsx                → Grid de personajes
 │   │   └── [slug]/
-│   │       ├── page.tsx            → ★ Ficha pública del personaje
-│   │       └── historia/page.tsx   → ★★ PANTALLA QR — experiencia "El Despertar"
+│   │       └── page.tsx            → ★★ DESTINO QR — ficha completa con historia
 │   ├── calendario/page.tsx         → Pases y Festividades
 │   └── glosario/page.tsx
 ├── components/
 │   ├── layout/
-│   │   ├── Header.tsx              → se oculta en rutas /historia
+│   │   ├── Header.tsx
 │   │   ├── Footer.tsx
-│   │   └── MainContent.tsx         → wrapper client que controla pt-16 y footer según ruta
-│   ├── historia/                   → ★ Experiencia inmersiva QR
-│   │   ├── HistoriaExperiencia.tsx → orquestador de fases (Client)
-│   │   ├── CapituloScroll.tsx      → sección de capítulo full-height (Client)
-│   │   ├── SecretoFinal.tsx        → sección dorada con secreto + CTAs (Client)
-│   │   └── fases/
-│   │       ├── FaseInvocacion.tsx  → negro + símbolo del origen girando (Client)
-│   │       ├── FaseNombre.tsx      → wipe reveal del nombre (Client)
-│   │       └── FaseLeyenda.tsx     → typewriter + imagen blur→nítida (Client)
+│   │   └── MainContent.tsx         → wrapper que añade pt-16 y footer
 │   ├── personajes/
 │   │   ├── PersonajeCard.tsx       → usa imagenPortada (retrato)
 │   │   ├── ParallaxHero.tsx        → usa imagenBanner primero, fallback a imagen (Client)
-│   │   ├── SimbolismoSection.tsx
-│   │   └── GaleriaSection.tsx      → 3 tabs: El personaje / El llavero / En el pase (Client)
+│   │   ├── SimbolismoSection.tsx   → componente existente (sin uso activo)
+│   │   └── GaleriaSection.tsx      → 3 tabs: El personaje / El imán / En el pase (Client)
 │   └── ui/                         → FadeUp, AnimatedCounter, ScrollProgress, WhatsAppShare, OrigenPlaceholder
 ├── lib/
 │   ├── data.ts                     → ★ Acceso a datos — merge multimedia portada + JSON
 │   ├── data/
-│   │   ├── personajes.json         → 9 personajes con narrativa, hotspots, imagenBanner, multimedia
+│   │   ├── personajes.json         → 9 personajes con narrativa (incl. palabrasClave), hotspots, imagenBanner, multimedia
 │   │   ├── glosario.json           → 16 entradas kichwa
 │   │   └── pases.json              → 7 pases con fechas y rutas
 │   └── origen-styles.ts            → Estilos por tipo de origen
@@ -156,8 +148,8 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 | Campo / archivo | Uso | Formato |
 |----------------|-----|---------|
 | `imagenPortada` en JSON → `public/personajes/[slug].png` | Tarjetas del grid (`PersonajeCard`) | Retrato portrait |
-| `imagenBanner` en JSON → `public/personajes/[slug]-banner.png` | Hero de la ficha (`ParallaxHero`) + FaseLeyenda QR | Landscape 1376×768 |
-| `multimedia[].url` con `titulo:"proceso"` → `public/personajes/[slug]-presentacion.png` | Galería tab "El llavero" | Libre |
+| `imagenBanner` en JSON → `public/personajes/[slug]-banner.png` | Hero de la ficha (`ParallaxHero`) | Landscape 1376×768 |
+| `multimedia[].url` con `titulo:"proceso"` → `public/personajes/[slug]-presentacion.png` | Galería tab "El imán" | Libre |
 | `multimedia[].url` con `titulo:"en-pase"` | Galería tab "En el pase" | Libre |
 | sin `titulo` / `titulo:"retrato"` | Galería tab "El personaje" | Libre |
 
@@ -183,29 +175,29 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 
 ---
 
-## Experiencia "El Despertar" — ruta `/historia`
+## Ficha pública — ruta `/personajes/[slug]`
 
-Al escanear el QR del llavero se abre `/es/personajes/[slug]/historia`. Es SSG puro (noindex).
+**Propósito:** presentación mínima del personaje. No revela el contenido profundo de `/historia`.
 
-### Flujo de fases (auto-play → scroll)
+### Estructura de la ficha (desde 2026-06-01)
 
-| Fase | Descripción | Duración |
-|------|-------------|----------|
-| 1 — Invocación | Negro + símbolo del origen (Chakana/Espiral/Rombo) con glow | 3.8s auto |
-| 2 — Nombre | Nombre en display-lg con clip-path wipe + StaggerLetters | 3.5s auto |
-| 3 — Leyenda | `narrativa.leyenda` con typewriter + `imagenBanner` emerge del blur | ~4s auto |
-| 4 — Capítulos | 3 secciones full-height scroll con gradiente del origen | scroll |
-| 5 — Secreto | Fondo dorado — `narrativa.secreto` exclusivo para llavero | scroll |
-| 6 — CTA | Botón → ficha del personaje | clic |
+```
+1. ParallaxHero       → imagen + nombre + origen
+2. Resumen            → 1 párrafo lead editorial
+3. Chips de datos     → origen (color acento) + "Personaje del pase riobambeño" + nombresAlt[0]
+4. GaleriaSection     → 3 tabs: El personaje / El llavero / En el pase
+5. CTA QR             → "La historia completa de {nombre} está en el llavero." + botón → /historia
+6. Cross-sell         → hasta 4 otros personajes con imagen
+```
 
-Botón "Saltar" (X) fijo top-right durante las fases 1–3.
+**Eliminado de la ficha:** SimbolismoSection, HotspotsViewer, Testimonios, Tags, WhatsAppShare, ScrollProgress.
 
-### Datos necesarios en `personajes.json`
+### Datos en `personajes.json` que usa la ficha
 
 ```json
 "narrativa": {
   "leyenda": "Frase poderosa de una línea.",
-  "secreto": "Dato exclusivo no publicado en la ficha.",
+  "secreto": "Dato del artesano que aparece al pie de la historia.",
   "capitulos": [
     { "titulo": "Título del capítulo", "texto": "3–4 oraciones." },
     { "titulo": "...", "texto": "..." },
@@ -214,13 +206,18 @@ Botón "Saltar" (X) fijo top-right durante las fases 1–3.
 }
 ```
 
-### Header/Footer en `/historia`
+`palabrasClave` existe en el JSON pero ya no se usa (era para FaseLeyenda, eliminada).
 
-`MainContent.tsx` (client) detecta `pathname.endsWith("/historia")` y:
-- Elimina `pt-16` del `<main>` (sin header no hace falta)
-- Oculta el `<Footer>`
+### i18n — claves del namespace `historia`
 
-`Header.tsx` retorna `null` cuando `pathname.endsWith("/historia")`.
+```json
+"historia": {
+  "titulo_seccion": "Su historia",
+  "leyenda_label": "Leyenda",
+  "secreto_label": "El artesano revela",
+  "volver": "Volver a los personajes"
+}
+```
 
 ---
 
@@ -250,20 +247,23 @@ Modo oscuro por defecto.
 - Frontend: todas las páginas con estilos completos (landing, personajes, detalle, pases, calendario, glosario, sobre, mapa)
 - i18n es/qu/en con rutas localizadas
 - Datos estáticos: 9 personajes (con `narrativa`, `hotspots`, `imagenBanner`, `multimedia`), 16 entradas glosario, 7 pases
-- Build de producción SSG sin errores — 82 rutas prerrenderizadas (incluye 27 rutas `/historia`)
+- Build de producción SSG sin errores
 - Eliminación completa de Directus
 - Favicons SVG
 - Renombrado marca a "Nunna"
 - Nav fusionado — "Pases y Festividades" en un solo punto
-- Rediseño ficha de personaje — parallax, lead editorial, simbolismo, galería
-- **Experiencia "El Despertar"** — 6 fases inmersivas para el QR del llavero
+- Rediseño ficha de personaje — parallax, lead editorial, galería
 - **Banners profesionales** en el hero de 4 personajes (Aya Uma, Diablos de lata, Payaso, Perro)
-- **Galería "El llavero"** con imágenes de presentación individual para 3 personajes
+- **Galería "El imán"** con imágenes de presentación individual para 3 personajes
+- **Deploy en producción** → https://nunnaec-production.up.railway.app/
+- **Adaptación producto imanes** — llaveros → imanes, QR → ficha directa, historia integrada en ficha (2026-06-04)
+- **Ficha completa como destino QR** — Hero + Resumen + Historia (leyenda + capítulos + secreto) + Galería + Cross-sell
 
 ### 🔄 Siguiente
-- Deploy Next.js en Railway
+- Merge branch `feature/MejorandoPersonajes` → `main` y redeploy en Railway
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
 - Fotografías reales "En el pase" para la galería (`titulo: "en-pase"`)
+- Fotografías del imán físico para la galería (`titulo: "proceso"`)
 
 ### ⏳ Fase 2
 - Modo claro/oscuro
@@ -290,7 +290,7 @@ Modo oscuro por defecto.
 
 ### Imágenes — `imagenBanner` vs `imagenPortada`
 - `imagenPortada` → retrato portrait, para tarjetas pequeñas (`PersonajeCard`)
-- `imagenBanner` → landscape 1376×768 con texto de marca, para hero grande y FaseLeyenda
+- `imagenBanner` → landscape 1376×768 con texto de marca, para hero grande
 - `ParallaxHero` usa `imagenBanner ?? imagen` (banner primero, retrato como fallback)
 - Personajes sin `imagenBanner` muestran `OrigenPlaceholder` artístico en el hero
 

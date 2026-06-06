@@ -30,8 +30,8 @@
       "cta": "Explore celebrations & calendar"
     },
     "qr": {
-      "titulo": "Do you have a keychain?",
-      "texto": "Scan the QR code to discover the full story of the character you hold in your hands.",
+      "titulo": "Do you have a magnet?",
+      "texto": "Scan the QR code on your card to discover the full story of the character.",
       "cta": "View all characters"
     }
   },
@@ -54,11 +54,9 @@
     "volver_inicio": "Back to home"
   },
   "historia": {
-    "saltar": "Skip",
-    "capitulo": "Chapter",
-    "secreto_titulo": "Only for those who hold this keychain",
-    "secreto_subtitulo": "A fact you won't find on the public page",
-    "cta": "Meet {nombre} in full",
+    "titulo_seccion": "Their story",
+    "leyenda_label": "Legend",
+    "secreto_label": "The artisan reveals",
     "volver": "Back to characters"
   },
   "comun": {

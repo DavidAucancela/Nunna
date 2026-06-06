@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getPases } from "@/lib/data";
-import { CalendarioGrid } from "@/components/calendario/CalendarioGrid";
+import { CalendarioGrid } from "@/modules/festividades/components/CalendarioGrid";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {

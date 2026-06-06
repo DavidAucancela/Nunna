@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { PersonajeCard } from "@/components/personajes/PersonajeCard";
+import { PersonajeCard } from "@/modules/personajes/components/PersonajeCard";
 import { FadeUp, FadeUpGroup, FadeUpItem } from "@/components/ui/FadeUp";
 import { getPersonajes } from "@/lib/data";
 

@@ -30,8 +30,8 @@
       "cta": "Raymikunata qhaway"
     },
     "qr": {
-      "titulo": "¿Llavero charinkichu?",
-      "texto": "QR código liypa, kay runamanta tukuyta yachay.",
+      "titulo": "¿Imán charinkichu?",
+      "texto": "Kartaykipi QR código liypa, kay runamanta tukuyta yachay.",
       "cta": "Tukuy runakunata qhaway"
     }
   },
@@ -54,11 +54,9 @@
     "volver_inicio": "Qallariymanmi kutiy"
   },
   "historia": {
-    "saltar": "Rinay",
-    "capitulo": "Yachaykuna",
-    "secreto_titulo": "Kay llaverota charikkuna pilla",
-    "secreto_subtitulo": "Mana llaktapi willashkamanta",
-    "cta": "{nombre} tukuyta riy",
+    "titulo_seccion": "Paypa kawsaynin",
+    "leyenda_label": "Willakuy",
+    "secreto_label": "Llankakuk willarin",
     "volver": "Runakunaman kutiy"
   },
   "comun": {
