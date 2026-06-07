@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { StaggerLetters } from "@/components/ui/FadeUp";
 import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
@@ -31,6 +32,11 @@ export function ParallaxHero({
 }: ParallaxHeroProps) {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -109,7 +115,14 @@ export function ParallaxHero({
 
         <h1
           className="mt-1 font-serif font-bold leading-none text-texto-claro"
-          style={{ fontSize: "clamp(3rem, 10vw, 7rem)" }}
+          style={{
+            fontSize:
+              nombre.length <= 8
+                ? "clamp(3.5rem, 10vw, 7rem)"
+                : nombre.length <= 12
+                ? "clamp(3rem, 8vw, 5.5rem)"
+                : "clamp(2.5rem, 6vw, 4.5rem)",
+          }}
         >
           <StaggerLetters text={nombre} delay={0.1} />
         </h1>

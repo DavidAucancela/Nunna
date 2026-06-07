@@ -54,7 +54,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   const imagenBanner = personaje.imagenBanner
     ? { url: personaje.imagenBanner, altText: `${personaje.nombre} — Nunna` }
     : undefined;
-  const otrosPersonajes = todosLosPersonajes.filter((p) => p.slug !== slug);
+  const otrosPersonajes = todosLosPersonajes.filter((p) => p.slug !== slug && !!p.imagenPortada);
   const style = getOrigenStyle(personaje.origen);
 
   return (
