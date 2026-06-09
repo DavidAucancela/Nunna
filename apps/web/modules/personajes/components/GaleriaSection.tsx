@@ -16,6 +16,7 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
 
   const retratos = multimedia.filter((m) => !m.titulo || m.titulo === "retrato");
   const proceso  = multimedia.filter((m) => m.titulo === "proceso");
+  const enPase   = multimedia.filter((m) => m.titulo === "en-pase");
 
   const open  = (images: Media[], idx: number) => setLightbox({ images, idx });
   const close = useCallback(() => setLightbox(null), []);
@@ -71,22 +72,25 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
         {/* El imán */}
         {proceso.length > 0 && (
           <>
-            <div className="my-14 flex items-center gap-5">
-              <div className="h-px flex-1 bg-borde-sutil" />
-              <span
-                className="select-none text-xs"
-                style={{ color: `${accentColor}30` }}
-                aria-hidden="true"
-              >
-                ✦
-              </span>
-              <div className="h-px flex-1 bg-borde-sutil" />
-            </div>
+            <Divider accentColor={accentColor} />
             <ImageGrid
               label="El imán"
               images={proceso}
               accentColor={accentColor}
               onOpen={(idx) => open(proceso, idx)}
+            />
+          </>
+        )}
+
+        {/* En el pase */}
+        {enPase.length > 0 && (
+          <>
+            <Divider accentColor={accentColor} />
+            <ImageGrid
+              label="En el pase"
+              images={enPase}
+              accentColor={accentColor}
+              onOpen={(idx) => open(enPase, idx)}
             />
           </>
         )}
@@ -198,6 +202,16 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
         )}
       </AnimatePresence>
     </section>
+  );
+}
+
+function Divider({ accentColor }: { accentColor: string }) {
+  return (
+    <div className="my-14 flex items-center gap-5">
+      <div className="h-px flex-1 bg-borde-sutil" />
+      <span className="select-none text-xs" style={{ color: `${accentColor}30` }} aria-hidden="true">✦</span>
+      <div className="h-px flex-1 bg-borde-sutil" />
+    </div>
   );
 }
 
