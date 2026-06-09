@@ -17,7 +17,14 @@
     "imagenBanner": "/personajes/aya-uma/banner.png",
     "narrativa": {
       "leyenda": "Donde el espíritu camina, la tierra responde.",
-      "palabrasClave": ["espíritu", "tierra", "Aya Uma", "Pachamama", "Kay Pacha", "Uku Pacha"],
+      "palabrasClave": [
+        "espíritu",
+        "tierra",
+        "Aya Uma",
+        "Pachamama",
+        "Kay Pacha",
+        "Uku Pacha"
+      ],
       "secreto": "Los artesanos que tejen la máscara del Aya Uma nunca la firman. Según la tradición, al terminar el último cuerno, el espíritu ya habita la pieza — y lo que habita un espíritu ya no pertenece a quien lo hizo.",
       "capitulos": [
         {
@@ -127,7 +134,13 @@
     "imagenPortada": null,
     "narrativa": {
       "leyenda": "Dos alas, un solo vuelo: lo que el cielo une, la tierra celebra.",
-      "palabrasClave": ["cielo", "tierra", "Curiquingue", "Pachamama", "alas"],
+      "palabrasClave": [
+        "cielo",
+        "tierra",
+        "Curiquingue",
+        "Pachamama",
+        "alas"
+      ],
       "secreto": "En los pases donde el Curiquingue danza sobre el camino de una familia, se dice que ese año la cosecha será buena. Las familias del barrio aún guardan ese augurio como una verdad que no necesita prueba.",
       "capitulos": [
         {
@@ -172,7 +185,12 @@
     "imagenPortada": null,
     "narrativa": {
       "leyenda": "El monte no olvida. El monte solo espera.",
-      "palabrasClave": ["monte", "Sacha Runa", "naturaleza", "selva"],
+      "palabrasClave": [
+        "monte",
+        "Sacha Runa",
+        "naturaleza",
+        "selva"
+      ],
       "secreto": "El traje del Sacha Runa se deteriora mientras danza — las hojas se marchitan, el musgo se cae, las ramas se rompen. Y eso es intencional: la naturaleza está reclamando lo suyo mientras el ser baila. Nadie lo repara.",
       "capitulos": [
         {
@@ -218,7 +236,12 @@
     "imagenBanner": "/personajes/payaso/banner.png",
     "narrativa": {
       "leyenda": "La máscara sonríe fija. La verdad no necesita permiso para salir.",
-      "palabrasClave": ["máscara", "verdad", "Payaso", "permiso"],
+      "palabrasClave": [
+        "máscara",
+        "verdad",
+        "Payaso",
+        "permiso"
+      ],
       "secreto": "El Payaso de pase nunca revela su identidad durante la celebración. Su poder ritual depende del anonimato total — al final del pase, muchos espectadores nunca saben quién los imitó ni de qué se rieron exactamente.",
       "capitulos": [
         {
@@ -275,6 +298,15 @@
         "titulo": "en-pase",
         "descripcion": "El Payaso en la Plaza Roja de Riobamba, corazón de la celebración.",
         "orden": 13
+      },
+      {
+        "id": "payaso-en-pase-5",
+        "tipo": "imagen",
+        "url": "/personajes/payaso/payaso_pase_primer_plano_mascara.jpg",
+        "altText": "Primer plano de la máscara del Payaso riobambeño en el pase",
+        "titulo": "en-pase",
+        "descripcion": "Detalle de la máscara pintada a mano del Payaso, símbolo de la crítica social festiva.",
+        "orden": 14
       }
     ],
     "testimonios": [],
@@ -299,7 +331,12 @@
     "imagenPortada": null,
     "narrativa": {
       "leyenda": "Lo que empezó como propaganda colonial terminó como símbolo de poder propio.",
-      "palabrasClave": ["colonial", "símbolo", "poder", "Rey Moro"],
+      "palabrasClave": [
+        "colonial",
+        "símbolo",
+        "poder",
+        "Rey Moro"
+      ],
       "secreto": "El traje del Rey Moro puede costar más de $3.000 y en muchas familias es la herencia más preciada — más que la tierra, más que el dinero. Heredar la corona es heredar el compromiso de que la tradición continúe.",
       "capitulos": [
         {
@@ -343,7 +380,12 @@
     "imagenPortada": null,
     "narrativa": {
       "leyenda": "Quien viste el uniforme asume el peso de toda la comunidad.",
-      "palabrasClave": ["uniforme", "comunidad", "Capitán", "peso"],
+      "palabrasClave": [
+        "uniforme",
+        "comunidad",
+        "Capitán",
+        "peso"
+      ],
       "secreto": "El prioste que encarna al Capitán no puede quitarse el traje durante todo el recorrido del pase — ni para comer, ni para descansar. Hacerlo sería una falta grave ante la comunidad y ante los ancestros que observan.",
       "capitulos": [
         {
@@ -387,7 +429,12 @@
     "imagenPortada": null,
     "narrativa": {
       "leyenda": "Entre el cielo cristiano y el Hanan Pacha, el Ángel encontró su propio camino.",
-      "palabrasClave": ["cielo", "Hanan Pacha", "Ángel", "camino"],
+      "palabrasClave": [
+        "cielo",
+        "Hanan Pacha",
+        "Ángel",
+        "camino"
+      ],
       "secreto": "Las alas del Ángel son tejidas por las madres y abuelas durante semanas antes del pase. Se dice que cada pluma cosida es una oración — y que las alas más elaboradas son las que más amor llevan, no las que más dinero cuestan.",
       "capitulos": [
         {
@@ -432,7 +479,12 @@
     "imagenBanner": "/personajes/perro/banner.png",
     "narrativa": {
       "leyenda": "El Allku guarda el umbral que ningún humano puede cruzar solo.",
-      "palabrasClave": ["Allku", "umbral", "Uku Pacha", "espíritu"],
+      "palabrasClave": [
+        "Allku",
+        "umbral",
+        "Uku Pacha",
+        "espíritu"
+      ],
       "secreto": "En la cosmovisión andina, el perro guía al difunto en su viaje al Uku Pacha. El Allku del pase lleva ese peso sin que la mayoría del público lo sepa — cada ladrido es también un saludo a los que ya no están.",
       "capitulos": [
         {
@@ -514,7 +566,13 @@
     "imagenBanner": "/personajes/diablos-de-lata/banner.png",
     "narrativa": {
       "leyenda": "Tomaron el símbolo del miedo y lo convirtieron en el corazón de la fiesta.",
-      "palabrasClave": ["símbolo", "miedo", "corazón", "fiesta", "Supay"],
+      "palabrasClave": [
+        "símbolo",
+        "miedo",
+        "corazón",
+        "fiesta",
+        "Supay"
+      ],
       "secreto": "Cada máscara de hojalata tarda semanas en hacerse y es completamente única. Los artesanos dicen que la máscara nace cuando el martillo golpea el metal por primera vez y suena — ese primer sonido ya es el diablo despertando.",
       "capitulos": [
         {
