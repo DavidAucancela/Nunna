@@ -2,14 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import {
   motion,
   useMotionValue,
   useSpring,
   useTransform,
   useReducedMotion,
-  useAnimation,
   type MotionValue,
 } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -20,68 +19,33 @@ interface NunnaLetterProps {
   index: number;
   weight: number;      // 1.0 = centro (máximo movimiento), 0.2 = extremo
   mouseX: MotionValue<number>;
-  mouseY: MotionValue<number>;
 }
 
-function NunnaLetter({ char, index, weight, mouseX, mouseY }: NunnaLetterProps) {
+function NunnaLetter({ char, index, weight, mouseX }: NunnaLetterProps) {
   const reduced = useReducedMotion();
-  const controls = useAnimation();
 
-  // Entrada stagger con rotación 3D
-  useEffect(() => {
-    if (reduced) {
-      controls.set({ opacity: 1, y: 0, rotateX: 0 });
-      return;
-    }
-    controls.start({
-      opacity: 1,
-      y: 0,
-      rotateX: 0,
-      transition: {
-        delay: 0.35 + index * 0.09,
-        duration: 0.75,
-        ease: [0.215, 0.61, 0.355, 1],
-      },
-    });
-  }, [controls, index, reduced]);
-
-  // Parallax: rango de desplazamiento proporcional al peso
   const maxX = 30 * weight;
-  const maxY = 18 * weight;
-
   const targetX = useTransform(mouseX, [-1, 1], [-maxX, maxX]);
-  const targetY = useTransform(mouseY, [-1, 1], [-maxY, maxY]);
-
-  // Letras centrales: spring más rápido → parecen más cercanas
-  // Letras extremas: spring más lento → parecen más lejanas
   const stiffness = 60 + weight * 40;   // 68 – 100
   const damping   = 14 + weight * 8;    // 16 – 22
-
   const springX = useSpring(targetX, { stiffness, damping });
-  const springY = useSpring(targetY, { stiffness, damping });
 
   if (reduced) {
     return <span className="inline-block">{char}</span>;
   }
 
+  // Un solo motion.span: animate controla opacity/y/rotateX (entrada),
+  // style controla x (parallax horizontal, sin conflicto), whileHover controla scale.
   return (
-    /* Capa exterior: animación de entrada */
     <motion.span
-      className="inline-block"
+      className="inline-block cursor-default"
       initial={{ opacity: 0, y: 50, rotateX: -45 }}
-      animate={controls}
+      animate={{ opacity: 1, y: 0, rotateX: 0 }}
+      transition={{ delay: 0.35 + index * 0.09, duration: 0.75, ease: [0.215, 0.61, 0.355, 1] }}
+      style={{ x: springX }}
+      whileHover={{ scale: 1.14, transition: { duration: 0.12, ease: "easeOut" } }}
     >
-      {/* Capa interior: parallax continuo + hover */}
-      <motion.span
-        className="inline-block cursor-default"
-        style={{ x: springX, y: springY }}
-        whileHover={{
-          scale: 1.14,
-          transition: { duration: 0.12, ease: "easeOut" },
-        }}
-      >
-        {char}
-      </motion.span>
+      {char}
     </motion.span>
   );
 }
@@ -90,11 +54,9 @@ function NunnaLetter({ char, index, weight, mouseX, mouseY }: NunnaLetterProps) 
 function NunnaTitle({
   texto,
   mouseX,
-  mouseY,
 }: {
   texto: string;
   mouseX: MotionValue<number>;
-  mouseY: MotionValue<number>;
 }) {
   const letters = texto.split("");
   const n = letters.length;
@@ -122,7 +84,6 @@ function NunnaTitle({
             index={i}
             weight={weight}
             mouseX={mouseX}
-            mouseY={mouseY}
           />
         );
       })}
@@ -177,21 +138,18 @@ export function HeroSection() {
   const reduced = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Posición del mouse normalizada a [-1, 1]
+  // Posición X del mouse normalizada a [-1, 1]
   const mouseXRaw = useMotionValue(0);
-  const mouseYRaw = useMotionValue(0);
 
   function onMouseMove(e: React.MouseEvent) {
     if (reduced) return;
     const rect = sectionRef.current?.getBoundingClientRect();
     if (!rect) return;
-    mouseXRaw.set((e.clientX - rect.left - rect.width  / 2) / (rect.width  / 2));
-    mouseYRaw.set((e.clientY - rect.top  - rect.height / 2) / (rect.height / 2));
+    mouseXRaw.set((e.clientX - rect.left - rect.width / 2) / (rect.width / 2));
   }
 
   function onMouseLeave() {
     mouseXRaw.set(0);
-    mouseYRaw.set(0);
   }
 
   return (
@@ -243,7 +201,7 @@ export function HeroSection() {
           Riobamba · Chimborazo · Ecuador
         </motion.p>
 
-        <NunnaTitle texto={t("hero.titulo")} mouseX={mouseXRaw} mouseY={mouseYRaw} />
+        <NunnaTitle texto={t("hero.titulo")} mouseX={mouseXRaw} />
 
         <div className="mt-6 overflow-hidden">
           <motion.p
