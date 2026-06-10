@@ -8,6 +8,7 @@ import { ParallaxHero } from "@/modules/personajes/components/ParallaxHero";
 import { GaleriaSection } from "@/modules/personajes/components/GaleriaSection";
 import { PersonajesCarrusel } from "@/modules/personajes/components/PersonajesCarrusel";
 import { FadeUp } from "@/components/ui/FadeUp";
+import { ScrollToTop } from "@/components/ui/ScrollToTop";
 
 interface PersonajePageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -59,6 +60,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
 
   return (
     <article>
+      <ScrollToTop />
       {/* ── 1. Hero ── */}
       <ParallaxHero
         nombre={personaje.nombre}
@@ -240,14 +242,14 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         nombre={personaje.nombre}
       />
 
-      {/* ── 6. Carrusel de personajes ── */}
+      {/* ── 6. Grid de personajes ── */}
       {otrosPersonajes.length > 0 && (
         <FadeUp>
           <section className="border-t border-borde-sutil px-5 py-16 sm:px-6 sm:py-20">
-            <div className="mx-auto max-w-7xl">
-              <div className="mb-8">
+            <div className="mx-auto max-w-4xl">
+              <div className="mb-10 text-center">
                 <p
-                  className="text-xs uppercase tracking-[0.2em] mb-1"
+                  className="text-xs uppercase tracking-[0.2em] mb-2"
                   style={{ color: style.accentColor }}
                 >
                   Más personajes del pase
