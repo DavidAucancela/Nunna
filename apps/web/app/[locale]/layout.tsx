@@ -8,6 +8,7 @@ import { Footer } from "@/components/layout/Footer";
 import { MainContent } from "@/components/layout/MainContent";
 import { LenisProvider } from "@/components/ui/LenisProvider";
 import "@/styles/globals.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 interface LocaleLayoutProps {
   children: React.ReactNode;

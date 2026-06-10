@@ -3,10 +3,8 @@ import { HeroSection }         from "@/modules/home/components/HeroSection";
 import { MarqueeStrip }        from "@/modules/home/components/MarqueeStrip";
 import { PersonajesShowcase }  from "@/modules/home/components/PersonajesShowcase";
 import { ProductoSection }     from "@/modules/home/components/ProductoSection";
-import { OrigenesSection }     from "@/modules/home/components/OrigenesSection";
-import { StatsSection }        from "@/modules/home/components/StatsSection";
+import { PaseMapSection }      from "@/modules/home/components/PaseMapSection";
 import { CtaFinal }            from "@/modules/home/components/CtaFinal";
-import { FadeUp }              from "@/components/ui/FadeUp";
 import type { PersonajeListItem } from "@seres-del-pase/types";
 
 interface HomePageProps {
@@ -59,23 +57,8 @@ export default async function HomePage({ params }: HomePageProps) {
       {/* 4. Producto — cómo funciona */}
       <ProductoSection />
 
-      {/* 5. Orígenes — las 4 culturas */}
-      <section className="border-b border-borde-sutil px-5 py-16 sm:px-6 sm:py-20">
-        <div className="mx-auto max-w-7xl">
-          <FadeUp>
-            <div className="mb-10 text-center">
-              <p className="text-xs uppercase tracking-[0.25em] text-acento-dorado">El cosmos andino</p>
-              <h2 className="mt-2 font-serif text-3xl font-bold text-texto-claro md:text-4xl">
-                Cuatro orígenes, una sola celebración
-              </h2>
-            </div>
-          </FadeUp>
-          <OrigenesSection />
-        </div>
-      </section>
-
-      {/* 6. Stats — foto de pase + cita + contadores */}
-      <StatsSection />
+      {/* 5. Mapa del pase — animado por scroll */}
+      <PaseMapSection />
 
       {/* 7. CTA final */}
       <CtaFinal />
