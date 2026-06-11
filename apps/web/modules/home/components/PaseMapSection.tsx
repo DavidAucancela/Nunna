@@ -4,8 +4,30 @@ import { useEffect, useRef, useState } from "react";
 import { useScroll, useMotionValueEvent, motion, AnimatePresence, type MotionStyle } from "framer-motion";
 import Image from "next/image";
 
-const TILE_STYLE =
-  "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+const TILE_STYLE = {
+  version: 8 as const,
+  name: "CARTO Dark Matter",
+  sources: {
+    carto: {
+      type: "raster" as const,
+      tiles: [
+        "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+      ],
+      tileSize: 256,
+      attribution: "© <a href='https://carto.com/attributions'>CARTO</a> © <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
+    },
+  },
+  layers: [
+    {
+      id: "carto",
+      type: "raster" as const,
+      source: "carto",
+    },
+  ],
+};
 
 // Ruta: Instituto Tecnológico Riobamba
 // Carlos Zambrano → Av. Daniel León Borja → 10 de Agosto → Iglesia La Catedral
@@ -132,9 +154,14 @@ export function PaseMapSection() {
     if (!container) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let map: any;
+    let ro: ResizeObserver | undefined;
 
     (async () => {
       const maplibregl = (await import("maplibre-gl")).default;
+
+      // Forzar dimensiones antes de crear el mapa — MapLibre lee offsetHeight al init
+      container.style.width = "100%";
+      container.style.height = "100vh";
 
       map = new maplibregl.Map({
         container,
@@ -147,9 +174,9 @@ export function PaseMapSection() {
 
       mapRef.current = map;
 
-      // Forzar dimensiones correctas tras hidratación
-      setTimeout(() => map.resize(), 100);
-      setTimeout(() => map.resize(), 500);
+      // ResizeObserver: re-ajusta el mapa si el contenedor cambia de tamaño
+      ro = new ResizeObserver(() => map?.resize());
+      ro.observe(container);
 
       map.on("error", (e: unknown) => console.error("[MapLibre]", e));
 
@@ -220,7 +247,7 @@ export function PaseMapSection() {
       });
     })();
 
-    return () => { map?.remove(); };
+    return () => { ro?.disconnect(); map?.remove(); };
   }, []);
 
   return (

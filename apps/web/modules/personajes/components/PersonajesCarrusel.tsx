@@ -2,8 +2,7 @@
 
 import { useState, useCallback } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import type { PersonajeListItem } from "@seres-del-pase/types";
@@ -19,7 +18,7 @@ export function PersonajesCarrusel({ personajes }: PersonajesCarruselProps) {
   const handleClick = useCallback(
     (p: PersonajeListItem) => {
       if (activeId === p.id) {
-        router.push(`/personajes/${p.slug}`);
+        router.push({ pathname: "/personajes/[slug]", params: { slug: p.slug } });
       } else {
         setActiveId(p.id);
       }
@@ -135,7 +134,7 @@ export function PersonajesCarrusel({ personajes }: PersonajesCarruselProps) {
               </p>
 
               <Link
-                href={`/personajes/${p.slug}`}
+                href={{ pathname: "/personajes/[slug]", params: { slug: p.slug } }}
                 onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-stone-950/60 px-4 py-1.5 text-xs font-medium text-white backdrop-blur-sm hover:bg-white/15 transition-colors"
               >

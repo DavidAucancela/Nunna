@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { usePathname } from "next/navigation";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { StaggerLetters } from "@/components/ui/FadeUp";

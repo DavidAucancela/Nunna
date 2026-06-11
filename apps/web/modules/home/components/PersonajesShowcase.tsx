@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { FadeUp } from "@/components/ui/FadeUp";
 import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
@@ -22,7 +22,7 @@ function ShowcaseCard({ personaje }: { personaje: ShowcasePersonaje }) {
 
   return (
     <Link
-      href={`/personajes/${personaje.slug}`}
+      href={{ pathname: "/personajes/[slug]", params: { slug: personaje.slug } }}
       className="group relative block h-full overflow-hidden rounded-2xl border border-borde-sutil transition-transform duration-300 hover:-translate-y-1 focus:outline-none"
     >
       {hasImage ? (
