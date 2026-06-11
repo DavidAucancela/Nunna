@@ -57,7 +57,20 @@
     "titulo_seccion": "Su historia",
     "leyenda_label": "Leyenda",
     "secreto_label": "El artesano revela",
-    "volver": "Volver a los personajes"
+    "volver": "Volver a los personajes",
+    "saltar": "Saltar",
+    "capitulo": "Capítulo",
+    "secreto_titulo": "Solo para quienes tienen este imán",
+    "secreto_subtitulo": "Un dato que no encontrarás en la ficha pública",
+    "cta": "Conocer al {nombre} completo",
+    "espiritu_despierta": "El espíritu despierta…",
+    "scroll_hint": "Descubre su historia",
+    "copiar_secreto": "Copiar secreto",
+    "copiado": "¡Copiado!",
+    "compartir_whatsapp": "Compartir en WhatsApp",
+    "compartir_mensaje": "Descubrí el secreto de {nombre} 🔑\n\n\"{secreto}\"\n\n— Solo para quienes tienen el imán Nunna ✨",
+    "cta_qr_titulo": "La historia completa de {nombre} está en el imán.",
+    "cta_qr_boton": "Ver la experiencia completa"
   },
   "comun": {
     "cargando": "Cargando…",

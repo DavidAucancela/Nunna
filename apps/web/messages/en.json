@@ -57,7 +57,20 @@
     "titulo_seccion": "Their story",
     "leyenda_label": "Legend",
     "secreto_label": "The artisan reveals",
-    "volver": "Back to characters"
+    "volver": "Back to characters",
+    "saltar": "Skip",
+    "capitulo": "Chapter",
+    "secreto_titulo": "Only for those who hold this magnet",
+    "secreto_subtitulo": "A fact you won't find on the public page",
+    "cta": "Meet {nombre} in full",
+    "espiritu_despierta": "The spirit awakens…",
+    "scroll_hint": "Discover the story",
+    "copiar_secreto": "Copy secret",
+    "copiado": "Copied!",
+    "compartir_whatsapp": "Share on WhatsApp",
+    "compartir_mensaje": "I discovered the secret of {nombre} 🔑\n\n\"{secreto}\"\n\n— Only for Nunna magnet holders ✨",
+    "cta_qr_titulo": "The full story of {nombre} is in the magnet.",
+    "cta_qr_boton": "See the full experience"
   },
   "comun": {
     "cargando": "Loading…",

@@ -7,6 +7,7 @@ import { PaseMapSection }      from "@/modules/home/components/PaseMapSection";
 import { CtaFinal }            from "@/modules/home/components/CtaFinal";
 import type { PersonajeListItem } from "@seres-del-pase/types";
 
+
 interface HomePageProps {
   params: Promise<{ locale: string }>;
 }
@@ -21,10 +22,10 @@ const LEYENDAS: Record<string, string> = {
 };
 
 const FALLBACKS: PersonajeListItem[] = [
-  { id: "aya-uma",         slug: "aya-uma",         nombre: "Aya Uma",         origen: "prehispanico", resumen: "", totalPases: 0, imagenPortada: "/personajes/aya-uma/portada.png" },
-  { id: "diablos-de-lata", slug: "diablos-de-lata", nombre: "Diablos de lata", origen: "mestizo",      resumen: "", totalPases: 0, imagenPortada: "/personajes/diablos-de-lata/portada.png" },
-  { id: "perro",           slug: "perro",           nombre: "Perro",           origen: "prehispanico", resumen: "", totalPases: 0, imagenPortada: "/personajes/perro/portada.png" },
-  { id: "payaso",          slug: "payaso",          nombre: "Payaso",          origen: "mixto",        resumen: "", totalPases: 0, imagenPortada: "/personajes/payaso/portada.png" },
+  { id: "aya-uma",         slug: "aya-uma",         nombre: "Aya Uma",         origen: "prehispanico", resumen: "", totalPases: 0, imagenPortada: "/personajes/aya-uma.png" },
+  { id: "diablos-de-lata", slug: "diablos-de-lata", nombre: "Diablos de lata", origen: "mestizo",      resumen: "", totalPases: 0, imagenPortada: "/personajes/diablos-de-lata.png" },
+  { id: "perro",           slug: "perro",           nombre: "Perro",           origen: "prehispanico", resumen: "", totalPases: 0, imagenPortada: "/personajes/perro.png" },
+  { id: "payaso",          slug: "payaso",          nombre: "Payaso",          origen: "mixto",        resumen: "", totalPases: 0, imagenPortada: "/personajes/payaso.png" },
 ];
 
 export default async function HomePage({ params }: HomePageProps) {
