@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
@@ -23,7 +23,7 @@ export function PersonajeCard({ personaje }: PersonajeCardProps) {
       transition={{ duration: 0.25, ease: "easeOut" }}
     >
       <Link
-        href={`/personajes/${personaje.slug}`}
+        href={{ pathname: "/personajes/[slug]", params: { slug: personaje.slug } }}
         onClick={() => window.scrollTo({ top: 0, behavior: "instant" })}
         className="group relative block aspect-[3/4] overflow-hidden rounded-2xl"
         style={{

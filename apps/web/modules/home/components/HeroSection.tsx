@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useRef } from "react";
 import {
   motion,
@@ -38,7 +38,7 @@ function NunnaLetter({ char, index, weight, mouseX }: NunnaLetterProps) {
   // style controla x (parallax horizontal, sin conflicto), whileHover controla scale.
   return (
     <motion.span
-      className="inline-block cursor-default"
+      className="inline-block cursor-default text-shimmer"
       initial={{ opacity: 0, y: 50, rotateX: -45 }}
       animate={{ opacity: 1, y: 0, rotateX: 0 }}
       transition={{ delay: 0.35 + index * 0.09, duration: 0.75, ease: [0.215, 0.61, 0.355, 1] }}
@@ -63,7 +63,7 @@ function NunnaTitle({
 
   return (
     <h1
-      className="mt-4 text-shimmer"
+      className="mt-4"
       style={{
         fontSize: "clamp(5.5rem, 22vw, 15rem)",
         letterSpacing: "-0.03em",
@@ -126,7 +126,7 @@ function MagneticButton({
   return (
     <div ref={ref} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
       <motion.div style={{ x: sx, y: sy }}>
-        <Link href={href} className={`${base} ${cls}`}>{children}</Link>
+        <Link href={href as "/personajes" | "/calendario"} className={`${base} ${cls}`}>{children}</Link>
       </motion.div>
     </div>
   );

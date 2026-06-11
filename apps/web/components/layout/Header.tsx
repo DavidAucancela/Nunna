@@ -1,9 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { usePathname, useParams } from "next/navigation";
+import { useParams, usePathname as useRawPathname, useRouter as useNextRouter } from "next/navigation";
 import { useState } from "react";
+import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_LINKS = [
@@ -22,9 +22,17 @@ const LOCALES = [
 export function Header() {
   const t = useTranslations("nav");
   const pathname = usePathname();
+  const rawPathname = useRawPathname();
+  const nextRouter = useNextRouter();
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const switchLocale = (code: string) => {
+    const segments = rawPathname.split("/");
+    segments[1] = code;
+    nextRouter.push(segments.join("/"));
+  };
 
   const isActive = (href: string) => pathname.includes(href);
 
@@ -70,9 +78,9 @@ export function Header() {
           {/* Selector de idioma */}
           <div className="hidden items-center gap-0.5 rounded-lg border border-borde-sutil p-0.5 md:flex">
             {LOCALES.map(({ code, label }) => (
-              <Link
+              <button
                 key={code}
-                href={`/${code}`}
+                onClick={() => switchLocale(code)}
                 className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                   locale === code
                     ? "bg-stone-800 text-texto-claro"
@@ -80,7 +88,7 @@ export function Header() {
                 }`}
               >
                 {label}
-              </Link>
+              </button>
             ))}
           </div>
 
@@ -154,10 +162,9 @@ export function Header() {
               <div className="flex items-center gap-1 pt-3 border-t border-borde-sutil mt-3">
                 <span className="text-xs text-stone-600 mr-1">Idioma:</span>
                 {LOCALES.map(({ code, label }) => (
-                  <Link
+                  <button
                     key={code}
-                    href={`/${code}`}
-                    onClick={() => setMenuOpen(false)}
+                    onClick={() => { switchLocale(code); setMenuOpen(false); }}
                     className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                       locale === code
                         ? "bg-stone-800 text-texto-claro"
@@ -165,7 +172,7 @@ export function Header() {
                     }`}
                   >
                     {label}
-                  </Link>
+                  </button>
                 ))}
               </div>
             </div>

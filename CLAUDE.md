@@ -258,6 +258,8 @@ Modo oscuro por defecto.
 - **Deploy en producción** → https://nunnaec-production.up.railway.app/
 - **Adaptación producto imanes** — llaveros → imanes, QR → ficha directa, historia integrada en ficha (2026-06-04)
 - **Ficha completa como destino QR** — Hero + Resumen + Historia (leyenda + capítulos + secreto) + Galería + Cross-sell
+- **Fix shimmer título landing** — `text-shimmer` movido de `h1` a cada `motion.span` individual (2026-06-10)
+- **Fix mapa "Un pase, un camino"** — tiles CARTO Dark Matter via raster CDN + height forzada antes de init MapLibre (2026-06-10)
 
 ### 🔄 Siguiente
 - Merge branch `feature/MejorandoPersonajes` → `main` y redeploy en Railway
@@ -311,6 +313,21 @@ Modo oscuro por defecto.
 
 ### next-intl
 - `i18n/request.ts` usa `.default` en dynamic import — sin esto React tira error de serialización
+
+### text-shimmer con Framer Motion (`HeroSection.tsx`)
+- **No poner `text-shimmer` en el padre** cuando los hijos son `motion.span` con `whileHover`
+- El problema: `scale` en `whileHover` crea un nuevo compositing layer para el span; ese layer hereda `color: transparent` del padre pero pierde acceso al gradiente `background-clip: text` del `h1` → letra invisible
+- **Solución**: aplicar `text-shimmer` directamente en cada `motion.span`, no en el `h1` contenedor
+
+### MapLibre GL en PaseMapSection (`PaseMapSection.tsx`)
+- **Tiles**: usar CARTO raster CDN `dark_all`, no el endpoint GL vector JSON que requiere auth
+  - URL: `https://{a,b,c,d}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png`
+  - El endpoint `/gl/dark-matter-gl-style/style.json` fue deprecado/requiere API key desde 2023
+- **Altura del contenedor**: forzar `container.style.height = "100vh"` **antes** de `new maplibregl.Map()`
+  - MapLibre lee `offsetHeight` al inicializar; `absolute inset-0` no resuelve la altura antes del primer paint → devuelve 300px (default MapLibre)
+  - Sin este fix el canvas tiene 300px de alto y los tiles no cubren la pantalla
+- **ResizeObserver**: conectar al contenedor para llamar `map.resize()` ante cambios de tamaño (mobile rotate, etc.)
+- MapLibre versión: `^4.7.1`
 
 ### Infraestructura
 - **Todo en Railway** — no Vercel
