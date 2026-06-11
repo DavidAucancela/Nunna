@@ -52,6 +52,11 @@
   }
 }
 
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.55; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
 @layer utilities {
   /* Gradiente de texto dorado para headings de impacto */
   .text-gradient-dorado {
