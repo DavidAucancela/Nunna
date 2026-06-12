@@ -1,4 +1,4 @@
-import { getPersonajes } from "@/lib/data";
+import { getPersonajes, getPersonaje, getRecorrido } from "@/lib/data";
 import { HeroSection }         from "@/modules/home/components/HeroSection";
 import { MarqueeStrip }        from "@/modules/home/components/MarqueeStrip";
 import { PersonajesShowcase }  from "@/modules/home/components/PersonajesShowcase";
@@ -14,13 +14,6 @@ interface HomePageProps {
 
 const FEATURED_SLUGS = ["aya-uma", "diablos-de-lata", "perro", "payaso"];
 
-const LEYENDAS: Record<string, string> = {
-  "aya-uma":         "Donde el espíritu camina, la tierra responde.",
-  "diablos-de-lata": "Tomaron el símbolo del miedo y lo convirtieron en el corazón de la fiesta.",
-  "perro":           "El Allku guarda el umbral que ningún humano puede cruzar solo.",
-  "payaso":          "La máscara sonríe fija. La verdad no necesita permiso para salir.",
-};
-
 const FALLBACKS: PersonajeListItem[] = [
   { id: "aya-uma",         slug: "aya-uma",         nombre: "Aya Uma",         origen: "prehispanico", resumen: "", totalPases: 0, imagenPortada: "/personajes/aya-uma.png" },
   { id: "diablos-de-lata", slug: "diablos-de-lata", nombre: "Diablos de lata", origen: "mestizo",      resumen: "", totalPases: 0, imagenPortada: "/personajes/diablos-de-lata.png" },
@@ -34,11 +27,15 @@ export default async function HomePage({ params }: HomePageProps) {
   const allPersonajes = await getPersonajes({ locale });
   const slugMap = new Map(allPersonajes.map((p) => [p.slug, p]));
 
-  const featured = FEATURED_SLUGS.map((slug, i) => {
-    const base = slugMap.get(slug) ?? FALLBACKS[i]!;
-    const leyenda = LEYENDAS[slug];
-    return leyenda ? { ...base, leyenda } : { ...base };
-  });
+  const featured = await Promise.all(
+    FEATURED_SLUGS.map(async (slug, i) => {
+      const base = slugMap.get(slug) ?? FALLBACKS[i]!;
+      const leyenda = (await getPersonaje(slug))?.narrativa?.leyenda;
+      return leyenda ? { ...base, leyenda } : { ...base };
+    })
+  );
+
+  const recorrido = await getRecorrido();
 
   return (
     <>
@@ -59,7 +56,7 @@ export default async function HomePage({ params }: HomePageProps) {
       <ProductoSection />
 
       {/* 5. Mapa del pase — animado por scroll */}
-      <PaseMapSection />
+      <PaseMapSection recorrido={recorrido} />
 
       {/* 7. CTA final */}
       <CtaFinal />

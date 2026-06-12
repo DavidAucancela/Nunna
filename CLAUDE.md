@@ -30,7 +30,7 @@ Implicaciones técnicas:
 
 | Capa | Tecnología | Ubicación |
 |------|-----------|-----------|
-| Frontend | Next.js 15.1 (App Router) + TypeScript | `apps/web/` |
+| Frontend | Next.js 15.5 (App Router) + TypeScript | `apps/web/` |
 | Estilos | Tailwind CSS v3 + PostCSS | `apps/web/tailwind.config.js` |
 | i18n | next-intl v3 (es / qu / en) | `apps/web/i18n/` + `apps/web/messages/` |
 | Datos | JSON estático en repo | `apps/web/lib/data/` |
@@ -86,35 +86,45 @@ No se necesitan variables de entorno para correr el frontend en desarrollo — l
 
 ```
 apps/web/
-├── app/[locale]/
-│   ├── layout.tsx                  → usa MainContent
-│   ├── page.tsx                    → Landing
-│   ├── personajes/
-│   │   ├── page.tsx                → Grid de personajes
-│   │   └── [slug]/
-│   │       └── page.tsx            → ★★ DESTINO QR — ficha completa con historia
-│   ├── calendario/page.tsx         → Pases y Festividades
-│   └── glosario/page.tsx
-├── components/
-│   ├── layout/
-│   │   ├── Header.tsx
-│   │   ├── Footer.tsx
-│   │   └── MainContent.tsx         → wrapper que añade pt-16 y footer
-│   ├── personajes/
-│   │   ├── PersonajeCard.tsx       → usa imagenPortada (retrato)
-│   │   ├── ParallaxHero.tsx        → usa imagenBanner primero, fallback a imagen (Client)
-│   │   ├── SimbolismoSection.tsx   → componente existente (sin uso activo)
-│   │   └── GaleriaSection.tsx      → 3 tabs: El personaje / El imán / En el pase (Client)
-│   └── ui/                         → FadeUp, AnimatedCounter, ScrollProgress, WhatsAppShare, OrigenPlaceholder
+├── app/
+│   ├── [locale]/
+│   │   ├── layout.tsx              → usa MainContent
+│   │   ├── page.tsx                → Landing
+│   │   ├── personajes/
+│   │   │   ├── page.tsx            → Grid de personajes
+│   │   │   └── [slug]/page.tsx     → ★★ DESTINO QR — ficha completa con historia
+│   │   ├── pases/page.tsx
+│   │   ├── calendario/page.tsx     → Pases y Festividades
+│   │   ├── glosario/page.tsx
+│   │   ├── buscar/page.tsx
+│   │   ├── mapa/page.tsx
+│   │   └── sobre/page.tsx
+│   └── api/health/route.ts         → healthcheck Railway
+├── components/                     → SOLO compartidos entre módulos
+│   ├── layout/                     → Header, Footer, MainContent (wrapper pt-16 + footer)
+│   └── ui/                         → FadeUp, AnimatedCounter, ScrollProgress, ScrollToTop,
+│                                     WhatsAppShare, OrigenPlaceholder, LenisProvider
+├── modules/                        → ★ Componentes por feature
+│   ├── home/components/            → HeroSection, PaseMapSection (recorrido), PersonajesShowcase,
+│   │                                 ProductoSection, OrigenesSection, StatsSection, MarqueeStrip, CtaFinal
+│   ├── personajes/components/      → PersonajeCard, ParallaxHero, GaleriaSection (3 tabs),
+│   │                                 NarrativaSection, PersonajesCarrusel, HotspotsViewer (sin uso),
+│   │                                 SimbolismoSection (sin uso)
+│   ├── festividades/components/    → CalendarioGrid
+│   └── glosario/components/        → GlosarioClient
 ├── lib/
-│   ├── data.ts                     → ★ Acceso a datos — merge multimedia portada + JSON
+│   ├── data.ts                     → ★ barrel — re-exporta lib/services/*
+│   ├── services/                   → personajes.service.ts (toPersonaje, merge multimedia),
+│   │                                 pases.service.ts, glosario.service.ts
 │   ├── data/
-│   │   ├── personajes.json         → 9 personajes con narrativa (incl. palabrasClave), hotspots, imagenBanner, multimedia
+│   │   ├── personajes.json         → 9 personajes con narrativa, hotspots, imagenBanner, multimedia
 │   │   ├── glosario.json           → 16 entradas kichwa
 │   │   └── pases.json              → 7 pases con fechas y rutas
 │   └── origen-styles.ts            → Estilos por tipo de origen
 ├── public/
-│   ├── personajes/                 → Imágenes (ver tabla de personajes más abajo)
+│   ├── personajes/                 → Imágenes planas [slug]-*.png (convención actual)
+│   │                                 ⚠ subcarpetas por slug (aya-uma/, payaso/, …) son legacy —
+│   │                                 aún referenciadas por PaseMapSection, no por el JSON
 │   └── pases/                      → Imágenes de los pases
 ├── i18n/routing.ts                 → Locales + pathnames
 ├── messages/                       → es.json / qu.json / en.json (incluye sección "historia")
@@ -132,7 +142,8 @@ Todas las páginas importan de `@/lib/data` (nunca de Directus ni de APIs extern
 import { getPersonajes, getPersonaje, getPases, getGlosario } from "@/lib/data";
 ```
 
-`toPersonaje()` construye el array `multimedia` mergeando:
+`lib/data.ts` es solo un barrel; la lógica vive en `lib/services/*.service.ts`.
+`toPersonaje()` (en `personajes.service.ts`) construye el array `multimedia` mergeando:
 1. `imagenPortada` del JSON → como `multimedia[0]` con id `${slug}-portada`
 2. Las entradas adicionales del array `multimedia` del JSON (presentaciones, grupo, etc.)
 
@@ -160,7 +171,7 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
   "id": "aya-uma-presentacion",
   "tipo": "imagen",
   "url": "/personajes/aya-uma-presentacion.png",
-  "altText": "Llavero Aya Uma — presentación individual",
+  "altText": "Imán Aya Uma — presentación individual",
   "titulo": "proceso",
   "descripcion": "Texto que aparece en hover",
   "orden": 1
@@ -170,24 +181,26 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 | `titulo` | Tab en galería |
 |----------|---------------|
 | `undefined` / `"retrato"` | El personaje |
-| `"proceso"` | El llavero |
+| `"proceso"` | El imán |
 | `"en-pase"` | En el pase |
+
+> Terminología estandarizada a **"imán"** en todo el código y datos (commit `b749f53`, 2026-06-11). No reintroducir "llavero".
 
 ---
 
 ## Ficha pública — ruta `/personajes/[slug]`
 
-**Propósito:** presentación mínima del personaje. No revela el contenido profundo de `/historia`.
+**Propósito:** destino del QR — ficha completa, la historia va integrada (no existe ruta `/historia` separada).
 
-### Estructura de la ficha (desde 2026-06-01)
+### Estructura de la ficha (desde 2026-06-04)
 
 ```
 1. ParallaxHero       → imagen + nombre + origen
 2. Resumen            → 1 párrafo lead editorial
-3. Chips de datos     → origen (color acento) + "Personaje del pase riobambeño" + nombresAlt[0]
-4. GaleriaSection     → 3 tabs: El personaje / El llavero / En el pase
-5. CTA QR             → "La historia completa de {nombre} está en el llavero." + botón → /historia
-6. Cross-sell         → hasta 4 otros personajes con imagen
+3. Ficha de datos     → origen (color acento) + festividad + nombresAlt
+4. Historia           → leyenda (cita centrada) + capítulos numerados + secreto del artesano
+5. GaleriaSection     → 3 tabs: El personaje / El imán / En el pase
+6. Cross-sell         → grid de otros personajes con imagen
 ```
 
 **Eliminado de la ficha:** SimbolismoSection, HotspotsViewer, Testimonios, Tags, WhatsAppShare, ScrollProgress.
@@ -260,9 +273,13 @@ Modo oscuro por defecto.
 - **Ficha completa como destino QR** — Hero + Resumen + Historia (leyenda + capítulos + secreto) + Galería + Cross-sell
 - **Fix shimmer título landing** — `text-shimmer` movido de `h1` a cada `motion.span` individual (2026-06-10)
 - **Fix mapa "Un pase, un camino"** — tiles CARTO Dark Matter via raster CDN + height forzada antes de init MapLibre (2026-06-10)
+- **Rediseño sección recorrido** — split-screen mapa (55%) + panel narrador (45%) con scroll-driven storytelling (`PaseMapSection.tsx`, 2026-06-10)
+- **Reorganización a `modules/`** — componentes por feature en `modules/<feature>/components/`; `components/` solo layout y ui
+- **Terminología "imán" estandarizada** + multimedia en-pase/proceso para Aya Uma, Payaso, Perro y Diablos de lata (2026-06-11)
 
 ### 🔄 Siguiente
-- Merge branch `feature/MejorandoPersonajes` → `main` y redeploy en Railway
+- Merge branch `fix/imagenes-multimedia-terminologia` → `main` y redeploy en Railway
+- Limpiar subcarpetas legacy en `public/personajes/` (aya-uma/, payaso/, …) y migrar `PaseMapSection` a las rutas planas del JSON
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
 - Fotografías reales "En el pase" para la galería (`titulo: "en-pase"`)
 - Fotografías del imán físico para la galería (`titulo: "proceso"`)
@@ -320,13 +337,21 @@ Modo oscuro por defecto.
 - **Solución**: aplicar `text-shimmer` directamente en cada `motion.span`, no en el `h1` contenedor
 
 ### MapLibre GL en PaseMapSection (`PaseMapSection.tsx`)
+- **Datos del recorrido en JSON**: ruta, waypoints, centro y zoom viven en `lib/data/recorrido.json`;
+  `getRecorrido()` (`lib/services/recorrido.service.ts`) los une con `personajes.json` (nombre kichwa-first,
+  `narrativa.leyenda`, altText). El componente recibe todo como prop desde `page.tsx` — no editar datos en el TSX.
 - **Tiles**: usar CARTO raster CDN `dark_all`, no el endpoint GL vector JSON que requiere auth
   - URL: `https://{a,b,c,d}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png`
   - El endpoint `/gl/dark-matter-gl-style/style.json` fue deprecado/requiere API key desde 2023
-- **Altura del contenedor**: forzar `container.style.height = "100vh"` **antes** de `new maplibregl.Map()`
-  - MapLibre lee `offsetHeight` al inicializar; `absolute inset-0` no resuelve la altura antes del primer paint → devuelve 300px (default MapLibre)
-  - Sin este fix el canvas tiene 300px de alto y los tiles no cubren la pantalla
-- **ResizeObserver**: conectar al contenedor para llamar `map.resize()` ante cambios de tamaño (mobile rotate, etc.)
+  - Atribución CARTO/OSM obligatoria → `attributionControl: { compact: true }`, nunca `false`
+- **Altura del contenedor**: fijar `container.style.height` en px (leída del wrapper `h-[45vh]`/`md:h-full`)
+  **antes** de `new maplibregl.Map()` — MapLibre lee `offsetHeight` al inicializar; `absolute inset-0`
+  no resuelve la altura antes del primer paint → devuelve 300px (default MapLibre)
+- **ResizeObserver sobre el wrapper**: re-sincroniza la altura en px y llama `map.resize()` (mobile rotate, etc.)
+- **Init perezoso**: el mapa se inicializa vía IntersectionObserver (`rootMargin: "100% 0px"`) cuando la
+  sección se acerca al viewport — no descargar maplibre-gl/tiles si el usuario no llega a la sección
+- **prefers-reduced-motion**: `useReducedMotion()` controla `flyTo` (duración 0) y transiciones del panel;
+  no usar `essential: true` en `flyTo` (ignora la preferencia)
 - MapLibre versión: `^4.7.1`
 
 ### Infraestructura

@@ -33,6 +33,14 @@
       "titulo": "¿Tienes un imán?",
       "texto": "Escanea el código QR de tu tarjeta para descubrir la historia completa del ser.",
       "cta": "Ver todos los personajes"
+    },
+    "recorrido": {
+      "eyebrow": "El recorrido",
+      "titulo": "Un pase, un camino",
+      "fecha": "20 de diciembre · Inst. Tecnológico Riobamba",
+      "scroll_hint": "Desplázate para seguir el pase",
+      "ver_ficha": "Ver ficha completa",
+      "ver_calendario": "Ver calendario de pases"
     }
   },
   "personajes": {

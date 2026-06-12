@@ -162,7 +162,7 @@ export function HeroSection() {
       {/* Video de fondo */}
       <div className="absolute inset-0">
         <Image
-          src="/personajes/aya-uma/banner.png"
+          src="/personajes/aya-uma-banner.png"
           alt=""
           fill
           className="object-cover object-center"
@@ -176,7 +176,7 @@ export function HeroSection() {
           loop
           playsInline
           preload="auto"
-          poster="/personajes/aya-uma/banner.png"
+          poster="/personajes/aya-uma-banner.png"
           className="absolute inset-0 h-full w-full object-cover object-center"
           aria-hidden="true"
         >

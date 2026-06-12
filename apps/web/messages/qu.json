@@ -33,6 +33,14 @@
       "titulo": "¿Imán charinkichu?",
       "texto": "Kartaykipi QR código liypa, kay runamanta tukuyta yachay.",
       "cta": "Tukuy runakunata qhaway"
+    },
+    "recorrido": {
+      "eyebrow": "Puriy ñan",
+      "titulo": "Shuk pase, shuk ñan",
+      "fecha": "Diciembre 20 · Inst. Tecnológico Riobamba",
+      "scroll_hint": "Paseta katiy",
+      "ver_ficha": "Tukuyta qhaway",
+      "ver_calendario": "Watapurata qhaway"
     }
   },
   "personajes": {
