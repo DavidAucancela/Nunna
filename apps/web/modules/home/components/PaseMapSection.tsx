@@ -1,9 +1,22 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useScroll, useMotionValueEvent, motion, AnimatePresence } from "framer-motion";
+import {
+  useScroll,
+  useMotionValueEvent,
+  useReducedMotion,
+  motion,
+  AnimatePresence,
+} from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import type {
+  Map as MapLibreMap,
+  Marker as MapLibreMarker,
+  GeoJSONSource,
+} from "maplibre-gl";
+import { Link } from "@/i18n/navigation";
+import type { Recorrido } from "@/lib/data";
 
 const TILE_STYLE = {
   version: 8 as const,
@@ -25,87 +38,6 @@ const TILE_STYLE = {
   layers: [{ id: "carto", type: "raster" as const, source: "carto" }],
 };
 
-// Carlos Zambrano → Av. Daniel León Borja → 10 de Agosto → Iglesia La Catedral
-const ROUTE_COORDS: [number, number][] = [
-  [-78.646, -1.6668],
-  [-78.6478, -1.667],
-  [-78.6495, -1.667],
-  [-78.651, -1.6671],
-  [-78.6522, -1.667],
-  [-78.6535, -1.6669],
-  [-78.6545, -1.6668],
-  [-78.6545, -1.6661],
-  [-78.6545, -1.6654],
-  [-78.6544, -1.6646],
-  [-78.6544, -1.6638],
-];
-
-interface Waypoint {
-  progress: number;
-  coord: [number, number];
-  image: string;
-  extraImages: string[];
-  alt: string;
-  nombre: string;
-  calle: string;
-  leyenda: string;
-  slug: string;
-}
-
-const WAYPOINTS: Waypoint[] = [
-  {
-    progress: 0.08,
-    coord: [-78.646, -1.6668],
-    image: "/personajes/aya-uma/en-pase.webp",
-    extraImages: [
-      "/personajes/aya-uma/en-pase-2.jpg",
-      "/personajes/aya-uma/grupo.jpeg",
-    ],
-    alt: "Aya Uma en el pase",
-    nombre: "Aya Uma",
-    calle: "Carlos Zambrano",
-    leyenda: "Donde el espíritu camina, la tierra responde.",
-    slug: "aya-uma",
-  },
-  {
-    progress: 0.35,
-    coord: [-78.651, -1.6671],
-    image: "/personajes/diablos-de-lata/en-pase.jpg",
-    extraImages: [],
-    alt: "Diablos de lata en el pase",
-    nombre: "Diablos de lata",
-    calle: "Av. Daniel León Borja",
-    leyenda:
-      "Tomaron el símbolo del miedo y lo convirtieron en el corazón de la fiesta.",
-    slug: "diablos-de-lata",
-  },
-  {
-    progress: 0.62,
-    coord: [-78.6545, -1.6661],
-    image: "/personajes/payaso/en-pase.jpeg",
-    extraImages: [
-      "/personajes/payaso/en-pase-2.jpeg",
-      "/personajes/payaso/payaso_pase_primer_plano_mascara.jpg",
-    ],
-    alt: "Payaso en el pase",
-    nombre: "Payaso",
-    calle: "10 de Agosto",
-    leyenda: "La máscara sonríe fija. La verdad no necesita permiso para salir.",
-    slug: "payaso",
-  },
-  {
-    progress: 0.88,
-    coord: [-78.6544, -1.6638],
-    image: "/personajes/perro/en-pase.webp",
-    extraImages: ["/personajes/perro/en-pase-2.jpg"],
-    alt: "Perro Allku en el pase",
-    nombre: "Perro · Allku",
-    calle: "Iglesia La Catedral",
-    leyenda: "El Allku guarda el umbral que ningún humano puede cruzar solo.",
-    slug: "perro",
-  },
-];
-
 function getRouteAtProgress(
   coords: [number, number][],
   progress: number
@@ -125,16 +57,18 @@ function getRouteAtProgress(
   return result;
 }
 
-export function PaseMapSection() {
+export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
+  const { ruta, waypoints, centro, zoom } = recorrido;
+  const t = useTranslations("home.recorrido");
+  const reducedMotion = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mapRef = useRef<any>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const dotMarkerRef = useRef<any>(null);
+  const mapRef = useRef<MapLibreMap | null>(null);
+  const dotMarkerRef = useRef<MapLibreMarker | null>(null);
   const waypointMarkersRef = useRef<HTMLDivElement[]>([]);
   const prevActiveIdxRef = useRef(-1);
   const [activeIdx, setActiveIdx] = useState(-1);
+  const [inView, setInView] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -145,19 +79,22 @@ export function PaseMapSection() {
     const p = Math.max(0, Math.min(1, (raw - 0.04) / 0.92));
 
     const map = mapRef.current;
-    if (map?.getSource?.("route-progress")) {
-      const coords = getRouteAtProgress(ROUTE_COORDS, p);
+    const source = map?.getSource("route-progress") as
+      | GeoJSONSource
+      | undefined;
+    if (map && source) {
+      const coords = getRouteAtProgress(ruta, p);
       if (coords.length >= 2) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (map.getSource("route-progress") as any).setData({
+        source.setData({
           type: "Feature",
+          properties: {},
           geometry: { type: "LineString", coordinates: coords },
         });
       }
       const lastCoord = coords[coords.length - 1]!;
       dotMarkerRef.current?.setLngLat(lastCoord);
 
-      WAYPOINTS.forEach((wp, i) => {
+      waypoints.forEach((wp, i) => {
         const el = waypointMarkersRef.current[i];
         if (!el) return;
         if (p >= wp.progress) {
@@ -165,11 +102,16 @@ export function PaseMapSection() {
           el.style.borderColor = "#C89B3C";
           el.style.color = "#C89B3C";
           el.style.boxShadow = "0 0 14px rgba(200,155,60,0.5)";
+        } else {
+          el.style.background = "rgba(200,155,60,0.07)";
+          el.style.borderColor = "rgba(200,155,60,0.22)";
+          el.style.color = "rgba(200,155,60,0.38)";
+          el.style.boxShadow = "none";
         }
       });
     }
 
-    const newActiveIdx = WAYPOINTS.reduce(
+    const newActiveIdx = waypoints.reduce(
       (acc, wp, i) => (p >= wp.progress ? i : acc),
       -1
     );
@@ -178,58 +120,85 @@ export function PaseMapSection() {
       setActiveIdx(newActiveIdx);
       if (newActiveIdx >= 0 && mapRef.current) {
         mapRef.current.flyTo({
-          center: WAYPOINTS[newActiveIdx]!.coord,
+          center: waypoints[newActiveIdx]!.coord,
           zoom: 15.1,
-          duration: 1000,
-          essential: true,
+          duration: reducedMotion ? 0 : 1000,
         });
       }
     }
   });
 
+  // Inicializar MapLibre solo cuando la sección se acerca al viewport —
+  // evita descargar la librería y los tiles si el usuario nunca llega aquí.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "100% 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   useEffect(() => {
     const container = mapContainerRef.current;
-    if (!container) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let map: any;
+    if (!inView || !container) return;
+    let map: MapLibreMap | undefined;
     let ro: ResizeObserver | undefined;
 
     (async () => {
       const maplibregl = (await import("maplibre-gl")).default;
 
-      const isMobile = window.innerWidth < 768;
-      container.style.width = "100%";
-      container.style.height = isMobile
-        ? `${window.innerHeight * 0.45}px`
-        : `${window.innerHeight}px`;
+      // MapLibre lee offsetHeight al inicializar, antes del primer paint —
+      // fijar la altura en px desde el wrapper (h-[45vh] / md:h-full) y
+      // mantenerla sincronizada ante resize/rotación.
+      const wrapper = container.parentElement;
+      const syncHeight = () => {
+        container.style.width = "100%";
+        container.style.height = `${
+          wrapper?.offsetHeight || window.innerHeight
+        }px`;
+      };
+      syncHeight();
 
       map = new maplibregl.Map({
         container,
         style: TILE_STYLE,
-        center: [-78.6502, -1.6657],
-        zoom: 14.6,
+        center: centro,
+        zoom,
         interactive: false,
-        attributionControl: false,
+        attributionControl: { compact: true },
       });
 
       mapRef.current = map;
-      ro = new ResizeObserver(() => map?.resize());
-      ro.observe(container);
+      ro = new ResizeObserver(() => {
+        syncHeight();
+        map?.resize();
+      });
+      if (wrapper) ro.observe(wrapper);
 
-      map.on("error", (e: unknown) => console.error("[MapLibre]", e));
+      const m = map;
+      m.on("error", (e: unknown) => console.error("[MapLibre]", e));
 
-      map.on("load", () => {
-        map.resize();
+      m.on("load", () => {
+        m.resize();
 
         // Ghost full route (dashed)
-        map.addSource("route-full", {
+        m.addSource("route-full", {
           type: "geojson",
           data: {
             type: "Feature",
-            geometry: { type: "LineString", coordinates: ROUTE_COORDS },
+            properties: {},
+            geometry: { type: "LineString", coordinates: ruta },
           },
         });
-        map.addLayer({
+        m.addLayer({
           id: "route-full-line",
           type: "line",
           source: "route-full",
@@ -243,17 +212,18 @@ export function PaseMapSection() {
         });
 
         // Animated progress route
-        map.addSource("route-progress", {
+        m.addSource("route-progress", {
           type: "geojson",
           data: {
             type: "Feature",
+            properties: {},
             geometry: {
               type: "LineString",
-              coordinates: [ROUTE_COORDS[0]!],
+              coordinates: [ruta[0]!],
             },
           },
         });
-        map.addLayer({
+        m.addLayer({
           id: "route-progress-glow",
           type: "line",
           source: "route-progress",
@@ -264,7 +234,7 @@ export function PaseMapSection() {
             "line-opacity": 0.18,
           },
         });
-        map.addLayer({
+        m.addLayer({
           id: "route-progress-line",
           type: "line",
           source: "route-progress",
@@ -281,26 +251,30 @@ export function PaseMapSection() {
         startEl.style.cssText =
           "width:12px;height:12px;border-radius:50%;background:#C89B3C;border:2px solid #fff;box-shadow:0 0 14px rgba(200,155,60,0.9)";
         new maplibregl.Marker({ element: startEl })
-          .setLngLat(ROUTE_COORDS[0]!)
-          .addTo(map);
+          .setLngLat(ruta[0]!)
+          .addTo(m);
 
         // Animated head dot (red with pulse ring)
         const dotEl = document.createElement("div");
         dotEl.style.cssText =
           "width:16px;height:16px;border-radius:50%;background:#B8312F;border:2.5px solid rgba(255,255,255,0.9);box-shadow:0 0 22px rgba(184,49,47,0.9);position:relative";
+        const prefersReduced = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
         const pulseRing = document.createElement("div");
         pulseRing.style.cssText =
-          "position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(184,49,47,0.45);animation:pulse-ring 1.6s ease-out infinite";
+          "position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(184,49,47,0.45)" +
+          (prefersReduced ? "" : ";animation:pulse-ring 1.6s ease-out infinite");
         dotEl.appendChild(pulseRing);
         const dotMarker = new maplibregl.Marker({
           element: dotEl,
           anchor: "center",
         });
-        dotMarker.setLngLat(ROUTE_COORDS[0]!).addTo(map);
+        dotMarker.setLngLat(ruta[0]!).addTo(m);
         dotMarkerRef.current = dotMarker;
 
         // Numbered waypoint pins
-        WAYPOINTS.forEach((wp, i) => {
+        waypoints.forEach((wp, i) => {
           const el = document.createElement("div");
           el.style.cssText = [
             "width:26px",
@@ -321,7 +295,7 @@ export function PaseMapSection() {
           waypointMarkersRef.current[i] = el;
           new maplibregl.Marker({ element: el, anchor: "center" })
             .setLngLat(wp.coord)
-            .addTo(map);
+            .addTo(m);
         });
       });
     })();
@@ -330,9 +304,9 @@ export function PaseMapSection() {
       ro?.disconnect();
       map?.remove();
     };
-  }, []);
+  }, [inView, ruta, waypoints, centro, zoom]);
 
-  const activeWp = activeIdx >= 0 ? WAYPOINTS[activeIdx] : null;
+  const activeWp = activeIdx >= 0 ? waypoints[activeIdx] : null;
 
   return (
     <section
@@ -352,14 +326,12 @@ export function PaseMapSection() {
           {/* Section header */}
           <div className="pointer-events-none absolute left-0 right-0 top-0 z-20 px-5 pt-6 md:px-7 md:pt-8">
             <p className="text-[10px] uppercase tracking-[0.3em] text-acento-dorado">
-              El recorrido
+              {t("eyebrow")}
             </p>
             <h2 className="mt-1 font-serif text-2xl font-bold text-texto-claro md:text-3xl">
-              Un pase, un camino
+              {t("titulo")}
             </h2>
-            <p className="mt-1 text-xs text-stone-500">
-              20 de diciembre · Inst. Tecnológico Riobamba
-            </p>
+            <p className="mt-1 text-xs text-stone-500">{t("fecha")}</p>
           </div>
         </div>
 
@@ -375,15 +347,15 @@ export function PaseMapSection() {
                   className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center gap-3"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  exit={{ opacity: 0, y: -28 }}
-                  transition={{ duration: 0.45 }}
+                  exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -28 }}
+                  transition={{ duration: reducedMotion ? 0.2 : 0.45 }}
                 >
                   <div className="w-px h-10 bg-gradient-to-b from-transparent to-stone-700" />
                   <p className="text-stone-600 text-[10px] uppercase tracking-[0.28em]">
-                    Desplázate para seguir el pase
+                    {t("scroll_hint")}
                   </p>
                   <p className="text-stone-700 font-serif text-sm leading-relaxed max-w-[260px]">
-                    Carlos Zambrano → Av. Daniel León Borja → 10 de Agosto → Iglesia La Catedral
+                    {waypoints.map((wp) => wp.calle).join(" → ")}
                   </p>
                   <div className="w-px h-8 bg-gradient-to-b from-stone-700 to-transparent" />
                 </motion.div>
@@ -391,10 +363,14 @@ export function PaseMapSection() {
                 <motion.div
                   key={activeIdx}
                   className="absolute inset-0 flex flex-col"
-                  initial={{ opacity: 0, y: 48 }}
+                  initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 48 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -40 }}
-                  transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -40 }}
+                  transition={
+                    reducedMotion
+                      ? { duration: 0.2 }
+                      : { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }
+                  }
                 >
                   {activeWp && (
                     <>
@@ -404,7 +380,7 @@ export function PaseMapSection() {
                         style={{ height: "42%" }}
                       >
                         <Image
-                          src={activeWp.image}
+                          src={activeWp.imagen}
                           alt={activeWp.alt}
                           fill
                           className="object-cover"
@@ -427,9 +403,9 @@ export function PaseMapSection() {
                         </blockquote>
 
                         {/* Extra images strip */}
-                        {activeWp.extraImages.length > 0 && (
+                        {activeWp.imagenesExtra.length > 0 && (
                           <div className="mt-4 flex gap-2">
-                            {activeWp.extraImages.slice(0, 2).map((img, j) => (
+                            {activeWp.imagenesExtra.slice(0, 2).map((img, j) => (
                               <div
                                 key={j}
                                 className="relative rounded-lg overflow-hidden flex-shrink-0 border border-borde-sutil"
@@ -447,25 +423,56 @@ export function PaseMapSection() {
                           </div>
                         )}
 
-                        <Link
-                          href={`/es/personajes/${activeWp.slug}`}
-                          className="mt-auto pt-3 self-start inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.3em] text-acento-dorado/65 hover:text-acento-dorado transition-colors duration-200"
-                        >
-                          Ver ficha completa
-                          <span aria-hidden="true">→</span>
-                        </Link>
+                        <div className="mt-auto flex flex-wrap items-center gap-x-6">
+                          <Link
+                            href={{
+                              pathname: "/personajes/[slug]",
+                              params: { slug: activeWp.slug },
+                            }}
+                            className="inline-flex min-h-[44px] items-center gap-1.5 text-[11px] uppercase tracking-[0.3em] text-acento-dorado/80 hover:text-acento-dorado transition-colors duration-200"
+                          >
+                            {t("ver_ficha")}
+                            <span aria-hidden="true">→</span>
+                          </Link>
+                          {activeIdx === waypoints.length - 1 && (
+                            <Link
+                              href="/calendario"
+                              className="inline-flex min-h-[44px] items-center gap-1.5 text-[11px] uppercase tracking-[0.3em] text-stone-500 hover:text-texto-claro transition-colors duration-200"
+                            >
+                              {t("ver_calendario")}
+                              <span aria-hidden="true">→</span>
+                            </Link>
+                          )}
+                        </div>
                       </div>
                     </>
                   )}
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Precarga invisible de la imagen del siguiente waypoint —
+                evita el flash al activarse (misma URL optimizada que la visible) */}
+            {waypoints[activeIdx + 1] && (
+              <div
+                className="pointer-events-none absolute inset-0 -z-10 opacity-0"
+                aria-hidden="true"
+              >
+                <Image
+                  src={waypoints[activeIdx + 1]!.imagen}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 768px) 45vw, 100vw"
+                />
+              </div>
+            )}
           </div>
 
           {/* ── Timeline ── */}
           <div className="flex-shrink-0 px-6 py-4 border-t border-borde-sutil">
             <div className="flex items-start">
-              {WAYPOINTS.map((wp, i) => (
+              {waypoints.map((wp, i) => (
                 <div key={i} className="flex items-center flex-1 min-w-0">
                   <div className="flex flex-col items-center flex-shrink-0">
                     <div
@@ -481,10 +488,10 @@ export function PaseMapSection() {
                       }`}
                       style={{ maxWidth: 50 }}
                     >
-                      {wp.nombre.split("·")[0]!.trim().split(" ")[0]}
+                      {wp.label}
                     </p>
                   </div>
-                  {i < WAYPOINTS.length - 1 && (
+                  {i < waypoints.length - 1 && (
                     <div className="flex-1 h-px bg-stone-800 mb-5 mx-1.5 overflow-hidden">
                       <div
                         className="h-full bg-acento-dorado/50 transition-all duration-700 ease-out"

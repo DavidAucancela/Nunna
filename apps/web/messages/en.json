@@ -33,6 +33,14 @@
       "titulo": "Do you have a magnet?",
       "texto": "Scan the QR code on your card to discover the full story of the character.",
       "cta": "View all characters"
+    },
+    "recorrido": {
+      "eyebrow": "The route",
+      "titulo": "One pase, one path",
+      "fecha": "December 20 · Inst. Tecnológico Riobamba",
+      "scroll_hint": "Scroll to follow the pase",
+      "ver_ficha": "View full profile",
+      "ver_calendario": "View pase calendar"
     }
   },
   "personajes": {

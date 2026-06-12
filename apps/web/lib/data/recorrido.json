@@ -1,0 +1,111 @@
+{
+  "centro": [
+    -78.6502,
+    -1.6657
+  ],
+  "zoom": 14.6,
+  "ruta": [
+    [
+      -78.646,
+      -1.6668
+    ],
+    [
+      -78.6478,
+      -1.667
+    ],
+    [
+      -78.6495,
+      -1.667
+    ],
+    [
+      -78.651,
+      -1.6671
+    ],
+    [
+      -78.6522,
+      -1.667
+    ],
+    [
+      -78.6535,
+      -1.6669
+    ],
+    [
+      -78.6545,
+      -1.6668
+    ],
+    [
+      -78.6545,
+      -1.6661
+    ],
+    [
+      -78.6545,
+      -1.6654
+    ],
+    [
+      -78.6544,
+      -1.6646
+    ],
+    [
+      -78.6544,
+      -1.6638
+    ]
+  ],
+  "waypoints": [
+    {
+      "progress": 0.08,
+      "coord": [
+        -78.646,
+        -1.6668
+      ],
+      "personajeSlug": "aya-uma",
+      "calle": "Carlos Zambrano",
+      "imagen": "/personajes/aya-uma-en-pase-1.webp",
+      "imagenesExtra": [
+        "/personajes/aya-uma-en-pase-2.jpg",
+        "/personajes/aya-uma-grupo.jpeg"
+      ],
+      "label": "Aya Uma"
+    },
+    {
+      "progress": 0.35,
+      "coord": [
+        -78.651,
+        -1.6671
+      ],
+      "personajeSlug": "diablos-de-lata",
+      "calle": "Av. Daniel León Borja",
+      "imagen": "/personajes/diablos-de-lata-en-pase-1.jpg",
+      "imagenesExtra": [],
+      "label": "Diablos"
+    },
+    {
+      "progress": 0.62,
+      "coord": [
+        -78.6545,
+        -1.6661
+      ],
+      "personajeSlug": "payaso",
+      "calle": "10 de Agosto",
+      "imagen": "/personajes/payaso-en-pase-1.jpeg",
+      "imagenesExtra": [
+        "/personajes/payaso-en-pase-2.jpeg",
+        "/personajes/payaso-en-pase-5.jpg"
+      ],
+      "label": "Payaso"
+    },
+    {
+      "progress": 0.88,
+      "coord": [
+        -78.6544,
+        -1.6638
+      ],
+      "personajeSlug": "perro",
+      "calle": "Iglesia La Catedral",
+      "imagen": "/personajes/perro-en-pase-1.webp",
+      "imagenesExtra": [
+        "/personajes/perro-en-pase-2.jpg"
+      ],
+      "label": "Perro"
+    }
+  ]
+}
