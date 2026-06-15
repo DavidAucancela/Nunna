@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { useRef } from "react";
 import {
@@ -160,27 +159,17 @@ export function HeroSection() {
       onMouseLeave={onMouseLeave}
     >
       {/* Video de fondo */}
-      <div className="absolute inset-0">
-        <Image
-          src="/personajes/aya-uma-banner.png"
-          alt=""
-          fill
-          className="object-cover object-center"
-          priority
-          sizes="100vw"
-          aria-hidden="true"
-        />
+      <div className="absolute inset-0 bg-fondo-oscuro">
         <video
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
-          poster="/personajes/aya-uma-banner.png"
           className="absolute inset-0 h-full w-full object-cover object-center"
           aria-hidden="true"
         >
-          <source src="/pases/pase-perros.mp4" type="video/mp4" />
+          <source src="/pases-videos/pase-perros.mp4" type="video/mp4" />
         </video>
       </div>
 

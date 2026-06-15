@@ -7,7 +7,7 @@
     "fechaDescripcion": "09:30–10:30 · Av. Antonio José de Sucre → Vicente Ramón Roca → Rocafuerte",
     "mes": 12,
     "dia": 20,
-    "imagenPortada": "/pases/gotitas-de-dulzura.jpg",
+    "imagenPortada": "/informacion_pases/gotitas-de-dulzura.jpg",
     "totalPersonajes": 1
   },
   {
@@ -18,7 +18,7 @@
     "fechaDescripcion": "12:00–13:00 · Cuba / México → Juan Bernardo de León → La Paz → Colegio Cisneros",
     "mes": 12,
     "dia": 20,
-    "imagenPortada": "/pases/safpi.jpg",
+    "imagenPortada": "/informacion_pases/safpi.jpg",
     "totalPersonajes": 1
   },
   {
@@ -29,7 +29,7 @@
     "fechaDescripcion": "13:00–14:00 · Carabobo / Villarroel → Rocafuerte → Colombia / Pichincha → García Moreno",
     "mes": 12,
     "dia": 20,
-    "imagenPortada": "/pases/mercado-santa-rosa.jpg",
+    "imagenPortada": "/informacion_pases/mercado-santa-rosa.jpg",
     "totalPersonajes": 1
   },
   {
@@ -40,7 +40,7 @@
     "fechaDescripcion": "15:00–18:00 · Carabobo → Venezuela → España → Argentinos → Espejo → Colón / Nueva York",
     "mes": 12,
     "dia": 20,
-    "imagenPortada": "/pases/la-salle.jpg",
+    "imagenPortada": "/informacion_pases/la-salle.jpg",
     "totalPersonajes": 1
   },
   {
@@ -51,7 +51,7 @@
     "fechaDescripcion": "17:00–20:00 · Carlos Zambrano → Av. Daniel León Borja → 10 de Agosto → Iglesia La Catedral",
     "mes": 12,
     "dia": 20,
-    "imagenPortada": "/pases/instituto-tecnologico.jpg",
+    "imagenPortada": "/informacion_pases/instituto-tecnologico.jpg",
     "totalPersonajes": 1
   },
   {
@@ -62,7 +62,7 @@
     "fechaDescripcion": "12:00 · Nuestra Señora de La Merced → Av. Daniel León Borja → Guayaquil → 10 de Agosto → 5 de Junio → Juan Lavalle",
     "mes": 1,
     "dia": 17,
-    "imagenPortada": "/pases/nino-rey-de-la-paz.jpg",
+    "imagenPortada": "/informacion_pases/nino-rey-de-la-paz.jpg",
     "totalPersonajes": 1
   },
   {
@@ -73,7 +73,7 @@
     "fechaDescripcion": "16:00 · Nuestra Señora de La Merced → Av. Daniel León Borja → Guayaquil → 10 de Agosto → 5 de Junio → Juan Lavalle",
     "mes": 1,
     "dia": 17,
-    "imagenPortada": "/pases/nino-abyayala.jpg",
+    "imagenPortada": "/informacion_pases/nino-abyayala.jpg",
     "totalPersonajes": 1
   },
   {
@@ -84,7 +84,7 @@
     "fechaDescripcion": "13:00 · Nuestra Señora de La Merced → Av. Daniel León Borja → Guayaquil → 10 de Agosto → 5 de Junio → Juan Lavalle",
     "mes": 1,
     "dia": 30,
-    "imagenPortada": "/pases/nino-disco-jockey.jpg",
+    "imagenPortada": "/informacion_pases/nino-disco-jockey.jpg",
     "totalPersonajes": 1
   },
   {
@@ -95,7 +95,7 @@
     "fechaDescripcion": "12:00 · Jesús Obrero La Primavera → Sibambe → Multitud → San Andrés → Av. Atahualpa → Colegio Chiriboga",
     "mes": 1,
     "dia": 31,
-    "imagenPortada": "/pases/divinos-ninos.jpg",
+    "imagenPortada": "/informacion_pases/divinos-ninos.jpg",
     "totalPersonajes": 1
   },
   {
@@ -106,7 +106,7 @@
     "fechaDescripcion": "19:00 · San Antonio de Padua, Loma de Quito → Orozco → Argentinos → Uruguay → Pichincha",
     "mes": 1,
     "dia": 31,
-    "imagenPortada": "/pases/nino-emmanuel.jpg",
+    "imagenPortada": "/informacion_pases/nino-emmanuel.jpg",
     "totalPersonajes": 1
   },
   {

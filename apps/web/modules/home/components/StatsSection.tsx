@@ -17,7 +17,7 @@ export function StatsSection() {
       {/* Imagen de fondo de un pase real */}
       <div className="absolute inset-0">
         <Image
-          src="/pases/inti-huayra.jpg"
+          src="/informacion_pases/inti-huayra.jpg"
           alt="Pase del Niño Riobambeño"
           fill
           className="object-cover"
