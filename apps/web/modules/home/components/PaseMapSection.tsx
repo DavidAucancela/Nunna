@@ -80,6 +80,7 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
   const prevActiveIdxRef = useRef(-1);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [inView, setInView] = useState(false);
+  const [photoIdx, setPhotoIdx] = useState(0);
 
   // Lleva el scroll hasta el punto donde el waypoint i se activa —
   // permite saltar a un personaje sin recorrer toda la sección (teclado incluido).
@@ -163,15 +164,22 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
     if (newActiveIdx !== prevActiveIdxRef.current) {
       prevActiveIdxRef.current = newActiveIdx;
       setActiveIdx(newActiveIdx);
-      if (newActiveIdx >= 0 && newActiveIdx < waypoints.length && mapRef.current) {
-        mapRef.current.flyTo({
-          center: waypoints[newActiveIdx]!.coord,
-          zoom: 15.1,
-          duration: reducedMotion ? 0 : 1000,
-        });
-      }
     }
+    // El mapa es estático (encuadra toda la ruta); el punto rojo viaja sobre él
+    // sincronizado al scroll. No se mueve la cámara → sin lag ni "settling".
   });
+
+  // Rotación automática de las fotos del waypoint activo
+  useEffect(() => {
+    setPhotoIdx(0);
+    const wp =
+      activeIdx >= 0 && activeIdx < waypoints.length ? waypoints[activeIdx] : null;
+    if (!wp || reducedMotion) return;
+    const total = 1 + wp.imagenesExtra.length;
+    if (total <= 1) return;
+    const id = setInterval(() => setPhotoIdx((i) => (i + 1) % total), 3500);
+    return () => clearInterval(id);
+  }, [activeIdx, waypoints, reducedMotion]);
 
   // Inicializar MapLibre solo cuando la sección se acerca al viewport —
   // evita descargar la librería y los tiles si el usuario nunca llega aquí.
@@ -240,6 +248,17 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
 
       m.on("load", () => {
         m.resize();
+
+        // Encuadrar toda la ruta — mapa estático, la cámara no persigue el scroll
+        const lons = ruta.map((c) => c[0]);
+        const lats = ruta.map((c) => c[1]);
+        m.fitBounds(
+          [
+            [Math.min(...lons), Math.min(...lats)],
+            [Math.max(...lons), Math.max(...lats)],
+          ],
+          { padding: { top: 96, bottom: 56, left: 48, right: 48 }, duration: 0 }
+        );
 
         // Ghost full route (dashed)
         m.addSource("route-full", {
@@ -366,6 +385,8 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
   const activeWp =
     activeIdx >= 0 && activeIdx < waypoints.length ? waypoints[activeIdx] : null;
   const isFinale = activeIdx === finaleIdx;
+  const fotos = activeWp ? [activeWp.imagen, ...activeWp.imagenesExtra] : [];
+  const fotoActual = fotos[photoIdx] ?? fotos[0];
 
   return (
     <section
@@ -492,24 +513,51 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
                 >
                   {activeWp && (
                     <>
-                      {/* Main image */}
-                      <div
-                        className="relative overflow-hidden flex-shrink-0"
-                        style={{ height: "42%" }}
-                      >
-                        <Image
-                          src={activeWp.imagen}
-                          alt={activeWp.alt}
-                          fill
-                          className="object-cover"
-                          sizes="(min-width: 768px) 45vw, 100vw"
-                          priority={activeIdx === 0}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-fondo-oscuro" />
+                      {/* Imagen rotativa — ocupa el alto disponible del panel */}
+                      <div className="relative flex-1 min-h-0 overflow-hidden">
+                        <AnimatePresence initial={false}>
+                          <motion.div
+                            key={fotoActual ?? activeWp.imagen}
+                            className="absolute inset-0"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: reducedMotion ? 0 : 0.8 }}
+                          >
+                            <Image
+                              src={fotoActual ?? activeWp.imagen}
+                              alt={activeWp.alt}
+                              fill
+                              className="object-cover"
+                              sizes="(min-width: 768px) 45vw, 100vw"
+                              priority={activeIdx === 0}
+                            />
+                          </motion.div>
+                        </AnimatePresence>
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-fondo-oscuro" />
+
+                        {/* Indicador de fotos */}
+                        {fotos.length > 1 && (
+                          <div className="absolute bottom-3 left-0 right-0 z-10 flex justify-center gap-1.5">
+                            {fotos.map((_, i) => (
+                              <button
+                                key={i}
+                                type="button"
+                                onClick={() => setPhotoIdx(i)}
+                                aria-label={t("ver_foto", { n: i + 1 })}
+                                className={`h-1.5 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70 ${
+                                  i === photoIdx
+                                    ? "w-5 bg-acento-dorado"
+                                    : "w-1.5 bg-texto-claro/40 hover:bg-texto-claro/70"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        )}
                       </div>
 
-                      {/* Text + extras */}
-                      <div className="flex flex-col flex-1 min-h-0 px-6 pt-4 pb-2">
+                      {/* Texto */}
+                      <div className="flex-shrink-0 px-6 pt-3 pb-3">
                         <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-acento-dorado">
                           {activeWp.calle}
                         </p>
@@ -521,38 +569,15 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
                             {activeWp.dato}
                           </p>
                         )}
-                        <blockquote className="mt-3 font-serif italic text-stone-400 text-sm md:text-[0.9rem] leading-relaxed border-l-2 border-acento-dorado/35 pl-3.5">
+                        <blockquote className="mt-2.5 font-serif italic text-stone-400 text-sm md:text-[0.9rem] leading-relaxed border-l-2 border-acento-dorado/35 pl-3.5">
                           &ldquo;{activeWp.leyenda}&rdquo;
                         </blockquote>
-
-                        {/* Extra images strip — oculta en móvil (<sm) para no
-                            recortar la cita y el CTA en pantallas cortas */}
-                        {activeWp.imagenesExtra.length > 0 && (
-                          <div className="mt-4 hidden gap-2 sm:flex">
-                            {activeWp.imagenesExtra.slice(0, 2).map((img, j) => (
-                              <div
-                                key={j}
-                                className="relative rounded-lg overflow-hidden flex-shrink-0 border border-borde-sutil"
-                                style={{ width: 80, height: 54 }}
-                              >
-                                <Image
-                                  src={img}
-                                  alt={activeWp.alt}
-                                  fill
-                                  className="object-cover"
-                                  sizes="80px"
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
                         <Link
                           href={{
                             pathname: "/personajes/[slug]",
                             params: { slug: activeWp.slug },
                           }}
-                          className="mt-auto inline-flex min-h-[44px] items-center gap-1.5 self-start text-[11px] uppercase tracking-[0.3em] text-acento-dorado/80 hover:text-acento-dorado transition-colors duration-200"
+                          className="mt-3 inline-flex min-h-[44px] items-center gap-1.5 text-[11px] uppercase tracking-[0.3em] text-acento-dorado/80 hover:text-acento-dorado transition-colors duration-200"
                         >
                           {t("ver_ficha")}
                           <span aria-hidden="true">→</span>
