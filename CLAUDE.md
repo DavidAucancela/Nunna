@@ -337,9 +337,22 @@ Modo oscuro por defecto.
 - **Solución**: aplicar `text-shimmer` directamente en cada `motion.span`, no en el `h1` contenedor
 
 ### MapLibre GL en PaseMapSection (`PaseMapSection.tsx`)
-- **Datos del recorrido en JSON**: ruta, waypoints, centro y zoom viven en `lib/data/recorrido.json`;
-  `getRecorrido()` (`lib/services/recorrido.service.ts`) los une con `personajes.json` (nombre kichwa-first,
-  `narrativa.leyenda`, altText). El componente recibe todo como prop desde `page.tsx` — no editar datos en el TSX.
+- **Datos del recorrido en JSON (multi-pase)**: `lib/data/recorrido.json` tiene la forma
+  `{ defaultPaseSlug, pases: [{ paseSlug, paseNombre, centro, zoom, ruta, waypoints }] }`.
+  `getRecorridos()` (`lib/services/recorrido.service.ts`) une cada waypoint con `personajes.json`
+  (nombre kichwa-first, `narrativa.leyenda`, altText) y pasa el campo opcional `dato`. El componente
+  recibe `recorridos` como prop desde `page.tsx` — no editar datos en el TSX.
+- **Agregar un pase al recorrido**: añadir un objeto a `pases[]` con `paseSlug` (debe existir en
+  `pases.json`), `centro`/`zoom`, e waypoints con `coord` ancla por personaje; el selector de pases
+  aparece solo cuando hay ≥2. Luego correr el script de ruta (abajo) para generar la geometría.
+- **Ruta sobre calles reales**: `scripts/build-route.mjs` toma los `coord` de los waypoints, pide a
+  OSRM (perfil foot) la ruta peatonal que los une, y hornea la geometría densa en `ruta` + alinea los
+  `coord` de los pines a la calle. Correr `node scripts/build-route.mjs` cuando cambien anclas/pases.
+  Necesita red; producción queda estática (cero llamadas en runtime, sigue SSG).
+- **Panel finale**: al pasar `FINALE_THRESHOLD` (~0.97 del scroll) se muestra un panel de cierre con
+  CTA a `/calendario`, aprovechando el tramo final del scroll (índice centinela `waypoints.length`).
+- **Switch de pase = re-init**: cambiar `activePaseSlug` reconstruye el mapa vía el cleanup del
+  `useEffect` (`map.remove()`); no hay teardown quirúrgico de capas/markers.
 - **Tiles**: usar CARTO raster CDN `dark_all`, no el endpoint GL vector JSON que requiere auth
   - URL: `https://{a,b,c,d}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png`
   - El endpoint `/gl/dark-matter-gl-style/style.json` fue deprecado/requiere API key desde 2023

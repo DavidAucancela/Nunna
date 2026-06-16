@@ -41,7 +41,10 @@
       "scroll_hint": "Paseta katiy",
       "ver_ficha": "Tukuyta qhaway",
       "ver_calendario": "Watapurata qhaway",
-      "ir_a": "Riy"
+      "ir_a": "Riy",
+      "pase_de_total": "{total} ukumanta {n} pase",
+      "finale_titulo": "Pase iglesiaman chayan",
+      "finale_texto": "Sapa runa ñanpi paypa ruraynin ruraska. Kayqa Riobamba pasekunamanta shukllami."
     }
   },
   "personajes": {

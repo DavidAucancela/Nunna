@@ -16,7 +16,7 @@ import type {
   GeoJSONSource,
 } from "maplibre-gl";
 import { Link } from "@/i18n/navigation";
-import type { Recorrido } from "@/lib/data";
+import type { Recorridos } from "@/lib/data";
 
 const TILE_STYLE = {
   version: 8 as const,
@@ -38,6 +38,9 @@ const TILE_STYLE = {
   layers: [{ id: "carto", type: "raster" as const, source: "carto" }],
 };
 
+// Pasado este progreso (tras el último waypoint) se muestra el panel de cierre.
+const FINALE_THRESHOLD = 0.97;
+
 function getRouteAtProgress(
   coords: [number, number][],
   progress: number
@@ -57,10 +60,17 @@ function getRouteAtProgress(
   return result;
 }
 
-export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
-  const { ruta, waypoints, centro, zoom } = recorrido;
+export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
+  const { pases, defaultPaseSlug } = recorridos;
   const t = useTranslations("home.recorrido");
   const reducedMotion = useReducedMotion();
+
+  const [activePaseSlug, setActivePaseSlug] = useState(defaultPaseSlug);
+  const activeRoute =
+    pases.find((p) => p.paseSlug === activePaseSlug) ?? pases[0]!;
+  const { ruta, waypoints, centro, zoom } = activeRoute;
+  const finaleIdx = waypoints.length; // índice centinela del panel de cierre
+
   const containerRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -73,17 +83,29 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
 
   // Lleva el scroll hasta el punto donde el waypoint i se activa —
   // permite saltar a un personaje sin recorrer toda la sección (teclado incluido).
-  function scrollToWaypoint(i: number) {
+  function scrollToProgress(rawProgress: number) {
     const el = containerRef.current;
-    const wp = waypoints[i];
-    if (!el || !wp) return;
-    const raw = wp.progress * 0.92 + 0.04 + 0.006; // justo pasado el umbral
+    if (!el) return;
     const sectionTop = el.getBoundingClientRect().top + window.scrollY;
     const scrollable = el.offsetHeight - window.innerHeight;
     window.scrollTo({
-      top: sectionTop + raw * scrollable,
+      top: sectionTop + rawProgress * scrollable,
       behavior: reducedMotion ? "auto" : "smooth",
     });
+  }
+
+  function scrollToWaypoint(i: number) {
+    const wp = waypoints[i];
+    if (!wp) return;
+    scrollToProgress(wp.progress * 0.92 + 0.04 + 0.006); // justo pasado el umbral
+  }
+
+  function selectPase(slug: string) {
+    if (slug === activePaseSlug) return;
+    prevActiveIdxRef.current = -1;
+    setActiveIdx(-1);
+    setActivePaseSlug(slug);
+    scrollToProgress(0); // reiniciar el recorrido al cambiar de pase
   }
 
   const { scrollYProgress } = useScroll({
@@ -130,14 +152,18 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
       });
     }
 
-    const newActiveIdx = waypoints.reduce(
+    const lastWpIdx = waypoints.reduce(
       (acc, wp, i) => (p >= wp.progress ? i : acc),
       -1
     );
+    const newActiveIdx =
+      lastWpIdx === waypoints.length - 1 && p >= FINALE_THRESHOLD
+        ? finaleIdx
+        : lastWpIdx;
     if (newActiveIdx !== prevActiveIdxRef.current) {
       prevActiveIdxRef.current = newActiveIdx;
       setActiveIdx(newActiveIdx);
-      if (newActiveIdx >= 0 && mapRef.current) {
+      if (newActiveIdx >= 0 && newActiveIdx < waypoints.length && mapRef.current) {
         mapRef.current.flyTo({
           center: waypoints[newActiveIdx]!.coord,
           zoom: 15.1,
@@ -165,6 +191,8 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
     return () => io.disconnect();
   }, []);
 
+  // Init + re-init del mapa. Cambiar de pase (activePaseSlug) reconstruye limpio
+  // vía el cleanup (map.remove()), sin teardown quirúrgico de capas/markers.
   useEffect(() => {
     const container = mapContainerRef.current;
     if (!inView || !container) return;
@@ -293,6 +321,7 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
         dotMarkerRef.current = dotMarker;
 
         // Numbered waypoint pins
+        waypointMarkersRef.current = [];
         waypoints.forEach((wp, i) => {
           const el = document.createElement("div");
           el.style.cssText = [
@@ -323,16 +352,20 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
     return () => {
       ro?.disconnect();
       map?.remove();
+      mapRef.current = null;
+      dotMarkerRef.current = null;
     };
-  }, [inView, ruta, waypoints, centro, zoom]);
+  }, [inView, activePaseSlug, ruta, waypoints, centro, zoom]);
 
-  const activeWp = activeIdx >= 0 ? waypoints[activeIdx] : null;
+  const activeWp =
+    activeIdx >= 0 && activeIdx < waypoints.length ? waypoints[activeIdx] : null;
+  const isFinale = activeIdx === finaleIdx;
 
   return (
     <section
       ref={containerRef}
       className="relative border-y border-borde-sutil"
-      style={{ height: "320vh" }}
+      style={{ height: "300vh" }}
     >
       <div className="sticky top-0 h-screen overflow-hidden bg-fondo-oscuro flex flex-col md:flex-row">
 
@@ -344,14 +377,49 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-fondo-oscuro/80 via-transparent to-fondo-oscuro/35 md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-fondo-oscuro/50" />
 
           {/* Section header */}
-          <div className="pointer-events-none absolute left-0 right-0 top-0 z-20 px-5 pt-6 md:px-7 md:pt-8">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-acento-dorado">
+          <div className="absolute left-0 right-0 top-0 z-20 px-5 pt-6 md:px-7 md:pt-8">
+            <p className="pointer-events-none text-[10px] uppercase tracking-[0.3em] text-acento-dorado">
               {t("eyebrow")}
             </p>
-            <h2 className="mt-1 font-serif text-2xl font-bold text-texto-claro md:text-3xl">
+            <h2 className="pointer-events-none mt-1 font-serif text-2xl font-bold text-texto-claro md:text-3xl">
               {t("titulo")}
             </h2>
-            <p className="mt-1 text-xs text-stone-500">{t("fecha")}</p>
+            <p className="pointer-events-none mt-1 text-xs text-stone-400">
+              {activeRoute.paseNombre}
+              {pases.length > 1 && (
+                <span className="text-stone-500">
+                  {" · "}
+                  {t("pase_de_total", {
+                    n: pases.findIndex((p) => p.paseSlug === activePaseSlug) + 1,
+                    total: pases.length,
+                  })}
+                </span>
+              )}
+            </p>
+
+            {/* Pase selector — solo con más de un pase */}
+            {pases.length > 1 && (
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {pases.map((pase) => {
+                  const active = pase.paseSlug === activePaseSlug;
+                  return (
+                    <button
+                      key={pase.paseSlug}
+                      type="button"
+                      onClick={() => selectPase(pase.paseSlug)}
+                      aria-pressed={active}
+                      className={`rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.15em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70 ${
+                        active
+                          ? "border-acento-dorado/70 bg-acento-dorado/15 text-acento-dorado"
+                          : "border-borde-sutil text-stone-400 hover:border-acento-dorado/40 hover:text-texto-claro"
+                      }`}
+                    >
+                      {pase.paseNombre}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
@@ -378,6 +446,30 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
                     {waypoints.map((wp) => wp.calle).join(" → ")}
                   </p>
                   <div className="w-px h-8 bg-gradient-to-b from-stone-700 to-transparent" />
+                </motion.div>
+              ) : isFinale ? (
+                <motion.div
+                  key="finale"
+                  className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center gap-4"
+                  initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 36 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -28 }}
+                  transition={{ duration: reducedMotion ? 0.2 : 0.5 }}
+                >
+                  <div className="w-px h-10 bg-gradient-to-b from-transparent to-acento-dorado/50" />
+                  <h3 className="font-serif text-2xl md:text-[1.8rem] font-bold text-texto-claro leading-tight">
+                    {t("finale_titulo")}
+                  </h3>
+                  <p className="text-stone-400 font-serif text-sm leading-relaxed max-w-[300px]">
+                    {t("finale_texto")}
+                  </p>
+                  <Link
+                    href="/calendario"
+                    className="mt-2 inline-flex min-h-[44px] items-center gap-2 rounded-full border border-acento-dorado/60 bg-acento-dorado/10 px-5 text-[11px] uppercase tracking-[0.25em] text-acento-dorado hover:bg-acento-dorado/20 transition-colors duration-200"
+                  >
+                    {t("ver_calendario")}
+                    <span aria-hidden="true">→</span>
+                  </Link>
                 </motion.div>
               ) : (
                 <motion.div
@@ -418,6 +510,11 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
                         <h3 className="mt-1 font-serif text-2xl md:text-[1.8rem] font-bold text-texto-claro leading-tight">
                           {activeWp.nombre}
                         </h3>
+                        {activeWp.dato && (
+                          <p className="mt-1.5 text-xs text-stone-400 leading-relaxed">
+                            {activeWp.dato}
+                          </p>
+                        )}
                         <blockquote className="mt-3 font-serif italic text-stone-400 text-sm md:text-[0.9rem] leading-relaxed border-l-2 border-acento-dorado/35 pl-3.5">
                           &ldquo;{activeWp.leyenda}&rdquo;
                         </blockquote>
@@ -444,27 +541,16 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
                           </div>
                         )}
 
-                        <div className="mt-auto flex flex-wrap items-center gap-x-6">
-                          <Link
-                            href={{
-                              pathname: "/personajes/[slug]",
-                              params: { slug: activeWp.slug },
-                            }}
-                            className="inline-flex min-h-[44px] items-center gap-1.5 text-[11px] uppercase tracking-[0.3em] text-acento-dorado/80 hover:text-acento-dorado transition-colors duration-200"
-                          >
-                            {t("ver_ficha")}
-                            <span aria-hidden="true">→</span>
-                          </Link>
-                          {activeIdx === waypoints.length - 1 && (
-                            <Link
-                              href="/calendario"
-                              className="inline-flex min-h-[44px] items-center gap-1.5 text-[11px] uppercase tracking-[0.3em] text-stone-500 hover:text-texto-claro transition-colors duration-200"
-                            >
-                              {t("ver_calendario")}
-                              <span aria-hidden="true">→</span>
-                            </Link>
-                          )}
-                        </div>
+                        <Link
+                          href={{
+                            pathname: "/personajes/[slug]",
+                            params: { slug: activeWp.slug },
+                          }}
+                          className="mt-auto inline-flex min-h-[44px] items-center gap-1.5 self-start text-[11px] uppercase tracking-[0.3em] text-acento-dorado/80 hover:text-acento-dorado transition-colors duration-200"
+                        >
+                          {t("ver_ficha")}
+                          <span aria-hidden="true">→</span>
+                        </Link>
                       </div>
                     </>
                   )}

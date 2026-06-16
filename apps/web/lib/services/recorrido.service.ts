@@ -8,30 +8,40 @@ export interface RecorridoWaypoint {
   nombre: string;
   label: string;
   calle: string;
+  dato?: string;
   leyenda: string;
   imagen: string;
   imagenesExtra: string[];
   alt: string;
 }
 
-export interface Recorrido {
+export interface RecorridoPase {
+  paseSlug: string;
+  paseNombre: string;
   centro: [number, number];
   zoom: number;
   ruta: [number, number][];
   waypoints: RecorridoWaypoint[];
 }
 
-export async function getRecorrido(): Promise<Recorrido> {
-  const waypoints = recorridoRaw.waypoints.map((wp) => {
+export interface Recorridos {
+  defaultPaseSlug: string;
+  pases: RecorridoPase[];
+}
+
+function toRecorridoPase(pase: (typeof recorridoRaw.pases)[number]): RecorridoPase {
+  const waypoints = pase.waypoints.map((wp) => {
     const personaje = personajesRaw.find((p) => p.slug === wp.personajeSlug);
     if (!personaje) {
-      throw new Error(`Recorrido: personaje "${wp.personajeSlug}" no existe en personajes.json`);
+      throw new Error(
+        `Recorrido (${pase.paseSlug}): personaje "${wp.personajeSlug}" no existe en personajes.json`
+      );
     }
     const nombre =
       personaje.nombreKichwa && personaje.nombreKichwa !== personaje.nombre
         ? `${personaje.nombre} · ${personaje.nombreKichwa}`
         : personaje.nombre;
-    return {
+    const waypoint: RecorridoWaypoint = {
       progress: wp.progress,
       coord: wp.coord as [number, number],
       slug: personaje.slug,
@@ -43,12 +53,23 @@ export async function getRecorrido(): Promise<Recorrido> {
       imagenesExtra: wp.imagenesExtra,
       alt: `${personaje.nombre} en el pase`,
     };
+    if ("dato" in wp && wp.dato) waypoint.dato = wp.dato;
+    return waypoint;
   });
 
   return {
-    centro: recorridoRaw.centro as [number, number],
-    zoom: recorridoRaw.zoom,
-    ruta: recorridoRaw.ruta as [number, number][],
+    paseSlug: pase.paseSlug,
+    paseNombre: pase.paseNombre,
+    centro: pase.centro as [number, number],
+    zoom: pase.zoom,
+    ruta: pase.ruta as [number, number][],
     waypoints,
+  };
+}
+
+export async function getRecorridos(): Promise<Recorridos> {
+  return {
+    defaultPaseSlug: recorridoRaw.defaultPaseSlug,
+    pases: recorridoRaw.pases.map(toRecorridoPase),
   };
 }
