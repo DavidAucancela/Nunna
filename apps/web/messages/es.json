@@ -40,7 +40,11 @@
       "fecha": "20 de diciembre · Inst. Tecnológico Riobamba",
       "scroll_hint": "Desplázate para seguir el pase",
       "ver_ficha": "Ver ficha completa",
-      "ver_calendario": "Ver calendario de pases"
+      "ver_calendario": "Ver calendario de pases",
+      "ir_a": "Ir a",
+      "pase_de_total": "{n} de {total} pases",
+      "finale_titulo": "El pase llega al templo",
+      "finale_texto": "Cada personaje cumplió su papel en el camino. Y este es solo uno de los pases de Riobamba."
     }
   },
   "personajes": {

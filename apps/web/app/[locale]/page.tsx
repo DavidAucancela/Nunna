@@ -1,4 +1,4 @@
-import { getPersonajes, getPersonaje, getRecorrido } from "@/lib/data";
+import { getPersonajes, getPersonaje, getRecorridos } from "@/lib/data";
 import { HeroSection }         from "@/modules/home/components/HeroSection";
 import { MarqueeStrip }        from "@/modules/home/components/MarqueeStrip";
 import { PersonajesShowcase }  from "@/modules/home/components/PersonajesShowcase";
@@ -35,7 +35,7 @@ export default async function HomePage({ params }: HomePageProps) {
     })
   );
 
-  const recorrido = await getRecorrido();
+  const recorridos = await getRecorridos();
 
   return (
     <>
@@ -56,7 +56,7 @@ export default async function HomePage({ params }: HomePageProps) {
       <ProductoSection />
 
       {/* 5. Mapa del pase — animado por scroll */}
-      <PaseMapSection recorrido={recorrido} />
+      <PaseMapSection recorridos={recorridos} />
 
       {/* 7. CTA final */}
       <CtaFinal />

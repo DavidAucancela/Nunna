@@ -1,111 +1,242 @@
 {
-  "centro": [
-    -78.6502,
-    -1.6657
-  ],
-  "zoom": 14.6,
-  "ruta": [
-    [
-      -78.646,
-      -1.6668
-    ],
-    [
-      -78.6478,
-      -1.667
-    ],
-    [
-      -78.6495,
-      -1.667
-    ],
-    [
-      -78.651,
-      -1.6671
-    ],
-    [
-      -78.6522,
-      -1.667
-    ],
-    [
-      -78.6535,
-      -1.6669
-    ],
-    [
-      -78.6545,
-      -1.6668
-    ],
-    [
-      -78.6545,
-      -1.6661
-    ],
-    [
-      -78.6545,
-      -1.6654
-    ],
-    [
-      -78.6544,
-      -1.6646
-    ],
-    [
-      -78.6544,
-      -1.6638
-    ]
-  ],
-  "waypoints": [
+  "defaultPaseSlug": "instituto-tecnologico-riobamba",
+  "pases": [
     {
-      "progress": 0.08,
-      "coord": [
-        -78.646,
-        -1.6668
+      "paseSlug": "instituto-tecnologico-riobamba",
+      "paseNombre": "Instituto Tecnológico Riobamba",
+      "centro": [
+        -78.6502,
+        -1.6657
       ],
-      "personajeSlug": "aya-uma",
-      "calle": "Carlos Zambrano",
-      "imagen": "/personajes/aya-uma-en-pase-1.webp",
-      "imagenesExtra": [
-        "/personajes/aya-uma-en-pase-2.jpg",
-        "/personajes/aya-uma-grupo.jpeg"
+      "zoom": 14.6,
+      "ruta": [
+        [
+          -78.645924,
+          -1.666711
+        ],
+        [
+          -78.6452,
+          -1.66733
+        ],
+        [
+          -78.645488,
+          -1.667693
+        ],
+        [
+          -78.646583,
+          -1.666718
+        ],
+        [
+          -78.64717,
+          -1.666195
+        ],
+        [
+          -78.647796,
+          -1.665666
+        ],
+        [
+          -78.648357,
+          -1.665194
+        ],
+        [
+          -78.649298,
+          -1.664419
+        ],
+        [
+          -78.649402,
+          -1.664326
+        ],
+        [
+          -78.649371,
+          -1.66525
+        ],
+        [
+          -78.649896,
+          -1.665829
+        ],
+        [
+          -78.650373,
+          -1.666451
+        ],
+        [
+          -78.650853,
+          -1.667013
+        ],
+        [
+          -78.650958,
+          -1.667136
+        ],
+        [
+          -78.651331,
+          -1.66757
+        ],
+        [
+          -78.65185,
+          -1.66817
+        ],
+        [
+          -78.652285,
+          -1.667779
+        ],
+        [
+          -78.652349,
+          -1.667729
+        ],
+        [
+          -78.6524,
+          -1.6677
+        ],
+        [
+          -78.652405,
+          -1.667697
+        ],
+        [
+          -78.652984,
+          -1.66717
+        ],
+        [
+          -78.653043,
+          -1.667116
+        ],
+        [
+          -78.653423,
+          -1.666793
+        ],
+        [
+          -78.653923,
+          -1.66635
+        ],
+        [
+          -78.653993,
+          -1.666309
+        ],
+        [
+          -78.654427,
+          -1.665903
+        ],
+        [
+          -78.654541,
+          -1.666024
+        ],
+        [
+          -78.654561,
+          -1.666048
+        ],
+        [
+          -78.654917,
+          -1.666467
+        ],
+        [
+          -78.655279,
+          -1.666146
+        ],
+        [
+          -78.655359,
+          -1.666076
+        ],
+        [
+          -78.655488,
+          -1.665968
+        ],
+        [
+          -78.655012,
+          -1.665403
+        ],
+        [
+          -78.654623,
+          -1.664937
+        ],
+        [
+          -78.654488,
+          -1.664781
+        ],
+        [
+          -78.654317,
+          -1.664575
+        ],
+        [
+          -78.65415,
+          -1.66438
+        ],
+        [
+          -78.654002,
+          -1.664231
+        ],
+        [
+          -78.65384,
+          -1.664038
+        ],
+        [
+          -78.654327,
+          -1.663455
+        ],
+        [
+          -78.654529,
+          -1.663688
+        ]
       ],
-      "label": "Aya Uma"
-    },
-    {
-      "progress": 0.35,
-      "coord": [
-        -78.651,
-        -1.6671
-      ],
-      "personajeSlug": "diablos-de-lata",
-      "calle": "Av. Daniel León Borja",
-      "imagen": "/personajes/diablos-de-lata-en-pase-1.jpg",
-      "imagenesExtra": [],
-      "label": "Diablos"
-    },
-    {
-      "progress": 0.62,
-      "coord": [
-        -78.6545,
-        -1.6661
-      ],
-      "personajeSlug": "payaso",
-      "calle": "10 de Agosto",
-      "imagen": "/personajes/payaso-en-pase-1.jpeg",
-      "imagenesExtra": [
-        "/personajes/payaso-en-pase-2.jpeg",
-        "/personajes/payaso-en-pase-5.jpg"
-      ],
-      "label": "Payaso"
-    },
-    {
-      "progress": 0.88,
-      "coord": [
-        -78.6544,
-        -1.6638
-      ],
-      "personajeSlug": "perro",
-      "calle": "Iglesia La Catedral",
-      "imagen": "/personajes/perro-en-pase-1.webp",
-      "imagenesExtra": [
-        "/personajes/perro-en-pase-2.jpg"
-      ],
-      "label": "Perro"
+      "waypoints": [
+        {
+          "progress": 0.08,
+          "coord": [
+            -78.645924,
+            -1.666711
+          ],
+          "personajeSlug": "aya-uma",
+          "calle": "Carlos Zambrano",
+          "dato": "Abre el pase despejando el camino entre la multitud.",
+          "imagen": "/personajes/aya-uma-en-pase-1.webp",
+          "imagenesExtra": [
+            "/personajes/aya-uma-en-pase-2.jpg",
+            "/personajes/aya-uma-grupo.jpeg"
+          ],
+          "label": "Aya Uma"
+        },
+        {
+          "progress": 0.35,
+          "coord": [
+            -78.650958,
+            -1.667136
+          ],
+          "personajeSlug": "diablos-de-lata",
+          "calle": "Av. Daniel León Borja",
+          "dato": "Irrumpe con estruendo de lata: el caos que la fiesta celebra.",
+          "imagen": "/personajes/diablos-de-lata-en-pase-1.jpg",
+          "imagenesExtra": [],
+          "label": "Diablos"
+        },
+        {
+          "progress": 0.62,
+          "coord": [
+            -78.654561,
+            -1.666048
+          ],
+          "personajeSlug": "payaso",
+          "calle": "10 de Agosto",
+          "dato": "Marca el ritmo y reparte bromas a lo largo de la avenida.",
+          "imagen": "/personajes/payaso-en-pase-1.jpeg",
+          "imagenesExtra": [
+            "/personajes/payaso-en-pase-2.jpeg",
+            "/personajes/payaso-en-pase-5.jpg"
+          ],
+          "label": "Payaso"
+        },
+        {
+          "progress": 0.88,
+          "coord": [
+            -78.654529,
+            -1.663688
+          ],
+          "personajeSlug": "perro",
+          "calle": "Iglesia La Catedral",
+          "dato": "Cierra el cortejo guardando el umbral del templo.",
+          "imagen": "/personajes/perro-en-pase-1.webp",
+          "imagenesExtra": [
+            "/personajes/perro-en-pase-2.jpg"
+          ],
+          "label": "Perro"
+        }
+      ]
     }
   ]
 }

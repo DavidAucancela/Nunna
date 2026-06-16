@@ -18,7 +18,7 @@ const PASES = [
     inicio: "Av. Antonio José de Sucre",
     fin: "Iglesia San Nicolás",
     personaje: "Aya Uma",
-    imagen: "/pases/gotitas-de-dulzura.jpg",
+    imagen: "/informacion_pases/gotitas-de-dulzura.jpg",
     color: "#C89B3C",
   },
   {
@@ -30,7 +30,7 @@ const PASES = [
     inicio: "Cuba / México",
     fin: "Colegio Cisneros",
     personaje: "Rey Moro",
-    imagen: "/pases/safpi.jpg",
+    imagen: "/informacion_pases/safpi.jpg",
     color: "#B8312F",
   },
   {
@@ -42,7 +42,7 @@ const PASES = [
     inicio: "Carlos Zambrano",
     fin: "Iglesia La Catedral",
     personaje: "Curiquingue",
-    imagen: "/pases/instituto-tecnologico.jpg",
+    imagen: "/informacion_pases/instituto-tecnologico.jpg",
     color: "#1F4D3F",
   },
   {
@@ -54,7 +54,7 @@ const PASES = [
     inicio: "Carabobo / Villarroel",
     fin: "García Moreno",
     personaje: "Payaso",
-    imagen: "/pases/mercado-santa-rosa.jpg",
+    imagen: "/informacion_pases/mercado-santa-rosa.jpg",
     color: "#C89B3C",
   },
   {
@@ -66,7 +66,7 @@ const PASES = [
     inicio: "España (frente al colegio)",
     fin: "Colón / Nueva York",
     personaje: "Perro",
-    imagen: "/pases/la-salle.jpg",
+    imagen: "/informacion_pases/la-salle.jpg",
     color: "#B8312F",
   },
 ];

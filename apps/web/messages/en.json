@@ -40,7 +40,11 @@
       "fecha": "December 20 · Inst. Tecnológico Riobamba",
       "scroll_hint": "Scroll to follow the pase",
       "ver_ficha": "View full profile",
-      "ver_calendario": "View pase calendar"
+      "ver_calendario": "View pase calendar",
+      "ir_a": "Go to",
+      "pase_de_total": "{n} of {total} pases",
+      "finale_titulo": "The pase reaches the church",
+      "finale_texto": "Each character played their part along the way. And this is just one of Riobamba's pases."
     }
   },
   "personajes": {

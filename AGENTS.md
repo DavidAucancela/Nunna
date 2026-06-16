@@ -54,7 +54,7 @@ Los datos viven en `apps/web/lib/data/*.json` (versión git, sin CMS). Para edit
 
 ## Gotchas técnicos
 
-- **MapLibre** (`PaseMapSection.tsx`): usar CARTO raster CDN `dark_all`, NO endpoint GL vector JSON. Fijar altura en px desde el wrapper antes de `new maplibregl.Map()`; `ResizeObserver` en el wrapper. Atribución `{ compact: true }`, nunca `false`. Datos del recorrido en `lib/data/recorrido.json` vía `getRecorrido()`, no hardcodear en el TSX.
+- **MapLibre** (`PaseMapSection.tsx`): usar CARTO raster CDN `dark_all`, NO endpoint GL vector JSON. Fijar altura en px desde el wrapper antes de `new maplibregl.Map()`; `ResizeObserver` en el wrapper. Atribución `{ compact: true }`, nunca `false`. Recorrido multi-pase en `lib/data/recorrido.json` (`{ defaultPaseSlug, pases[] }`) vía `getRecorridos()`, no hardcodear en el TSX. La geometría `ruta` la genera `node scripts/build-route.mjs` (OSRM) — no editarla a mano.
 - **text-shimmer** (`HeroSection.tsx`): aplicar en cada `motion.span`, no en el `h1` padre — `scale` en whileHover rompe `background-clip: text` heredado.
 - **Parallax** (`ParallaxHero.tsx`): usa `imagenBanner ?? imagen` (banner primero, retrato fallback). Sin banner → `OrigenPlaceholder`.
 - **Galería**: 3 tabs según campo `titulo` del multimedia: `undefined`/`"retrato"` → "El personaje", `"proceso"` → "El imán", `"en-pase"` → "En el pase".
