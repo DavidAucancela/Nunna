@@ -373,7 +373,7 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
       className="relative border-y border-borde-sutil"
       style={{ height: "300vh" }}
     >
-      <div className="sticky top-0 h-screen overflow-hidden bg-fondo-oscuro flex flex-col md:flex-row">
+      <div className="sticky top-16 h-[calc(100vh-4rem)] overflow-hidden bg-fondo-oscuro flex flex-col md:flex-row">
 
         {/* ── MAP — left 55% ── */}
         <div className="relative h-[45vh] md:h-full md:w-[55%] flex-shrink-0">
