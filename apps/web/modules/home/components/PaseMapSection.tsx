@@ -198,9 +198,14 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
     if (!inView || !container) return;
     let map: MapLibreMap | undefined;
     let ro: ResizeObserver | undefined;
+    // El import es async: si el efecto se limpia (cambio de pase) mientras el
+    // import está pendiente, hay que descartar el mapa que se cree después —
+    // si no, queda huérfano (nunca se destruye) y pisa mapRef con un pase viejo.
+    let cancelled = false;
 
     (async () => {
       const maplibregl = (await import("maplibre-gl")).default;
+      if (cancelled) return;
 
       // MapLibre lee offsetHeight al inicializar, antes del primer paint —
       // fijar la altura en px desde el wrapper (h-[45vh] / md:h-full) y
@@ -350,6 +355,7 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
     })();
 
     return () => {
+      cancelled = true;
       ro?.disconnect();
       map?.remove();
       mapRef.current = null;

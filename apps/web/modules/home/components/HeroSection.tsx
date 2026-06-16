@@ -166,6 +166,7 @@ export function HeroSection() {
           loop
           playsInline
           preload="auto"
+          poster="/personajes/aya-uma-banner.png"
           className="absolute inset-0 h-full w-full object-cover object-center"
           aria-hidden="true"
         >
