@@ -66,9 +66,25 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
   const mapRef = useRef<MapLibreMap | null>(null);
   const dotMarkerRef = useRef<MapLibreMarker | null>(null);
   const waypointMarkersRef = useRef<HTMLDivElement[]>([]);
+  const pinActiveRef = useRef<boolean[]>([]);
   const prevActiveIdxRef = useRef(-1);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [inView, setInView] = useState(false);
+
+  // Lleva el scroll hasta el punto donde el waypoint i se activa —
+  // permite saltar a un personaje sin recorrer toda la sección (teclado incluido).
+  function scrollToWaypoint(i: number) {
+    const el = containerRef.current;
+    const wp = waypoints[i];
+    if (!el || !wp) return;
+    const raw = wp.progress * 0.92 + 0.04 + 0.006; // justo pasado el umbral
+    const sectionTop = el.getBoundingClientRect().top + window.scrollY;
+    const scrollable = el.offsetHeight - window.innerHeight;
+    window.scrollTo({
+      top: sectionTop + raw * scrollable,
+      behavior: reducedMotion ? "auto" : "smooth",
+    });
+  }
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -97,7 +113,10 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
       waypoints.forEach((wp, i) => {
         const el = waypointMarkersRef.current[i];
         if (!el) return;
-        if (p >= wp.progress) {
+        const active = p >= wp.progress;
+        if (pinActiveRef.current[i] === active) return; // solo al cruzar el umbral
+        pinActiveRef.current[i] = active;
+        if (active) {
           el.style.background = "rgba(200,155,60,0.22)";
           el.style.borderColor = "#C89B3C";
           el.style.color = "#C89B3C";
@@ -297,6 +316,7 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
             .setLngLat(wp.coord)
             .addTo(m);
         });
+        pinActiveRef.current = waypoints.map(() => false); // pins recién creados = inactivos
       });
     })();
 
@@ -350,11 +370,11 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
                   exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -28 }}
                   transition={{ duration: reducedMotion ? 0.2 : 0.45 }}
                 >
-                  <div className="w-px h-10 bg-gradient-to-b from-transparent to-stone-700" />
-                  <p className="text-stone-600 text-[10px] uppercase tracking-[0.28em]">
+                  <div className="w-px h-10 bg-gradient-to-b from-transparent to-stone-600" />
+                  <p className="text-stone-400 text-[10px] uppercase tracking-[0.28em]">
                     {t("scroll_hint")}
                   </p>
-                  <p className="text-stone-700 font-serif text-sm leading-relaxed max-w-[260px]">
+                  <p className="text-stone-500 font-serif text-sm leading-relaxed max-w-[260px]">
                     {waypoints.map((wp) => wp.calle).join(" → ")}
                   </p>
                   <div className="w-px h-8 bg-gradient-to-b from-stone-700 to-transparent" />
@@ -402,9 +422,10 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
                           &ldquo;{activeWp.leyenda}&rdquo;
                         </blockquote>
 
-                        {/* Extra images strip */}
+                        {/* Extra images strip — oculta en móvil (<sm) para no
+                            recortar la cita y el CTA en pantallas cortas */}
                         {activeWp.imagenesExtra.length > 0 && (
-                          <div className="mt-4 flex gap-2">
+                          <div className="mt-4 hidden gap-2 sm:flex">
                             {activeWp.imagenesExtra.slice(0, 2).map((img, j) => (
                               <div
                                 key={j}
@@ -413,7 +434,7 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
                               >
                                 <Image
                                   src={img}
-                                  alt=""
+                                  alt={activeWp.alt}
                                   fill
                                   className="object-cover"
                                   sizes="80px"
@@ -474,23 +495,29 @@ export function PaseMapSection({ recorrido }: { recorrido: Recorrido }) {
             <div className="flex items-start">
               {waypoints.map((wp, i) => (
                 <div key={i} className="flex items-center flex-1 min-w-0">
-                  <div className="flex flex-col items-center flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => scrollToWaypoint(i)}
+                    aria-label={`${t("ir_a")} ${wp.label}`}
+                    aria-current={i === activeIdx ? "true" : undefined}
+                    className="group flex flex-col items-center flex-shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70"
+                  >
                     <div
-                      className={`w-2.5 h-2.5 rounded-full border-2 transition-all duration-500 ${
+                      className={`w-2.5 h-2.5 rounded-full border-2 transition-all duration-500 group-hover:border-acento-dorado ${
                         i <= activeIdx
                           ? "bg-acento-dorado border-acento-dorado shadow-[0_0_8px_rgba(200,155,60,0.65)]"
-                          : "bg-transparent border-stone-700"
+                          : "bg-transparent border-stone-600"
                       }`}
                     />
-                    <p
-                      className={`mt-1.5 text-[9px] uppercase tracking-wider text-center leading-tight transition-colors duration-500 ${
-                        i <= activeIdx ? "text-acento-dorado/75" : "text-stone-700"
+                    <span
+                      className={`mt-1.5 text-[9px] uppercase tracking-wider text-center leading-tight transition-colors duration-500 group-hover:text-acento-dorado ${
+                        i <= activeIdx ? "text-acento-dorado/75" : "text-stone-500"
                       }`}
                       style={{ maxWidth: 50 }}
                     >
                       {wp.label}
-                    </p>
-                  </div>
+                    </span>
+                  </button>
                   {i < waypoints.length - 1 && (
                     <div className="flex-1 h-px bg-stone-800 mb-5 mx-1.5 overflow-hidden">
                       <div
