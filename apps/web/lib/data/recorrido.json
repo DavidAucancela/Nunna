@@ -237,6 +237,360 @@
           "label": "Perro"
         }
       ]
+    },
+    {
+      "paseSlug": "mercado-santa-rosa",
+      "paseNombre": "Mercado Santa Rosa",
+      "centro": [
+        -78.651,
+        -1.67
+      ],
+      "zoom": 14.8,
+      "ruta": [
+        [
+          -78.647193,
+          -1.670213
+        ],
+        [
+          -78.647445,
+          -1.669985
+        ],
+        [
+          -78.647988,
+          -1.669512
+        ],
+        [
+          -78.648578,
+          -1.669
+        ],
+        [
+          -78.649117,
+          -1.66854
+        ],
+        [
+          -78.649705,
+          -1.668021
+        ],
+        [
+          -78.650182,
+          -1.668577
+        ],
+        [
+          -78.65067,
+          -1.669176
+        ],
+        [
+          -78.651143,
+          -1.669753
+        ],
+        [
+          -78.650939,
+          -1.66993
+        ],
+        [
+          -78.650554,
+          -1.670265
+        ],
+        [
+          -78.650019,
+          -1.670716
+        ],
+        [
+          -78.650499,
+          -1.671307
+        ],
+        [
+          -78.651024,
+          -1.670832
+        ],
+        [
+          -78.651595,
+          -1.670336
+        ],
+        [
+          -78.652175,
+          -1.669833
+        ],
+        [
+          -78.652423,
+          -1.669618
+        ],
+        [
+          -78.652781,
+          -1.669304
+        ],
+        [
+          -78.653274,
+          -1.669847
+        ],
+        [
+          -78.653787,
+          -1.669413
+        ],
+        [
+          -78.654094,
+          -1.669135
+        ],
+        [
+          -78.654369,
+          -1.668908
+        ],
+        [
+          -78.654437,
+          -1.669003
+        ],
+        [
+          -78.654687,
+          -1.669335
+        ],
+        [
+          -78.654846,
+          -1.669527
+        ],
+        [
+          -78.655132,
+          -1.669898
+        ]
+      ],
+      "waypoints": [
+        {
+          "progress": 0.1,
+          "coord": [
+            -78.647193,
+            -1.670213
+          ],
+          "personajeSlug": "payaso",
+          "calle": "Carabobo y Villarroel",
+          "dato": "Abre paso entre los puestos del mercado con sus cabriolas.",
+          "imagen": "/personajes/payaso-en-pase-3.jpg",
+          "imagenesExtra": [
+            "/personajes/payaso-en-pase-4.jpg"
+          ],
+          "label": "Payaso"
+        },
+        {
+          "progress": 0.5,
+          "coord": [
+            -78.650939,
+            -1.66993
+          ],
+          "personajeSlug": "perro",
+          "calle": "Rocafuerte",
+          "dato": "Vigila los flancos del cortejo entre la gente.",
+          "imagen": "/personajes/perro-en-pase-2.jpg",
+          "imagenesExtra": [],
+          "label": "Perro"
+        },
+        {
+          "progress": 0.9,
+          "coord": [
+            -78.655132,
+            -1.669898
+          ],
+          "personajeSlug": "diablos-de-lata",
+          "calle": "García Moreno",
+          "dato": "Cierra la comparsa con el estruendo de la lata.",
+          "imagen": "/personajes/diablos-de-lata-en-pase-1.jpg",
+          "imagenesExtra": [],
+          "label": "Diablos"
+        }
+      ]
+    },
+    {
+      "paseSlug": "nino-rey-de-la-paz",
+      "paseNombre": "Niño Rey de la Paz",
+      "centro": [
+        -78.654,
+        -1.6678
+      ],
+      "zoom": 14.6,
+      "ruta": [
+        [
+          -78.658145,
+          -1.665592
+        ],
+        [
+          -78.658402,
+          -1.665185
+        ],
+        [
+          -78.658553,
+          -1.664945
+        ],
+        [
+          -78.658644,
+          -1.664811
+        ],
+        [
+          -78.65831,
+          -1.664458
+        ],
+        [
+          -78.657834,
+          -1.663934
+        ],
+        [
+          -78.656784,
+          -1.664829
+        ],
+        [
+          -78.656061,
+          -1.665468
+        ],
+        [
+          -78.655488,
+          -1.665968
+        ],
+        [
+          -78.655359,
+          -1.666076
+        ],
+        [
+          -78.655279,
+          -1.666146
+        ],
+        [
+          -78.654917,
+          -1.666467
+        ],
+        [
+          -78.65476,
+          -1.666608
+        ],
+        [
+          -78.654455,
+          -1.666871
+        ],
+        [
+          -78.654381,
+          -1.666929
+        ],
+        [
+          -78.653893,
+          -1.667362
+        ],
+        [
+          -78.65348,
+          -1.667722
+        ],
+        [
+          -78.65392,
+          -1.668309
+        ],
+        [
+          -78.654119,
+          -1.668136
+        ],
+        [
+          -78.654331,
+          -1.66795
+        ],
+        [
+          -78.653893,
+          -1.667362
+        ],
+        [
+          -78.65348,
+          -1.667722
+        ],
+        [
+          -78.65345,
+          -1.667748
+        ],
+        [
+          -78.652872,
+          -1.668257
+        ],
+        [
+          -78.652859,
+          -1.668267
+        ],
+        [
+          -78.652313,
+          -1.668746
+        ],
+        [
+          -78.651946,
+          -1.669068
+        ],
+        [
+          -78.651703,
+          -1.669272
+        ],
+        [
+          -78.651209,
+          -1.66867
+        ],
+        [
+          -78.650738,
+          -1.668091
+        ],
+        [
+          -78.650182,
+          -1.668577
+        ],
+        [
+          -78.649593,
+          -1.669099
+        ],
+        [
+          -78.649052,
+          -1.669585
+        ],
+        [
+          -78.64956,
+          -1.670157
+        ],
+        [
+          -78.64988,
+          -1.669867
+        ]
+      ],
+      "waypoints": [
+        {
+          "progress": 0.1,
+          "coord": [
+            -78.658145,
+            -1.665592
+          ],
+          "personajeSlug": "aya-uma",
+          "calle": "Av. Daniel León Borja",
+          "dato": "Encabeza la procesión hacia el templo del Niño.",
+          "imagen": "/personajes/aya-uma-en-pase-2.jpg",
+          "imagenesExtra": [
+            "/personajes/aya-uma-grupo.jpeg"
+          ],
+          "label": "Aya Uma"
+        },
+        {
+          "progress": 0.5,
+          "coord": [
+            -78.654119,
+            -1.668136
+          ],
+          "personajeSlug": "payaso",
+          "calle": "Guayaquil",
+          "dato": "Anima a los devotos a lo largo de la bajada.",
+          "imagen": "/personajes/payaso-en-pase-5.jpg",
+          "imagenesExtra": [
+            "/personajes/payaso-en-pase-1.jpeg"
+          ],
+          "label": "Payaso"
+        },
+        {
+          "progress": 0.9,
+          "coord": [
+            -78.64988,
+            -1.669867
+          ],
+          "personajeSlug": "perro",
+          "calle": "10 de Agosto",
+          "dato": "Custodia la llegada del Niño Rey de la Paz.",
+          "imagen": "/personajes/perro-en-pase-1.webp",
+          "imagenesExtra": [],
+          "label": "Perro"
+        }
+      ]
     }
   ]
 }
