@@ -411,41 +411,41 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
             <h2 className="pointer-events-none mt-1 font-serif text-2xl font-bold text-texto-claro md:text-3xl">
               {t("titulo")}
             </h2>
-            <p className="pointer-events-none mt-1 text-xs text-stone-400">
-              {activeRoute.paseNombre}
-              {pases.length > 1 && (
-                <span className="text-stone-500">
-                  {" · "}
-                  {t("pase_de_total", {
-                    n: pases.findIndex((p) => p.paseSlug === activePaseSlug) + 1,
-                    total: pases.length,
+            {/* Pase selector — con ≥2 pases reemplaza al subtítulo y se hace notar */}
+            {pases.length > 1 ? (
+              <div className="mt-3.5">
+                <p className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-acento-dorado">
+                  <span
+                    aria-hidden="true"
+                    className="inline-block h-1.5 w-1.5 rounded-full bg-acento-dorado motion-safe:animate-pulse"
+                  />
+                  {t("elige_pase")}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {pases.map((pase) => {
+                    const active = pase.paseSlug === activePaseSlug;
+                    return (
+                      <button
+                        key={pase.paseSlug}
+                        type="button"
+                        onClick={() => selectPase(pase.paseSlug)}
+                        aria-pressed={active}
+                        className={`rounded-full border px-3.5 py-1.5 text-[11px] uppercase tracking-[0.12em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70 ${
+                          active
+                            ? "border-acento-dorado bg-acento-dorado font-semibold text-fondo-oscuro shadow-[0_0_16px_rgba(200,155,60,0.35)]"
+                            : "border-stone-600 bg-fondo-oscuro/60 text-stone-200 hover:border-acento-dorado hover:bg-acento-dorado/10 hover:text-acento-dorado"
+                        }`}
+                      >
+                        {pase.paseNombre}
+                      </button>
+                    );
                   })}
-                </span>
-              )}
-            </p>
-
-            {/* Pase selector — solo con más de un pase */}
-            {pases.length > 1 && (
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {pases.map((pase) => {
-                  const active = pase.paseSlug === activePaseSlug;
-                  return (
-                    <button
-                      key={pase.paseSlug}
-                      type="button"
-                      onClick={() => selectPase(pase.paseSlug)}
-                      aria-pressed={active}
-                      className={`rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.15em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70 ${
-                        active
-                          ? "border-acento-dorado/70 bg-acento-dorado/15 text-acento-dorado"
-                          : "border-borde-sutil text-stone-400 hover:border-acento-dorado/40 hover:text-texto-claro"
-                      }`}
-                    >
-                      {pase.paseNombre}
-                    </button>
-                  );
-                })}
+                </div>
               </div>
+            ) : (
+              <p className="pointer-events-none mt-1 text-xs text-stone-400">
+                {activeRoute.paseNombre}
+              </p>
             )}
           </div>
         </div>
