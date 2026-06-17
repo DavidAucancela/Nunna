@@ -166,11 +166,11 @@ export function HeroSection() {
           loop
           playsInline
           preload="auto"
-          poster="/personajes/aya-uma-banner.png"
+          poster="/pases-videos/main-header-poster.jpg"
           className="absolute inset-0 h-full w-full object-cover object-center"
           aria-hidden="true"
         >
-          <source src="/pases-videos/pase-perros.mp4" type="video/mp4" />
+          <source src="/pases-videos/main-header.mp4" type="video/mp4" />
         </video>
       </div>
 
