@@ -12,6 +12,7 @@ pnpm --filter @seres-del-pase/web dev --port 3030   # frontend en :3030
 pnpm build                            # build SSG completo (usa turbo — solo web)
 pnpm --filter @seres-del-pase/web type-check        # tsc --noEmit
 pnpm --filter @seres-del-pase/web lint              # next lint
+node scripts/build-route.mjs                        # snap rutas del recorrido a calles (OSRM, autor)
 ```
 
 Sin variables de entorno para desarrollo frontend.
@@ -19,7 +20,7 @@ Sin variables de entorno para desarrollo frontend.
 ## Monorepo
 
 ```
-apps/web/       → Next.js 15.1 App Router (activo)
+apps/web/       → Next.js 15.5 App Router (activo)
 apps/api/       → NestJS (Fase 3 — inactivo, ni intentar tocar)
 packages/types/ → @seres-del-pase/types — contratos compartidos
 packages/ui/    → @seres-del-pase/ui — componentes base (react 19 peer)
@@ -54,7 +55,9 @@ Los datos viven en `apps/web/lib/data/*.json` (versión git, sin CMS). Para edit
 
 ## Gotchas técnicos
 
-- **MapLibre** (`PaseMapSection.tsx`): usar CARTO raster CDN `dark_all`, NO endpoint GL vector JSON. Fijar altura en px desde el wrapper antes de `new maplibregl.Map()`; `ResizeObserver` en el wrapper. Atribución `{ compact: true }`, nunca `false`. Recorrido multi-pase en `lib/data/recorrido.json` (`{ defaultPaseSlug, pases[] }`) vía `getRecorridos()`, no hardcodear en el TSX. La geometría `ruta` la genera `node scripts/build-route.mjs` (OSRM) — no editarla a mano.
+- **MapLibre** (`PaseMapSection.tsx`): CARTO raster CDN `dark_all`, NO endpoint GL vector JSON. Fijar altura en px desde el wrapper antes de `new maplibregl.Map()`; `ResizeObserver` en el wrapper. Atribución `{ compact: true }`, nunca `false`. **Mapa estático** (`fitBounds`, sin `flyTo`) — la cámara no persigue el scroll. Contenedor `sticky top-16 h-[calc(100vh-4rem)]` (bajo el navbar fijo). Init async con guard `cancelled`.
+- **Recorrido multi-pase** (`lib/data/recorrido.json` = `{ defaultPaseSlug, pases[] }`) vía `getRecorridos()`, no hardcodear en el TSX. La geometría `ruta` la genera `node scripts/build-route.mjs` (OSRM) — no editarla a mano. Editar coords ancla → re-correr el script. Selector visible con ≥2 pases; fotos rotativas por waypoint (`[imagen, ...imagenesExtra]`).
+- **Assets** (reorg 2026-06-14): imágenes de pases en `public/informacion_pases/`, video del hero en `public/pases-videos/`. NO carpetas con espacios en `public/`.
 - **text-shimmer** (`HeroSection.tsx`): aplicar en cada `motion.span`, no en el `h1` padre — `scale` en whileHover rompe `background-clip: text` heredado.
 - **Parallax** (`ParallaxHero.tsx`): usa `imagenBanner ?? imagen` (banner primero, retrato fallback). Sin banner → `OrigenPlaceholder`.
 - **Galería**: 3 tabs según campo `titulo` del multimedia: `undefined`/`"retrato"` → "El personaje", `"proceso"` → "El imán", `"en-pase"` → "En el pase".
