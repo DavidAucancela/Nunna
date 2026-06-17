@@ -356,12 +356,40 @@
         {
           "progress": 0.1,
           "coord": [
-            -78.647193,
-            -1.670213
+            -78.647445,
+            -1.669985
+          ],
+          "personajeSlug": "aya-uma",
+          "calle": "Carabobo y Villarroel",
+          "dato": "Abre la comparsa entre los puestos del mercado.",
+          "imagen": "/personajes/aya-uma-en-pase-2.jpg",
+          "imagenesExtra": [
+            "/personajes/aya-uma-grupo.jpeg"
+          ],
+          "label": "Aya Uma"
+        },
+        {
+          "progress": 0.37,
+          "coord": [
+            -78.650939,
+            -1.66993
+          ],
+          "personajeSlug": "diablos-de-lata",
+          "calle": "Rocafuerte",
+          "dato": "Estremece la calle con el repique de la lata.",
+          "imagen": "/personajes/diablos-de-lata-en-pase-1.jpg",
+          "imagenesExtra": [],
+          "label": "Diablos"
+        },
+        {
+          "progress": 0.63,
+          "coord": [
+            -78.652423,
+            -1.669618
           ],
           "personajeSlug": "payaso",
-          "calle": "Carabobo y Villarroel",
-          "dato": "Abre paso entre los puestos del mercado con sus cabriolas.",
+          "calle": "Colombia y Pichincha",
+          "dato": "Reparte bromas y ordena a la multitud.",
           "imagen": "/personajes/payaso-en-pase-3.jpg",
           "imagenesExtra": [
             "/personajes/payaso-en-pase-4.jpg"
@@ -369,30 +397,17 @@
           "label": "Payaso"
         },
         {
-          "progress": 0.5,
+          "progress": 0.9,
           "coord": [
-            -78.650939,
-            -1.66993
+            -78.654846,
+            -1.669527
           ],
           "personajeSlug": "perro",
-          "calle": "Rocafuerte",
-          "dato": "Vigila los flancos del cortejo entre la gente.",
+          "calle": "García Moreno",
+          "dato": "Cierra el cortejo vigilando los flancos.",
           "imagen": "/personajes/perro-en-pase-2.jpg",
           "imagenesExtra": [],
           "label": "Perro"
-        },
-        {
-          "progress": 0.9,
-          "coord": [
-            -78.655132,
-            -1.669898
-          ],
-          "personajeSlug": "diablos-de-lata",
-          "calle": "García Moreno",
-          "dato": "Cierra la comparsa con el estruendo de la lata.",
-          "imagen": "/personajes/diablos-de-lata-en-pase-1.jpg",
-          "imagenesExtra": [],
-          "label": "Diablos"
         }
       ]
     },
@@ -550,27 +565,40 @@
         {
           "progress": 0.1,
           "coord": [
-            -78.658145,
-            -1.665592
+            -78.658402,
+            -1.665185
           ],
           "personajeSlug": "aya-uma",
-          "calle": "Av. Daniel León Borja",
-          "dato": "Encabeza la procesión hacia el templo del Niño.",
-          "imagen": "/personajes/aya-uma-en-pase-2.jpg",
+          "calle": "Nuestra Señora de La Merced",
+          "dato": "Encabeza la procesión hacia el Niño.",
+          "imagen": "/personajes/aya-uma-en-pase-1.webp",
           "imagenesExtra": [
-            "/personajes/aya-uma-grupo.jpeg"
+            "/personajes/aya-uma-en-pase-2.jpg"
           ],
           "label": "Aya Uma"
         },
         {
-          "progress": 0.5,
+          "progress": 0.37,
           "coord": [
-            -78.654119,
-            -1.668136
+            -78.65476,
+            -1.666608
+          ],
+          "personajeSlug": "diablos-de-lata",
+          "calle": "Av. Daniel León Borja",
+          "dato": "Irrumpe con su estruendo entre los devotos.",
+          "imagen": "/personajes/diablos-de-lata-en-pase-1.jpg",
+          "imagenesExtra": [],
+          "label": "Diablos"
+        },
+        {
+          "progress": 0.63,
+          "coord": [
+            -78.65345,
+            -1.667748
           ],
           "personajeSlug": "payaso",
           "calle": "Guayaquil",
-          "dato": "Anima a los devotos a lo largo de la bajada.",
+          "dato": "Anima la bajada con su danza incansable.",
           "imagen": "/personajes/payaso-en-pase-5.jpg",
           "imagenesExtra": [
             "/personajes/payaso-en-pase-1.jpeg"
@@ -580,14 +608,16 @@
         {
           "progress": 0.9,
           "coord": [
-            -78.64988,
-            -1.669867
+            -78.64956,
+            -1.670157
           ],
           "personajeSlug": "perro",
           "calle": "10 de Agosto",
           "dato": "Custodia la llegada del Niño Rey de la Paz.",
           "imagen": "/personajes/perro-en-pase-1.webp",
-          "imagenesExtra": [],
+          "imagenesExtra": [
+            "/personajes/perro-en-pase-2.jpg"
+          ],
           "label": "Perro"
         }
       ]
