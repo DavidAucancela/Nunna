@@ -44,3 +44,8 @@ coverage/
 
 # Sentry
 .sentryclirc
+
+# Videos fuente sin comprimir del recorrido/hero — solo se commitea el web-ready
+apps/web/public/pases-videos/video_main_header.mp4
+apps/web/public/pases-videos/pases_personsajes.mp4
+apps/web/public/pases-videos/AQPBd*.mp4
