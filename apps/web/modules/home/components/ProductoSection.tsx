@@ -14,7 +14,7 @@ function ImanVisual() {
   return (
     <div className="relative mx-auto h-44 w-44 overflow-hidden rounded-2xl border border-acento-dorado/20 shadow-[0_0_48px_rgba(200,155,60,0.12)]">
       <Image
-        src="/personajes/diablos-de-lata-presentacion.png"
+        src="/personajes/diablos-de-lata-iman.png"
         alt="Imán artesanal Diablos de lata"
         fill
         className="object-cover"

@@ -76,6 +76,15 @@
     "apariciones": [],
     "multimedia": [
       {
+        "id": "aya-uma-iman",
+        "tipo": "imagen",
+        "url": "/personajes/aya-uma-iman.png",
+        "altText": "Imán artesanal de Aya Uma",
+        "titulo": "proceso",
+        "descripcion": "El imán del Aya Uma, con su máscara de doble rostro.",
+        "orden": 0
+      },
+      {
         "id": "aya-uma-presentacion",
         "tipo": "imagen",
         "url": "/personajes/aya-uma-presentacion.png",
@@ -263,6 +272,15 @@
     "elementos": [],
     "apariciones": [],
     "multimedia": [
+      {
+        "id": "payaso-iman",
+        "tipo": "imagen",
+        "url": "/personajes/payaso-iman.png",
+        "altText": "Imán artesanal de Payaso",
+        "titulo": "proceso",
+        "descripcion": "El imán del Payaso, guardián festivo del pase.",
+        "orden": 0
+      },
       {
         "id": "payaso-en-pase-1",
         "tipo": "imagen",
@@ -516,6 +534,24 @@
     "apariciones": [],
     "multimedia": [
       {
+        "id": "perro-iman",
+        "tipo": "imagen",
+        "url": "/personajes/perro-iman.png",
+        "altText": "Imán artesanal de Perro",
+        "titulo": "proceso",
+        "descripcion": "El imán del Perro · Allku, guardián del umbral.",
+        "orden": 0
+      },
+      {
+        "id": "perro-iman-2",
+        "tipo": "imagen",
+        "url": "/personajes/perro-iman-2.png",
+        "altText": "Imán artesanal de Perro",
+        "titulo": "proceso",
+        "descripcion": "El imán del Perro · Allku, otra vista.",
+        "orden": 0
+      },
+      {
         "id": "perro-presentacion",
         "tipo": "imagen",
         "url": "/personajes/perro-presentacion.png",
@@ -603,6 +639,15 @@
     "elementos": [],
     "apariciones": [],
     "multimedia": [
+      {
+        "id": "diablos-de-lata-iman",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata-iman.png",
+        "altText": "Imán artesanal de Diablos de lata",
+        "titulo": "proceso",
+        "descripcion": "El imán del Diablo de lata, máscara roja de hojalata.",
+        "orden": 0
+      },
       {
         "id": "diablos-de-lata-presentacion",
         "tipo": "imagen",
