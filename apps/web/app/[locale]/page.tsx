@@ -15,10 +15,10 @@ interface HomePageProps {
 const FEATURED_SLUGS = ["aya-uma", "diablos-de-lata", "perro", "payaso"];
 
 const FALLBACKS: PersonajeListItem[] = [
-  { id: "aya-uma",         slug: "aya-uma",         nombre: "Aya Uma",         origen: "prehispanico", resumen: "", totalPases: 0, imagenPortada: "/personajes/aya-uma.png" },
-  { id: "diablos-de-lata", slug: "diablos-de-lata", nombre: "Diablos de lata", origen: "mestizo",      resumen: "", totalPases: 0, imagenPortada: "/personajes/diablos-de-lata.png" },
-  { id: "perro",           slug: "perro",           nombre: "Perro",           origen: "prehispanico", resumen: "", totalPases: 0, imagenPortada: "/personajes/perro.png" },
-  { id: "payaso",          slug: "payaso",          nombre: "Payaso",          origen: "mixto",        resumen: "", totalPases: 0, imagenPortada: "/personajes/payaso.png" },
+  { id: "aya-uma",         slug: "aya-uma",         nombre: "Aya Uma",         origen: "prehispanico", resumen: "", totalPases: 0, imagenPortada: "/personajes/aya-uma.webp" },
+  { id: "diablos-de-lata", slug: "diablos-de-lata", nombre: "Diablos de lata", origen: "mestizo",      resumen: "", totalPases: 0, imagenPortada: "/personajes/diablos-de-lata.webp" },
+  { id: "perro",           slug: "perro",           nombre: "Perro",           origen: "prehispanico", resumen: "", totalPases: 0, imagenPortada: "/personajes/perro.webp" },
+  { id: "payaso",          slug: "payaso",          nombre: "Payaso",          origen: "mixto",        resumen: "", totalPases: 0, imagenPortada: "/personajes/payaso.webp" },
 ];
 
 export default async function HomePage({ params }: HomePageProps) {

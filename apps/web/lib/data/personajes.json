@@ -13,8 +13,8 @@
     "descripcion": "<h2>El señor de los dos mundos</h2><p>El nombre Aya Uma proviene de dos palabras kichwa: <em>aya</em> (espíritu, alma, difunto) y <em>uma</em> (cabeza). Es literalmente «la cabeza del espíritu». Esta figura es el eje ritual de los pases riobambeños: su presencia garantiza que la comunicación entre el mundo de los vivos (Kay Pacha) y el mundo de los ancestros (Uku Pacha) esté abierta durante la celebración.</p><h2>La máscara de doble rostro</h2><p>La máscara del Aya Uma es la más elaborada de todos los personajes del pase. Tiene dos caras —una en la parte delantera y otra en la parte trasera de la cabeza— porque el Aya Uma ve en todas las direcciones simultáneamente: el pasado y el futuro, el mundo de arriba y el de abajo. Los doce cuernos que rodean la máscara representan los doce meses del año solar. Cada cuerno puede llevar cintas de colores con significados específicos: el rojo para la fuerza, el amarillo para la prosperidad, el verde para la naturaleza.</p><h2>El fuete y la danza sin fin</h2><p>El Aya Uma porta siempre un fuete (látigo) que golpea rítmicamente contra el suelo durante toda la danza. Este golpe no es violencia: es comunicación con la Pachamama, un llamado al que la tierra responde con fertilidad. La danza del Aya Uma no tiene coreografía fija —es improvisación constante alrededor de un eje de giro, con saltos, giros y movimientos que pueden durar horas sin pausa.</p><h2>El silencio como poder</h2><p>A diferencia del Payaso o el Sacha Runa, el Aya Uma nunca habla. Su poder ritual radica precisamente en ese silencio: lo que el espíritu comunica va más allá de las palabras humanas. Cuando el Aya Uma señala con el fuete hacia alguien en el público, ese momento tiene peso ritual —es una bendición o una advertencia.</p>",
     "simbolismo": "Representa la dualidad fundamental del cosmos andino: vida y muerte, pasado y futuro, Kay Pacha y Uku Pacha. Los doce cuernos symbolizan el ciclo anual completo. La doble máscara recuerda que el tiempo andino no es lineal sino circular: el futuro ya ocurrió en otro ciclo. El fuete que golpea la tierra es el pulso del pase, el corazón visible de la comunicación entre mundos.",
     "origen": "prehispanico",
-    "imagenPortada": "/personajes/aya-uma.png",
-    "imagenBanner": "/personajes/aya-uma-banner.png",
+    "imagenPortada": "/personajes/aya-uma.webp",
+    "imagenBanner": "/personajes/aya-uma-banner.webp",
     "narrativa": {
       "leyenda": "Donde el espíritu camina, la tierra responde.",
       "palabrasClave": [
@@ -78,7 +78,7 @@
       {
         "id": "aya-uma-iman",
         "tipo": "imagen",
-        "url": "/personajes/aya-uma-iman.png",
+        "url": "/personajes/aya-uma-iman.webp",
         "altText": "Imán artesanal de Aya Uma",
         "titulo": "proceso",
         "descripcion": "El imán del Aya Uma, con su máscara de doble rostro.",
@@ -87,7 +87,7 @@
       {
         "id": "aya-uma-presentacion",
         "tipo": "imagen",
-        "url": "/personajes/aya-uma-presentacion.png",
+        "url": "/personajes/aya-uma-presentacion.webp",
         "altText": "Imán Aya Uma — presentación individual",
         "titulo": "proceso",
         "descripcion": "El imán del Aya Uma, pieza artesanal única.",
@@ -241,8 +241,8 @@
     "descripcion": "<h2>El crítico con máscara</h2><p>En los pases riobambeños, el Payaso no entretiene pasivamente: actúa, improvisa, interpela. Se acerca al público, lo imita, exagera sus gestos, parodia a las figuras de autoridad que aparecen en la celebración. Esta práctica tiene raíces profundas: en las culturas andinas prehispánicas existían figuras análogas (los llamados «indios gracioso» en documentos coloniales) que cumplían una función ritual de inversión del orden social.</p><h2>El traje</h2><p>El traje del Payaso es el más heterogéneo de todos: no existe un modelo único. Cada payaso construye su traje con retazos de tela de colores contrastantes —rojo, amarillo, verde, naranja— cosidos sin aparente orden estético. Los cascabeles en los bordes del traje y el sombrero de ala ancha son los elementos más constantes. La máscara tiene rasgos caricaturizados: nariz grande, mejillas rojizas, sonrisa fija.</p><h2>La improvisación como arte</h2><p>A diferencia de otros personajes cuya danza sigue coreografías tradicionales, el Payaso improvisa. Su actuación depende del contexto: qué está pasando en el pase ese día, quién es el público, qué noticias o conflictos sociales son relevantes en ese momento. Un buen payaso de pase es un cronista de su tiempo.</p>",
     "simbolismo": "Representa la función social de la crítica mediante la risa. En el espacio ritual del pase, el Payaso tiene licencia para decir lo que nadie más puede. Es el guardián de la verdad disfrazado de entretenimiento. Su máscara fija de sonrisa contrasta con la posibilidad de decir cosas dolorosas: la risa como estrategia de supervivencia cultural.",
     "origen": "mixto",
-    "imagenPortada": "/personajes/payaso.png",
-    "imagenBanner": "/personajes/payaso-banner.png",
+    "imagenPortada": "/personajes/payaso.webp",
+    "imagenBanner": "/personajes/payaso-banner.webp",
     "narrativa": {
       "leyenda": "La máscara sonríe fija. La verdad no necesita permiso para salir.",
       "palabrasClave": [
@@ -275,7 +275,7 @@
       {
         "id": "payaso-iman",
         "tipo": "imagen",
-        "url": "/personajes/payaso-iman.png",
+        "url": "/personajes/payaso-iman.webp",
         "altText": "Imán artesanal de Payaso",
         "titulo": "proceso",
         "descripcion": "El imán del Payaso, guardián festivo del pase.",
@@ -293,7 +293,7 @@
       {
         "id": "payaso-proceso-1",
         "tipo": "imagen",
-        "url": "/personajes/payaso-iman-principal.png",
+        "url": "/personajes/payaso-iman-principal.webp",
         "altText": "Imán Payaso — presentación individual",
         "titulo": "proceso",
         "descripcion": "El imán del Payaso, pieza artesanal única con su característica máscara de colores.",
@@ -502,8 +502,8 @@
     "descripcion": "<h2>El compañero del Aya Uma</h2><p>En los pases donde aparece, el Perro (Allku) siempre está cerca del Aya Uma. Esta proximidad no es casual: en la mitología kichwa, el perro es el guardián del umbral entre el mundo de los vivos y el mundo de los muertos, el mismo umbral que el Aya Uma transita ritualmente. El Allku del pase es el guardián de su guardián.</p><h2>El traje</h2><p>El traje del Perro es uno de los más artesanales del pase. Consiste en una mameluco (enterizo) de tela acolchada que cubre todo el cuerpo, pintado o bordado con manchas de colores que imitan el pelaje de un perro chusco (mestizo). La máscara representa el hocico del animal con orejas flácidas. La cola, cosida en la parte trasera del traje, es uno de los elementos más cómicos: el danzante la mueve con un mecanismo de hilo interno.</p><h2>La actuación del Allku</h2><p>El danzante que interpreta al Perro tiene libertad de improvisación similar al Payaso. Ladra, persigue al público (especialmente a los niños, que huyen y ríen a la vez), finge olisquear el suelo, levanta la «pata» en las esquinas. Su actuación es física y exigente: requiere moverse en cuatro patas durante periodos prolongados.</p>",
     "simbolismo": "Representa el mundo doméstico y la lealtad, en contraste con los personajes más solemnes o salvajes del pase. El Allku es el puente entre lo cotidiano y lo ritual: un animal familiar que en el contexto del pase adquiere dimensiones cósmicas. Su relación con el Aya Uma refleja el vínculo entre el guardián humano y su compañero animal.",
     "origen": "prehispanico",
-    "imagenPortada": "/personajes/perro.png",
-    "imagenBanner": "/personajes/perro-banner.png",
+    "imagenPortada": "/personajes/perro.webp",
+    "imagenBanner": "/personajes/perro-banner.webp",
     "narrativa": {
       "leyenda": "El Allku guarda el umbral que ningún humano puede cruzar solo.",
       "palabrasClave": [
@@ -536,7 +536,7 @@
       {
         "id": "perro-iman",
         "tipo": "imagen",
-        "url": "/personajes/perro-iman.png",
+        "url": "/personajes/perro-iman.webp",
         "altText": "Imán artesanal de Perro",
         "titulo": "proceso",
         "descripcion": "El imán del Perro · Allku, guardián del umbral.",
@@ -545,7 +545,7 @@
       {
         "id": "perro-iman-2",
         "tipo": "imagen",
-        "url": "/personajes/perro-iman-2.png",
+        "url": "/personajes/perro-iman-2.webp",
         "altText": "Imán artesanal de Perro",
         "titulo": "proceso",
         "descripcion": "El imán del Perro · Allku, otra vista.",
@@ -554,7 +554,7 @@
       {
         "id": "perro-presentacion",
         "tipo": "imagen",
-        "url": "/personajes/perro-presentacion.png",
+        "url": "/personajes/perro-presentacion.webp",
         "altText": "Imán Perro — presentación individual",
         "titulo": "proceso",
         "descripcion": "El imán del Allku en su presentación individual.",
@@ -563,7 +563,7 @@
       {
         "id": "perro-presentacion-2",
         "tipo": "imagen",
-        "url": "/personajes/perro-presentacion-2.png",
+        "url": "/personajes/perro-presentacion-2.webp",
         "altText": "Imán Perro — retrato",
         "titulo": "proceso",
         "descripcion": "El Allku, guardián del umbral — imán artesanal.",
@@ -607,8 +607,8 @@
     "descripcion": "<h2>Los líderes de la comparsa</h2><p>En el pase riobambeño, los Diablos de lata no marchan al final —van al frente. Son quienes abren el espacio ritual: con sus sonajeros de metal anuncian que la comparsa llega y que el orden cotidiano va a ser interrumpido. Su liderazgo no es de autoridad formal sino de energía ritual: donde el Diablo de lata danza, la multitud se reorganiza.</p><h2>La máscara de hojalata</h2><p>La máscara roja de hojalata es el elemento más característico de este personaje y una obra maestra de la artesanía popular riobambeña. Confeccionada por artesanos especializados que trabajan el metal con martillo y punzón, cada máscara es única: lleva cuernos retorcidos, ojos de vidrio o botones y dientes tallados en el metal. El color rojo no es accidental —en la cosmovisión andina, el rojo es el color del fuego y de la sangre que da vida. El diablo rojo del pase no viene a llevarse almas sino a traer energía vital.</p><h2>Los sonajeros</h2><p>Los Diablos de lata llevan sonajeros en muñecas, tobillos y cintura —construidos con latas de metal, semillas secas o huesos. El sonido es inconfundible: metálico, rítmico, penetrante. Cumple una función ritual: el ruido ahuyenta espíritus negativos y limpia el espacio por donde pasa la comparsa.</p><h2>Ni diablo cristiano ni supay andino</h2><p>La figura del diablo en los pases riobambeños es una de las expresiones más fascinantes del sincretismo colonial andino. Los evangelizadores usaron la figura del diablo para representar todo lo que debía rechazarse. Pero las comunidades kichwa tomaron esa figura y la transformaron: el Diablo de lata heredó la máscara aterradora del diablo cristiano y la llenó con el poder del Supay andino, ser que en la cosmovisión original no era malo sino habitante del Uku Pacha, con poder sobre las fuerzas de la tierra.</p>",
     "simbolismo": "Representan la rebeldía y el sincretismo religioso. La máscara roja de hojalata combina el imaginario del diablo cristiano —introducido para intimidar a las comunidades— con el poder del Supay andino, habitante del Uku Pacha. Los Diablos de lata son la prueba de que la resistencia cultural no siempre toma la forma del rechazo: a veces consiste en tomar el símbolo del opresor y darle vuelta.",
     "origen": "mestizo",
-    "imagenPortada": "/personajes/diablos-de-lata.png",
-    "imagenBanner": "/personajes/diablos-de-lata-banner.png",
+    "imagenPortada": "/personajes/diablos-de-lata.webp",
+    "imagenBanner": "/personajes/diablos-de-lata-banner.webp",
     "narrativa": {
       "leyenda": "Tomaron el símbolo del miedo y lo convirtieron en el corazón de la fiesta.",
       "palabrasClave": [
@@ -642,7 +642,7 @@
       {
         "id": "diablos-de-lata-iman",
         "tipo": "imagen",
-        "url": "/personajes/diablos-de-lata-iman.png",
+        "url": "/personajes/diablos-de-lata-iman.webp",
         "altText": "Imán artesanal de Diablos de lata",
         "titulo": "proceso",
         "descripcion": "El imán del Diablo de lata, máscara roja de hojalata.",
@@ -651,7 +651,7 @@
       {
         "id": "diablos-de-lata-presentacion",
         "tipo": "imagen",
-        "url": "/personajes/diablos-de-lata-presentacion.png",
+        "url": "/personajes/diablos-de-lata-presentacion.webp",
         "altText": "Imán Diablos de lata — presentación individual",
         "titulo": "proceso",
         "descripcion": "El imán del Diablo de lata, máscara roja de hojalata.",
@@ -660,7 +660,7 @@
       {
         "id": "diablos-de-lata-proceso-2",
         "tipo": "imagen",
-        "url": "/personajes/diablos-de-lata-iman-principal.png",
+        "url": "/personajes/diablos-de-lata-iman-principal.webp",
         "altText": "Imán Diablos de lata — presentación detalle",
         "titulo": "proceso",
         "descripcion": "El imán del Diablo de lata, con su característica máscara de hojalata y sonajeros.",

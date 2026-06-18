@@ -14,7 +14,7 @@ function ImanVisual() {
   return (
     <div className="relative mx-auto h-44 w-44 overflow-hidden rounded-2xl border border-acento-dorado/20 shadow-[0_0_48px_rgba(200,155,60,0.12)]">
       <Image
-        src="/personajes/diablos-de-lata-iman.png"
+        src="/personajes/diablos-de-lata-iman.webp"
         alt="Imán artesanal Diablos de lata"
         fill
         className="object-cover"
@@ -62,7 +62,7 @@ function FichaVisual() {
   return (
     <div className="relative mx-auto h-44 w-28 overflow-hidden rounded-2xl border border-acento-dorado/20 bg-stone-900 shadow-[0_0_48px_rgba(200,155,60,0.12)]">
       <Image
-        src="/personajes/diablos-de-lata.png"
+        src="/personajes/diablos-de-lata.webp"
         alt="Ficha del personaje en el teléfono"
         fill
         className="object-cover object-top"
