@@ -394,7 +394,7 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
       className="relative border-y border-borde-sutil"
       style={{ height: "300vh" }}
     >
-      <div className="sticky top-16 h-[calc(100vh-4rem)] overflow-hidden bg-fondo-oscuro flex flex-col md:flex-row">
+      <div className="sticky top-16 h-[calc(100dvh-4rem)] overflow-hidden bg-fondo-oscuro flex flex-col md:flex-row">
 
         {/* ── MAP — left 55% ── */}
         <div className="relative h-[45vh] md:h-full md:w-[55%] flex-shrink-0">
@@ -619,15 +619,17 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
                     aria-current={i === activeIdx ? "true" : undefined}
                     className="group flex flex-col items-center flex-shrink-0 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70"
                   >
-                    <div
-                      className={`w-2.5 h-2.5 rounded-full border-2 transition-all duration-500 group-hover:border-acento-dorado ${
-                        i <= activeIdx
-                          ? "bg-acento-dorado border-acento-dorado shadow-[0_0_8px_rgba(200,155,60,0.65)]"
-                          : "bg-transparent border-stone-600"
-                      }`}
-                    />
+                    <div className="flex items-center justify-center min-w-[44px] min-h-[44px]">
+                      <div
+                        className={`w-2.5 h-2.5 rounded-full border-2 transition-all duration-500 group-hover:border-acento-dorado ${
+                          i <= activeIdx
+                            ? "bg-acento-dorado border-acento-dorado shadow-[0_0_8px_rgba(200,155,60,0.65)]"
+                            : "bg-transparent border-stone-600"
+                        }`}
+                      />
+                    </div>
                     <span
-                      className={`mt-1.5 text-[9px] uppercase tracking-wider text-center leading-tight transition-colors duration-500 group-hover:text-acento-dorado ${
+                      className={`mt-0.5 text-[9px] uppercase tracking-wider text-center leading-tight transition-colors duration-500 group-hover:text-acento-dorado ${
                         i <= activeIdx ? "text-acento-dorado/75" : "text-stone-500"
                       }`}
                       style={{ maxWidth: 50 }}

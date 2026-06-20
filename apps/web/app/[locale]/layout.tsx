@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { Fraunces } from "next/font/google";
 import { routing } from "@/i18n/routing";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -9,6 +10,12 @@ import { MainContent } from "@/components/layout/MainContent";
 import { LenisProvider } from "@/components/ui/LenisProvider";
 import "@/styles/globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-fraunces",
+});
 
 interface LocaleLayoutProps {
   children: React.ReactNode;
@@ -59,7 +66,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className="dark" suppressHydrationWarning>
+    <html lang={locale} className={`dark ${fraunces.variable}`} suppressHydrationWarning>
       <body className="bg-fondo-oscuro text-texto-claro antialiased">
         <a
           href="#main-content"
