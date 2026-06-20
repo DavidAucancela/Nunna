@@ -65,7 +65,10 @@
   "error": {
     "404": "Page not found",
     "500": "Server error",
-    "volver_inicio": "Back to home"
+    "volver_inicio": "Back to home",
+    "personaje_titulo": "This character isn't available",
+    "personaje_desc": "The link may have changed or the character is no longer published. Explore all the beings of the pase.",
+    "ver_catalogo": "See all characters"
   },
   "historia": {
     "titulo_seccion": "Their story",

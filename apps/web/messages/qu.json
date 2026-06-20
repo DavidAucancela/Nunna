@@ -65,7 +65,10 @@
   "error": {
     "404": "Mana tarirkanchu",
     "500": "Llakiwa tiyarqan",
-    "volver_inicio": "Qallariymanmi kutiy"
+    "volver_inicio": "Qallariymanmi kutiy",
+    "personaje_titulo": "Kay runaqa mana tiyanchu",
+    "personaje_desc": "Yaqapaschá tinki wakllirirqa, mana ima runapas willashkachu. Tukuy pase runakunata maskay.",
+    "ver_catalogo": "Tukuy runakunata rikuy"
   },
   "historia": {
     "titulo_seccion": "Paypa kawsaynin",
