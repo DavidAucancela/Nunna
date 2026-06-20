@@ -65,7 +65,10 @@
   "error": {
     "404": "Página no encontrada",
     "500": "Error del servidor",
-    "volver_inicio": "Volver al inicio"
+    "volver_inicio": "Volver al inicio",
+    "personaje_titulo": "Este personaje no está disponible",
+    "personaje_desc": "Es posible que el enlace haya cambiado o que el personaje ya no esté publicado. Explora todos los seres del pase.",
+    "ver_catalogo": "Ver todos los personajes"
   },
   "historia": {
     "titulo_seccion": "Su historia",

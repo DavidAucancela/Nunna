@@ -348,6 +348,13 @@ Modo oscuro por defecto.
 ### next-intl
 - `i18n/request.ts` usa `.default` en dynamic import — sin esto React tira error de serialización
 
+### QR — contrato de URL permanente ⚠
+El QR de cada imán físico codifica `/[locale]/personajes/<slug>`. Una vez impreso, **esa URL es inmutable** — si cambia, el imán ya vendido da 404 y no hay forma de arreglarlo desde la web.
+- **Los slugs de `personajes.json` son un contrato permanente. Nunca renombres un slug a secas.** Para renombrar: cambia el `slug` en el JSON **y** agrega `{ from: "<viejo>", to: "<nuevo>" }` en `lib/data/slug-aliases.ts`. Nunca borres un alias.
+- `next.config.ts` (`redirects()`) genera un `308` por cada alias × idioma (`/es/personajes`, `/qu/runakunamanta`, `/en/characters` — deben coincidir con `i18n/routing.ts`). Los redirects de next.config corren **antes** del middleware de next-intl, así que la URL localizada del QR coincide directo.
+- Slug muerto sin alias → `app/[locale]/personajes/[slug]/not-found.tsx` (404 amable con salida al catálogo; copy en namespace `error`: `personaje_titulo` / `personaje_desc` / `ver_catalogo`).
+- **Riesgo de infraestructura (no resoluble por código):** el QR codifica también el dominio. Hoy es el subdominio autogenerado de Railway (`nunnaec-production.up.railway.app`); si se cambia de hosting o se renombra el proyecto, **todos los imanes impresos se rompen**. Antes de imprimir a escala, usar un **dominio propio** apuntado a Railway.
+
 ### text-shimmer con Framer Motion (`HeroSection.tsx`)
 - **No poner `text-shimmer` en el padre** cuando los hijos son `motion.span` con `whileHover`
 - El problema: `scale` en `whileHover` crea un nuevo compositing layer para el span; ese layer hereda `color: transparent` del padre pero pierde acceso al gradiente `background-clip: text` del `h1` → letra invisible
