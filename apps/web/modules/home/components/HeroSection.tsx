@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   motion,
   useMotionValue,
@@ -125,7 +125,7 @@ function MagneticButton({
   return (
     <div ref={ref} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
       <motion.div style={{ x: sx, y: sy }}>
-        <Link href={href as "/personajes" | "/calendario"} className={`${base} ${cls}`}>{children}</Link>
+        <Link href={href as "/personajes" | "/calendario" | "/sobre"} className={`${base} ${cls}`}>{children}</Link>
       </motion.div>
     </div>
   );
@@ -137,11 +137,16 @@ export function HeroSection() {
   const reduced = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
 
+  const [hasHover, setHasHover] = useState(false);
+  useEffect(() => {
+    setHasHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+  }, []);
+
   // Posición X del mouse normalizada a [-1, 1]
   const mouseXRaw = useMotionValue(0);
 
   function onMouseMove(e: React.MouseEvent) {
-    if (reduced) return;
+    if (reduced || !hasHover) return;
     const rect = sectionRef.current?.getBoundingClientRect();
     if (!rect) return;
     mouseXRaw.set((e.clientX - rect.left - rect.width / 2) / (rect.width / 2));
@@ -165,7 +170,7 @@ export function HeroSection() {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
           poster="/pases-videos/main-header-poster.jpg"
           className="absolute inset-0 h-full w-full object-cover object-center"
           aria-hidden="true"
@@ -210,11 +215,8 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 1.2 }}
           className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
         >
-          <MagneticButton href="/personajes" variant="primary">
-            {t("hero.cta_principal")}
-          </MagneticButton>
-          <MagneticButton href="/calendario" variant="secondary">
-            {t("hero.cta_secundario")}
+          <MagneticButton href="/sobre" variant="primary">
+            Conoce este proyecto
           </MagneticButton>
         </motion.div>
       </div>

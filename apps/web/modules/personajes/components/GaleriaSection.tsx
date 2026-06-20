@@ -118,7 +118,7 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-14 sm:px-20"
+              className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-4 sm:px-14 md:px-20"
             >
               {/* Barra superior */}
               <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-5 py-4">
@@ -179,7 +179,7 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
                 <>
                   <button
                     onClick={(e) => { e.stopPropagation(); go(-1); }}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-borde-sutil bg-stone-900/80 text-stone-400 backdrop-blur-sm transition-all hover:border-stone-500 hover:text-stone-200"
+                    className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-borde-sutil bg-stone-900/80 text-stone-400 backdrop-blur-sm transition-all hover:border-stone-500 hover:text-stone-200"
                     aria-label="Imagen anterior"
                   >
                     <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -188,7 +188,7 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); go(1); }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-borde-sutil bg-stone-900/80 text-stone-400 backdrop-blur-sm transition-all hover:border-stone-500 hover:text-stone-200"
+                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-borde-sutil bg-stone-900/80 text-stone-400 backdrop-blur-sm transition-all hover:border-stone-500 hover:text-stone-200"
                     aria-label="Imagen siguiente"
                   >
                     <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">

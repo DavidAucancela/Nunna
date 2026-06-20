@@ -12,13 +12,13 @@ const ANDEAN_PATTERN = encodeURIComponent(
 
 function ImanVisual() {
   return (
-    <div className="relative mx-auto h-44 w-44 overflow-hidden rounded-2xl border border-acento-dorado/20 shadow-[0_0_48px_rgba(200,155,60,0.12)]">
+    <div className="relative mx-auto h-20 w-20 overflow-hidden rounded-xl border border-acento-dorado/20 shadow-[0_0_24px_rgba(200,155,60,0.12)] sm:h-28 sm:w-28 md:h-44 md:w-44 md:rounded-2xl md:shadow-[0_0_48px_rgba(200,155,60,0.12)]">
       <Image
         src="/personajes/diablos-de-lata-iman.webp"
         alt="Imán artesanal Diablos de lata"
         fill
         className="object-cover"
-        sizes="176px"
+        sizes="(max-width: 640px) 80px, (max-width: 768px) 112px, 176px"
       />
     </div>
   );
@@ -26,15 +26,15 @@ function ImanVisual() {
 
 function QrVisual() {
   return (
-    <div className="relative mx-auto flex h-44 w-44 items-center justify-center">
+    <div className="relative mx-auto flex h-20 w-20 items-center justify-center sm:h-28 sm:w-28 md:h-44 md:w-44">
       <div
-        className="absolute inset-8 animate-ping rounded-sm bg-acento-dorado/6"
+        className="absolute inset-4 animate-ping rounded-sm bg-acento-dorado/6 md:inset-8"
         style={{ animationDuration: "3s" }}
       />
       <svg
         viewBox="0 0 100 100"
         fill="currentColor"
-        className="relative h-36 w-36 text-acento-dorado"
+        className="relative h-16 w-16 text-acento-dorado sm:h-24 sm:w-24 md:h-36 md:w-36"
         aria-hidden="true"
       >
         <rect x="5"  y="5"  width="30" height="30" fill="none" stroke="currentColor" strokeWidth="7" rx="2" />
@@ -60,13 +60,13 @@ function QrVisual() {
 
 function FichaVisual() {
   return (
-    <div className="relative mx-auto h-44 w-28 overflow-hidden rounded-2xl border border-acento-dorado/20 bg-stone-900 shadow-[0_0_48px_rgba(200,155,60,0.12)]">
+    <div className="relative mx-auto h-20 w-14 overflow-hidden rounded-lg border border-acento-dorado/20 bg-stone-900 shadow-[0_0_24px_rgba(200,155,60,0.12)] sm:h-28 sm:w-20 sm:rounded-xl md:h-44 md:w-28 md:rounded-2xl md:shadow-[0_0_48px_rgba(200,155,60,0.12)]">
       <Image
         src="/personajes/diablos-de-lata.webp"
         alt="Ficha del personaje en el teléfono"
         fill
         className="object-cover object-top"
-        sizes="112px"
+        sizes="(max-width: 640px) 56px, (max-width: 768px) 80px, 112px"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 to-transparent" />
       <div className="absolute bottom-3 left-3 right-3 space-y-1.5">
@@ -102,7 +102,7 @@ const PASOS = [
 export function ProductoSection() {
   return (
     <section
-      className="border-y border-borde-sutil px-6 py-24"
+      className="border-y border-borde-sutil px-3 py-16 sm:px-6 sm:py-24"
       style={{
         backgroundColor: "#080706",
         backgroundImage: `url("data:image/svg+xml,${ANDEAN_PATTERN}")`,
@@ -113,7 +113,7 @@ export function ProductoSection() {
 
         {/* Encabezado */}
         <FadeUp>
-          <div className="mb-20 text-center">
+          <div className="mb-10 text-center sm:mb-20">
             <p className="text-xs uppercase tracking-[0.3em] text-acento-dorado">El producto</p>
             <h2 className="mt-3 font-serif text-3xl font-bold text-texto-claro md:text-5xl">
               Cómo funciona
@@ -121,28 +121,51 @@ export function ProductoSection() {
           </div>
         </FadeUp>
 
-        {/* 3 tiles con divisores */}
-        <div className="grid grid-cols-1 divide-y divide-borde-sutil md:grid-cols-3 md:divide-x md:divide-y-0">
+        {/* Mobile: Stepper vertical */}
+        <div className="mx-auto max-w-md space-y-0 md:hidden">
           {PASOS.map((paso, i) => (
             <FadeUp key={paso.num} delay={i * 0.15}>
-              <div className="flex flex-col items-center px-8 py-12 text-center md:py-4">
+              <div className="relative flex gap-4 pb-14 last:pb-0">
+                {/* Línea + círculo numerado */}
+                <div className="flex flex-col items-center">
+                  <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-acento-dorado/50 bg-stone-950 font-serif text-sm font-bold text-acento-dorado">
+                    {paso.num}
+                  </span>
+                  {i < PASOS.length - 1 && (
+                    <div className="w-px flex-1 bg-gradient-to-b from-acento-dorado/20 to-transparent" />
+                  )}
+                </div>
+                {/* Contenido */}
+                <div className="flex flex-1 flex-col gap-3 pt-1">
+                  <div className="shrink-0">
+                    <paso.Visual />
+                  </div>
+                  <h3 className="font-serif text-xl font-bold text-texto-claro">
+                    {paso.titulo}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-stone-400">
+                    {paso.texto}
+                  </p>
+                </div>
+              </div>
+            </FadeUp>
+          ))}
+        </div>
 
-                {/* Número */}
+        {/* Desktop: Grid 3 columnas */}
+        <div className="hidden md:grid md:grid-cols-3 md:divide-x md:divide-borde-sutil">
+          {PASOS.map((paso, i) => (
+            <FadeUp key={paso.num} delay={i * 0.15}>
+              <div className="flex flex-col items-center px-8 py-10 text-center">
                 <span className="font-serif text-5xl font-bold text-acento-dorado/35 md:text-6xl">
                   {paso.num}
                 </span>
-
-                {/* Visual */}
                 <div className="mt-6">
                   <paso.Visual />
                 </div>
-
-                {/* Título */}
                 <h3 className="mt-8 font-serif text-xl font-bold text-texto-claro md:text-2xl">
                   {paso.titulo}
                 </h3>
-
-                {/* Descripción */}
                 <p className="mt-3 text-sm leading-relaxed text-stone-400 md:text-base">
                   {paso.texto}
                 </p>

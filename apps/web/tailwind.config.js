@@ -21,7 +21,7 @@ module.exports = {
         "borde-sutil": "#2A2724",
       },
       fontFamily: {
-        serif: ["Fraunces", "Georgia", "serif"],
+        serif: ["var(--font-fraunces)", "Fraunces", "Georgia", "serif"],
         sans: ["Inter", "system-ui", "sans-serif"],
       },
       fontSize: {
