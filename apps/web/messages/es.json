@@ -1,8 +1,8 @@
 {
   "nav": {
     "personajes": "Personajes",
-    "mapa": "Mapa",
-    "calendario": "Pases y Festividades",
+    "pases": "Pases",
+    "calendario": "Calendario",
     "glosario": "Glosario",
     "buscar": "Buscar",
     "sobre": "Sobre el proyecto"
@@ -60,7 +60,14 @@
     "titulo": "Pases y Festividades",
     "descripcion": "Los pases son el escenario donde los personajes cobran vida.",
     "fecha_fija": "Fecha fija",
-    "fecha_movil": "Fecha variable"
+    "fecha_movil": "Fecha variable",
+    "org": "Alcaldía de Riobamba · Chimborazo",
+    "intro_oficial": "Recorridos oficiales de los Pases del Niño en Riobamba. Cada institución organiza su propio pase con personajes, música y comparsas por las calles del centro histórico.",
+    "dia_banner": "Miércoles 20 de diciembre · {count} pases durante todo el día",
+    "orden_dia": "Orden del día",
+    "recorridos_oficiales": "Recorridos oficiales",
+    "calendario_completo": "Calendario completo",
+    "nota": "Recorridos oficiales emitidos por la Alcaldía de Riobamba para el 20 de diciembre. Las rutas y horarios pueden variar en ediciones futuras."
   },
   "error": {
     "404": "Página no encontrada",

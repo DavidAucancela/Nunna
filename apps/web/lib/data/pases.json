@@ -8,7 +8,14 @@
     "mes": 12,
     "dia": 20,
     "imagenPortada": "/informacion_pases/gotitas-de-dulzura.jpg",
-    "totalPersonajes": 1
+    "totalPersonajes": 1,
+    "tipo": "Centro de Desarrollo Infantil",
+    "horario": "09:30 – 10:30",
+    "ruta": "Av. Antonio José de Sucre → Vicente Ramón Roca → Rocafuerte",
+    "inicio": "Av. Antonio José de Sucre",
+    "fin": "Iglesia San Nicolás",
+    "personaje": "Aya Uma",
+    "color": "#C89B3C"
   },
   {
     "id": "safpi",
@@ -19,7 +26,14 @@
     "mes": 12,
     "dia": 20,
     "imagenPortada": "/informacion_pases/safpi.jpg",
-    "totalPersonajes": 1
+    "totalPersonajes": 1,
+    "tipo": "Institución educativa",
+    "horario": "12:00 – 13:00",
+    "ruta": "Cuba / México → Juan Bernardo de León → La Paz",
+    "inicio": "Cuba / México",
+    "fin": "Colegio Cisneros",
+    "personaje": "Rey Moro",
+    "color": "#B8312F"
   },
   {
     "id": "mercado-santa-rosa",
@@ -30,7 +44,14 @@
     "mes": 12,
     "dia": 20,
     "imagenPortada": "/informacion_pases/mercado-santa-rosa.jpg",
-    "totalPersonajes": 1
+    "totalPersonajes": 1,
+    "tipo": "Mercado popular",
+    "horario": "13:00 – 14:00",
+    "ruta": "Carabobo / Villarroel → Rocafuerte → Colombia / Pichincha → García Moreno",
+    "inicio": "Carabobo / Villarroel",
+    "fin": "García Moreno",
+    "personaje": "Payaso",
+    "color": "#C89B3C"
   },
   {
     "id": "unidad-educativa-la-salle",
@@ -41,7 +62,14 @@
     "mes": 12,
     "dia": 20,
     "imagenPortada": "/informacion_pases/la-salle.jpg",
-    "totalPersonajes": 1
+    "totalPersonajes": 1,
+    "tipo": "Unidad educativa",
+    "horario": "15:00 – 18:00",
+    "ruta": "Carabobo → Venezuela → España → Argentinos → Espejo → Colón / Nueva York",
+    "inicio": "España (frente al colegio)",
+    "fin": "Colón / Nueva York",
+    "personaje": "Perro",
+    "color": "#B8312F"
   },
   {
     "id": "instituto-tecnologico-riobamba",
@@ -52,7 +80,14 @@
     "mes": 12,
     "dia": 20,
     "imagenPortada": "/informacion_pases/instituto-tecnologico.jpg",
-    "totalPersonajes": 1
+    "totalPersonajes": 1,
+    "tipo": "Institución de educación superior",
+    "horario": "17:00 – 20:00",
+    "ruta": "Carlos Zambrano → Av. Daniel León Borja → 10 de Agosto → Espejo",
+    "inicio": "Carlos Zambrano",
+    "fin": "Iglesia La Catedral",
+    "personaje": "Curiquingue",
+    "color": "#1F4D3F"
   },
   {
     "id": "nino-rey-de-la-paz",

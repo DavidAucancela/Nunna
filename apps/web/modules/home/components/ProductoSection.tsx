@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
 import { FadeUp } from "@/components/ui/FadeUp";
 
 const ANDEAN_PATTERN = encodeURIComponent(
@@ -10,91 +11,141 @@ const ANDEAN_PATTERN = encodeURIComponent(
   `</svg>`
 );
 
+/* — Marco de teléfono reutilizable — */
+function PhoneMock({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative mx-auto w-full max-w-[260px]">
+      <div className="absolute -inset-6 rounded-[2.5rem] bg-acento-dorado/8 blur-2xl" />
+      <div className="relative rounded-[2.4rem] border border-stone-700/80 bg-stone-900 p-2.5 shadow-2xl shadow-black/50">
+        {/* Notch */}
+        <div className="absolute left-1/2 top-3 z-20 h-1.5 w-16 -translate-x-1/2 rounded-full bg-stone-700" />
+        <div className="relative aspect-[9/16] overflow-hidden rounded-[1.8rem] bg-stone-950">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* — Paso 01: el imán físico — */
 function ImanVisual() {
   return (
-    <div className="relative mx-auto h-20 w-20 overflow-hidden rounded-xl border border-acento-dorado/20 shadow-[0_0_24px_rgba(200,155,60,0.12)] sm:h-28 sm:w-28 md:h-44 md:w-44 md:rounded-2xl md:shadow-[0_0_48px_rgba(200,155,60,0.12)]">
-      <Image
-        src="/personajes/diablos-de-lata-iman.webp"
-        alt="Imán artesanal Diablos de lata"
-        fill
-        className="object-cover"
-        sizes="(max-width: 640px) 80px, (max-width: 768px) 112px, 176px"
-      />
+    <div className="relative mx-auto w-full max-w-[320px]">
+      <div className="absolute -inset-5 rounded-[2rem] bg-acento-dorado/10 blur-3xl" />
+      <div className="relative aspect-square overflow-hidden rounded-[1.6rem] border border-acento-dorado/25 shadow-2xl shadow-black/40">
+        <Image
+          src="/personajes/diablos-de-lata-iman.webp"
+          alt="Imán artesanal Diablos de lata"
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 80vw, 320px"
+        />
+        <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/5" />
+      </div>
+      {/* Etiqueta artesanal */}
+      <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-acento-dorado/30 bg-stone-950 px-4 py-1.5 text-[11px] font-medium uppercase tracking-wider text-acento-dorado/90 shadow-lg">
+        Pieza única · hecho a mano
+      </span>
     </div>
   );
 }
 
+/* — Paso 02: escaneo del QR — */
 function QrVisual() {
+  const reduce = useReducedMotion();
   return (
-    <div className="relative mx-auto flex h-20 w-20 items-center justify-center sm:h-28 sm:w-28 md:h-44 md:w-44">
-      <div
-        className="absolute inset-4 animate-ping rounded-sm bg-acento-dorado/6 md:inset-8"
-        style={{ animationDuration: "3s" }}
-      />
-      <svg
-        viewBox="0 0 100 100"
-        fill="currentColor"
-        className="relative h-16 w-16 text-acento-dorado sm:h-24 sm:w-24 md:h-36 md:w-36"
-        aria-hidden="true"
-      >
-        <rect x="5"  y="5"  width="30" height="30" fill="none" stroke="currentColor" strokeWidth="7" rx="2" />
-        <rect x="12" y="12" width="16" height="16" rx="1" />
-        <rect x="65" y="5"  width="30" height="30" fill="none" stroke="currentColor" strokeWidth="7" rx="2" />
-        <rect x="72" y="12" width="16" height="16" rx="1" />
-        <rect x="5"  y="65" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="7" rx="2" />
-        <rect x="12" y="72" width="16" height="16" rx="1" />
-        <rect x="42" y="5"  width="8" height="8"  rx="1" />
-        <rect x="42" y="17" width="8" height="8"  rx="1" />
-        <rect x="65" y="42" width="8" height="8"  rx="1" />
-        <rect x="77" y="42" width="8" height="8"  rx="1" />
-        <rect x="42" y="42" width="8" height="8"  rx="1" />
-        <rect x="54" y="54" width="8" height="8"  rx="1" />
-        <rect x="66" y="66" width="8" height="8"  rx="1" />
-        <rect x="78" y="54" width="8" height="8"  rx="1" />
-        <rect x="54" y="78" width="8" height="8"  rx="1" />
-        <rect x="78" y="78" width="8" height="8"  rx="1" />
-      </svg>
-    </div>
+    <PhoneMock>
+      <div className="flex h-full flex-col items-center justify-center gap-5 bg-gradient-to-b from-stone-900 to-stone-950 p-6">
+        <p className="text-[10px] uppercase tracking-[0.25em] text-stone-500">Reverso de la tarjeta</p>
+        <div className="relative">
+          <svg
+            viewBox="0 0 100 100"
+            fill="currentColor"
+            className="h-32 w-32 text-acento-dorado"
+            aria-hidden="true"
+          >
+            <rect x="5"  y="5"  width="30" height="30" fill="none" stroke="currentColor" strokeWidth="7" rx="2" />
+            <rect x="12" y="12" width="16" height="16" rx="1" />
+            <rect x="65" y="5"  width="30" height="30" fill="none" stroke="currentColor" strokeWidth="7" rx="2" />
+            <rect x="72" y="12" width="16" height="16" rx="1" />
+            <rect x="5"  y="65" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="7" rx="2" />
+            <rect x="12" y="72" width="16" height="16" rx="1" />
+            <rect x="42" y="5"  width="8" height="8"  rx="1" />
+            <rect x="42" y="17" width="8" height="8"  rx="1" />
+            <rect x="65" y="42" width="8" height="8"  rx="1" />
+            <rect x="77" y="42" width="8" height="8"  rx="1" />
+            <rect x="42" y="42" width="8" height="8"  rx="1" />
+            <rect x="54" y="54" width="8" height="8"  rx="1" />
+            <rect x="66" y="66" width="8" height="8"  rx="1" />
+            <rect x="78" y="54" width="8" height="8"  rx="1" />
+            <rect x="54" y="78" width="8" height="8"  rx="1" />
+            <rect x="78" y="78" width="8" height="8"  rx="1" />
+          </svg>
+          {/* Línea de escaneo */}
+          {!reduce && (
+            <motion.div
+              className="absolute inset-x-0 h-[2px] rounded-full bg-acento-dorado shadow-[0_0_10px_2px_rgba(200,155,60,0.7)]"
+              initial={{ top: "4%" }}
+              animate={{ top: ["4%", "96%", "4%"] }}
+              transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+            />
+          )}
+        </div>
+        <p className="text-center text-xs leading-relaxed text-stone-500">
+          Apunta la cámara<br />— sin apps —
+        </p>
+      </div>
+    </PhoneMock>
   );
 }
 
+/* — Paso 03: la ficha del ser — */
 function FichaVisual() {
   return (
-    <div className="relative mx-auto h-20 w-14 overflow-hidden rounded-lg border border-acento-dorado/20 bg-stone-900 shadow-[0_0_24px_rgba(200,155,60,0.12)] sm:h-28 sm:w-20 sm:rounded-xl md:h-44 md:w-28 md:rounded-2xl md:shadow-[0_0_48px_rgba(200,155,60,0.12)]">
+    <PhoneMock>
       <Image
         src="/personajes/diablos-de-lata.webp"
         alt="Ficha del personaje en el teléfono"
         fill
         className="object-cover object-top"
-        sizes="(max-width: 640px) 56px, (max-width: 768px) 80px, 112px"
+        sizes="(max-width: 768px) 80vw, 260px"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 to-transparent" />
-      <div className="absolute bottom-3 left-3 right-3 space-y-1.5">
-        <div className="h-1 w-10 rounded-full bg-acento-dorado/60" />
-        <div className="h-1 w-7 rounded-full bg-stone-600" />
-        <div className="h-1 w-14 rounded-full bg-stone-700" />
+      <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent" />
+      <div className="absolute inset-x-5 bottom-6 space-y-2.5">
+        <span className="inline-block rounded-full bg-acento-rojo/90 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white">
+          Mestizo
+        </span>
+        <div className="h-3.5 w-28 rounded bg-stone-100/90" />
+        <div className="space-y-1.5 pt-1">
+          <div className="h-1.5 w-full rounded-full bg-stone-500/70" />
+          <div className="h-1.5 w-5/6 rounded-full bg-stone-600/70" />
+          <div className="h-1.5 w-2/3 rounded-full bg-stone-700/70" />
+        </div>
       </div>
-    </div>
+    </PhoneMock>
   );
 }
 
 const PASOS = [
   {
     num: "01",
+    kicker: "Lo físico",
     titulo: "Elige tu imán",
-    texto: "Cada imán lleva un ser único de los pases riobambeños, moldeado artesanalmente.",
+    texto: "Cada imán es una pieza moldeada y pintada a mano: un ser de los pases riobambeños que vive en tu refrigeradora. No hay dos exactamente iguales.",
     Visual: ImanVisual,
   },
   {
     num: "02",
+    kicker: "El puente",
     titulo: "Escanea el QR",
-    texto: "Con la cámara de tu teléfono — sin app. En segundos estás en la ficha del ser.",
+    texto: "Apunta la cámara de tu teléfono al código del reverso. Sin apps ni descargas — en segundos cruzas del objeto físico a su historia.",
     Visual: QrVisual,
   },
   {
     num: "03",
+    kicker: "Lo digital",
     titulo: "Descubre al ser",
-    texto: "Historia, simbolismo y cosmovisión kichwa en español, kichwa e inglés.",
+    texto: "Aterrizas en la ficha completa: leyenda, capítulos, simbolismo y la cosmovisión kichwa que le da sentido — en español, kichwa e inglés.",
     Visual: FichaVisual,
   },
 ];
@@ -102,7 +153,7 @@ const PASOS = [
 export function ProductoSection() {
   return (
     <section
-      className="border-y border-borde-sutil px-3 py-16 sm:px-6 sm:py-24"
+      className="border-y border-borde-sutil px-5 py-16 sm:px-6 sm:py-24"
       style={{
         backgroundColor: "#080706",
         backgroundImage: `url("data:image/svg+xml,${ANDEAN_PATTERN}")`,
@@ -111,67 +162,61 @@ export function ProductoSection() {
     >
       <div className="mx-auto max-w-6xl">
 
-        {/* Encabezado */}
+        {/* Encabezado + descripción del proyecto */}
         <FadeUp>
-          <div className="mb-10 text-center sm:mb-20">
+          <div className="mx-auto mb-16 max-w-2xl text-center sm:mb-24">
             <p className="text-xs uppercase tracking-[0.3em] text-acento-dorado">El producto</p>
             <h2 className="mt-3 font-serif text-3xl font-bold text-texto-claro md:text-5xl">
               Cómo funciona
             </h2>
+            <p className="mx-auto mt-6 text-base leading-relaxed text-stone-400 md:text-lg">
+              <span className="font-semibold text-texto-claro">Nunna</span> es un catálogo
+              vivo de los seres que dan vida a los pases riobambeños. Cada uno se vuelve un
+              imán artesanal: una pieza única que lleva, en su reverso, un código QR.
+            </p>
+            <p className="mx-auto mt-4 text-base leading-relaxed text-stone-400 md:text-lg">
+              Al escanearlo aterrizas en la ficha del personaje —su historia y su cosmovisión
+              kichwa— para que cada imán sea también una puerta a la memoria de Riobamba.
+            </p>
           </div>
         </FadeUp>
 
-        {/* Mobile: Stepper vertical */}
-        <div className="mx-auto max-w-md space-y-0 md:hidden">
-          {PASOS.map((paso, i) => (
-            <FadeUp key={paso.num} delay={i * 0.15}>
-              <div className="relative flex gap-4 pb-14 last:pb-0">
-                {/* Línea + círculo numerado */}
-                <div className="flex flex-col items-center">
-                  <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-acento-dorado/50 bg-stone-950 font-serif text-sm font-bold text-acento-dorado">
-                    {paso.num}
-                  </span>
-                  {i < PASOS.length - 1 && (
-                    <div className="w-px flex-1 bg-gradient-to-b from-acento-dorado/20 to-transparent" />
-                  )}
-                </div>
-                {/* Contenido */}
-                <div className="flex flex-1 flex-col gap-3 pt-1">
-                  <div className="shrink-0">
+        {/* Pasos — editorial alternado */}
+        <div className="space-y-20 md:space-y-32">
+          {PASOS.map((paso, i) => {
+            const flip = i % 2 === 1;
+            return (
+              <FadeUp key={paso.num}>
+                <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
+                  {/* Visual */}
+                  <div className={flip ? "md:order-2" : ""}>
                     <paso.Visual />
                   </div>
-                  <h3 className="font-serif text-xl font-bold text-texto-claro">
-                    {paso.titulo}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-stone-400">
-                    {paso.texto}
-                  </p>
-                </div>
-              </div>
-            </FadeUp>
-          ))}
-        </div>
 
-        {/* Desktop: Grid 3 columnas */}
-        <div className="hidden md:grid md:grid-cols-3 md:divide-x md:divide-borde-sutil">
-          {PASOS.map((paso, i) => (
-            <FadeUp key={paso.num} delay={i * 0.15}>
-              <div className="flex flex-col items-center px-8 py-10 text-center">
-                <span className="font-serif text-5xl font-bold text-acento-dorado/35 md:text-6xl">
-                  {paso.num}
-                </span>
-                <div className="mt-6">
-                  <paso.Visual />
+                  {/* Texto */}
+                  <div className={flip ? "md:order-1 md:text-right" : ""}>
+                    <div className={`flex items-center gap-4 ${flip ? "md:flex-row-reverse" : ""}`}>
+                      <span className="font-serif text-6xl font-bold leading-none text-acento-dorado/25 md:text-7xl">
+                        {paso.num}
+                      </span>
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-[11px] uppercase tracking-[0.3em] text-acento-dorado">
+                          {paso.kicker}
+                        </span>
+                        <span className="h-px w-12 bg-acento-dorado/40" />
+                      </div>
+                    </div>
+                    <h3 className="mt-6 font-serif text-2xl font-bold text-texto-claro md:text-4xl">
+                      {paso.titulo}
+                    </h3>
+                    <p className={`mt-4 text-base leading-relaxed text-stone-400 md:text-lg ${flip ? "md:ml-auto" : ""} max-w-md`}>
+                      {paso.texto}
+                    </p>
+                  </div>
                 </div>
-                <h3 className="mt-8 font-serif text-xl font-bold text-texto-claro md:text-2xl">
-                  {paso.titulo}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-stone-400 md:text-base">
-                  {paso.texto}
-                </p>
-              </div>
-            </FadeUp>
-          ))}
+              </FadeUp>
+            );
+          })}
         </div>
       </div>
     </section>

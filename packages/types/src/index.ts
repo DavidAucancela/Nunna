@@ -110,6 +110,14 @@ export interface PaseListItem
   extends Pick<Pase, "id" | "slug" | "nombre" | "fechaTipo" | "fechaDescripcion" | "mes" | "dia"> {
   imagenPortada?: string;
   totalPersonajes: number;
+  /** Datos del recorrido oficial (solo pases con ruta publicada). */
+  tipo?: string;
+  horario?: string;
+  ruta?: string;
+  inicio?: string;
+  fin?: string;
+  personaje?: string;
+  color?: string;
 }
 
 export interface PasePersonaje {

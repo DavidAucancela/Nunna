@@ -1,8 +1,8 @@
 {
   "nav": {
     "personajes": "Runakuna",
-    "mapa": "Mapa",
-    "calendario": "Raymi Watapura",
+    "pases": "Pawkarkuna",
+    "calendario": "Watapura",
     "glosario": "Rimasikuna",
     "buscar": "Maskanakuy",
     "sobre": "Ima Mantamanta"
@@ -60,7 +60,14 @@
     "titulo": "Raymikuna",
     "descripcion": "Raymikuna ukupi runakunaqa kawsarinku.",
     "fecha_fija": "Sapa wata chay punchaw",
-    "fecha_movil": "Hukchasqa punchaw"
+    "fecha_movil": "Hukchasqa punchaw",
+    "org": "Riobamba Alcaldía · Chimborazo",
+    "intro_oficial": "Riobamba llaqtapi Wawa Pawkarkunap kikin ñankunan. Sapa wasin paypa pawkarninta wakichin: runakunawan, takiwan, tushuywan llaqta ukupi.",
+    "dia_banner": "Miércoles 20 diciembre punchaw · {count} pawkar tukuy punchaw",
+    "orden_dia": "Punchawpa katiynin",
+    "recorridos_oficiales": "Kikin ñankuna",
+    "calendario_completo": "Tukuy watapura",
+    "nota": "Riobamba Alcaldíap 20 diciembre punchawpaq kikin ñankuna. Ñankunapas pachakunapas hamuq watakunapi hukchakunmanmi."
   },
   "error": {
     "404": "Mana tarirkanchu",

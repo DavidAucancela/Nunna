@@ -1,6 +1,5 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { FadeUp } from "@/components/ui/FadeUp";
 
@@ -74,19 +73,11 @@ export function CtaFinal() {
         </FadeUp>
 
         <FadeUp delay={0.2}>
-          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Link
-              href="/personajes"
-              className="rounded-full bg-acento-rojo px-10 py-4 text-sm font-semibold text-white shadow-lg shadow-acento-rojo/30 transition-all hover:bg-red-700 hover:shadow-acento-rojo/50"
-            >
-              Ver todos los personajes
-            </Link>
-            <Link
-              href="/sobre"
-              className="text-sm font-medium text-stone-400 underline-offset-4 transition-colors hover:text-acento-dorado hover:underline"
-            >
-              Conocer el proyecto →
-            </Link>
+          <div className="mt-10 flex justify-center">
+            <span className="inline-flex items-center gap-2 rounded-full bg-acento-rojo px-10 py-4 text-sm font-semibold text-white shadow-lg shadow-acento-rojo/30">
+              <QrIcon className="h-4 w-4" />
+              Escanea tu QR
+            </span>
           </div>
         </FadeUp>
       </div>
