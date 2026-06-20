@@ -9,6 +9,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const MESES = [
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+];
+
 // Datos fijos de referencia basados en los recorridos oficiales de la Alcaldía de Riobamba
 const PASES_FIJOS = [
   {
@@ -65,6 +70,14 @@ const PASES_FIJOS = [
 export default async function CalendarioPage() {
   const pases = await getPases({});
 
+  // Todos los pases agrupados por mes (calendario completo en formato lista)
+  const pasesPorMes = MESES.reduce<Record<number, typeof pases>>((acc, _, i) => {
+    const mes = i + 1;
+    const pasesDelMes = pases.filter((p) => p.mes === mes);
+    if (pasesDelMes.length > 0) acc[mes] = pasesDelMes;
+    return acc;
+  }, {});
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-12">
       <header className="mb-10">
@@ -97,6 +110,46 @@ export default async function CalendarioPage() {
       </header>
 
       <CalendarioGrid pases={pases} pasesFijos={PASES_FIJOS} />
+
+      {/* Calendario completo — todos los pases por mes (vista de lista) */}
+      {Object.keys(pasesPorMes).length > 0 && (
+        <section className="mt-16 border-t border-borde-sutil pt-12">
+          <h2 className="mb-8 font-serif text-2xl font-bold text-texto-claro">
+            Calendario completo
+          </h2>
+          {Object.entries(pasesPorMes).map(([mes, pasesDelMes]) => (
+            <div key={mes} className="mb-12">
+              <h3 className="mb-4 font-serif text-xl font-bold text-acento-dorado">
+                {MESES[Number(mes) - 1]}
+              </h3>
+              <div className="space-y-4">
+                {pasesDelMes.map((pase) => (
+                  <div
+                    key={pase.id}
+                    className="flex items-center gap-6 rounded-2xl border border-borde-sutil bg-stone-900/30 p-6"
+                  >
+                    <div className="min-w-16 text-center">
+                      {pase.dia ? (
+                        <span className="text-3xl font-bold text-texto-claro">
+                          {String(pase.dia).padStart(2, "0")}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-stone-500">Fecha variable</span>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="font-serif text-lg font-semibold text-texto-claro">
+                        {pase.nombre}
+                      </h4>
+                      <p className="mt-1 text-sm text-stone-500">{pase.fechaDescripcion}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
     </div>
   );
 }

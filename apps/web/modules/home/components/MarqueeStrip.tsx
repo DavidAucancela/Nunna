@@ -23,10 +23,18 @@ export function MarqueeStrip() {
         .marquee-track {
           display: flex;
           width: max-content;
-          animation: marquee 32s linear infinite;
+          /* Móvil: ventana angosta → más lento para que no se perciba veloz */
+          animation: marquee 60s linear infinite;
+        }
+        /* A partir de tablet la pantalla es más ancha → puede ir más rápido */
+        @media (min-width: 768px) {
+          .marquee-track { animation-duration: 40s; }
         }
         .marquee-track:hover {
           animation-play-state: paused;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .marquee-track { animation: none; transform: translateX(0); }
         }
       `}</style>
 

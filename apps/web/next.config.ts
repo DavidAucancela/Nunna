@@ -24,13 +24,24 @@ const nextConfig: NextConfig = {
   // Ver lib/data/slug-aliases.ts. Los redirects de next.config se evalúan ANTES
   // del middleware de next-intl, así que la URL localizada del QR coincide directo.
   async redirects() {
-    return slugAliases.flatMap(({ from, to }) =>
+    const slugRedirects = slugAliases.flatMap(({ from, to }) =>
       PERSONAJE_BASE_PATHS.map((base) => ({
         source: `${base}/${from}`,
         destination: `${base}/${to}`,
         permanent: true,
       }))
     );
+
+    // /mapa se fusionó dentro de /pases. Redirigimos por idioma para no romper
+    // enlaces externos a la antigua página del mapa (los pathnames localizados
+    // deben coincidir con i18n/routing.ts → "/pases").
+    const mapaRedirects = [
+      { source: "/es/mapa", destination: "/es/pases", permanent: true },
+      { source: "/qu/mapa", destination: "/qu/pawkarkuna", permanent: true },
+      { source: "/en/map", destination: "/en/celebrations", permanent: true },
+    ];
+
+    return [...slugRedirects, ...mapaRedirects];
   },
   async headers() {
     return [

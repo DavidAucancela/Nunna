@@ -21,11 +21,6 @@ export const routing = defineRouting({
       qu: "/pawkarkuna",
       en: "/celebrations",
     },
-    "/mapa": {
-      es: "/mapa",
-      qu: "/mapa",
-      en: "/map",
-    },
     "/calendario": {
       es: "/calendario",
       qu: "/watapura",

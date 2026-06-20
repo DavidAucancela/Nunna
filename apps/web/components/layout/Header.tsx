@@ -7,8 +7,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_LINKS = [
-  { key: "personajes", href: "/personajes" },
-  { key: "mapa",       href: "/mapa" },
+  { key: "pases",      href: "/pases" },
   { key: "calendario", href: "/calendario" },
   { key: "glosario",   href: "/glosario" },
 ] as const;

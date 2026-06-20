@@ -19,7 +19,7 @@ export function Footer() {
           <div>
             <p className="mb-3 text-xs uppercase tracking-widest text-stone-500">Explorar</p>
             <ul className="space-y-2">
-              {(["personajes", "mapa", "calendario", "glosario"] as const).map((key) => (
+              {(["pases", "calendario", "glosario"] as const).map((key) => (
                 <li key={key}>
                   <Link
                     href={`/${key}`}

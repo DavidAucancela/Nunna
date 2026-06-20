@@ -1,8 +1,8 @@
 {
   "nav": {
     "personajes": "Characters",
-    "mapa": "Map",
-    "calendario": "Celebrations & Calendar",
+    "pases": "Parades",
+    "calendario": "Calendar",
     "glosario": "Glossary",
     "buscar": "Search",
     "sobre": "About"
@@ -60,7 +60,14 @@
     "titulo": "Celebrations & Festivities",
     "descripcion": "The pases are the stage where the characters come to life.",
     "fecha_fija": "Fixed date",
-    "fecha_movil": "Variable date"
+    "fecha_movil": "Variable date",
+    "org": "Riobamba City Hall · Chimborazo",
+    "intro_oficial": "Official routes of the Pases del Niño in Riobamba. Each institution organizes its own parade with characters, music and troupes through the streets of the historic center.",
+    "dia_banner": "Wednesday December 20 · {count} parades throughout the day",
+    "orden_dia": "Order of the day",
+    "recorridos_oficiales": "Official routes",
+    "calendario_completo": "Full calendar",
+    "nota": "Official routes issued by Riobamba City Hall for December 20. Routes and times may vary in future editions."
   },
   "error": {
     "404": "Page not found",
