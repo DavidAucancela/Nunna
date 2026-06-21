@@ -17,6 +17,7 @@ import type {
 } from "maplibre-gl";
 import { Link } from "@/i18n/navigation";
 import type { Recorridos } from "@/lib/data";
+import type { PaseListItem } from "@seres-del-pase/types";
 
 const TILE_STYLE = {
   version: 8 as const,
@@ -60,7 +61,27 @@ function getRouteAtProgress(
   return result;
 }
 
-export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
+function stylePin(el: HTMLDivElement, active: boolean) {
+  if (active) {
+    el.style.background = "rgba(200,155,60,0.22)";
+    el.style.borderColor = "#C89B3C";
+    el.style.color = "#C89B3C";
+    el.style.boxShadow = "0 0 14px rgba(200,155,60,0.5)";
+  } else {
+    el.style.background = "rgba(200,155,60,0.07)";
+    el.style.borderColor = "rgba(200,155,60,0.22)";
+    el.style.color = "rgba(200,155,60,0.38)";
+    el.style.boxShadow = "none";
+  }
+}
+
+export function PaseMapSection({
+  recorridos,
+  pasesInfo = [],
+}: {
+  recorridos: Recorridos;
+  pasesInfo?: PaseListItem[];
+}) {
   const { pases, defaultPaseSlug } = recorridos;
   const t = useTranslations("home.recorrido");
   const reducedMotion = useReducedMotion();
@@ -69,6 +90,7 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
   const activeRoute =
     pases.find((p) => p.paseSlug === activePaseSlug) ?? pases[0]!;
   const { ruta, waypoints, centro, zoom } = activeRoute;
+  const activePaseInfo = pasesInfo.find((p) => p.slug === activePaseSlug);
   const finaleIdx = waypoints.length; // índice centinela del panel de cierre
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -78,6 +100,9 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
   const waypointMarkersRef = useRef<HTMLDivElement[]>([]);
   const pinActiveRef = useRef<boolean[]>([]);
   const prevActiveIdxRef = useRef(-1);
+  // Estado inicial = ruta completa dibujada ("pase ya recorrido"). Al primer
+  // scroll real se borra y comienza desde el punto de inicio.
+  const startedRef = useRef(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [inView, setInView] = useState(false);
   const [photoIdx, setPhotoIdx] = useState(0);
@@ -104,6 +129,7 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
   function selectPase(slug: string) {
     if (slug === activePaseSlug) return;
     prevActiveIdxRef.current = -1;
+    startedRef.current = false; // el nuevo pase vuelve a mostrar la ruta completa
     setActiveIdx(-1);
     setActivePaseSlug(slug);
     scrollToProgress(0); // reiniciar el recorrido al cambiar de pase
@@ -121,6 +147,33 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
     const source = map?.getSource("route-progress") as
       | GeoJSONSource
       | undefined;
+
+    // Estado inicial: sin scroll real todavía → mantener la ruta completa
+    // ("pase ya recorrido"). En cuanto el scroll avanza, se borra y arranca.
+    if (!startedRef.current) {
+      if (p <= 0.001) {
+        if (map && source) {
+          source.setData({
+            type: "Feature",
+            properties: {},
+            geometry: { type: "LineString", coordinates: ruta },
+          });
+          dotMarkerRef.current?.setLngLat(ruta[ruta.length - 1]!);
+          waypoints.forEach((_, i) => {
+            const el = waypointMarkersRef.current[i];
+            if (el) stylePin(el, true);
+            pinActiveRef.current[i] = true;
+          });
+        }
+        if (prevActiveIdxRef.current !== -1) {
+          prevActiveIdxRef.current = -1;
+          setActiveIdx(-1);
+        }
+        return;
+      }
+      startedRef.current = true;
+    }
+
     if (map && source) {
       const coords = getRouteAtProgress(ruta, p);
       if (coords.length >= 2) {
@@ -139,17 +192,7 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
         const active = p >= wp.progress;
         if (pinActiveRef.current[i] === active) return; // solo al cruzar el umbral
         pinActiveRef.current[i] = active;
-        if (active) {
-          el.style.background = "rgba(200,155,60,0.22)";
-          el.style.borderColor = "#C89B3C";
-          el.style.color = "#C89B3C";
-          el.style.boxShadow = "0 0 14px rgba(200,155,60,0.5)";
-        } else {
-          el.style.background = "rgba(200,155,60,0.07)";
-          el.style.borderColor = "rgba(200,155,60,0.22)";
-          el.style.color = "rgba(200,155,60,0.38)";
-          el.style.boxShadow = "none";
-        }
+        stylePin(el, active);
       });
     }
 
@@ -282,7 +325,8 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
           },
         });
 
-        // Animated progress route
+        // Ruta de progreso — arranca con la ruta COMPLETA dibujada (estado
+        // inicial: "pase ya recorrido"). El primer scroll la colapsa al inicio.
         m.addSource("route-progress", {
           type: "geojson",
           data: {
@@ -290,7 +334,7 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
             properties: {},
             geometry: {
               type: "LineString",
-              coordinates: [ruta[0]!],
+              coordinates: startedRef.current ? [ruta[0]!] : ruta,
             },
           },
         });
@@ -341,7 +385,9 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
           element: dotEl,
           anchor: "center",
         });
-        dotMarker.setLngLat(ruta[0]!).addTo(m);
+        dotMarker
+          .setLngLat(startedRef.current ? ruta[0]! : ruta[ruta.length - 1]!)
+          .addTo(m);
         dotMarkerRef.current = dotMarker;
 
         // Numbered waypoint pins
@@ -369,7 +415,11 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
             .setLngLat(wp.coord)
             .addTo(m);
         });
-        pinActiveRef.current = waypoints.map(() => false); // pins recién creados = inactivos
+        // Estado inicial (ruta completa) = todos los pines activos; tras el
+        // primer scroll se reinician al colapsar la ruta al punto de inicio.
+        const initialActive = !startedRef.current;
+        waypointMarkersRef.current.forEach((el) => stylePin(el, initialActive));
+        pinActiveRef.current = waypoints.map(() => initialActive);
       });
     })();
 
@@ -459,20 +509,68 @@ export function PaseMapSection({ recorridos }: { recorridos: Recorridos }) {
               {activeIdx === -1 ? (
                 <motion.div
                   key="start"
-                  className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center gap-3"
+                  className="absolute inset-0 flex flex-col justify-center gap-3 overflow-y-auto px-7 py-6"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -28 }}
                   transition={{ duration: reducedMotion ? 0.2 : 0.45 }}
                 >
-                  <div className="w-px h-10 bg-gradient-to-b from-transparent to-stone-600" />
-                  <p className="text-stone-400 text-[10px] uppercase tracking-[0.28em]">
-                    {t("scroll_hint")}
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-acento-dorado">
+                    {activePaseInfo?.tipo ?? t("eyebrow")}
                   </p>
-                  <p className="text-stone-500 font-serif text-sm leading-relaxed max-w-[260px]">
-                    {waypoints.map((wp) => wp.calle).join(" → ")}
-                  </p>
-                  <div className="w-px h-8 bg-gradient-to-b from-stone-700 to-transparent" />
+                  <h3 className="font-serif text-2xl md:text-[1.8rem] font-bold text-texto-claro leading-tight">
+                    {activePaseInfo?.nombre ?? activeRoute.paseNombre}
+                  </h3>
+
+                  {activePaseInfo ? (
+                    <div className="space-y-2 text-sm">
+                      {activePaseInfo.horario && (
+                        <p className="flex items-center gap-2 text-stone-300">
+                          <svg className="h-4 w-4 shrink-0 text-acento-dorado" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          {activePaseInfo.horario}
+                        </p>
+                      )}
+                      {(activePaseInfo.inicio || activePaseInfo.ruta) && (
+                        <p className="flex items-start gap-2 text-stone-400">
+                          <svg className="mt-0.5 h-4 w-4 shrink-0 text-acento-dorado" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                          </svg>
+                          {activePaseInfo.inicio && activePaseInfo.fin
+                            ? `${activePaseInfo.inicio} → ${activePaseInfo.fin}`
+                            : activePaseInfo.ruta}
+                        </p>
+                      )}
+                      {activePaseInfo.personaje && (
+                        <p className="flex items-center gap-2">
+                          <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: activePaseInfo.color ?? "#C89B3C" }} />
+                          <span className="text-stone-500">{t("personaje")}:</span>
+                          <span className="font-medium" style={{ color: activePaseInfo.color ?? "#C89B3C" }}>
+                            {activePaseInfo.personaje}
+                          </span>
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="font-serif text-sm leading-relaxed text-stone-500">
+                      {waypoints.map((wp) => wp.calle).join(" → ")}
+                    </p>
+                  )}
+
+                  {activePaseInfo?.fechaDescripcion && (
+                    <p className="text-xs leading-relaxed text-stone-400">
+                      {activePaseInfo.fechaDescripcion}
+                    </p>
+                  )}
+
+                  <div className="mt-1 flex items-center gap-2 text-acento-dorado/80">
+                    <span className="text-[10px] uppercase tracking-[0.28em]">
+                      {t("scroll_hint")}
+                    </span>
+                    <span aria-hidden="true" className="motion-safe:animate-bounce">↓</span>
+                  </div>
                 </motion.div>
               ) : isFinale ? (
                 <motion.div
