@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { FadeUp } from "@/components/ui/FadeUp";
 
 const ANDEAN_PATTERN = encodeURIComponent(
@@ -32,12 +33,12 @@ function ImanVisual() {
   return (
     <div className="relative mx-auto w-full max-w-[320px]">
       <div className="absolute -inset-5 rounded-[2rem] bg-acento-dorado/10 blur-3xl" />
-      <div className="relative aspect-square overflow-hidden rounded-[1.6rem] border border-acento-dorado/25 shadow-2xl shadow-black/40">
+      <div className="relative aspect-square overflow-hidden rounded-[1.6rem] border border-acento-dorado/25 bg-stone-100 shadow-2xl shadow-black/40">
         <Image
           src="/personajes/diablos-de-lata-iman.webp"
           alt="Imán artesanal Diablos de lata"
           fill
-          className="object-cover"
+          className="object-contain p-3"
           sizes="(max-width: 768px) 80vw, 320px"
         />
         <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/5" />
@@ -110,16 +111,17 @@ function FichaVisual() {
         className="object-cover object-top"
         sizes="(max-width: 768px) 80vw, 260px"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent" />
-      <div className="absolute inset-x-5 bottom-6 space-y-2.5">
+      <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/55 to-transparent" />
+      <div className="absolute inset-x-5 bottom-6 space-y-3">
         <span className="inline-block rounded-full bg-acento-rojo/90 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white">
           Mestizo
         </span>
-        <div className="h-3.5 w-28 rounded bg-stone-100/90" />
-        <div className="space-y-1.5 pt-1">
-          <div className="h-1.5 w-full rounded-full bg-stone-500/70" />
-          <div className="h-1.5 w-5/6 rounded-full bg-stone-600/70" />
-          <div className="h-1.5 w-2/3 rounded-full bg-stone-700/70" />
+        <div className="h-5 w-32 rounded bg-stone-100/90" />
+        <div className="space-y-2.5 pt-1">
+          <div className="h-2.5 w-full rounded-full bg-stone-400/70" />
+          <div className="h-2.5 w-11/12 rounded-full bg-stone-500/70" />
+          <div className="h-2.5 w-5/6 rounded-full bg-stone-600/70" />
+          <div className="h-2.5 w-2/3 rounded-full bg-stone-700/70" />
         </div>
       </div>
     </PhoneMock>
@@ -181,44 +183,151 @@ export function ProductoSection() {
           </div>
         </FadeUp>
 
-        {/* Pasos — editorial alternado */}
-        <div className="space-y-20 md:space-y-32">
-          {PASOS.map((paso, i) => {
-            const flip = i % 2 === 1;
-            return (
-              <FadeUp key={paso.num}>
-                <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
-                  {/* Visual */}
-                  <div className={flip ? "md:order-2" : ""}>
-                    <paso.Visual />
-                  </div>
-
-                  {/* Texto */}
-                  <div className={flip ? "md:order-1 md:text-right" : ""}>
-                    <div className={`flex items-center gap-4 ${flip ? "md:flex-row-reverse" : ""}`}>
-                      <span className="font-serif text-6xl font-bold leading-none text-acento-dorado/25 md:text-7xl">
-                        {paso.num}
-                      </span>
-                      <div className="flex flex-col gap-1.5">
-                        <span className="text-[11px] uppercase tracking-[0.3em] text-acento-dorado">
-                          {paso.kicker}
-                        </span>
-                        <span className="h-px w-12 bg-acento-dorado/40" />
-                      </div>
-                    </div>
-                    <h3 className="mt-6 font-serif text-2xl font-bold text-texto-claro md:text-4xl">
-                      {paso.titulo}
-                    </h3>
-                    <p className={`mt-4 text-base leading-relaxed text-stone-400 md:text-lg ${flip ? "md:ml-auto" : ""} max-w-md`}>
-                      {paso.texto}
-                    </p>
-                  </div>
-                </div>
-              </FadeUp>
-            );
-          })}
-        </div>
+        {/* Pasos — visual fijo + pasos que avanzan al scroll */}
+        <PasosScroll />
       </div>
     </section>
+  );
+}
+
+/* — Texto de un paso (número + kicker + título + descripción) — */
+function PasoTexto({ paso }: { paso: (typeof PASOS)[number] }) {
+  return (
+    <>
+      <div className="flex items-center gap-4">
+        <span className="font-serif text-6xl font-bold leading-none text-acento-dorado/25 md:text-7xl">
+          {paso.num}
+        </span>
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[11px] uppercase tracking-[0.3em] text-acento-dorado">
+            {paso.kicker}
+          </span>
+          <span className="h-px w-12 bg-acento-dorado/40" />
+        </div>
+      </div>
+      <h3 className="mt-6 font-serif text-2xl font-bold text-texto-claro md:text-4xl">
+        {paso.titulo}
+      </h3>
+      <p className="mt-4 max-w-md text-base leading-relaxed text-stone-400 md:text-lg">
+        {paso.texto}
+      </p>
+    </>
+  );
+}
+
+/* — Escena anclada: imagen + texto cambian juntos según el scroll (desktop) / apilado (móvil) — */
+function PasosScroll() {
+  const reduce = useReducedMotion();
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [active, setActive] = useState(0);
+
+  // El progreso del scroll dentro del "track" elige el punto activo.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const onScroll = () => {
+      const rect = track.getBoundingClientRect();
+      const total = rect.height - window.innerHeight;
+      const scrolled = Math.min(Math.max(-rect.top, 0), Math.max(total, 1));
+      const progress = total > 0 ? scrolled / total : 0;
+      const idx = Math.min(PASOS.length - 1, Math.floor(progress * PASOS.length));
+      setActive((prev) => (prev !== idx ? idx : prev));
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  // Clic en un punto → desplaza al centro de su tramo; el scroll fija el estado.
+  const goTo = (i: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const rect = track.getBoundingClientRect();
+    const total = Math.max(rect.height - window.innerHeight, 1);
+    const targetScrolled = ((i + 0.5) / PASOS.length) * total;
+    const delta = rect.top + targetScrolled;
+    window.scrollTo({ top: window.scrollY + delta, behavior: reduce ? "auto" : "smooth" });
+  };
+
+  const paso = PASOS[active] ?? PASOS[0]!;
+  const ActiveVisual = paso.Visual;
+  const fade = {
+    initial: reduce ? false : { opacity: 0, y: 12 },
+    animate: { opacity: 1, y: 0 },
+    exit: reduce ? { opacity: 0 } : { opacity: 0, y: -12 },
+    transition: { duration: reduce ? 0 : 0.4, ease: "easeOut" as const },
+  };
+
+  return (
+    <>
+      {/* Desktop — escena anclada; un solo punto (imagen + texto) visible a la vez */}
+      <div className="hidden md:block">
+        {/* El alto del track da la distancia de scroll: un viewport por punto */}
+        <div ref={trackRef} style={{ height: `${PASOS.length * 100}vh` }}>
+          <div className="sticky top-16 flex h-[calc(100vh-4rem)] items-center">
+            <div className="grid w-full grid-cols-2 items-center gap-16">
+              {/* Visual */}
+              <div className="flex justify-center">
+                <AnimatePresence mode="wait">
+                  <motion.div key={`v-${active}`} className="w-full" {...fade}>
+                    <ActiveVisual />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Texto + indicador de puntos */}
+              <div>
+                <AnimatePresence mode="wait">
+                  <motion.div key={`t-${active}`} {...fade}>
+                    <PasoTexto paso={paso} />
+                  </motion.div>
+                </AnimatePresence>
+
+                <div className="mt-12 flex items-center gap-4">
+                  {PASOS.map((p, i) => (
+                    <button
+                      key={p.num}
+                      type="button"
+                      onClick={() => goTo(i)}
+                      aria-label={`Ir al paso ${p.num} — ${p.titulo}`}
+                      aria-current={i === active}
+                      className="group rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-acento-dorado"
+                    >
+                      <span
+                        className={`block h-3.5 rounded-full transition-all duration-300 ${
+                          i === active
+                            ? "w-12 bg-acento-dorado"
+                            : "w-3.5 bg-acento-dorado/30 group-hover:bg-acento-dorado/60"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Móvil — apilado: cada punto muestra imagen + texto, scroll al siguiente */}
+      <div className="space-y-20 md:hidden">
+        {PASOS.map((p) => (
+          <FadeUp key={p.num}>
+            <div className="flex flex-col">
+              <div className="mb-10">
+                <p.Visual />
+              </div>
+              <PasoTexto paso={p} />
+            </div>
+          </FadeUp>
+        ))}
+      </div>
+    </>
   );
 }
