@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { FadeUp } from "@/components/ui/FadeUp";
+import { QrScanner } from "@/components/ui/QrScanner";
 
 function QrIcon({ className }: { className?: string }) {
   return (
@@ -37,6 +39,8 @@ function QrIcon({ className }: { className?: string }) {
 }
 
 export function CtaFinal() {
+  const [scannerOpen, setScannerOpen] = useState(false);
+
   return (
     <section className="relative overflow-hidden px-6 py-24 sm:py-32">
       {/* Fondo gradiente */}
@@ -74,13 +78,19 @@ export function CtaFinal() {
 
         <FadeUp delay={0.2}>
           <div className="mt-10 flex justify-center">
-            <span className="inline-flex items-center gap-2 rounded-full bg-acento-rojo px-10 py-4 text-sm font-semibold text-white shadow-lg shadow-acento-rojo/30">
+            <button
+              type="button"
+              onClick={() => setScannerOpen(true)}
+              className="inline-flex items-center gap-2 rounded-full bg-acento-rojo px-10 py-4 text-sm font-semibold text-white shadow-lg shadow-acento-rojo/30 transition hover:bg-acento-rojo/90 hover:shadow-acento-rojo/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acento-dorado"
+            >
               <QrIcon className="h-4 w-4" />
               Escanea tu QR
-            </span>
+            </button>
           </div>
         </FadeUp>
       </div>
+
+      <QrScanner open={scannerOpen} onClose={() => setScannerOpen(false)} />
     </section>
   );
 }

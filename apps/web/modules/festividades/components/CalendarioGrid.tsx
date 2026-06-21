@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import type { PaseListItem } from "@seres-del-pase/types";
 
 const MESES = [
@@ -11,43 +12,27 @@ const MESES = [
 
 const DIAS_POR_MES = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-interface PaseEnDia {
-  dia: number;
-  pases: PaseListItem[];
-}
-
 interface CalendarioGridProps {
   pases: PaseListItem[];
-  pasesFijos: { mes: number; dia: number | null; nombre: string; descripcion: string; tipo: string }[];
 }
 
-export function CalendarioGrid({ pases, pasesFijos }: CalendarioGridProps) {
-  const [selected, setSelected] = useState<{ mes: number; dia: number; pases: { nombre: string; descripcion: string; tipo: string }[] } | null>(null);
+export function CalendarioGrid({ pases }: CalendarioGridProps) {
+  const [selected, setSelected] = useState<{ mes: number; dia: number; pases: PaseListItem[] } | null>(null);
+  const detalleRef = useRef<HTMLDivElement>(null);
 
-  function getDiasConEvento(mes: number): Record<number, { nombre: string; descripcion: string; tipo: string }[]> {
-    const result: Record<number, { nombre: string; descripcion: string; tipo: string }[]> = {};
+  useEffect(() => {
+    if (!selected) return;
+    detalleRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [selected]);
 
+  function getDiasConEvento(mes: number): Record<number, PaseListItem[]> {
+    const result: Record<number, PaseListItem[]> = {};
     for (const p of pases) {
       if (p.mes === mes && p.dia) {
         if (!result[p.dia]) result[p.dia] = [];
-        result[p.dia]!.push({
-          nombre: p.nombre,
-          descripcion: p.fechaDescripcion ?? "",
-          tipo: p.fechaTipo ?? "pase",
-        });
+        result[p.dia]!.push(p);
       }
     }
-
-    for (const p of pasesFijos) {
-      if (p.mes === mes && p.dia) {
-        if (!result[p.dia]) result[p.dia] = [];
-        const yaExiste = result[p.dia]!.some((e) => e.nombre === p.nombre);
-        if (!yaExiste) {
-          result[p.dia]!.push({ nombre: p.nombre, descripcion: p.descripcion, tipo: p.tipo });
-        }
-      }
-    }
-
     return result;
   }
 
@@ -136,16 +121,18 @@ export function CalendarioGrid({ pases, pasesFijos }: CalendarioGridProps) {
         })}
       </div>
 
-      {/* Panel de detalle */}
+      {/* Panel de detalle — tarjetas con la información completa del pase */}
       {selected && (
-        <div className="mt-8 rounded-2xl border border-acento-dorado/30 bg-stone-900/60 p-6">
+        <div ref={detalleRef} className="mt-8 scroll-mt-20 rounded-2xl border border-acento-dorado/30 bg-stone-900/60 p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-widest text-acento-dorado">
                 {selected.dia} de {MESES[selected.mes - 1]}
               </p>
               <h3 className="mt-1 font-serif text-xl font-bold text-texto-claro">
-                {selected.pases.map((p) => p.nombre).join(" · ")}
+                {selected.pases.length === 1
+                  ? selected.pases[0]!.nombre
+                  : `${selected.pases.length} eventos`}
               </h3>
             </div>
             <button
@@ -158,20 +145,85 @@ export function CalendarioGrid({ pases, pasesFijos }: CalendarioGridProps) {
               </svg>
             </button>
           </div>
-          <div className="mt-4 space-y-3">
-            {selected.pases.map((p, i) => (
-              <div key={i}>
-                {p.descripcion && (
-                  <p className="text-sm leading-relaxed text-stone-400">{p.descripcion}</p>
-                )}
-                <span className="mt-1 inline-flex rounded-full border border-stone-700 bg-stone-800 px-2 py-0.5 text-[10px] uppercase tracking-wider text-stone-500">
-                  {p.tipo}
-                </span>
-              </div>
+
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {selected.pases.map((pase) => (
+              <PaseCard key={pase.id} pase={pase} />
             ))}
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+function PaseCard({ pase }: { pase: PaseListItem }) {
+  const acento = pase.color ?? "#C89B3C";
+
+  return (
+    <article
+      className="overflow-hidden rounded-xl border border-borde-sutil bg-stone-900/40"
+      style={{ borderLeftWidth: 3, borderLeftColor: acento }}
+    >
+      {pase.imagenPortada && (
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-stone-950">
+          <Image
+            src={pase.imagenPortada}
+            alt={`Información del ${pase.nombre}`}
+            fill
+            sizes="(max-width: 640px) 100vw, 33vw"
+            className="object-cover"
+          />
+        </div>
+      )}
+
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-3">
+          <h4 className="font-serif text-base font-semibold text-texto-claro">
+            {pase.nombre}
+          </h4>
+          {pase.tipo && (
+            <span className="mt-0.5 shrink-0 rounded-full border border-stone-700 bg-stone-800 px-2 py-0.5 text-[10px] uppercase tracking-wider text-stone-400">
+              {pase.tipo}
+            </span>
+          )}
+        </div>
+
+        {/* Datos del recorrido oficial */}
+        {pase.horario && (
+          <p className="mt-3 flex items-center gap-2 text-sm text-stone-400">
+            <svg className="h-4 w-4 shrink-0 text-acento-dorado" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {pase.horario}
+          </p>
+        )}
+
+        {(pase.inicio || pase.fin || pase.ruta) && (
+          <p className="mt-2 flex items-start gap-2 text-sm text-stone-400">
+            <svg className="mt-0.5 h-4 w-4 shrink-0 text-acento-dorado" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+            </svg>
+            {pase.inicio && pase.fin ? `${pase.inicio} → ${pase.fin}` : pase.ruta}
+          </p>
+        )}
+
+        {pase.personaje && (
+          <p className="mt-2 flex items-center gap-2 text-sm">
+            <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: acento }} />
+            <span className="text-stone-500">Personaje:</span>
+            <span className="font-medium" style={{ color: acento }}>{pase.personaje}</span>
+          </p>
+        )}
+
+        {/* Festividades sin recorrido — solo descripción */}
+        {!pase.horario && pase.fechaDescripcion && (
+          <p className="mt-3 text-sm leading-relaxed text-stone-400">
+            {pase.fechaDescripcion}
+          </p>
+        )}
+      </div>
+    </article>
   );
 }
