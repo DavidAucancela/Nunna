@@ -11,7 +11,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "fondo-oscuro": "#0F0E0C",
+        "fondo-oscuro": "#880044",
         "fondo-claro": "#F5F1EA",
         "acento-rojo": "#B8312F",
         "acento-dorado": "#C89B3C",

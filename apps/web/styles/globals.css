@@ -27,7 +27,7 @@
 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: #0F0E0C; }
+  ::-webkit-scrollbar-track { background: #880044; }
   ::-webkit-scrollbar-thumb { background: #2A2724; border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: #C89B3C; transition: background 0.2s; }
 
