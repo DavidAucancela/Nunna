@@ -62,7 +62,7 @@ function NunnaTitle({
 
   return (
     <h1
-      className="mt-4"
+      className="mt-4 not-italic"
       style={{
         fontSize: "clamp(5.5rem, 22vw, 15rem)",
         letterSpacing: "-0.03em",
