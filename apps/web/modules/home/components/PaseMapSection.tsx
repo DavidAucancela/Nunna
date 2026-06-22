@@ -435,6 +435,9 @@ export function PaseMapSection({
   const activeWp =
     activeIdx >= 0 && activeIdx < waypoints.length ? waypoints[activeIdx] : null;
   const isFinale = activeIdx === finaleIdx;
+  // El selector de pases solo se muestra al inicio y al final del recorrido;
+  // mientras se avanza por los waypoints se oculta para dejar el mapa + fotos.
+  const showSelector = activeIdx === -1 || isFinale;
   const fotos = activeWp ? [activeWp.imagen, ...activeWp.imagenesExtra] : [];
   const fotoActual = fotos[photoIdx] ?? fotos[0];
 
@@ -453,50 +456,77 @@ export function PaseMapSection({
           {/* Vignette: top fade on mobile, right fade on desktop */}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-fondo-oscuro/80 via-transparent to-fondo-oscuro/35 md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-fondo-oscuro/50" />
 
-          {/* Section header */}
+          {/* Section header — completo al inicio/final; título compacto al avanzar */}
           <div className="absolute left-0 right-0 top-0 z-20 px-5 pt-6 md:px-7 md:pt-8">
-            <p className="pointer-events-none text-[10px] uppercase tracking-[0.3em] text-acento-dorado">
-              {t("eyebrow")}
-            </p>
-            <h2 className="pointer-events-none mt-1 font-serif text-2xl font-bold text-texto-claro md:text-3xl">
-              {t("titulo")}
-            </h2>
-            {/* Pase selector — con ≥2 pases reemplaza al subtítulo y se hace notar */}
-            {pases.length > 1 ? (
-              <div className="mt-3.5">
-                <p className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-acento-dorado">
-                  <span
-                    aria-hidden="true"
-                    className="inline-block h-1.5 w-1.5 rounded-full bg-acento-dorado motion-safe:animate-pulse"
-                  />
-                  {t("elige_pase")}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {pases.map((pase) => {
-                    const active = pase.paseSlug === activePaseSlug;
-                    return (
-                      <button
-                        key={pase.paseSlug}
-                        type="button"
-                        onClick={() => selectPase(pase.paseSlug)}
-                        aria-pressed={active}
-                        className={`rounded-full border px-3.5 py-1.5 text-[11px] uppercase tracking-[0.12em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70 ${
-                          active
-                            ? "border-acento-dorado bg-acento-dorado font-semibold text-fondo-oscuro shadow-[0_0_16px_rgba(200,155,60,0.35)]"
-                            : "border-stone-600 bg-fondo-oscuro/60 text-stone-200 hover:border-acento-dorado hover:bg-acento-dorado/10 hover:text-acento-dorado"
-                        }`}
-                      >
-                        {pase.paseNombre}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : (
-              <p className="pointer-events-none mt-1 text-xs text-stone-400">
-                {activeRoute.paseNombre}
-              </p>
-            )}
+            <AnimatePresence mode="wait">
+              {showSelector ? (
+                <motion.div
+                  key="full-header"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: reducedMotion ? 0.15 : 0.35 }}
+                >
+                  <p className="pointer-events-none text-[10px] uppercase tracking-[0.3em] text-acento-dorado">
+                    {t("eyebrow")}
+                  </p>
+                  <h2 className="pointer-events-none mt-1 font-serif text-2xl font-bold text-texto-claro md:text-3xl">
+                    {t("titulo")}
+                  </h2>
+                  {/* Pase selector — con ≥2 pases reemplaza al subtítulo y se hace notar */}
+                  {pases.length > 1 ? (
+                    <div className="mt-3.5">
+                      <p className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-acento-dorado">
+                        <span
+                          aria-hidden="true"
+                          className="inline-block h-1.5 w-1.5 rounded-full bg-acento-dorado motion-safe:animate-pulse"
+                        />
+                        {t("elige_pase")}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {pases.map((pase) => {
+                          const active = pase.paseSlug === activePaseSlug;
+                          return (
+                            <button
+                              key={pase.paseSlug}
+                              type="button"
+                              onClick={() => selectPase(pase.paseSlug)}
+                              aria-pressed={active}
+                              className={`rounded-full border px-3.5 py-1.5 text-[11px] uppercase tracking-[0.12em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70 ${
+                                active
+                                  ? "border-acento-dorado bg-acento-dorado font-semibold text-fondo-oscuro shadow-[0_0_16px_rgba(200,155,60,0.35)]"
+                                  : "border-stone-600 bg-fondo-oscuro/60 text-stone-200 hover:border-acento-dorado hover:bg-acento-dorado/10 hover:text-acento-dorado"
+                              }`}
+                            >
+                              {pase.paseNombre}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="pointer-events-none mt-1 text-xs text-stone-400">
+                      {activeRoute.paseNombre}
+                    </p>
+                  )}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="compact-title"
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: reducedMotion ? 0.15 : 0.3 }}
+                >
+                  <div className="inline-flex items-center gap-2 rounded-full border border-acento-dorado/30 bg-fondo-oscuro/70 px-3.5 py-1.5 backdrop-blur-sm">
+                    <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-acento-dorado" />
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-acento-dorado">
+                      {activeRoute.paseNombre}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -654,20 +684,15 @@ export function PaseMapSection({
                         )}
                       </div>
 
-                      {/* Texto */}
-                      <div className="flex-shrink-0 px-6 pt-3 pb-3">
+                      {/* Texto — compacto para dejar más espacio a la foto */}
+                      <div className="flex-shrink-0 px-6 pt-2 pb-2.5">
                         <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-acento-dorado">
                           {activeWp.calle}
                         </p>
-                        <h3 className="mt-1 font-serif text-2xl md:text-[1.8rem] font-bold text-texto-claro leading-tight">
+                        <h3 className="mt-0.5 font-serif text-xl md:text-2xl font-bold text-texto-claro leading-tight">
                           {activeWp.nombre}
                         </h3>
-                        {activeWp.dato && (
-                          <p className="mt-1.5 text-xs text-stone-400 leading-relaxed">
-                            {activeWp.dato}
-                          </p>
-                        )}
-                        <blockquote className="mt-2.5 font-serif italic text-stone-400 text-sm md:text-[0.9rem] leading-relaxed border-l-2 border-acento-dorado/35 pl-3.5">
+                        <blockquote className="mt-1.5 font-serif italic text-stone-400 text-xs md:text-sm leading-snug border-l-2 border-acento-dorado/35 pl-3 line-clamp-2">
                           &ldquo;{activeWp.leyenda}&rdquo;
                         </blockquote>
                         <Link
@@ -675,7 +700,7 @@ export function PaseMapSection({
                             pathname: "/personajes/[slug]",
                             params: { slug: activeWp.slug },
                           }}
-                          className="mt-3 inline-flex min-h-[44px] items-center gap-1.5 text-[11px] uppercase tracking-[0.3em] text-acento-dorado/80 hover:text-acento-dorado transition-colors duration-200"
+                          className="mt-2 inline-flex min-h-[40px] items-center gap-1.5 text-[11px] uppercase tracking-[0.3em] text-acento-dorado/80 hover:text-acento-dorado transition-colors duration-200"
                         >
                           {t("ver_ficha")}
                           <span aria-hidden="true">→</span>
