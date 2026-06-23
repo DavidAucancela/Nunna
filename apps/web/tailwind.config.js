@@ -11,14 +11,28 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "fondo-oscuro": "#0F0E0C",
-        "fondo-claro": "#F5F1EA",
-        "acento-rojo": "#B8312F",
-        "acento-dorado": "#C89B3C",
-        "acento-jade": "#1F4D3F",
-        "texto-oscuro": "#1A1A1A",
-        "texto-claro": "#EFEAE0",
-        "borde-sutil": "#2A2724",
+        "fondo-oscuro": "rgb(var(--fondo-oscuro) / <alpha-value>)",
+        "fondo-claro": "rgb(var(--fondo-claro) / <alpha-value>)",
+        "acento-rojo": "rgb(var(--acento-rojo) / <alpha-value>)",
+        "acento-dorado": "rgb(var(--acento-dorado) / <alpha-value>)",
+        "acento-jade": "rgb(var(--acento-jade) / <alpha-value>)",
+        "texto-oscuro": "rgb(var(--texto-oscuro) / <alpha-value>)",
+        "texto-claro": "rgb(var(--texto-claro) / <alpha-value>)",
+        "borde-sutil": "rgb(var(--borde-sutil) / <alpha-value>)",
+        // Escala stone temática: invierte en claro/oscuro vía variables CSS
+        stone: {
+          50: "rgb(var(--stone-50) / <alpha-value>)",
+          100: "rgb(var(--stone-100) / <alpha-value>)",
+          200: "rgb(var(--stone-200) / <alpha-value>)",
+          300: "rgb(var(--stone-300) / <alpha-value>)",
+          400: "rgb(var(--stone-400) / <alpha-value>)",
+          500: "rgb(var(--stone-500) / <alpha-value>)",
+          600: "rgb(var(--stone-600) / <alpha-value>)",
+          700: "rgb(var(--stone-700) / <alpha-value>)",
+          800: "rgb(var(--stone-800) / <alpha-value>)",
+          900: "rgb(var(--stone-900) / <alpha-value>)",
+          950: "rgb(var(--stone-950) / <alpha-value>)",
+        },
       },
       fontFamily: {
         serif: ["var(--font-fraunces)", "Fraunces", "Georgia", "serif"],

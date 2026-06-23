@@ -155,9 +155,8 @@ const PASOS = [
 export function ProductoSection() {
   return (
     <section
-      className="border-y border-borde-sutil px-5 py-16 sm:px-6 sm:py-24"
+      className="border-y border-borde-sutil bg-fondo-oscuro px-5 py-16 sm:px-6 sm:py-24"
       style={{
-        backgroundColor: "#080706",
         backgroundImage: `url("data:image/svg+xml,${ANDEAN_PATTERN}")`,
         backgroundRepeat: "repeat",
       }}

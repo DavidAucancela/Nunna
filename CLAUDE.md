@@ -96,7 +96,6 @@ apps/web/
 │   │   ├── pases/page.tsx
 │   │   ├── calendario/page.tsx     → Pases y Festividades
 │   │   ├── glosario/page.tsx
-│   │   ├── buscar/page.tsx
 │   │   ├── mapa/page.tsx
 │   │   └── sobre/page.tsx
 │   └── api/health/route.ts         → healthcheck Railway
@@ -307,12 +306,26 @@ Modo oscuro por defecto.
 
 ### ⏳ Fase 3
 - Hotspots interactivos en el traje (componente `HotspotsViewer.tsx` ya existe, datos en JSON)
-- Búsqueda semántica (pgvector + Supabase + NestJS)
 - Mapa interactivo (MapLibre — dependencia ya instalada)
+
+### ❌ Descartado
+- **Búsqueda semántica** (pgvector + Supabase + NestJS) — funcionalidad cancelada (2026-06-21).
+  Se eliminó la página/ruta `/buscar` y su botón del navbar. Ver decisión abajo.
 
 ---
 
 ## Decisiones técnicas clave
+
+### Búsqueda semántica descartada ⚠ (2026-06-21)
+- La **búsqueda semántica no se implementará**. Era el motivo principal de Supabase/pgvector y NestJS en Fase 3.
+- Se eliminó: la página `app/[locale]/buscar/page.tsx`, la ruta `/buscar` (+ `/maskanakuy` qu / `/search` en) en `i18n/routing.ts`, el botón de búsqueda del `Header`, y las claves `nav.buscar` (es/qu/en).
+- **No reintroducir** un botón ni ruta de búsqueda. Si en el futuro se quiere buscar, replantear desde cero.
+- Supabase/pgvector quedan sin uso real; si no aparece otro caso de Fase 3 que los necesite, considerar retirarlos.
+
+### Navbar — 3 secciones visibles en móvil (2026-06-21)
+- El navbar móvil muestra **las 3 secciones inline** (Pases, Calendario, Glosario) — ya no hay menú hamburguesa.
+- El selector de idioma en móvil es un **botón compacto** (`locale` actual + chevron) que abre un popover; en escritorio son pills siempre visibles.
+- Mantener el header en **una sola fila** (~64px): muchos lugares dependen de `top-16`/`pt-16` (MainContent, sticky de `PaseMapSection`). No añadir una segunda fila.
 
 ### Marca: "Nunna"
 - El nombre público del sistema es **Nunna**
@@ -361,6 +374,18 @@ El QR de cada imán físico codifica `/[locale]/personajes/<slug>`. Una vez impr
 - **Solución**: aplicar `text-shimmer` directamente en cada `motion.span`, no en el `h1` contenedor
 
 ### MapLibre GL en PaseMapSection (`PaseMapSection.tsx`)
+- **Dos layouts por breakpoint** (2026-06-21): el recorrido por **scroll-pinned** (sticky `300vh`) es frágil
+  en móvil — iOS Safari **congela las animaciones ligadas al scroll** durante el desplazamiento por inercia,
+  así que en el teléfono el recorrido se veía a saltos/congelado. Solución:
+  - **Móvil** (`max-width:767px`, vía `matchMedia` → estado `isMobile`): **carrusel táctil** sin scroll —
+    mapa fijo arriba + tarjeta abajo con botones ‹ ›, **swipe** horizontal y **pines tocables**. La navegación
+    mueve `activeIdx` por la secuencia `[-1, ...waypoints, finaleIdx]` y `goToIdx()` pinta el mapa a ese punto.
+  - **Escritorio**: se mantiene el scroll-driven original (sin cambios de UX).
+  - El handler de scroll (`useMotionValueEvent`) hace `if (isMobileRef.current) return`; los hooks se llaman
+    siempre (el `return` del layout móvil va **después** de todos los hooks). `paintMap(p, full?)` es el
+    pintor compartido (ruta de progreso + dot + pines); `mapHeader`/`storyCard` se reutilizan en ambos layouts.
+  - El init del mapa incluye `isMobile` en sus deps → al cruzar el breakpoint el contenedor cambia y el mapa
+    se reconstruye; tras `load` repinta el `activeIdx` vigente (rotación de pantalla a mitad de recorrido).
 - **Datos del recorrido en JSON (multi-pase)**: `lib/data/recorrido.json` tiene la forma
   `{ defaultPaseSlug, pases: [{ paseSlug, paseNombre, centro, zoom, ruta, waypoints }] }`.
   `getRecorridos()` (`lib/services/recorrido.service.ts`) une cada waypoint con `personajes.json`

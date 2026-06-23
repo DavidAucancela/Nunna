@@ -4,8 +4,9 @@
     "pases": "Pawkarkuna",
     "calendario": "Watapura",
     "glosario": "Rimasikuna",
-    "buscar": "Maskanakuy",
-    "sobre": "Ima Mantamanta"
+    "sobre": "Ima Mantamanta",
+    "idioma": "Shimi",
+    "tema": "Llimpita tikray"
   },
   "home": {
     "hero": {
@@ -47,7 +48,10 @@
       "elige_pase": "Paseta akllay",
       "finale_titulo": "Pase iglesiaman chayan",
       "finale_texto": "Sapa runa ñanpi paypa ruraynin ruraska. Kayqa Riobamba pasekunamanta shukllami.",
-      "personaje": "Runa"
+      "personaje": "Runa",
+      "anterior": "Ñawpaq",
+      "siguiente": "Qatiq",
+      "avanza_hint": "Paseta katiy"
     }
   },
   "personajes": {

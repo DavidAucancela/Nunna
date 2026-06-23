@@ -4,8 +4,9 @@
     "pases": "Parades",
     "calendario": "Calendar",
     "glosario": "Glossary",
-    "buscar": "Search",
-    "sobre": "About"
+    "sobre": "About",
+    "idioma": "Language",
+    "tema": "Toggle theme"
   },
   "home": {
     "hero": {
@@ -47,7 +48,10 @@
       "elige_pase": "Switch pase",
       "finale_titulo": "The pase reaches the church",
       "finale_texto": "Each character played their part along the way. And this is just one of Riobamba's pases.",
-      "personaje": "Character"
+      "personaje": "Character",
+      "anterior": "Previous",
+      "siguiente": "Next",
+      "avanza_hint": "Tap next to walk the pase"
     }
   },
   "personajes": {

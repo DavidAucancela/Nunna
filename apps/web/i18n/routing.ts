@@ -31,11 +31,6 @@ export const routing = defineRouting({
       qu: "/rimasikuna",
       en: "/glossary",
     },
-    "/buscar": {
-      es: "/buscar",
-      qu: "/maskanakuy",
-      en: "/search",
-    },
     "/sobre": {
       es: "/sobre",
       qu: "/imamanta",

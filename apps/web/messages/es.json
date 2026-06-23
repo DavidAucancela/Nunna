@@ -4,8 +4,9 @@
     "pases": "Pases",
     "calendario": "Calendario",
     "glosario": "Glosario",
-    "buscar": "Buscar",
-    "sobre": "Sobre el proyecto"
+    "sobre": "Sobre el proyecto",
+    "idioma": "Idioma",
+    "tema": "Cambiar tema"
   },
   "home": {
     "hero": {
@@ -47,7 +48,10 @@
       "elige_pase": "Cambia de pase",
       "finale_titulo": "El pase llega al templo",
       "finale_texto": "Cada personaje cumplió su papel en el camino. Y este es solo uno de los pases de Riobamba.",
-      "personaje": "Personaje"
+      "personaje": "Personaje",
+      "anterior": "Anterior",
+      "siguiente": "Siguiente",
+      "avanza_hint": "Avanza para recorrer el pase"
     }
   },
   "personajes": {
