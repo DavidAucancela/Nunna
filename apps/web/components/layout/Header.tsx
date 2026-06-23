@@ -5,6 +5,7 @@ import { useParams, usePathname as useRawPathname, useRouter as useNextRouter } 
 import { useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const NAV_LINKS = [
   { key: "pases",      href: "/pases" },
@@ -72,8 +73,8 @@ export function Header() {
           })}
         </nav>
 
-        {/* Selector de idioma */}
-        <div className="flex shrink-0 items-center">
+        {/* Selector de idioma + tema */}
+        <div className="flex shrink-0 items-center gap-2">
           {/* Escritorio — pills siempre visibles */}
           <div className="hidden items-center gap-0.5 rounded-lg border border-borde-sutil p-0.5 md:flex">
             {LOCALES.map(({ code, label }) => (
@@ -134,6 +135,9 @@ export function Header() {
               )}
             </AnimatePresence>
           </div>
+
+          {/* Conmutador de tema claro/oscuro */}
+          <ThemeToggle />
         </div>
       </div>
     </header>
