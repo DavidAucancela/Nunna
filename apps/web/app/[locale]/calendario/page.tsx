@@ -22,25 +22,9 @@ export default async function CalendarioPage() {
           Calendario festivo
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-stone-400">
-          Los pases riobambeños siguen el ciclo agrícola-ritual andino. Haz clic en cualquier fecha
-          marcada para conocer la información completa del pase o festividad.
+          Los pases riobambeños se concentran en pocos meses del año. Elige un mes para ver sus
+          pases y festividades con horarios, rutas y personajes.
         </p>
-
-        {/* Leyenda */}
-        <div className="mt-6 flex flex-wrap gap-4 text-sm text-stone-500">
-          <span className="flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded bg-acento-dorado text-[9px] font-bold text-fondo-oscuro">
-              15
-            </span>
-            Día con evento
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded border border-borde-sutil text-[9px] text-stone-700">
-              7
-            </span>
-            Sin eventos
-          </span>
-        </div>
       </header>
 
       <CalendarioGrid pases={pases} />

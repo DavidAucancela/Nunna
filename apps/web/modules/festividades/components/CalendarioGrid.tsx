@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import type { PaseListItem } from "@seres-del-pase/types";
 
@@ -10,149 +10,108 @@ const MESES = [
   "Septiembre", "Octubre", "Noviembre", "Diciembre",
 ];
 
-const DIAS_POR_MES = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
 interface CalendarioGridProps {
   pases: PaseListItem[];
 }
 
 export function CalendarioGrid({ pases }: CalendarioGridProps) {
-  const [selected, setSelected] = useState<{ mes: number; dia: number; pases: PaseListItem[] } | null>(null);
-  const detalleRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!selected) return;
-    detalleRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [selected]);
-
-  function getDiasConEvento(mes: number): Record<number, PaseListItem[]> {
-    const result: Record<number, PaseListItem[]> = {};
+  // Solo importan los meses que tienen pases (la mayoría del año no tiene).
+  const porMes = useMemo(() => {
+    const map = new Map<number, PaseListItem[]>();
     for (const p of pases) {
-      if (p.mes === mes && p.dia) {
-        if (!result[p.dia]) result[p.dia] = [];
-        result[p.dia]!.push(p);
-      }
+      if (!p.mes) continue;
+      if (!map.has(p.mes)) map.set(p.mes, []);
+      map.get(p.mes)!.push(p);
     }
-    return result;
+    for (const arr of map.values()) arr.sort((a, b) => (a.dia ?? 0) - (b.dia ?? 0));
+    return map;
+  }, [pases]);
+
+  const mesesActivos = useMemo(
+    () => [...porMes.keys()].sort((a, b) => a - b),
+    [porMes]
+  );
+
+  const [mesSel, setMesSel] = useState(mesesActivos[0] ?? 12);
+  const eventosMes = porMes.get(mesSel) ?? [];
+
+  // Agrupar los pases del mes por día (un día puede tener varios pases).
+  const porDia = useMemo(() => {
+    const map = new Map<number, PaseListItem[]>();
+    for (const p of eventosMes) {
+      const dia = p.dia ?? 0;
+      if (!map.has(dia)) map.set(dia, []);
+      map.get(dia)!.push(p);
+    }
+    return [...map.entries()].sort((a, b) => a[0] - b[0]);
+  }, [eventosMes]);
+
+  if (mesesActivos.length === 0) {
+    return (
+      <p className="text-stone-500">Aún no hay pases programados.</p>
+    );
   }
 
   return (
     <div>
-      {/* Grid 3×4 */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {MESES.map((nombreMes, idx) => {
-          const mesNum = idx + 1;
-          const diasCount = DIAS_POR_MES[idx]!;
-          const eventos = getDiasConEvento(mesNum);
-          const tieneEventos = Object.keys(eventos).length > 0;
-
+      {/* Selector — solo los meses con pases */}
+      <div className="flex flex-wrap gap-2.5">
+        {mesesActivos.map((m) => {
+          const count = porMes.get(m)!.length;
+          const active = m === mesSel;
           return (
-            <div
-              key={mesNum}
-              className={`rounded-2xl border p-4 transition-colors ${
-                tieneEventos
-                  ? "border-acento-dorado/30 bg-stone-900/60"
-                  : "border-borde-sutil bg-stone-900/20"
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMesSel(m)}
+              aria-pressed={active}
+              className={`group flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70 ${
+                active
+                  ? "border-acento-dorado bg-acento-dorado font-semibold text-fondo-oscuro shadow-[0_0_16px_rgba(200,155,60,0.3)]"
+                  : "border-borde-sutil bg-stone-900/40 text-stone-300 hover:border-acento-dorado/60 hover:text-acento-dorado"
               }`}
             >
-              <h3
-                className={`mb-3 font-serif text-base font-semibold ${
-                  tieneEventos ? "text-acento-dorado" : "text-stone-500"
+              {MESES[m - 1]}
+              <span
+                className={`flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-bold ${
+                  active
+                    ? "bg-fondo-oscuro/20 text-fondo-oscuro"
+                    : "bg-acento-dorado/15 text-acento-dorado"
                 }`}
               >
-                {nombreMes}
-              </h3>
-
-              {/* Mini grid de días */}
-              <div className="grid grid-cols-7 gap-0.5">
-                {Array.from({ length: diasCount }, (_, d) => {
-                  const dia = d + 1;
-                  const eventosDelDia = eventos[dia];
-                  const hasEvento = !!eventosDelDia?.length;
-
-                  return (
-                    <button
-                      key={dia}
-                      onClick={() =>
-                        hasEvento
-                          ? setSelected({ mes: mesNum, dia, pases: eventosDelDia! })
-                          : undefined
-                      }
-                      className={`flex h-6 w-6 items-center justify-center rounded text-[10px] transition-all ${
-                        hasEvento
-                          ? "cursor-pointer bg-acento-dorado text-fondo-oscuro font-semibold hover:scale-110 hover:shadow-lg hover:shadow-acento-dorado/30"
-                          : "text-stone-700 cursor-default"
-                      } ${
-                        selected?.mes === mesNum && selected?.dia === dia
-                          ? "ring-2 ring-acento-dorado ring-offset-1 ring-offset-fondo-oscuro"
-                          : ""
-                      }`}
-                      aria-label={hasEvento ? `${dia} de ${nombreMes}: ${eventosDelDia!.map((e) => e.nombre).join(", ")}` : undefined}
-                      disabled={!hasEvento}
-                    >
-                      {dia}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Resumen de eventos del mes */}
-              {tieneEventos && (
-                <div className="mt-3 space-y-1">
-                  {Object.entries(eventos).map(([dia, evs]) => (
-                    <button
-                      key={dia}
-                      onClick={() =>
-                        setSelected({ mes: mesNum, dia: Number(dia), pases: evs })
-                      }
-                      className="flex w-full items-start gap-2 rounded-lg px-1 py-0.5 text-left text-xs transition-colors hover:bg-stone-800"
-                    >
-                      <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-acento-dorado" />
-                      <span className="text-stone-400">
-                        <span className="font-medium text-stone-300">{dia} —</span>{" "}
-                        {evs.map((e) => e.nombre).join(", ")}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                {count}
+              </span>
+            </button>
           );
         })}
       </div>
 
-      {/* Panel de detalle — tarjetas con la información completa del pase */}
-      {selected && (
-        <div ref={detalleRef} className="mt-8 scroll-mt-20 rounded-2xl border border-acento-dorado/30 bg-stone-900/60 p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-widest text-acento-dorado">
-                {selected.dia} de {MESES[selected.mes - 1]}
-              </p>
-              <h3 className="mt-1 font-serif text-xl font-bold text-texto-claro">
-                {selected.pases.length === 1
-                  ? selected.pases[0]!.nombre
-                  : `${selected.pases.length} eventos`}
-              </h3>
+      {/* Pases del mes seleccionado — agrupados por día, en grid */}
+      <div className="mt-10 space-y-12">
+        {porDia.map(([dia, evs]) => (
+          <section key={dia}>
+            <div className="mb-5 flex items-baseline gap-3">
+              <span className="font-serif text-4xl font-bold leading-none text-acento-dorado">
+                {String(dia).padStart(2, "0")}
+              </span>
+              <div>
+                <p className="text-sm font-medium text-texto-claro">
+                  {MESES[mesSel - 1]}
+                </p>
+                <p className="text-xs text-stone-500">
+                  {evs.length === 1 ? "1 evento" : `${evs.length} eventos`}
+                </p>
+              </div>
             </div>
-            <button
-              onClick={() => setSelected(null)}
-              className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-800 hover:text-stone-300 transition-colors"
-              aria-label="Cerrar"
-            >
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
 
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            {selected.pases.map((pase) => (
-              <PaseCard key={pase.id} pase={pase} />
-            ))}
-          </div>
-        </div>
-      )}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {evs.map((pase) => (
+                <PaseCard key={pase.id} pase={pase} />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
     </div>
   );
 }
@@ -162,7 +121,7 @@ function PaseCard({ pase }: { pase: PaseListItem }) {
 
   return (
     <article
-      className="overflow-hidden rounded-xl border border-borde-sutil bg-stone-900/40"
+      className="overflow-hidden rounded-xl border border-borde-sutil bg-stone-900/40 transition-colors hover:border-acento-dorado/40"
       style={{ borderLeftWidth: 3, borderLeftColor: acento }}
     >
       {pase.imagenPortada && (

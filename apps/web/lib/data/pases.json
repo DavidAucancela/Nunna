@@ -163,11 +163,23 @@
   {
     "id": "fiestas-riobamba",
     "slug": "fiestas-riobamba",
-    "nombre": "Fiestas de Riobamba",
+    "nombre": "Fiestas de Riobamba — 21 de abril",
     "fechaTipo": "fija",
-    "fechaDescripcion": "Independencia de Riobamba y Batalla de Tapi (21 de abril de 1822). Desfile cívico-militar por el centro histórico.",
+    "fechaDescripcion": "Fiesta mayor: conmemora la independencia de 1820 y la Batalla de Tapi de 1822. Desfile cívico-militar por el centro histórico.",
     "mes": 4,
     "dia": 21,
+    "tipo": "Fiesta cívica",
+    "imagenPortada": null,
+    "totalPersonajes": 0
+  },
+  {
+    "id": "primer-grito-riobamba",
+    "slug": "primer-grito-riobamba",
+    "nombre": "Primer Grito de Independencia — Riobamba",
+    "fechaTipo": "fija",
+    "fechaDescripcion": "Conmemora el primer grito/intento de independencia del 11 de noviembre de 1820.",
+    "mes": 11,
+    "dia": 11,
     "tipo": "Fiesta cívica",
     "imagenPortada": null,
     "totalPersonajes": 0
