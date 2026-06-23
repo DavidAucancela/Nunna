@@ -2,6 +2,8 @@
   {
     "id": "aya-uma",
     "slug": "aya-uma",
+    "experiencia": true,
+    "audioAmbiente": "/audio/aya-uma-ambiente.mp3",
     "nombre": "Aya Uma",
     "nombreKichwa": "Aya Uma",
     "nombresAlt": [
@@ -230,6 +232,8 @@
   {
     "id": "payaso",
     "slug": "payaso",
+    "experiencia": true,
+    "audioAmbiente": "/audio/payaso-ambiente.mp3",
     "nombre": "Payaso",
     "nombreKichwa": "Pukllakuk",
     "nombresAlt": [
@@ -492,6 +496,8 @@
   {
     "id": "perro",
     "slug": "perro",
+    "experiencia": true,
+    "audioAmbiente": "/audio/perro-ambiente.mp3",
     "nombre": "Perro",
     "nombreKichwa": "Allku",
     "nombresAlt": [
@@ -597,6 +603,8 @@
   {
     "id": "diablos-de-lata",
     "slug": "diablos-de-lata",
+    "experiencia": true,
+    "audioAmbiente": "/audio/diablos-de-lata-ambiente.mp3",
     "nombre": "Diablos de lata",
     "nombreKichwa": "Supay",
     "nombresAlt": [

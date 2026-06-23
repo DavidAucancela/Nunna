@@ -45,6 +45,8 @@ function toPersonaje(p: PersonajeRaw): Personaje {
   if (p.publicadoEn) personaje.publicadoEn = p.publicadoEn;
   if (p.narrativa) personaje.narrativa = p.narrativa as Narrativa;
   if ("imagenBanner" in p && p.imagenBanner) personaje.imagenBanner = p.imagenBanner as string;
+  if ("experiencia" in p && p.experiencia) personaje.experiencia = p.experiencia as boolean;
+  if ("audioAmbiente" in p && p.audioAmbiente) personaje.audioAmbiente = p.audioAmbiente as string;
   if (p.hotspots?.length) personaje.hotspots = p.hotspots as Hotspot[];
   return personaje;
 }

@@ -113,5 +113,13 @@
     "fuente": "Source",
     "fotografia": "Photography",
     "licencia": "License"
+  },
+  "experiencia": {
+    "preludio": "You have awakened",
+    "despertar": "Awaken {nombre}",
+    "toca_para_despertar": "Tap to awaken",
+    "activar_sonido": "Enable sound",
+    "silenciar": "Mute",
+    "descubrir": "Discover"
   }
 }
