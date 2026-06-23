@@ -374,6 +374,18 @@ El QR de cada imán físico codifica `/[locale]/personajes/<slug>`. Una vez impr
 - **Solución**: aplicar `text-shimmer` directamente en cada `motion.span`, no en el `h1` contenedor
 
 ### MapLibre GL en PaseMapSection (`PaseMapSection.tsx`)
+- **Dos layouts por breakpoint** (2026-06-21): el recorrido por **scroll-pinned** (sticky `300vh`) es frágil
+  en móvil — iOS Safari **congela las animaciones ligadas al scroll** durante el desplazamiento por inercia,
+  así que en el teléfono el recorrido se veía a saltos/congelado. Solución:
+  - **Móvil** (`max-width:767px`, vía `matchMedia` → estado `isMobile`): **carrusel táctil** sin scroll —
+    mapa fijo arriba + tarjeta abajo con botones ‹ ›, **swipe** horizontal y **pines tocables**. La navegación
+    mueve `activeIdx` por la secuencia `[-1, ...waypoints, finaleIdx]` y `goToIdx()` pinta el mapa a ese punto.
+  - **Escritorio**: se mantiene el scroll-driven original (sin cambios de UX).
+  - El handler de scroll (`useMotionValueEvent`) hace `if (isMobileRef.current) return`; los hooks se llaman
+    siempre (el `return` del layout móvil va **después** de todos los hooks). `paintMap(p, full?)` es el
+    pintor compartido (ruta de progreso + dot + pines); `mapHeader`/`storyCard` se reutilizan en ambos layouts.
+  - El init del mapa incluye `isMobile` en sus deps → al cruzar el breakpoint el contenedor cambia y el mapa
+    se reconstruye; tras `load` repinta el `activeIdx` vigente (rotación de pantalla a mitad de recorrido).
 - **Datos del recorrido en JSON (multi-pase)**: `lib/data/recorrido.json` tiene la forma
   `{ defaultPaseSlug, pases: [{ paseSlug, paseNombre, centro, zoom, ruta, waypoints }] }`.
   `getRecorridos()` (`lib/services/recorrido.service.ts`) une cada waypoint con `personajes.json`
