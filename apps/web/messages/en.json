@@ -121,5 +121,13 @@
     "activar_sonido": "Enable sound",
     "silenciar": "Mute",
     "descubrir": "Discover"
+  },
+  "anatomia": {
+    "eyebrow": "Anatomy of the character",
+    "titulo": "Every piece tells a story",
+    "hint": "Scroll to explore each part of the costume.",
+    "contador": "Element {n} of {total}",
+    "material": "Material",
+    "artesano": "Who makes it"
   }
 }

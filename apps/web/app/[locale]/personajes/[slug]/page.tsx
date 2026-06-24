@@ -6,6 +6,7 @@ import { getPersonaje, getPersonajes } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import { ParallaxHero } from "@/modules/personajes/components/ParallaxHero";
 import { HeroDespertar } from "@/modules/personajes/components/HeroDespertar";
+import { AnatomiaSection } from "@/modules/personajes/components/AnatomiaSection";
 import { GaleriaSection } from "@/modules/personajes/components/GaleriaSection";
 import { PersonajesCarrusel } from "@/modules/personajes/components/PersonajesCarrusel";
 import { FadeUp } from "@/components/ui/FadeUp";
@@ -249,6 +250,16 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
           </section>
         </FadeUp>
       )}
+
+      {/* ── 4b. Anatomía (experiencia v2 — solo con hotspots) ── */}
+      {personaje.experiencia && personaje.hotspots?.length && imagenPortada ? (
+        <AnatomiaSection
+          imagen={imagenPortada}
+          hotspots={personaje.hotspots}
+          accentColor={style.accentColor}
+          nombre={personaje.nombre}
+        />
+      ) : null}
 
       {/* ── 5. Galería ── */}
       <GaleriaSection

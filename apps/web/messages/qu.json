@@ -121,5 +121,13 @@
     "activar_sonido": "Uyariyta kichay",
     "silenciar": "Uyariyta wichay",
     "descubrir": "Tariy"
+  },
+  "anatomia": {
+    "eyebrow": "Runapa aychan",
+    "titulo": "Sapan pieza willan",
+    "hint": "Sapan churanata qhawankapak kuyuy.",
+    "contador": "{n} / {total} pieza",
+    "material": "Imamanta",
+    "artesano": "Pi rurak"
   }
 }

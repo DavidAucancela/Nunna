@@ -30,6 +30,10 @@ export interface Hotspot {
   y: number;
   titulo: string;
   cuerpo: string;
+  /** Material del elemento (Fase 4 — anatomía). */
+  material?: string;
+  /** Quién fabrica el elemento (Fase 4 — anatomía). */
+  artesano?: string;
 }
 
 export interface Personaje {
