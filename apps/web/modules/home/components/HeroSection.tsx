@@ -159,7 +159,9 @@ export function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative -mt-16 flex min-h-screen items-center justify-center overflow-hidden"
+      // El hero es un video oscuro: se mantiene en tema oscuro en ambos modos
+      // (la clase `dark` fuerza los tokens oscuros aquí) para conservar el contraste.
+      className="dark relative -mt-16 flex min-h-screen items-center justify-center overflow-hidden bg-fondo-oscuro"
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
     >

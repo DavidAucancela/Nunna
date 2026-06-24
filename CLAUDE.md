@@ -106,9 +106,9 @@ apps/web/
 ├── modules/                        → ★ Componentes por feature
 │   ├── home/components/            → HeroSection, PaseMapSection (recorrido), PersonajesShowcase,
 │   │                                 ProductoSection, OrigenesSection, StatsSection, MarqueeStrip, CtaFinal
-│   ├── personajes/components/      → PersonajeCard, ParallaxHero, GaleriaSection (3 tabs),
-│   │                                 NarrativaSection, PersonajesCarrusel, HotspotsViewer (sin uso),
-│   │                                 SimbolismoSection (sin uso)
+│   ├── personajes/components/      → PersonajeCard, ParallaxHero, HeroDespertar (★ hero v2 inmersivo),
+│   │                                 GaleriaSection (3 tabs), NarrativaSection, PersonajesCarrusel,
+│   │                                 HotspotsViewer (sin uso), SimbolismoSection (sin uso)
 │   ├── festividades/components/    → CalendarioGrid
 │   └── glosario/components/        → GlosarioClient
 ├── lib/
@@ -118,6 +118,7 @@ apps/web/
 │   │                                 recorrido.service.ts (getRecorridos — multi-pase del mapa)
 │   ├── data/
 │   │   ├── personajes.json         → 9 personajes con narrativa, hotspots, imagenBanner, multimedia
+│   │   │                             (+ flags v2: experiencia, audioAmbiente)
 │   │   ├── glosario.json           → 16 entradas kichwa
 │   │   ├── pases.json              → pases con fechas y rutas (grid /pases, /mapa, /calendario)
 │   │   └── recorrido.json          → mapa "Un pase, un camino": { defaultPaseSlug, pases[] }
@@ -125,9 +126,10 @@ apps/web/
 ├── public/
 │   ├── personajes/                 → Imágenes planas [slug]-*.png (retrato, banner, en-pase, presentación)
 │   ├── informacion_pases/          → Imágenes de los pases (antes public/pases/, movidas 2026-06-14)
-│   └── pases-videos/               → Video de fondo del hero (pase-perros.mp4)
+│   ├── pases-videos/               → Video de fondo del hero (pase-perros.mp4)
+│   └── audio/                      → Audio ambiente del hero v2 ([slug]-ambiente.mp3) — ver README
 ├── i18n/routing.ts                 → Locales + pathnames
-├── messages/                       → es.json / qu.json / en.json (incluye sección "historia")
+├── messages/                       → es.json / qu.json / en.json (incluye secciones "historia" y "experiencia")
 ├── tailwind.config.js              → CommonJS, NO .ts
 └── next.config.ts
 ```
@@ -167,6 +169,9 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 > **Imágenes de pases** (grid `/pases`, `/mapa`, `/calendario`): en `public/informacion_pases/`,
 > referenciadas por `pases.json` y `mapa/page.tsx` como `/informacion_pases/[archivo]`.
 > **Video del hero**: `public/pases-videos/pase-perros.mp4` (poster fallback = `aya-uma-banner.png`).
+> **Audio del hero v2**: `public/audio/[slug]-ambiente.mp3` (referenciado por `audioAmbiente` en
+> `personajes.json`). Opt-in, sin autoplay; si falta el archivo, el botón aparece pero no suena.
+> Ver `public/audio/README.md` para los nombres exactos esperados.
 > No usar carpetas con espacios en `public/` — rompen las URLs.
 
 ### Galería — convención del campo `titulo`
@@ -200,7 +205,7 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 ### Estructura de la ficha (desde 2026-06-04)
 
 ```
-1. ParallaxHero       → imagen + nombre + origen
+1. Hero               → HeroDespertar (si experiencia:true) | ParallaxHero (resto) — imagen + nombre + origen
 2. Resumen            → 1 párrafo lead editorial
 3. Ficha de datos     → origen (color acento) + festividad + nombresAlt
 4. Historia           → leyenda (cita centrada) + capítulos numerados + secreto del artesano
@@ -236,6 +241,22 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
   "volver": "Volver a los personajes"
 }
 ```
+
+### i18n — claves del namespace `experiencia` (hero v2 "Despertar")
+
+```json
+"experiencia": {
+  "preludio": "Has despertado a",
+  "despertar": "Despertar a {nombre}",
+  "toca_para_despertar": "Toca para despertar",
+  "activar_sonido": "Activar sonido",
+  "silenciar": "Silenciar",
+  "descubrir": "Descubrir"
+}
+```
+
+> ⚠ Las cadenas kichwa (`qu.json`) de este namespace son **tentativas** — pendiente revisión
+> con hablante nativo antes de producción.
 
 ---
 
@@ -290,6 +311,13 @@ Modo oscuro por defecto.
   - Selector de pases (visible con ≥2); re-init del mapa al cambiar de pase
   - Anclaje bajo el navbar (`sticky top-16 h-[calc(100vh-4rem)]`)
   - 3 pases sembrados: Instituto Tecnológico (real), Mercado Santa Rosa y Niño Rey de la Paz (demo)
+- **Experiencia v2 — Fase 1 "Despertar"** (`HeroDespertar.tsx`, 2026-06-22):
+  - Hero inmersivo del destino del QR: pantalla negra inicial → al primer tap/scroll despierta
+  - Parallax multicapa (scroll + mouse) sobre la imagen única; nombre letra a letra ("Has despertado a {nombre}")
+  - Toggle de sonido **opt-in** (sin autoplay) con audio ambiente por personaje (`audioAmbiente`)
+  - Respeta `prefers-reduced-motion` y funciona en tema **claro y oscuro**
+  - Activado por flag `experiencia: true` en `personajes.json` (hoy: aya-uma, payaso, perro, diablos-de-lata);
+    si es `false`/ausente cae al `ParallaxHero` original. Ver decisión técnica abajo.
 
 ### 🔄 Siguiente
 - **Merge PR #13** (`fix/hero-poster-y-map-reinit-race` → `main`) y redeploy en Railway
@@ -299,9 +327,12 @@ Modo oscuro por defecto.
 - Añadir los demás pases de `pases.json` al recorrido (hoy 3 de ~10)
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
 - Fotografías reales "En el pase" (`titulo: "en-pase"`) y del imán físico (`titulo: "proceso"`) para la galería
+- **Experiencia v2** — colocar los 4 audios reales en `public/audio/`; revisar cadenas kichwa del namespace
+  `experiencia` con hablante nativo; continuar Fases 2-12 (identidad/ficha viva, cosmovisión rostro dual,
+  anatomía con `HotspotsViewer`, números con `AnimatedCounter`, etc.)
 
 ### ⏳ Fase 2
-- Modo claro/oscuro
+- Modo claro/oscuro ✅ (toggle junto a los idiomas, commit `58c591e`)
 - Página de detalle de pase (`/pases/[slug]`)
 
 ### ⏳ Fase 3
@@ -315,6 +346,46 @@ Modo oscuro por defecto.
 ---
 
 ## Decisiones técnicas clave
+
+### Experiencia inmersiva v2 — hero "Despertar" (2026-06-22)
+Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling inmersivo
+(plan de 12 fases del autor). **Fase 1 implementada**; el resto pendiente.
+- **Una sola ruta, mejora progresiva.** La v2 vive en la **misma** ruta del QR (no `/experiencia/[slug]`)
+  para no romper el contrato de URL de los imanes impresos. Se activa por personaje, no globalmente.
+- **Flag por datos:** campo `experiencia: true` en `personajes.json` → la ficha renderiza `HeroDespertar`;
+  si es `false`/ausente cae al `ParallaxHero` original (degradación limpia para los personajes sin imágenes).
+  Campos nuevos en `@seres-del-pase/types` (`experiencia`, `audioAmbiente`) y mapeados en `personajes.service.ts`.
+- **Stack:** `framer-motion` + Lenis (ya instalados). **No se agregó GSAP** — choca con el monorepo
+  (Turbopack ya desactivado por `typedRoutes`) y hoy nada lo justifica.
+- **Audio opt-in, sin autoplay** (`public/audio/[slug]-ambiente.mp3`): toggle de silencio muy visible;
+  volumen fijo 0.32 al activar. Si falta el archivo el botón aparece pero no suena.
+- **Ambos temas:** los tokens `fondo-oscuro`/`fondo-claro` se **invierten** vía CSS vars en `.dark`
+  (`fondo-oscuro` = bg de la página en ambos temas), así el gradiente del hero funde a la página sin banda.
+- **Reduce motion:** `useReducedMotion()` apaga parallax (scroll y mouse), rotaciones y pulsos.
+- **Reutilizable para fases siguientes (ya en el repo, dormido):** `HotspotsViewer.tsx` (Fase 4 — aya-uma
+  ya tiene `hotspots`), `AnimatedCounter.tsx` (Fase 5), `SimbolismoSection` + campo `simbolismo` (Fase 3).
+- ⚠ Cadenas kichwa del namespace `experiencia` son **tentativas** — revisar con hablante nativo.
+
+### Calendario — solo meses con pases (2026-06-22)
+- `/calendario` ya **no** muestra el grid de los 12 meses. `CalendarioGrid` presenta **solo los meses con
+  eventos** como chips con contador (Ene · Abr · Nov · Dic); al elegir uno se ven sus pases **agrupados por
+  día** en grid de tarjetas (`PaseCard` con imagen de `informacion_pases` + tipo/horario/ruta/personaje).
+- **Fiestas de Riobamba** = dos fechas: **21 abr** (`fiestas-riobamba`, independencia 1820 + Batalla de Tapi
+  1822) y **11 nov** (`primer-grito-riobamba`, primer grito 1820). `nino-familia` = 6 ene.
+
+### Hero del inicio — siempre oscuro en ambos temas (2026-06-22)
+- El hero es un **video oscuro**: en modo claro los tokens invertidos lavaban el video. Se fuerza el tema
+  oscuro **solo en esa sección** (clase `dark` + `bg-fondo-oscuro` en el `<section>`) para conservar el
+  contraste en ambos modos. No convertirlo en "claro".
+
+### "Cómo funciona" — stepper con foco + carrusel móvil (`ProductoSection.tsx`, 2026-06-22)
+- **Paso 01 (imán):** fondo = foto del diablo de lata en pase borrosa/atenuada; el imán va grande y centrado
+  con **máscara radial** que difumina su fondo blanco (la imagen del imán trae fondo blanco, no es recorte).
+- **Niveles con foco (`StepperList`, compartido):** las 3 categorías **siempre visibles**; la activa enfocada
+  y las demás reducidas/desenfocadas (`blur`+`opacity`+`scale`).
+- **Desktop:** escena anclada (sticky), el scroll cambia el nivel. **Móvil:** **carrusel táctil**
+  (swipe/botones/tap), **no depende del scroll** (robusto en iOS); el scroll del desktop se ignora en móvil
+  (`track.offsetParent === null`).
 
 ### Búsqueda semántica descartada ⚠ (2026-06-21)
 - La **búsqueda semántica no se implementará**. Era el motivo principal de Supabase/pgvector y NestJS en Fase 3.
@@ -434,17 +505,20 @@ El QR de cada imán físico codifica `/[locale]/personajes/<slug>`. Una vez impr
 
 ## Personajes en producción
 
-| Slug | Nombre | Origen | Retrato | Banner | Narrativa |
-|------|--------|--------|---------|--------|-----------|
-| aya-uma | Aya Uma | prehispanico | ✅ | ✅ | ✅ |
-| curiquingue | Curiquingue | prehispanico | ❌ | ❌ | ✅ |
-| sacha-runa | Sacha Runa | prehispanico | ❌ | ❌ | ✅ |
-| payaso | Payaso | mixto | ✅ | ✅ | ✅ |
-| rey-moro | Rey Moro | colonial | ❌ | ❌ | ✅ |
-| capitan | Capitán | colonial | ❌ | ❌ | ✅ |
-| angel | Ángel | colonial | ❌ | ❌ | ✅ |
-| perro | Perro | prehispanico | ✅ | ✅ | ✅ |
-| diablos-de-lata | Diablos de lata | mestizo | ✅ | ✅ | ✅ |
+| Slug | Nombre | Origen | Retrato | Banner | Narrativa | Experiencia v2 |
+|------|--------|--------|---------|--------|-----------|----------------|
+| aya-uma | Aya Uma | prehispanico | ✅ | ✅ | ✅ | ✅ |
+| curiquingue | Curiquingue | prehispanico | ❌ | ❌ | ✅ | ❌ |
+| sacha-runa | Sacha Runa | prehispanico | ❌ | ❌ | ✅ | ❌ |
+| payaso | Payaso | mixto | ✅ | ✅ | ✅ | ✅ |
+| rey-moro | Rey Moro | colonial | ❌ | ❌ | ✅ | ❌ |
+| capitan | Capitán | colonial | ❌ | ❌ | ✅ | ❌ |
+| angel | Ángel | colonial | ❌ | ❌ | ✅ | ❌ |
+| perro | Perro | prehispanico | ✅ | ✅ | ✅ | ✅ |
+| diablos-de-lata | Diablos de lata | mestizo | ✅ | ✅ | ✅ | ✅ |
+
+> **Experiencia v2** = flag `experiencia: true` en el JSON → usa `HeroDespertar`. Requiere imágenes
+> completas; los 4 activos coinciden con los que tienen retrato + banner. Audio en `public/audio/`.
 
 Para agregar un personaje: editar `apps/web/lib/data/personajes.json` con la estructura existente.
 Para agregar imágenes: copiar a `public/personajes/` y actualizar `imagenPortada` / `imagenBanner` / `multimedia` en el JSON.

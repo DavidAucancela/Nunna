@@ -113,5 +113,13 @@
     "fuente": "Pachaqa",
     "fotografia": "Resqui",
     "licencia": "Simi"
+  },
+  "experiencia": {
+    "preludio": "Rikcharichishkanki",
+    "despertar": "{nombre}-ta rikcharichiy",
+    "toca_para_despertar": "Llamiy rikcharichinkapak",
+    "activar_sonido": "Uyariyta kichay",
+    "silenciar": "Uyariyta wichay",
+    "descubrir": "Tariy"
   }
 }

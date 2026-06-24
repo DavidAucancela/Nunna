@@ -30,17 +30,35 @@ function PhoneMock({ children }: { children: React.ReactNode }) {
 
 /* — Paso 01: el imán físico — */
 function ImanVisual() {
+  // La imagen del imán trae fondo blanco propio: la máscara radial difumina sus
+  // bordes para que se asiente sobre la foto del pase (borrosa) en vez de un bloque blanco.
+  const fadeMask =
+    "radial-gradient(ellipse 52% 56% at 50% 47%, #000 74%, transparent 100%)";
   return (
-    <div className="relative mx-auto w-full max-w-[320px]">
+    <div className="relative mx-auto w-full max-w-[420px]">
       <div className="absolute -inset-5 rounded-[2rem] bg-acento-dorado/10 blur-3xl" />
-      <div className="relative aspect-square overflow-hidden rounded-[1.6rem] border border-acento-dorado/25 bg-stone-100 shadow-2xl shadow-black/40">
+      <div className="relative aspect-square overflow-hidden rounded-[1.6rem] border border-acento-dorado/25 shadow-2xl shadow-black/40">
+        {/* Fondo: diablo de lata en pase — borroso y atenuado */}
         <Image
-          src="/personajes/diablos-de-lata-iman.webp"
+          src="/personajes/diablos-de-lata-en-pase-1.jpg"
+          alt=""
+          aria-hidden="true"
+          fill
+          className="scale-110 object-cover blur-md brightness-[0.55]"
+          sizes="(max-width: 768px) 80vw, 420px"
+        />
+        <div className="absolute inset-0 bg-fondo-oscuro/45" />
+
+        {/* Imán — grande, centrado, con bordes difuminados sobre la foto */}
+        <Image
+          src="/personajes/diablos-de-lata-iman-principal.webp"
           alt="Imán artesanal Diablos de lata"
           fill
-          className="object-contain p-3"
-          sizes="(max-width: 768px) 80vw, 320px"
+          className="object-contain p-2 drop-shadow-[0_12px_30px_rgba(0,0,0,0.55)]"
+          sizes="(max-width: 768px) 80vw, 420px"
+          style={{ WebkitMaskImage: fadeMask, maskImage: fadeMask }}
         />
+
         <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/5" />
       </div>
       {/* Etiqueta artesanal */}
@@ -189,28 +207,77 @@ export function ProductoSection() {
   );
 }
 
-/* — Texto de un paso (número + kicker + título + descripción) — */
-function PasoTexto({ paso }: { paso: (typeof PASOS)[number] }) {
+/* — Stepper con foco: las 3 categorías siempre visibles; la activa enfocada y las
+   demás reducidas/desenfocadas (arriba/abajo), para saber en qué punto se está.
+   Compartido por desktop (cambia con el scroll) y móvil (cambia con swipe/tap). — */
+function StepperList({
+  active,
+  onSelect,
+  reduce,
+}: {
+  active: number;
+  onSelect: (i: number) => void;
+  reduce: boolean | null;
+}) {
   return (
-    <>
-      <div className="flex items-center gap-4">
-        <span className="font-serif text-6xl font-bold leading-none text-acento-dorado/25 md:text-7xl">
-          {paso.num}
-        </span>
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[11px] uppercase tracking-[0.3em] text-acento-dorado">
-            {paso.kicker}
-          </span>
-          <span className="h-px w-12 bg-acento-dorado/40" />
-        </div>
-      </div>
-      <h3 className="mt-6 font-serif text-2xl font-bold text-texto-claro md:text-4xl">
-        {paso.titulo}
-      </h3>
-      <p className="mt-4 max-w-md text-base leading-relaxed text-stone-400 md:text-lg">
-        {paso.texto}
-      </p>
-    </>
+    <div className="flex flex-col gap-5">
+      {PASOS.map((p, i) => {
+        const isActive = i === active;
+        return (
+          <motion.button
+            key={p.num}
+            type="button"
+            onClick={() => onSelect(i)}
+            aria-current={isActive}
+            aria-label={`Paso ${p.num} — ${p.titulo}`}
+            className="text-left focus-visible:outline-none"
+            style={{ transformOrigin: "left center" }}
+            animate={{
+              opacity: isActive ? 1 : 0.3,
+              scale: isActive ? 1 : 0.82,
+              filter: isActive ? "blur(0px)" : "blur(2.5px)",
+            }}
+            transition={{ duration: reduce ? 0 : 0.45, ease: "easeOut" }}
+          >
+            <div className="flex items-center gap-3">
+              <span
+                className={`font-serif font-bold leading-none transition-colors ${
+                  isActive
+                    ? "text-5xl text-acento-dorado/30 md:text-6xl"
+                    : "text-3xl text-acento-dorado/20"
+                }`}
+              >
+                {p.num}
+              </span>
+              <span className="text-[11px] uppercase tracking-[0.3em] text-acento-dorado">
+                {p.kicker}
+              </span>
+            </div>
+            <h3
+              className={`mt-2 font-serif font-bold text-texto-claro ${
+                isActive ? "text-2xl md:text-4xl" : "text-xl md:text-2xl"
+              }`}
+            >
+              {p.titulo}
+            </h3>
+            <AnimatePresence initial={false}>
+              {isActive && (
+                <motion.p
+                  key="desc"
+                  initial={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                  transition={{ duration: reduce ? 0 : 0.4, ease: "easeOut" }}
+                  className="max-w-md overflow-hidden text-base leading-relaxed text-stone-400 md:text-lg"
+                >
+                  <span className="block pt-4">{p.texto}</span>
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -226,6 +293,9 @@ function PasosScroll() {
     if (!track) return;
 
     const onScroll = () => {
+      // En móvil el track de desktop está oculto (display:none) → no debe tocar
+      // el estado, que ahí lo controla el carrusel táctil.
+      if (track.offsetParent === null) return;
       const rect = track.getBoundingClientRect();
       const total = rect.height - window.innerHeight;
       const scrolled = Math.min(Math.max(-rect.top, 0), Math.max(total, 1));
@@ -254,6 +324,22 @@ function PasosScroll() {
     window.scrollTo({ top: window.scrollY + delta, behavior: reduce ? "auto" : "smooth" });
   };
 
+  // Navegación del carrusel móvil (sin depender del scroll)
+  const goNext = () => setActive((a) => Math.min(a + 1, PASOS.length - 1));
+  const goPrev = () => setActive((a) => Math.max(a - 1, 0));
+  const touchStartX = useRef<number | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0]?.clientX ?? null;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null) return;
+    const dx = (e.changedTouches[0]?.clientX ?? 0) - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) < 40) return;
+    if (dx < 0) goNext();
+    else goPrev();
+  };
+
   const paso = PASOS[active] ?? PASOS[0]!;
   const ActiveVisual = paso.Visual;
   const fade = {
@@ -280,52 +366,71 @@ function PasosScroll() {
                 </AnimatePresence>
               </div>
 
-              {/* Texto + indicador de puntos */}
-              <div>
-                <AnimatePresence mode="wait">
-                  <motion.div key={`t-${active}`} {...fade}>
-                    <PasoTexto paso={paso} />
-                  </motion.div>
-                </AnimatePresence>
-
-                <div className="mt-12 flex items-center gap-4">
-                  {PASOS.map((p, i) => (
-                    <button
-                      key={p.num}
-                      type="button"
-                      onClick={() => goTo(i)}
-                      aria-label={`Ir al paso ${p.num} — ${p.titulo}`}
-                      aria-current={i === active}
-                      className="group rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-acento-dorado"
-                    >
-                      <span
-                        className={`block h-3.5 rounded-full transition-all duration-300 ${
-                          i === active
-                            ? "w-12 bg-acento-dorado"
-                            : "w-3.5 bg-acento-dorado/30 group-hover:bg-acento-dorado/60"
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {/* Stepper con foco — la activa se enfoca, las demás reducidas/desenfocadas */}
+              <StepperList active={active} onSelect={goTo} reduce={reduce} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Móvil — apilado: cada punto muestra imagen + texto, scroll al siguiente */}
-      <div className="space-y-20 md:hidden">
-        {PASOS.map((p) => (
-          <FadeUp key={p.num}>
-            <div className="flex flex-col">
-              <div className="mb-10">
-                <p.Visual />
-              </div>
-              <PasoTexto paso={p} />
-            </div>
-          </FadeUp>
-        ))}
+      {/* Móvil — carrusel táctil: visual + stepper con foco; swipe / botones / tap.
+          No depende del scroll (robusto en iOS). */}
+      <div className="md:hidden" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+        {/* Visual del nivel activo */}
+        <div className="flex justify-center">
+          <AnimatePresence mode="wait">
+            <motion.div key={`mv-${active}`} className="w-full" {...fade}>
+              <ActiveVisual />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Niveles — siempre visibles, el activo enfocado */}
+        <div className="mt-10">
+          <StepperList active={active} onSelect={setActive} reduce={reduce} />
+        </div>
+
+        {/* Controles */}
+        <div className="mt-8 flex items-center justify-between gap-4">
+          <button
+            type="button"
+            onClick={goPrev}
+            disabled={active <= 0}
+            aria-label="Anterior"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-borde-sutil text-stone-300 transition-colors disabled:opacity-30 enabled:hover:border-acento-dorado enabled:hover:text-acento-dorado"
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+
+          <div className="flex items-center gap-2">
+            {PASOS.map((p, i) => (
+              <button
+                key={p.num}
+                type="button"
+                onClick={() => setActive(i)}
+                aria-label={`Ir al paso ${p.num}`}
+                aria-current={i === active}
+                className={`h-2.5 rounded-full transition-all duration-300 ${
+                  i === active ? "w-6 bg-acento-dorado" : "w-2.5 bg-stone-600 hover:bg-stone-400"
+                }`}
+              />
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={goNext}
+            disabled={active >= PASOS.length - 1}
+            aria-label="Siguiente"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-borde-sutil text-stone-300 transition-colors disabled:opacity-30 enabled:hover:border-acento-dorado enabled:hover:text-acento-dorado"
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+        </div>
       </div>
     </>
   );

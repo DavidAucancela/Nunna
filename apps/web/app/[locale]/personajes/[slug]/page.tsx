@@ -5,6 +5,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getPersonaje, getPersonajes } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import { ParallaxHero } from "@/modules/personajes/components/ParallaxHero";
+import { HeroDespertar } from "@/modules/personajes/components/HeroDespertar";
 import { GaleriaSection } from "@/modules/personajes/components/GaleriaSection";
 import { PersonajesCarrusel } from "@/modules/personajes/components/PersonajesCarrusel";
 import { FadeUp } from "@/components/ui/FadeUp";
@@ -62,16 +63,30 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
     <article>
       <ScrollToTop />
       {/* ── 1. Hero ── */}
-      <ParallaxHero
-        nombre={personaje.nombre}
-        nombreKichwa={personaje.nombreKichwa}
-        nombresAlt={personaje.nombresAlt}
-        origen={personaje.origen}
-        imagen={imagenPortada}
-        imagenBanner={imagenBanner}
-        origenLabel={style.label}
-        accentColor={style.accentColor}
-      />
+      {personaje.experiencia ? (
+        <HeroDespertar
+          nombre={personaje.nombre}
+          nombreKichwa={personaje.nombreKichwa}
+          nombresAlt={personaje.nombresAlt}
+          origen={personaje.origen}
+          imagen={imagenPortada}
+          imagenBanner={imagenBanner}
+          origenLabel={style.label}
+          accentColor={style.accentColor}
+          audioAmbiente={personaje.audioAmbiente}
+        />
+      ) : (
+        <ParallaxHero
+          nombre={personaje.nombre}
+          nombreKichwa={personaje.nombreKichwa}
+          nombresAlt={personaje.nombresAlt}
+          origen={personaje.origen}
+          imagen={imagenPortada}
+          imagenBanner={imagenBanner}
+          origenLabel={style.label}
+          accentColor={style.accentColor}
+        />
+      )}
 
       {/* ── 2. Resumen editorial ── */}
       <FadeUp>

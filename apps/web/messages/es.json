@@ -113,5 +113,13 @@
     "fuente": "Fuente",
     "fotografia": "Fotografía",
     "licencia": "Licencia"
+  },
+  "experiencia": {
+    "preludio": "Has despertado a",
+    "despertar": "Despertar a {nombre}",
+    "toca_para_despertar": "Toca para despertar",
+    "activar_sonido": "Activar sonido",
+    "silenciar": "Silenciar",
+    "descubrir": "Descubrir"
   }
 }

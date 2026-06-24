@@ -43,6 +43,10 @@ export interface Personaje {
   simbolismo?: string;
   origen?: TipoOrigen;
   imagenBanner?: string;
+  /** Activa la experiencia inmersiva v2 (hero "Despertar", etc.). */
+  experiencia?: boolean;
+  /** Pista de audio ambiente para el hero inmersivo (opt-in, sin autoplay). */
+  audioAmbiente?: string;
   narrativa?: Narrativa;
   hotspots?: Hotspot[];
   variantes: VariantePersonaje[];
