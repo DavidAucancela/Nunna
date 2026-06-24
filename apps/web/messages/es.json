@@ -121,5 +121,13 @@
     "activar_sonido": "Activar sonido",
     "silenciar": "Silenciar",
     "descubrir": "Descubrir"
+  },
+  "anatomia": {
+    "eyebrow": "Anatomía del personaje",
+    "titulo": "Cada pieza cuenta algo",
+    "hint": "Desplázate para recorrer cada elemento del traje.",
+    "contador": "Elemento {n} de {total}",
+    "material": "Material",
+    "artesano": "Quién lo hace"
   }
 }

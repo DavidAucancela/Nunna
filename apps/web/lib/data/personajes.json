@@ -47,30 +47,33 @@
       {
         "id": "cuernos",
         "x": 50,
-        "y": 9,
+        "y": 12,
         "titulo": "Los 12 cuernos",
-        "cuerpo": "Representan los doce meses del año solar andino. Las cintas de colores tienen significados: rojo → fuerza, amarillo → prosperidad, verde → naturaleza."
+        "cuerpo": "Representan los doce meses del año solar andino. Las cintas de colores tienen significados: rojo → fuerza, amarillo → prosperidad, verde → naturaleza.",
+        "material": "Cuernos dorados con cintas de colores"
       },
       {
         "id": "mascara",
-        "x": 52,
-        "y": 26,
+        "x": 50,
+        "y": 37,
         "titulo": "Máscara de doble rostro",
-        "cuerpo": "Dos caras: una delantera y una trasera. El Aya Uma ve en todas las direcciones simultáneamente — el pasado y el futuro, Kay Pacha y Uku Pacha."
+        "cuerpo": "Dos caras: una delantera y una trasera. El Aya Uma ve en todas las direcciones simultáneamente — el pasado y el futuro, Kay Pacha y Uku Pacha.",
+        "artesano": "Los artesanos nunca firman la máscara: al terminar el último cuerno, el espíritu ya la habita."
       },
       {
         "id": "traje",
-        "x": 34,
-        "y": 60,
+        "x": 44,
+        "y": 62,
         "titulo": "El traje multicolor",
-        "cuerpo": "Confeccionado con tela bordada en colores primarios. Cada franja y color tiene su propio significado en la cosmovisión andina."
+        "cuerpo": "Confeccionado con tela bordada en colores primarios. Cada franja y color tiene su propio significado en la cosmovisión andina.",
+        "material": "Tela bordada en colores primarios"
       },
       {
         "id": "fuete",
-        "x": 74,
-        "y": 70,
+        "x": 82,
+        "y": 60,
         "titulo": "El fuete",
-        "cuerpo": "Golpea rítmicamente el suelo durante toda la danza. No es violencia: es comunicación con la Pachamama. Cada golpe es un llamado al que la tierra responde."
+        "cuerpo": "En el pase, esta mano sostiene el fuete: un látigo que golpea rítmicamente el suelo durante toda la danza. No es violencia, es comunicación con la Pachamama — cada golpe es un llamado al que la tierra responde."
       }
     ],
     "variantes": [],
@@ -271,7 +274,32 @@
         }
       ]
     },
-    "hotspots": [],
+    "hotspots": [
+      {
+        "id": "gorro",
+        "x": 50,
+        "y": 15,
+        "titulo": "El sombrero",
+        "cuerpo": "Junto con la máscara, el sombrero es uno de los pocos elementos constantes del traje. Completa el disfraz que vuelve anónimo al Payaso — y ese anonimato es la fuente de su poder para criticar.",
+        "material": "Sombrero adornado"
+      },
+      {
+        "id": "rostro",
+        "x": 52,
+        "y": 36,
+        "titulo": "La máscara sonriente",
+        "cuerpo": "Rasgos caricaturizados: nariz grande, mejillas rojizas y una sonrisa fija. Esa sonrisa inmóvil contrasta con las verdades dolorosas que el Payaso se atreve a decir — la risa como estrategia de supervivencia cultural.",
+        "material": "Máscara de rasgos exagerados"
+      },
+      {
+        "id": "traje",
+        "x": 50,
+        "y": 66,
+        "titulo": "El traje de retazos",
+        "cuerpo": "No existe un modelo único: cada payaso cose su traje con retazos de colores contrastantes —rojo, amarillo, verde, naranja— sin un orden estético aparente. Los cascabeles en los bordes lo acompañan en cada gesto.",
+        "material": "Retazos de tela de colores y cascabeles"
+      }
+    ],
     "variantes": [],
     "elementos": [],
     "apariciones": [],
@@ -534,7 +562,31 @@
         }
       ]
     },
-    "hotspots": [],
+    "hotspots": [
+      {
+        "id": "hocico",
+        "x": 50,
+        "y": 22,
+        "titulo": "El hocico y las orejas",
+        "cuerpo": "La máscara representa el hocico del Allku con orejas flácidas. En la mitología kichwa el perro es el guardián del umbral entre los vivos y los muertos — el mismo umbral que el Aya Uma transita ritualmente.",
+        "material": "Máscara con hocico y orejas"
+      },
+      {
+        "id": "patas",
+        "x": 74,
+        "y": 42,
+        "titulo": "Las patas",
+        "cuerpo": "El danzante ladra, persigue a los niños y se mueve en cuatro patas durante largos periodos. Una actuación física y exigente que convierte lo doméstico en ritual."
+      },
+      {
+        "id": "traje",
+        "x": 50,
+        "y": 64,
+        "titulo": "El mameluco de pelaje",
+        "cuerpo": "Un enterizo de tela acolchada, pintado o bordado con manchas que imitan el pelaje de un perro chusco. En la parte trasera lleva una cola con un mecanismo de hilo interno que el danzante mueve desde adentro.",
+        "material": "Tela acolchada, pintada o bordada"
+      }
+    ],
     "variantes": [],
     "elementos": [],
     "apariciones": [],
@@ -642,7 +694,40 @@
         }
       ]
     },
-    "hotspots": [],
+    "hotspots": [
+      {
+        "id": "mascara",
+        "x": 48,
+        "y": 22,
+        "titulo": "La máscara de hojalata",
+        "cuerpo": "Obra maestra de la artesanía riobambeña: cuernos retorcidos, ojos de vidrio o botones y dientes tallados en el metal. El rojo no es casual — es el color del fuego y de la sangre que da vida. No viene a llevarse almas, sino a traer energía vital.",
+        "material": "Hojalata trabajada a martillo y punzón",
+        "artesano": "Artesanos del metal especializados; cada máscara es única y tarda semanas."
+      },
+      {
+        "id": "cabello",
+        "x": 24,
+        "y": 40,
+        "titulo": "La melena",
+        "cuerpo": "Una cabellera larga enmarca la máscara y oculta por completo el rostro del danzante, reforzando la transformación del hombre en Supay."
+      },
+      {
+        "id": "pechera",
+        "x": 52,
+        "y": 70,
+        "titulo": "El pecho y la pechera",
+        "cuerpo": "Chaqueta y pechera bordadas con tachones visten al que lidera la comparsa. Los Diablos de lata no marchan al final: van al frente, abriendo el espacio ritual para todos.",
+        "material": "Tela bordada con tachones metálicos"
+      },
+      {
+        "id": "sonajeros",
+        "x": 78,
+        "y": 62,
+        "titulo": "Los sonajeros de lata",
+        "cuerpo": "Se llevan en muñecas, tobillos y cintura. Su sonido metálico y penetrante no es solo música: en la cosmovisión andina el ruido ritual ahuyenta espíritus negativos y limpia el espacio por donde pasa la comparsa.",
+        "material": "Latas de metal, semillas secas o huesos"
+      }
+    ],
     "variantes": [],
     "elementos": [],
     "apariciones": [],

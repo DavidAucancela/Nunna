@@ -107,8 +107,9 @@ apps/web/
 │   ├── home/components/            → HeroSection, PaseMapSection (recorrido), PersonajesShowcase,
 │   │                                 ProductoSection, OrigenesSection, StatsSection, MarqueeStrip, CtaFinal
 │   ├── personajes/components/      → PersonajeCard, ParallaxHero, HeroDespertar (★ hero v2 inmersivo),
+│   │                                 AnatomiaSection (★ Fase 4 — hotspots scroll-driven),
 │   │                                 GaleriaSection (3 tabs), NarrativaSection, PersonajesCarrusel,
-│   │                                 HotspotsViewer (sin uso), SimbolismoSection (sin uso)
+│   │                                 HotspotsViewer (superseded por AnatomiaSection), SimbolismoSection (sin uso)
 │   ├── festividades/components/    → CalendarioGrid
 │   └── glosario/components/        → GlosarioClient
 ├── lib/
@@ -209,6 +210,7 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 2. Resumen            → 1 párrafo lead editorial
 3. Ficha de datos     → origen (color acento) + festividad + nombresAlt
 4. Historia           → leyenda (cita centrada) + capítulos numerados + secreto del artesano
+4b. AnatomiaSection   → (experiencia + hotspots) Fase 4: visual sticky con pines + cards scroll-driven
 5. GaleriaSection     → 3 tabs: El personaje / El imán / En el pase
 6. Cross-sell         → grid de otros personajes con imagen
 ```
@@ -230,6 +232,23 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 ```
 
 `palabrasClave` existe en el JSON pero ya no se usa (era para FaseLeyenda, eliminada).
+
+**`hotspots[]` (Fase 4 — `AnatomiaSection`):** cada elemento del traje con coords `%` calibradas a
+`imagenPortada` (la figura del imán). `material` y `artesano` son opcionales (se muestran como filas
+etiquetadas en la card). Solo se renderiza si el personaje tiene `experiencia: true`.
+
+```json
+"hotspots": [
+  {
+    "id": "cuernos",
+    "x": 50, "y": 12,                         // % sobre imagenPortada (origen arriba-izquierda)
+    "titulo": "Los 12 cuernos",
+    "cuerpo": "Significado del elemento (1–3 frases).",
+    "material": "Cuernos dorados con cintas",  // opcional → fila "Material"
+    "artesano": "Quién lo fabrica / dato"      // opcional → fila "Quién lo hace"
+  }
+]
+```
 
 ### i18n — claves del namespace `historia`
 
@@ -257,6 +276,21 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 
 > ⚠ Las cadenas kichwa (`qu.json`) de este namespace son **tentativas** — pendiente revisión
 > con hablante nativo antes de producción.
+
+### i18n — claves del namespace `anatomia` (Fase 4)
+
+```json
+"anatomia": {
+  "eyebrow": "Anatomía del personaje",
+  "titulo": "Cada pieza cuenta algo",
+  "hint": "Desplázate para recorrer cada elemento del traje.",
+  "contador": "Elemento {n} de {total}",
+  "material": "Material",
+  "artesano": "Quién lo hace"
+}
+```
+
+> ⚠ Las cadenas kichwa de `anatomia` también son **tentativas** — revisar con hablante nativo.
 
 ---
 
@@ -318,6 +352,14 @@ Modo oscuro por defecto.
   - Respeta `prefers-reduced-motion` y funciona en tema **claro y oscuro**
   - Activado por flag `experiencia: true` en `personajes.json` (hoy: aya-uma, payaso, perro, diablos-de-lata);
     si es `false`/ausente cae al `ParallaxHero` original. Ver decisión técnica abajo.
+- **Experiencia v2 — Fase 4 "Anatomía"** (`AnatomiaSection.tsx`, 2026-06-23):
+  - Diagrama interactivo: visual sticky (imán) con pines numerados sobre el `imagenPortada`; cada elemento
+    del traje se activa **en secuencia al scroll** (IntersectionObserver, robusto en iOS — no scroll-linked)
+  - Card por elemento con significado + `material` + `artesano` (campos nuevos opcionales en `Hotspot`)
+  - Pines clicables (saltan a su bloque); mini-nav de elementos; respeta `prefers-reduced-motion` y ambos temas
+  - Datos: `hotspots[]` en `personajes.json` (aya-uma 4, payaso 3, perro 3, diablos-de-lata 4), coords
+    calibradas a la figura del imán y textos derivados de la narrativa/descripción ya autorizada
+  - Gate: `experiencia && hotspots?.length && imagenPortada`; se inserta entre Historia y Galería
 
 ### 🔄 Siguiente
 - **Merge PR #13** (`fix/hero-poster-y-map-reinit-race` → `main`) y redeploy en Railway
@@ -336,7 +378,7 @@ Modo oscuro por defecto.
 - Página de detalle de pase (`/pases/[slug]`)
 
 ### ⏳ Fase 3
-- Hotspots interactivos en el traje (componente `HotspotsViewer.tsx` ya existe, datos en JSON)
+- Hotspots interactivos en el traje ✅ (implementados como `AnatomiaSection.tsx` — Fase 4 v2, 2026-06-23)
 - Mapa interactivo (MapLibre — dependencia ya instalada)
 
 ### ❌ Descartado
@@ -517,8 +559,9 @@ El QR de cada imán físico codifica `/[locale]/personajes/<slug>`. Una vez impr
 | perro | Perro | prehispanico | ✅ | ✅ | ✅ | ✅ |
 | diablos-de-lata | Diablos de lata | mestizo | ✅ | ✅ | ✅ | ✅ |
 
-> **Experiencia v2** = flag `experiencia: true` en el JSON → usa `HeroDespertar`. Requiere imágenes
-> completas; los 4 activos coinciden con los que tienen retrato + banner. Audio en `public/audio/`.
+> **Experiencia v2** = flag `experiencia: true` en el JSON → usa `HeroDespertar` (Fase 1) + `AnatomiaSection`
+> (Fase 4, si tiene `hotspots[]`). Requiere imágenes completas; los 4 activos coinciden con los que tienen
+> retrato + banner. Audio del hero en `public/audio/`. Hotspots: aya-uma 4, payaso 3, perro 3, diablos 4.
 
 Para agregar un personaje: editar `apps/web/lib/data/personajes.json` con la estructura existente.
 Para agregar imágenes: copiar a `public/personajes/` y actualizar `imagenPortada` / `imagenBanner` / `multimedia` en el JSON.
