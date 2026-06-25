@@ -47,9 +47,11 @@ Implicaciones técnicas:
 | Servicio | Plataforma | Notas |
 |---------|------------|-------|
 | Frontend (Next.js) | Railway | Único servicio activo |
-| Base de datos | Supabase | Reservada para Fase 3 (búsqueda semántica) |
+| Auth + colección | Supabase | **Activo** desde 2026-06-24 (desbloqueo de imanes) — magic-link + tablas `unlock_codes`/`user_unlocks` |
 
 **Todo en Railway.** No usar Vercel — decisión tomada para centralizar infraestructura.
+**Supabase ya no está "solo reservado":** lo usa el desbloqueo de imanes (auth + colección). El contenido
+sigue en JSON estático; Supabase entra solo en runtime para auth/colección. Ver decisión técnica abajo.
 
 ---
 
@@ -97,9 +99,12 @@ apps/web/
 │   │   ├── calendario/page.tsx     → Pases y Festividades
 │   │   ├── glosario/page.tsx
 │   │   ├── mapa/page.tsx
+│   │   ├── desbloquear/page.tsx    → ★ canje de código de 6 chars (desbloqueo de imán)
+│   │   ├── mis-personajes/page.tsx → ★ colección del usuario + progreso + logros
 │   │   └── sobre/page.tsx
 │   └── api/health/route.ts         → healthcheck Railway
 ├── components/                     → SOLO compartidos entre módulos
+│   ├── auth/                       → ColeccionProvider (sesión + colección Supabase, useColeccion/useDesbloqueo)
 │   ├── layout/                     → Header, Footer, MainContent (wrapper pt-16 + footer)
 │   └── ui/                         → FadeUp, AnimatedCounter, ScrollProgress, ScrollToTop,
 │                                     WhatsAppShare, OrigenPlaceholder, LenisProvider
@@ -107,12 +112,15 @@ apps/web/
 │   ├── home/components/            → HeroSection, PaseMapSection (recorrido), PersonajesShowcase,
 │   │                                 ProductoSection, OrigenesSection, StatsSection, MarqueeStrip, CtaFinal
 │   ├── personajes/components/      → PersonajeCard, ParallaxHero, HeroDespertar (★ hero v2 inmersivo),
+│   │                                 HeroGated/AnatomiaGated (★ gating por desbloqueo),
 │   │                                 AnatomiaSection (★ Fase 4 — hotspots scroll-driven),
 │   │                                 GaleriaSection (3 tabs), NarrativaSection, PersonajesCarrusel,
 │   │                                 HotspotsViewer (superseded por AnatomiaSection), SimbolismoSection (sin uso)
+│   ├── desbloqueo/components/      → DesbloquearForm, ColeccionClient (★ desbloqueo de imanes)
 │   ├── festividades/components/    → CalendarioGrid
 │   └── glosario/components/        → GlosarioClient
 ├── lib/
+│   ├── supabase/client.ts          → ★ cliente Supabase browser (auth + colección; null si faltan envs)
 │   ├── data.ts                     → ★ barrel — re-exporta lib/services/*
 │   ├── services/                   → personajes.service.ts (toPersonaje, merge multimedia),
 │   │                                 pases.service.ts, glosario.service.ts,
@@ -360,6 +368,13 @@ Modo oscuro por defecto.
   - Datos: `hotspots[]` en `personajes.json` (aya-uma 4, payaso 3, perro 3, diablos-de-lata 4), coords
     calibradas a la figura del imán y textos derivados de la narrativa/descripción ya autorizada
   - Gate: `experiencia && hotspots?.length && imagenPortada`; se inserta entre Historia y Galería
+- **Desbloqueo de imanes + colección sincronizada** (`feature/desbloqueo-coleccion-imanes`, 2026-06-24):
+  - Código de 6 caracteres bajo la tarjeta → canje atómico vía Supabase (RPC `redeem_code`) → colección por
+    cuenta (magic-link). El QR sigue navegando a la ficha pública (sin cambios). Ver decisión técnica abajo.
+  - Páginas `/desbloquear` y `/mis-personajes` (progreso + logros derivados); pestaña condicional en el nav.
+  - Ficha gated: experiencia inmersiva = premio del desbloqueo (`HeroGated`/`AnatomiaGated`); degrada a
+    "siempre visible" si Supabase no está configurado. ⚠ **Falta**: `pnpm install`, aplicar `supabase/schema.sql`,
+    sembrar códigos, y poner las envs Supabase en Railway. Cadenas kichwa nuevas **tentativas**.
 
 ### 🔄 Siguiente
 - **Merge PR #13** (`fix/hero-poster-y-map-reinit-race` → `main`) y redeploy en Railway
@@ -388,6 +403,51 @@ Modo oscuro por defecto.
 ---
 
 ## Decisiones técnicas clave
+
+### Desbloqueo de imanes + colección sincronizada (2026-06-24) ⚠
+Convierte la compra física en una experiencia que **sube de nivel**: cada tarjeta trae un **código de 6
+caracteres** impreso debajo; al canjearlo, el personaje entra a la **colección sincronizada por cuenta** del
+usuario y su ficha desbloquea la experiencia inmersiva. Branch: `feature/desbloqueo-coleccion-imanes`.
+- **El QR NO cambia.** Sigue navegando a la ficha pública (`/[locale]/personajes/[slug]`) — contrato intacto.
+  La **única llave de desbloqueo es el código de 6 caracteres** (vía accesible: se escribe a mano, sin cámara).
+- **⚠ Enciende Supabase en producción** (auth + colección). Se aparta del principio "todo estático / sin
+  backend"; es el costo de la sincronización entre dispositivos (decisión explícita del autor). El sitio
+  **sigue siendo SSG**: Supabase solo entra en runtime para auth y colección; el contenido sigue en JSON.
+- **Backend** (`supabase/schema.sql`, aplicar a mano en el proyecto Supabase):
+  - `unlock_codes` (catálogo de códigos; **sin policies RLS de lectura** → nunca se exponen al cliente).
+  - `user_unlocks` (colección por usuario; RLS: cada quien lee solo la suya).
+  - RPC `redeem_code(p_code)` `SECURITY DEFINER` → canje atómico (un solo `UPDATE ... WHERE redeemed_by IS
+    NULL`); devuelve status tipado: `ok` / `invalid` / `already_yours` / `already_redeemed_by_other` /
+    `not_authenticated`. **Toda validación es server-side.**
+- **Siembra de códigos:** `scripts/seed-codes.mjs` genera códigos únicos de 6 caracteres (alfabeto sin
+  ambiguos: sin `I/L/O/0/1`) por personaje e imprime un CSV `code,personaje_slug` para imprenta. Resuelve
+  `@supabase/supabase-js` vía `createRequire` anclado a `apps/web` (la dep no está en la raíz del workspace).
+  `node --env-file=.env.local scripts/seed-codes.mjs --count 20 --batch lote-1 > codes.csv` (`--dry-run` para
+  solo el CSV, sin tocar la DB).
+- **Cliente/estado:** `lib/supabase/client.ts` (degrada a `supabase=null` si faltan envs) +
+  `components/auth/ColeccionProvider.tsx` (`useColeccion()`, `useDesbloqueo(slug)`), montado en `layout.tsx`
+  dentro de `NextIntlClientProvider`. Cache en `localStorage` (`nunna:coleccion`) para hidratar sin parpadeo.
+  Auth: **magic-link** por email (`signInWithOtp`), sin contraseñas. El código pendiente se guarda
+  (`nunna:pending_code`) y el **formulario** lo canjea al volver del enlace (no el provider, para mostrar el
+  resultado). `emailRedirectTo` vuelve a `/desbloquear`.
+- **Gating de la ficha (degradación segura):** `HeroGated` y `AnatomiaGated` reemplazan a
+  `HeroDespertar`/`AnatomiaSection` directos. Lógica vía `useDesbloqueo(slug)`:
+  - Sin `experiencia` → `ParallaxHero` (igual que siempre).
+  - **Si Supabase no está configurado** (`gatingActive=false`) → muestra la experiencia inmersiva como hoy
+    (no rompe nada en builds sin envs). **En Railway hay que poner las envs o el gating queda apagado.**
+  - `experiencia` + desbloqueado → `HeroDespertar` + `AnatomiaSection`.
+  - `experiencia` + bloqueado → `ParallaxHero` (teaser) + CTA a `/desbloquear`; Anatomía oculta (no duplica CTA).
+  - **SSR-safe:** hasta `resolved` (mounted && ready) se renderiza el teaser, igual en server y primer paint
+    del cliente → sin mismatch de hidratación.
+- **Rutas nuevas** (`i18n/routing.ts`): `/desbloquear` y `/mis-personajes` (qu **tentativo**). La pestaña
+  "Mis personajes" en el `Header` aparece **condicional** cuando `coleccion.size > 0` (mantiene 1 fila).
+- **Logros derivados, no almacenados:** `/mis-personajes` calcula insignias cruzando la colección con el
+  campo `origen` de `personajes.json` (completar un origen, juntar los 9). Progreso con barra.
+- **i18n:** namespaces nuevos `desbloquear` / `coleccion` / `logros` + `nav.mis_personajes` en es/qu/en
+  (kichwa **tentativo**, revisar con hablante nativo).
+- **Pendiente de despliegue:** `pnpm install` (añade `@supabase/supabase-js`), aplicar el SQL, sembrar
+  códigos, poner `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` en Railway, y permitir la URL de
+  prod como redirect del magic-link en Supabase → Auth.
 
 ### Experiencia inmersiva v2 — hero "Despertar" (2026-06-22)
 Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling inmersivo
@@ -587,6 +647,10 @@ pnpm --filter @seres-del-pase/web type-check         # verificar tipos
 # Recorrido del mapa — snap de rutas a calles (OSRM). Correr tras editar
 # coords ancla de waypoints en recorrido.json. Necesita red; no toca runtime.
 node scripts/build-route.mjs
+
+# Desbloqueo de imanes — sembrar códigos de 6 caracteres en Supabase (genera CSV para imprenta).
+# Requiere SUPABASE_SERVICE_ROLE_KEY. --dry-run = solo CSV, sin tocar la DB.
+node --env-file=.env.local scripts/seed-codes.mjs --count 20 --batch lote-1 > codes.csv
 
 # Prisma (Fase 3)
 ./apps/api/node_modules/.bin/prisma generate --schema=prisma/schema.prisma

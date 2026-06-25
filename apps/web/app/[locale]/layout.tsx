@@ -8,6 +8,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MainContent } from "@/components/layout/MainContent";
 import { LenisProvider } from "@/components/ui/LenisProvider";
+import { ColeccionProvider } from "@/components/auth/ColeccionProvider";
 import "@/styles/globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -83,10 +84,12 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           Saltar al contenido
         </a>
         <NextIntlClientProvider messages={messages}>
-          <LenisProvider>
-            <Header />
-            <MainContent footer={<Footer />}>{children}</MainContent>
-          </LenisProvider>
+          <ColeccionProvider>
+            <LenisProvider>
+              <Header />
+              <MainContent footer={<Footer />}>{children}</MainContent>
+            </LenisProvider>
+          </ColeccionProvider>
         </NextIntlClientProvider>
       </body>
     </html>
