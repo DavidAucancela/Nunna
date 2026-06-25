@@ -24,10 +24,22 @@ export function AnatomiaSection({ imagen, hotspots, accentColor, nombre }: Anato
   const reduced = useReducedMotion();
   const t = useTranslations("anatomia");
   const [activeIdx, setActiveIdx] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const chipRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  // Activación secuencial: una franja delgada en el centro del viewport decide
-  // qué bloque (y por tanto qué pin) está activo. Sin transforms ligados al scroll.
+  // En el layout apilado (<lg) el visual va sticky arriba; en escritorio es de 2 columnas.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  // Activación secuencial: una línea del viewport decide qué bloque (y por tanto qué
+  // pin) está activo. Sin transforms ligados al scroll. En móvil la línea va más abajo
+  // (≈66%) para que el texto activo caiga DEBAJO del visual sticky, no oculto tras él.
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => {
@@ -38,11 +50,24 @@ export function AnatomiaSection({ imagen, hotspots, accentColor, nombre }: Anato
           }
         }
       },
-      { rootMargin: "-50% 0px -50% 0px", threshold: 0 },
+      {
+        rootMargin: isMobile ? "-66% 0px -34% 0px" : "-50% 0px -50% 0px",
+        threshold: 0,
+      },
     );
     stepRefs.current.forEach((el) => el && obs.observe(el));
     return () => obs.disconnect();
-  }, [hotspots.length]);
+  }, [hotspots.length, isMobile]);
+
+  // En móvil, mantener visible el chip activo dentro del mini-nav de scroll horizontal.
+  useEffect(() => {
+    if (!isMobile) return;
+    chipRefs.current[activeIdx]?.scrollIntoView({
+      behavior: reduced ? "auto" : "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [activeIdx, isMobile, reduced]);
 
   function goTo(i: number) {
     stepRefs.current[i]?.scrollIntoView({
@@ -68,7 +93,7 @@ export function AnatomiaSection({ imagen, hotspots, accentColor, nombre }: Anato
         <div className="lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
           {/* ── Visual sticky con pines ── */}
           <div className="sticky top-16 z-10 -mx-5 mb-2 self-start bg-fondo-oscuro/80 px-5 pb-4 pt-2 backdrop-blur-sm sm:mx-0 sm:px-0 sm:backdrop-blur-none lg:top-24 lg:bg-transparent lg:pb-0">
-            <div className="relative mx-auto h-[40vh] w-full max-w-xs sm:h-[46vh] lg:h-[72vh] lg:max-w-none">
+            <div className="relative mx-auto h-[32vh] w-full max-w-[15rem] sm:h-[40vh] sm:max-w-xs lg:h-[72vh] lg:max-w-none">
               <Image
                 src={imagen.url}
                 alt={imagen.altText}
@@ -119,14 +144,17 @@ export function AnatomiaSection({ imagen, hotspots, accentColor, nombre }: Anato
               })}
             </div>
 
-            {/* Mini-nav de elementos (debajo del visual) */}
-            <div className="mt-3 flex flex-wrap justify-center gap-2 lg:mt-5">
+            {/* Mini-nav de elementos (debajo del visual) — fila con scroll en móvil */}
+            <div className="mt-3 flex snap-x gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:mt-5 lg:flex-wrap lg:justify-center lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden">
               {hotspots.map((h, i) => (
                 <button
                   key={h.id}
                   type="button"
+                  ref={(el) => {
+                    chipRefs.current[i] = el;
+                  }}
                   onClick={() => goTo(i)}
-                  className="rounded-full border px-3 py-1 text-[11px] transition-colors"
+                  className="flex-none snap-center whitespace-nowrap rounded-full border px-3 py-1 text-[11px] transition-colors"
                   style={{
                     borderColor: i === activeIdx ? `${accentColor}60` : "rgb(var(--borde-sutil))",
                     color: i === activeIdx ? accentColor : "rgb(var(--stone-500))",
@@ -148,7 +176,7 @@ export function AnatomiaSection({ imagen, hotspots, accentColor, nombre }: Anato
                 ref={(el) => {
                   stepRefs.current[i] = el;
                 }}
-                className="flex min-h-[58vh] flex-col justify-center py-8 lg:min-h-[72vh]"
+                className="flex min-h-[52vh] flex-col justify-center py-6 sm:py-8 lg:min-h-[72vh]"
               >
                 <motion.div
                   initial={reduced ? false : { opacity: 0, y: 16 }}
