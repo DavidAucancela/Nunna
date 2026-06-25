@@ -8,7 +8,6 @@ import { ParallaxHero } from "@/modules/personajes/components/ParallaxHero";
 import { HeroDespertar } from "@/modules/personajes/components/HeroDespertar";
 import { AnatomiaSection } from "@/modules/personajes/components/AnatomiaSection";
 import { GaleriaSection } from "@/modules/personajes/components/GaleriaSection";
-import { PersonajesCarrusel } from "@/modules/personajes/components/PersonajesCarrusel";
 import { FadeUp } from "@/components/ui/FadeUp";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
 
@@ -45,9 +44,8 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   const { slug, locale } = await params;
   setRequestLocale(locale);
 
-  const [personaje, todosLosPersonajes, t] = await Promise.all([
+  const [personaje, t] = await Promise.all([
     getPersonaje(slug, locale),
-    getPersonajes({ locale }),
     getTranslations({ locale, namespace: "historia" }),
   ]);
 
@@ -57,7 +55,6 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   const imagenBanner = personaje.imagenBanner
     ? { url: personaje.imagenBanner, altText: `${personaje.nombre} — Nunna` }
     : undefined;
-  const otrosPersonajes = todosLosPersonajes.filter((p) => p.slug !== slug && !!p.imagenPortada);
   const style = getOrigenStyle(personaje.origen);
 
   return (
@@ -267,29 +264,6 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         accentColor={style.accentColor}
         nombre={personaje.nombre}
       />
-
-      {/* ── 6. Grid de personajes ── */}
-      {otrosPersonajes.length > 0 && (
-        <FadeUp>
-          <section className="border-t border-borde-sutil px-5 py-16 sm:px-6 sm:py-20">
-            <div className="mx-auto max-w-4xl">
-              <div className="mb-10 text-center">
-                <p
-                  className="text-xs uppercase tracking-[0.2em] mb-2"
-                  style={{ color: style.accentColor }}
-                >
-                  Más personajes del pase
-                </p>
-                <h2 className="font-serif text-2xl font-bold text-texto-claro sm:text-3xl">
-                  Conoce a los otros personajes
-                </h2>
-              </div>
-
-              <PersonajesCarrusel personajes={otrosPersonajes} />
-            </div>
-          </section>
-        </FadeUp>
-      )}
     </article>
   );
 }
