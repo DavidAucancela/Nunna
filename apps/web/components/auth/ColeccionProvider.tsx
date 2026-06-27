@@ -6,10 +6,14 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase, supabaseEnabled } from "@/lib/supabase/client";
+
+/** Formato del código impreso: 6 caracteres alfanuméricos en mayúsculas. */
+export const CODE_RE = /^[A-Z0-9]{6}$/;
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -81,6 +85,8 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
   );
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(!supabaseEnabled);
+  // Secuencia para descartar respuestas obsoletas de cargas concurrentes (latest-wins).
+  const loadSeqRef = useRef(0);
 
   const applyColeccion = useCallback((slugs: string[]) => {
     setColeccion(new Set(slugs));
@@ -89,7 +95,10 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
 
   const loadColeccion = useCallback(async () => {
     if (!supabase) return;
+    const seq = ++loadSeqRef.current;
     const { data, error } = await supabase.from("user_unlocks").select("personaje_slug");
+    // Si llegó una carga más nueva mientras esperábamos, ignorar este resultado.
+    if (seq !== loadSeqRef.current) return;
     if (!error && data) {
       applyColeccion(data.map((r) => r.personaje_slug as string));
     }
@@ -99,48 +108,50 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
     async (code: string): Promise<RedeemResult> => {
       if (!supabase) return { status: "not_configured" };
       const normalized = code.trim().toUpperCase();
-      const { data, error } = await supabase.rpc("redeem_code", { p_code: normalized });
-      if (error) return { status: "error" };
-      const row = (Array.isArray(data) ? data[0] : data) as
-        | { status?: string; personaje_slug?: string }
-        | null
-        | undefined;
-      const status = (row?.status ?? "error") as RedeemStatus;
-      const slug = row?.personaje_slug ?? undefined;
-      if ((status === "ok" || status === "already_yours") && slug) {
-        setColeccion((prev) => {
-          const next = new Set(prev).add(slug);
-          writeCache([...next]);
-          return next;
-        });
+      // Validación de formato antes de la red: evita llamadas inútiles a la RPC.
+      if (!CODE_RE.test(normalized)) return { status: "invalid" };
+      try {
+        const { data, error } = await supabase.rpc("redeem_code", { p_code: normalized });
+        if (error) return { status: "error" };
+        const row = (Array.isArray(data) ? data[0] : data) as
+          | { status?: string; personaje_slug?: string }
+          | null
+          | undefined;
+        const status = (row?.status ?? "error") as RedeemStatus;
+        const slug = row?.personaje_slug ?? undefined;
+        if ((status === "ok" || status === "already_yours") && slug) {
+          setColeccion((prev) => {
+            const next = new Set(prev).add(slug);
+            writeCache([...next]);
+            return next;
+          });
+        }
+        return { status, slug };
+      } catch {
+        // Fallo de red/timeout: nunca lanzamos, devolvemos un estado controlado.
+        return { status: "error" };
       }
-      return { status, slug };
     },
     [],
   );
 
-  // Carga inicial + escucha de cambios de auth.
+  // Fuente única de verdad de la sesión: onAuthStateChange emite INITIAL_SESSION al
+  // suscribirse (con la sesión actual o null), así evitamos un getSession en paralelo
+  // que dispararía dos cargas de colección a la vez. `active` solo apaga efectos tras
+  // desmontar; el estado `ready` se resuelve en el primer evento.
   useEffect(() => {
     if (!supabase) return;
     let active = true;
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (!active) return;
-      setSession(data.session);
-      if (data.session) loadColeccion().finally(() => active && setReady(true));
-      else {
-        applyColeccion([]);
-        setReady(true);
-      }
-    });
-
     const { data: sub } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (!active) return;
       setSession(newSession);
       if (newSession) {
-        loadColeccion();
-      } else if (event === "SIGNED_OUT") {
+        if (event === "INITIAL_SESSION" || event === "SIGNED_IN") loadColeccion();
+      } else {
         applyColeccion([]);
       }
+      setReady(true);
     });
 
     return () => {

@@ -154,6 +154,7 @@
     "error_ya_tuyo": "You already have this being in your collection.",
     "error_ya_canjeado": "This code was already redeemed by another account.",
     "error_email": "We couldn't send the link. Check your email and try again.",
+    "email_requerido": "Enter your email to save your collection.",
     "error_generico": "Something went wrong. Please try again.",
     "no_configurado": "Unlocking isn't available right now.",
     "no_camara": "No camera access? Type the code by hand — it's the most accessible way.",

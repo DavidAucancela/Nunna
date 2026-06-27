@@ -154,6 +154,7 @@
     "error_ya_tuyo": "Ya tienes a este ser en tu colección.",
     "error_ya_canjeado": "Este código ya fue canjeado por otra cuenta.",
     "error_email": "No pudimos enviar el enlace. Revisa tu correo e inténtalo de nuevo.",
+    "email_requerido": "Ingresa tu correo para guardar tu colección.",
     "error_generico": "Algo salió mal. Inténtalo de nuevo.",
     "no_configurado": "El desbloqueo no está disponible en este momento.",
     "no_camara": "¿Sin acceso a la cámara? Escribe el código a mano: es la forma más accesible.",

@@ -9,6 +9,7 @@ import {
   useColeccion,
   setPendingCode,
   consumePendingCode,
+  CODE_RE,
   type RedeemResult,
 } from "@/components/auth/ColeccionProvider";
 
@@ -22,7 +23,6 @@ export interface PersonajeLite {
 type Phase = "form" | "sending" | "link_sent" | "redeeming" | "success";
 
 const CODE_LEN = 6;
-const CODE_RE = /^[A-Z0-9]{6}$/;
 
 export function DesbloquearForm({ personajes }: { personajes: PersonajeLite[] }) {
   const t = useTranslations("desbloquear");
@@ -35,10 +35,24 @@ export function DesbloquearForm({ personajes }: { personajes: PersonajeLite[] })
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [unlockedSlug, setUnlockedSlug] = useState<string | null>(null);
   const autoTriedRef = useRef(false);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  // Si la sesión se cierra, permitir que un futuro login vuelva a auto-canjear.
+  useEffect(() => {
+    if (!session) autoTriedRef.current = false;
+  }, [session]);
 
   const unlocked = unlockedSlug ? personajes.find((p) => p.slug === unlockedSlug) ?? null : null;
 
   const handleResult = useCallback((result: RedeemResult) => {
+    if (!mountedRef.current) return; // no actualizar estado tras desmontar
     switch (result.status) {
       case "ok":
       case "already_yours":
@@ -97,12 +111,17 @@ export function DesbloquearForm({ personajes }: { personajes: PersonajeLite[] })
       return;
     }
 
-    // Sin sesión: guardar el código y enviar el magic-link.
-    if (!email.trim()) return;
+    // Sin sesión: se necesita el correo para guardar la colección.
+    if (!email.trim()) {
+      setErrorKey("email_requerido");
+      return;
+    }
     setPhase("sending");
     setPendingCode(normalized);
     const err = await signInWithEmail(email.trim());
     if (err) {
+      // El enlace no se envió: no dejar el código pendiente colgado en storage.
+      consumePendingCode();
       setErrorKey("error_email");
       setPhase("form");
       return;
