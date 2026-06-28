@@ -368,25 +368,25 @@ Modo oscuro por defecto.
   - Datos: `hotspots[]` en `personajes.json` (aya-uma 4, payaso 3, perro 3, diablos-de-lata 4), coords
     calibradas a la figura del imán y textos derivados de la narrativa/descripción ya autorizada
   - Gate: `experiencia && hotspots?.length && imagenPortada`; se inserta entre Historia y Galería
-- **Desbloqueo de imanes + colección sincronizada** (`feature/desbloqueo-coleccion-imanes`, 2026-06-24):
+- **Desbloqueo de imanes + colección sincronizada** (PR #25/#26, desplegado 2026-06-28):
   - Código de 6 caracteres bajo la tarjeta → canje atómico vía Supabase (RPC `redeem_code`) → colección por
     cuenta (magic-link). El QR sigue navegando a la ficha pública (sin cambios). Ver decisión técnica abajo.
   - Páginas `/desbloquear` y `/mis-personajes` (progreso + logros derivados); pestaña condicional en el nav.
-  - Ficha gated: experiencia inmersiva = premio del desbloqueo (`HeroGated`/`AnatomiaGated`); degrada a
-    "siempre visible" si Supabase no está configurado. ⚠ **Falta**: `pnpm install`, aplicar `supabase/schema.sql`,
-    sembrar códigos, y poner las envs Supabase en Railway. Cadenas kichwa nuevas **tentativas**.
+  - Ficha gated: experiencia inmersiva = premio del desbloqueo (`HeroGated`/`AnatomiaGated`).
+  - **En producción:** schema aplicado, lote-1 sembrado, envs en Railway, redirect en Supabase Auth configurado.
+  - Cadenas kichwa de namespaces `desbloquear`/`coleccion`/`logros` **tentativas** — revisar con hablante nativo.
+- **CI arreglado** (2026-06-28): conflicto de versión pnpm resuelto + `.eslintrc.json` añadido al web app +
+  lint/type-check acotado a `@seres-del-pase/web` (la API NestJS no tiene config ESLint).
 
 ### 🔄 Siguiente
-- **Merge PR #13** (`fix/hero-poster-y-map-reinit-race` → `main`) y redeploy en Railway
-- **Recorrido — datos reales** de Mercado Santa Rosa y Niño Rey de la Paz: coords ancla exactas
-  (hoy aproximadas), qué personajes desfilan en cada uno, y fotos propias (hoy reusan las existentes).
-  Tras editar coords: correr `node scripts/build-route.mjs`
-- Añadir los demás pases de `pases.json` al recorrido (hoy 3 de ~10)
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
 - Fotografías reales "En el pase" (`titulo: "en-pase"`) y del imán físico (`titulo: "proceso"`) para la galería
-- **Experiencia v2** — colocar los 4 audios reales en `public/audio/`; revisar cadenas kichwa del namespace
-  `experiencia` con hablante nativo; continuar Fases 2-12 (identidad/ficha viva, cosmovisión rostro dual,
-  anatomía con `HotspotsViewer`, números con `AnimatedCounter`, etc.)
+- **Audios reales** del hero v2 en `public/audio/` (4 archivos: `[slug]-ambiente.mp3` por personaje con `experiencia: true`)
+- **Revisar kichwa** de namespaces `desbloquear`/`coleccion`/`logros`/`experiencia`/`anatomia` con hablante nativo
+- **Recorrido — datos reales** de Mercado Santa Rosa y Niño Rey de la Paz: coords ancla exactas, personajes que
+  desfilan, fotos propias. Tras editar coords en `recorrido.json`: `node scripts/build-route.mjs`
+- Añadir los demás pases de `pases.json` al recorrido (hoy 3 de ~10)
+- **Experiencia v2** — Fases 2, 3, 5-12 del plan de 12 fases (Fases 1 y 4 ya implementadas)
 
 ### ⏳ Fase 2
 - Modo claro/oscuro ✅ (toggle junto a los idiomas, commit `58c591e`)
@@ -404,7 +404,7 @@ Modo oscuro por defecto.
 
 ## Decisiones técnicas clave
 
-### Desbloqueo de imanes + colección sincronizada (2026-06-24) ⚠
+### Desbloqueo de imanes + colección sincronizada (desplegado 2026-06-28)
 Convierte la compra física en una experiencia que **sube de nivel**: cada tarjeta trae un **código de 6
 caracteres** impreso debajo; al canjearlo, el personaje entra a la **colección sincronizada por cuenta** del
 usuario y su ficha desbloquea la experiencia inmersiva. Branch: `feature/desbloqueo-coleccion-imanes`.
@@ -445,9 +445,9 @@ usuario y su ficha desbloquea la experiencia inmersiva. Branch: `feature/desbloq
   campo `origen` de `personajes.json` (completar un origen, juntar los 9). Progreso con barra.
 - **i18n:** namespaces nuevos `desbloquear` / `coleccion` / `logros` + `nav.mis_personajes` en es/qu/en
   (kichwa **tentativo**, revisar con hablante nativo).
-- **Pendiente de despliegue:** `pnpm install` (añade `@supabase/supabase-js`), aplicar el SQL, sembrar
-  códigos, poner `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` en Railway, y permitir la URL de
-  prod como redirect del magic-link en Supabase → Auth.
+- **Despliegue completado (2026-06-28):** schema SQL aplicado en Supabase, lote-1 de códigos sembrado,
+  `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` configuradas en Railway, URL de producción
+  (`https://nunnaec-production.up.railway.app/**`) permitida como redirect del magic-link en Supabase Auth.
 
 ### Experiencia inmersiva v2 — hero "Despertar" (2026-06-22)
 Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling inmersivo

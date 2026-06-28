@@ -49,3 +49,7 @@ coverage/
 apps/web/public/pases-videos/video_main_header.mp4
 apps/web/public/pases-videos/pases_personsajes.mp4
 apps/web/public/pases-videos/AQPBd*.mp4
+
+# Códigos de desbloqueo para imprenta — datos sensibles, no commitear
+codes.csv
+codes-*.csv
