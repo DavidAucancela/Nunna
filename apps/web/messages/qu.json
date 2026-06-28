@@ -160,7 +160,12 @@
     "no_camara": "¿Mana cámara tiyanchu? Códigota makiwan qillqay: aswan allin ñan.",
     "ficha_titulo": "{nombre}-ta rikcharichiy",
     "ficha_texto": "Kartaykipa urapi códigota churay, paypa tukuy experienciata kawsankapak.",
-    "ficha_boton": "Paskay"
+    "ficha_boton": "Paskay",
+    "verificar": "Código hatun watuchina",
+    "verificando": "Watuchikushpa…",
+    "enlace_expirado": "Wichay chinkarka. Kuti código churay shuk wichay japingapak.",
+    "volver_codigo": "Código tikrachina",
+    "cambiar": "Tikrachina"
   },
   "coleccion": {
     "titulo": "Ñuka runakuna",

@@ -160,7 +160,12 @@
     "no_camara": "No camera access? Type the code by hand — it's the most accessible way.",
     "ficha_titulo": "Awaken {nombre}",
     "ficha_texto": "Enter the code under your card to live its full experience.",
-    "ficha_boton": "Unlock"
+    "ficha_boton": "Unlock",
+    "verificar": "Verify code",
+    "verificando": "Verifying…",
+    "enlace_expirado": "The link has expired. Enter your code again to receive a new one.",
+    "volver_codigo": "Change code or email",
+    "cambiar": "Change"
   },
   "coleccion": {
     "titulo": "My characters",

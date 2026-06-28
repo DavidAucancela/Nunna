@@ -45,6 +45,8 @@ interface ColeccionContextValue {
   /** Envía un magic-link al email. Devuelve un mensaje de error o null si ok. */
   signInWithEmail: (email: string) => Promise<string | null>;
   signOut: () => Promise<void>;
+  /** Verifica si un código existe y está sin canjear (sin auth, paso previo al magic-link). */
+  checkCodeValid: (code: string) => Promise<boolean>;
   /** Canjea un código de 6 caracteres. Requiere sesión. */
   redeemCode: (code: string) => Promise<RedeemResult>;
   /** Recarga la colección desde Supabase. */
@@ -103,6 +105,18 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
       applyColeccion(data.map((r) => r.personaje_slug as string));
     }
   }, [applyColeccion]);
+
+  const checkCodeValid = useCallback(async (code: string): Promise<boolean> => {
+    if (!supabase) return false;
+    const normalized = code.trim().toUpperCase();
+    if (!CODE_RE.test(normalized)) return false;
+    try {
+      const { data } = await supabase.rpc("check_code_valid", { p_code: normalized });
+      return data === true;
+    } catch {
+      return false;
+    }
+  }, []);
 
   const redeemCode = useCallback(
     async (code: string): Promise<RedeemResult> => {
@@ -187,10 +201,11 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
       has,
       signInWithEmail,
       signOut,
+      checkCodeValid,
       redeemCode,
       refrescar: loadColeccion,
     }),
-    [ready, session, coleccion, has, signInWithEmail, signOut, redeemCode, loadColeccion],
+    [ready, session, coleccion, has, signInWithEmail, signOut, checkCodeValid, redeemCode, loadColeccion],
   );
 
   return <ColeccionContext.Provider value={value}>{children}</ColeccionContext.Provider>;

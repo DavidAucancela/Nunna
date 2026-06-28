@@ -160,7 +160,12 @@
     "no_camara": "¿Sin acceso a la cámara? Escribe el código a mano: es la forma más accesible.",
     "ficha_titulo": "Despierta a {nombre}",
     "ficha_texto": "Ingresa el código bajo tu tarjeta para vivir su experiencia completa.",
-    "ficha_boton": "Desbloquear"
+    "ficha_boton": "Desbloquear",
+    "verificar": "Verificar código",
+    "verificando": "Verificando…",
+    "enlace_expirado": "El enlace expiró. Vuelve a ingresar tu código para recibir uno nuevo.",
+    "volver_codigo": "Cambiar código o correo",
+    "cambiar": "Cambiar"
   },
   "coleccion": {
     "titulo": "Mis personajes",

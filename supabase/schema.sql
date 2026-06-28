@@ -120,3 +120,26 @@ $$;
 -- Solo usuarios autenticados pueden canjear.
 revoke all on function public.redeem_code(text) from public;
 grant execute on function public.redeem_code(text) to authenticated;
+
+-- ── RPC de pre-validación (sin auth) ─────────────────────────────────────────
+-- Comprueba si un código existe y está sin canjear, ANTES de pedir el correo.
+-- Devuelve true/false. No revela el personaje_slug ni datos del código.
+-- Accesible sin sesión (anon) — la RLS de unlock_codes sigue bloqueando SELECT directo.
+
+create or replace function public.check_code_valid(p_code text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists(
+    select 1 from public.unlock_codes
+    where code = upper(btrim(p_code))
+      and redeemed_by is null
+  );
+$$;
+
+revoke all on function public.check_code_valid(text) from public;
+grant execute on function public.check_code_valid(text) to anon;
+grant execute on function public.check_code_valid(text) to authenticated;
