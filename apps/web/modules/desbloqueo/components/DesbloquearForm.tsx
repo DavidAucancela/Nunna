@@ -34,7 +34,13 @@ type Phase = "code" | "checking" | "email" | "sending" | "link_sent" | "redeemin
 
 const CODE_LEN = 6;
 
-export function DesbloquearForm({ personajes }: { personajes: PersonajeLite[] }) {
+export function DesbloquearForm({
+  personajes,
+  personajeActivo,
+}: {
+  personajes: PersonajeLite[];
+  personajeActivo?: PersonajeLite;
+}) {
   const t = useTranslations("desbloquear");
   const tc = useTranslations("coleccion");
   const { ready, gatingActive, session, signInWithEmail, checkCodeValid, redeemCode } = useColeccion();
@@ -72,7 +78,10 @@ export function DesbloquearForm({ personajes }: { personajes: PersonajeLite[] })
     if (!session) autoTriedRef.current = false;
   }, [session]);
 
-  const unlocked = unlockedSlug ? (personajes.find((p) => p.slug === unlockedSlug) ?? null) : null;
+  // Personaje desbloqueado: el que devolvió el canje, con fallback al activo de contexto.
+  const unlocked =
+    (unlockedSlug ? (personajes.find((p) => p.slug === unlockedSlug) ?? null) : null) ??
+    (phase === "success" ? (personajeActivo ?? null) : null);
 
   const handleResult = useCallback((result: RedeemResult) => {
     if (!mountedRef.current) return;

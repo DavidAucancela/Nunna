@@ -42,6 +42,12 @@ export const routing = defineRouting({
       qu: "/paskay",
       en: "/unlock",
     },
+    // Landing de desbloqueo por personaje — destino del QR impreso en la tarjeta.
+    "/desbloquear/[slug]": {
+      es: "/desbloquear/[slug]",
+      qu: "/paskay/[slug]",
+      en: "/unlock/[slug]",
+    },
     "/mis-personajes": {
       es: "/mis-personajes",
       qu: "/nuka-runakuna",

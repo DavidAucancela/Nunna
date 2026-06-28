@@ -165,7 +165,11 @@
     "verificando": "Verifying…",
     "enlace_expirado": "The link has expired. Enter your code again to receive a new one.",
     "volver_codigo": "Change code or email",
-    "cambiar": "Change"
+    "cambiar": "Change",
+    "desbloquear_personaje": "Unlock {nombre}",
+    "subtitulo_personaje": "Enter the code under your {nombre} card to unlock the full experience.",
+    "explorar_sin_desbloquear": "Just want to explore?",
+    "ver_ficha": "View {nombre} full page"
   },
   "coleccion": {
     "titulo": "My characters",

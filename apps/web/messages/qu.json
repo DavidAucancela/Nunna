@@ -165,7 +165,11 @@
     "verificando": "Watuchikushpa…",
     "enlace_expirado": "Wichay chinkarka. Kuti código churay shuk wichay japingapak.",
     "volver_codigo": "Código tikrachina",
-    "cambiar": "Tikrachina"
+    "cambiar": "Tikrachina",
+    "desbloquear_personaje": "{nombre} paskana",
+    "subtitulo_personaje": "{nombre} tarjeta uray código churay tukuy kawsayta japingapak.",
+    "explorar_sin_desbloquear": "¿Yachankichu?",
+    "ver_ficha": "{nombre} rikunapak"
   },
   "coleccion": {
     "titulo": "Ñuka runakuna",
