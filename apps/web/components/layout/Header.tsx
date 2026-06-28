@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { useColeccion } from "@/components/auth/ColeccionProvider";
 
 const NAV_LINKS = [
   { key: "pases",      href: "/pases" },
@@ -27,6 +28,12 @@ export function Header() {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
   const [langOpen, setLangOpen] = useState(false);
+  const { coleccion } = useColeccion();
+
+  // "Mis personajes" aparece una vez que el usuario desbloquea su primer ser.
+  const navLinks = coleccion.size > 0
+    ? [...NAV_LINKS, { key: "mis_personajes", href: "/mis-personajes" } as const]
+    : NAV_LINKS;
 
   const switchLocale = (code: string) => {
     const segments = rawPathname.split("/");
@@ -48,7 +55,7 @@ export function Header() {
 
         {/* Nav — las 3 secciones, visibles en móvil y escritorio */}
         <nav className="flex items-center gap-4 md:gap-6">
-          {NAV_LINKS.map(({ key, href }) => {
+          {navLinks.map(({ key, href }) => {
             const active = isActive(href);
             return (
               <Link

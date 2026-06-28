@@ -36,5 +36,16 @@ export const routing = defineRouting({
       qu: "/imamanta",
       en: "/about",
     },
+    // Desbloqueo por código de 6 caracteres (cadenas qu tentativas — revisar con hablante).
+    "/desbloquear": {
+      es: "/desbloquear",
+      qu: "/paskay",
+      en: "/unlock",
+    },
+    "/mis-personajes": {
+      es: "/mis-personajes",
+      qu: "/nuka-runakuna",
+      en: "/my-characters",
+    },
   },
 });
