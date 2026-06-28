@@ -38,7 +38,7 @@ export default function SobrePage() {
 
         <div className="border-l-2 border-acento-dorado pl-6">
           <p className="text-stone-300">
-            "Aya Uma antes que Diablo Huma. Los nombres importan porque los nombres son memoria."
+            &ldquo;Aya Uma antes que Diablo Huma. Los nombres importan porque los nombres son memoria.&rdquo;
           </p>
         </div>
 
