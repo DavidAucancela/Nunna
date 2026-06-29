@@ -67,15 +67,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`dark ${fraunces.variable}`} suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "(function(){try{var t=localStorage.getItem('theme');var d=document.documentElement;if(t==='light'){d.classList.remove('dark')}else{d.classList.add('dark')}}catch(e){}})()",
-          }}
-        />
-      </head>
+    <html lang={locale} className={`dark ${fraunces.variable}`}>
       <body className="bg-fondo-oscuro text-texto-claro antialiased">
         <a
           href="#main-content"

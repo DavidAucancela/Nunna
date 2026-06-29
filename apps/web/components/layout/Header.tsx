@@ -5,7 +5,6 @@ import { useParams, usePathname as useRawPathname, useRouter as useNextRouter } 
 import { useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useColeccion } from "@/components/auth/ColeccionProvider";
 
 const NAV_LINKS = [
@@ -143,8 +142,6 @@ export function Header() {
             </AnimatePresence>
           </div>
 
-          {/* Conmutador de tema claro/oscuro */}
-          <ThemeToggle />
         </div>
       </div>
     </header>
