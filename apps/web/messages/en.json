@@ -100,7 +100,9 @@
     "compartir_whatsapp": "Share on WhatsApp",
     "compartir_mensaje": "I discovered the secret of {nombre} 🔑\n\n\"{secreto}\"\n\n— Only for Nunna magnet holders ✨",
     "cta_qr_titulo": "The full story of {nombre} is in the magnet.",
-    "cta_qr_boton": "See the full experience"
+    "cta_qr_boton": "See the full experience",
+    "coleccion_eyebrow": "Collection",
+    "coleccion_titulo": "Meet the other beings"
   },
   "comun": {
     "cargando": "Loading…",

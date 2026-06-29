@@ -100,7 +100,9 @@
     "compartir_whatsapp": "WhatsApp apiy",
     "compartir_mensaje": "{nombre} paktay tarirqani 🔑\n\n\"{secreto}\"\n\n— Nunna imanta charikkuna pilla ✨",
     "cta_qr_titulo": "{nombre} tukuy pakta imánpicha.",
-    "cta_qr_boton": "Tukuyta qhaway"
+    "cta_qr_boton": "Tukuyta qhaway",
+    "coleccion_eyebrow": "Tantanakuy",
+    "coleccion_titulo": "Shuk runakuna rijsinki"
   },
   "comun": {
     "cargando": "Yaykumuchkani…",
