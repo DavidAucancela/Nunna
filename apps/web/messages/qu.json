@@ -102,7 +102,9 @@
     "cta_qr_titulo": "{nombre} tukuy pakta imánpicha.",
     "cta_qr_boton": "Tukuyta qhaway",
     "coleccion_eyebrow": "Tantanakuy",
-    "coleccion_titulo": "Shuk runakuna rijsinki"
+    "coleccion_titulo": "Shuk runakuna rijsinki",
+    "cuando_eyebrow": "Pawkarkuna ukupi",
+    "cuando_titulo": "Maypi ima pacha rinakunchi"
   },
   "comun": {
     "cargando": "Yaykumuchkani…",

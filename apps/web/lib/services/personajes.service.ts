@@ -47,6 +47,7 @@ function toPersonaje(p: PersonajeRaw): Personaje {
   if ("imagenBanner" in p && p.imagenBanner) personaje.imagenBanner = p.imagenBanner as string;
   if ("experiencia" in p && p.experiencia) personaje.experiencia = p.experiencia as boolean;
   if ("audioAmbiente" in p && p.audioAmbiente) personaje.audioAmbiente = p.audioAmbiente as string;
+  if ("artesanoFirma" in p && p.artesanoFirma) personaje.artesanoFirma = p.artesanoFirma as string;
   if (p.hotspots?.length) personaje.hotspots = p.hotspots as Hotspot[];
   return personaje;
 }

@@ -13,9 +13,10 @@ interface NarrativaSectionProps {
   secreto: string;
   capitulos: Capitulo[];
   accentColor: string;
+  artesanoFirma?: string;
 }
 
-export function NarrativaSection({ leyenda, secreto, capitulos, accentColor }: NarrativaSectionProps) {
+export function NarrativaSection({ leyenda, secreto, capitulos, accentColor, artesanoFirma }: NarrativaSectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [secretoVisible, setSecretoVisible] = useState(false);
   const reduced = useReducedMotion();
@@ -220,6 +221,11 @@ export function NarrativaSection({ leyenda, secreto, capitulos, accentColor }: N
                   className="text-base leading-relaxed text-stone-300"
                 >
                   {secreto}
+                  {artesanoFirma && (
+                    <span className="mt-3 block text-right text-xs italic text-stone-600">
+                      · {artesanoFirma}
+                    </span>
+                  )}
                 </motion.p>
               )}
             </AnimatePresence>

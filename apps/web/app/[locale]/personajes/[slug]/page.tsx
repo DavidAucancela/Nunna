@@ -8,7 +8,9 @@ import { HeroGated } from "@/modules/personajes/components/HeroGated";
 import { AnatomiaGated } from "@/modules/personajes/components/AnatomiaGated";
 import { GaleriaSection } from "@/modules/personajes/components/GaleriaSection";
 import { NarrativaSection } from "@/modules/personajes/components/NarrativaSection";
+import { CuandoVerloSection } from "@/modules/personajes/components/CuandoVerloSection";
 import { PersonajesCarrusel } from "@/modules/personajes/components/PersonajesCarrusel";
+import { WhatsAppShare } from "@/components/ui/WhatsAppShare";
 import { FadeUp } from "@/components/ui/FadeUp";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
 
@@ -87,7 +89,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         audioAmbiente={personaje.audioAmbiente}
       />
 
-      {/* ── 2. Resumen editorial ── */}
+      {/* ── 2. Resumen editorial + compartir ── */}
       <FadeUp>
         <section className="mx-auto max-w-3xl px-5 py-16 sm:px-6 sm:py-24">
           <div className="relative">
@@ -102,6 +104,9 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
               {personaje.resumen}
             </p>
           </div>
+          <div className="mt-8">
+            <WhatsAppShare nombre={personaje.nombre} />
+          </div>
         </section>
       </FadeUp>
 
@@ -112,7 +117,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
 
             {/* Origen */}
             <div className="bg-stone-900/40 px-6 py-5">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-stone-600 mb-2">Origen</p>
+              <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-stone-600">Origen</p>
               <span
                 className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium"
                 style={{
@@ -121,24 +126,24 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
                   backgroundColor: `${style.accentColor}10`,
                 }}
               >
-                <span className="h-1.5 w-1.5 rounded-full flex-none" style={{ backgroundColor: style.accentColor }} />
+                <span className="h-1.5 w-1.5 flex-none rounded-full" style={{ backgroundColor: style.accentColor }} />
                 {style.label}
               </span>
             </div>
 
             {/* Festividad — desde pases.json */}
             <div className="bg-stone-900/40 px-6 py-5">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-stone-600 mb-2">Festividad</p>
-              <p className="text-sm text-stone-300 leading-snug">{festividad}</p>
+              <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-stone-600">Festividad</p>
+              <p className="text-sm leading-snug text-stone-300">{festividad}</p>
             </div>
 
             {/* Nombres alt */}
             <div className="bg-stone-900/40 px-6 py-5">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-stone-600 mb-2">
+              <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-stone-600">
                 {personaje.nombresAlt.length > 1 ? "También conocido como" : "Nombre alternativo"}
               </p>
               {personaje.nombresAlt.length > 0 ? (
-                <p className="text-sm italic text-stone-400 leading-snug">
+                <p className="text-sm italic leading-snug text-stone-400">
                   {personaje.nombresAlt.join(", ")}
                 </p>
               ) : (
@@ -149,17 +154,26 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         </section>
       </FadeUp>
 
-      {/* ── 4. Historia (scrollytelling con sticky desktop + secreto interactivo) ── */}
+      {/* ── 4. Cuándo y dónde verlo ── */}
+      <CuandoVerloSection
+        pases={pasesDelPersonaje}
+        accentColor={style.accentColor}
+        eyebrow={t("cuando_eyebrow")}
+        titulo={t("cuando_titulo")}
+      />
+
+      {/* ── 5. Historia (scrollytelling con sticky desktop + secreto interactivo) ── */}
       {personaje.narrativa && (
         <NarrativaSection
           leyenda={personaje.narrativa.leyenda}
           secreto={personaje.narrativa.secreto}
           capitulos={personaje.narrativa.capitulos}
           accentColor={style.accentColor}
+          {...(personaje.artesanoFirma ? { artesanoFirma: personaje.artesanoFirma } : {})}
         />
       )}
 
-      {/* ── 4b. Anatomía (experiencia v2 — solo con hotspots, gated por desbloqueo) ── */}
+      {/* ── 5b. Anatomía (experiencia v2 — solo con hotspots, gated por desbloqueo) ── */}
       {personaje.experiencia && personaje.hotspots?.length && imagenPortada ? (
         <AnatomiaGated
           slug={personaje.slug}
@@ -170,14 +184,14 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         />
       ) : null}
 
-      {/* ── 5. Galería (3 grupos + lightbox) ── */}
+      {/* ── 6. Galería (3 grupos + lightbox) ── */}
       <GaleriaSection
         multimedia={personaje.multimedia}
         accentColor={style.accentColor}
         nombre={personaje.nombre}
       />
 
-      {/* ── 6. Cross-sell ── */}
+      {/* ── 7. Cross-sell ── */}
       {otrosPersonajes.length > 0 && (
         <section className="border-t border-borde-sutil py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-5 sm:px-6">

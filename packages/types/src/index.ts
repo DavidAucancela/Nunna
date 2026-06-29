@@ -51,6 +51,8 @@ export interface Personaje {
   experiencia?: boolean;
   /** Pista de audio ambiente para el hero inmersivo (opt-in, sin autoplay). */
   audioAmbiente?: string;
+  /** Firma del artesano que aparece bajo el secreto (ej: "Taller Guamán, Riobamba"). */
+  artesanoFirma?: string;
   narrativa?: Narrativa;
   hotspots?: Hotspot[];
   variantes: VariantePersonaje[];

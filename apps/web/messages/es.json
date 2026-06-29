@@ -102,7 +102,9 @@
     "cta_qr_titulo": "La historia completa de {nombre} está en el imán.",
     "cta_qr_boton": "Ver la experiencia completa",
     "coleccion_eyebrow": "Colección",
-    "coleccion_titulo": "Conoce a los otros seres"
+    "coleccion_titulo": "Conoce a los otros seres",
+    "cuando_eyebrow": "En los pases",
+    "cuando_titulo": "Cuándo y dónde verlo"
   },
   "comun": {
     "cargando": "Cargando…",
