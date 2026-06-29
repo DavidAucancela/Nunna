@@ -36,6 +36,13 @@ export interface Hotspot {
   artesano?: string;
 }
 
+export interface Artesano {
+  nombre: string;
+  ciudad?: string;
+  foto?: string;
+  bio?: string;
+}
+
 export interface Personaje {
   id: string;
   slug: string;
@@ -51,8 +58,10 @@ export interface Personaje {
   experiencia?: boolean;
   /** Pista de audio ambiente para el hero inmersivo (opt-in, sin autoplay). */
   audioAmbiente?: string;
-  /** Firma del artesano que aparece bajo el secreto (ej: "Taller Guamán, Riobamba"). */
+  /** Firma corta bajo el secreto (ej: "Taller Guamán, Riobamba"). */
   artesanoFirma?: string;
+  /** Datos completos del artesano que creó el imán físico. */
+  artesano?: Artesano;
   narrativa?: Narrativa;
   hotspots?: Hotspot[];
   variantes: VariantePersonaje[];

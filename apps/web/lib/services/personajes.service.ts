@@ -1,4 +1,4 @@
-import type { Personaje, PersonajeListItem, TipoOrigen, Narrativa, Hotspot, Media } from "@seres-del-pase/types";
+import type { Personaje, PersonajeListItem, TipoOrigen, Narrativa, Hotspot, Media, Artesano } from "@seres-del-pase/types";
 import personajesRaw from "../data/personajes.json";
 
 type PersonajeRaw = typeof personajesRaw[number];
@@ -48,6 +48,7 @@ function toPersonaje(p: PersonajeRaw): Personaje {
   if ("experiencia" in p && p.experiencia) personaje.experiencia = p.experiencia as boolean;
   if ("audioAmbiente" in p && p.audioAmbiente) personaje.audioAmbiente = p.audioAmbiente as string;
   if ("artesanoFirma" in p && p.artesanoFirma) personaje.artesanoFirma = p.artesanoFirma as string;
+  if ("artesano" in p && p.artesano) personaje.artesano = p.artesano as Artesano;
   if (p.hotspots?.length) personaje.hotspots = p.hotspots as Hotspot[];
   return personaje;
 }

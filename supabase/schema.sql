@@ -143,3 +143,21 @@ $$;
 revoke all on function public.check_code_valid(text) from public;
 grant execute on function public.check_code_valid(text) to anon;
 grant execute on function public.check_code_valid(text) to authenticated;
+
+-- ── RPC de contador anónimo ───────────────────────────────────────────────────
+-- Devuelve cuántas personas han desbloqueado un personaje.
+-- Accesible sin sesión (anon) — no revela qué usuarios, solo el total.
+
+create or replace function public.count_collectors(p_slug text)
+returns bigint
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select count(*) from public.user_unlocks where personaje_slug = p_slug;
+$$;
+
+revoke all on function public.count_collectors(text) from public;
+grant execute on function public.count_collectors(text) to anon;
+grant execute on function public.count_collectors(text) to authenticated;

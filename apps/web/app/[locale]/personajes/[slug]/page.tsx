@@ -9,6 +9,8 @@ import { AnatomiaGated } from "@/modules/personajes/components/AnatomiaGated";
 import { GaleriaSection } from "@/modules/personajes/components/GaleriaSection";
 import { NarrativaSection } from "@/modules/personajes/components/NarrativaSection";
 import { CuandoVerloSection } from "@/modules/personajes/components/CuandoVerloSection";
+import { ArtesanoSection } from "@/modules/personajes/components/ArtesanoSection";
+import { ColeccionCounter } from "@/modules/personajes/components/ColeccionCounter";
 import { PersonajesCarrusel } from "@/modules/personajes/components/PersonajesCarrusel";
 import { WhatsAppShare } from "@/components/ui/WhatsAppShare";
 import { FadeUp } from "@/components/ui/FadeUp";
@@ -106,6 +108,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
           </div>
           <div className="mt-8">
             <WhatsAppShare nombre={personaje.nombre} />
+            <ColeccionCounter slug={personaje.slug} nombre={personaje.nombre} />
           </div>
         </section>
       </FadeUp>
@@ -184,7 +187,17 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         />
       ) : null}
 
-      {/* ── 6. Galería (3 grupos + lightbox) ── */}
+      {/* ── 5c. Artesano (si el campo existe en el JSON) ── */}
+      {personaje.artesano && (
+        <ArtesanoSection
+          artesano={personaje.artesano}
+          nombre={personaje.nombre}
+          {...(personaje.origen ? { origen: personaje.origen } : {})}
+          accentColor={style.accentColor}
+        />
+      )}
+
+      {/* ── 6. Galería (3 grupos + lightbox + video) ── */}
       <GaleriaSection
         multimedia={personaje.multimedia}
         accentColor={style.accentColor}
