@@ -67,7 +67,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`dark ${fraunces.variable}`}>
+    <html lang={locale} className={`dark ${fraunces.variable}`} suppressHydrationWarning>
       <body className="bg-fondo-oscuro text-texto-claro antialiased">
         <a
           href="#main-content"

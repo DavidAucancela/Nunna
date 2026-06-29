@@ -64,7 +64,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
     : undefined;
   const style = getOrigenStyle(personaje.origen);
 
-  const pasesDelPersonaje = pases.filter((p) => p.personaje === personaje.nombre);
+  const pasesDelPersonaje = pases.filter((p) => p.personaje && p.personaje === personaje.nombre);
   const festividad =
     pasesDelPersonaje.length > 0
       ? `${pasesDelPersonaje.length} ${pasesDelPersonaje.length === 1 ? "pase" : "pases"} del Niño Riobambeño`

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase/client";
 
 interface ColeccionCounterProps {
@@ -10,12 +10,19 @@ interface ColeccionCounterProps {
 
 export function ColeccionCounter({ slug, nombre }: ColeccionCounterProps) {
   const [count, setCount] = useState<number | null>(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
   useEffect(() => {
     if (!supabase) return;
-    supabase
+    void supabase
       .rpc("count_collectors", { p_slug: slug })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (!mountedRef.current || error) return;
         if (typeof data === "number" && data > 0) setCount(data);
       });
   }, [slug]);

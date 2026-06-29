@@ -30,7 +30,7 @@ export function CuandoVerloSection({ pases, accentColor, eyebrow, titulo }: Cuan
 
         <div className="space-y-3">
           {pases.map((pase) => {
-            const mesLabel = pase.mes ? MESES_ES[pase.mes - 1] : null;
+            const mesLabel = pase.mes && pase.mes >= 1 && pase.mes <= 12 ? MESES_ES[pase.mes - 1] : null;
             const shortName = pase.nombre.replace(/^Pase del Niño\s*[—–-]\s*/i, "");
 
             return (
