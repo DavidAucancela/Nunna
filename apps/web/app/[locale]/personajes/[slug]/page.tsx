@@ -2,11 +2,17 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 
-import { getPersonaje, getPersonajes } from "@/lib/data";
+import { getPersonaje, getPersonajes, getPases } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import { HeroGated } from "@/modules/personajes/components/HeroGated";
 import { AnatomiaGated } from "@/modules/personajes/components/AnatomiaGated";
 import { GaleriaSection } from "@/modules/personajes/components/GaleriaSection";
+import { NarrativaSection } from "@/modules/personajes/components/NarrativaSection";
+import { CuandoVerloSection } from "@/modules/personajes/components/CuandoVerloSection";
+import { ArtesanoSection } from "@/modules/personajes/components/ArtesanoSection";
+import { ColeccionCounter } from "@/modules/personajes/components/ColeccionCounter";
+import { PersonajesCarrusel } from "@/modules/personajes/components/PersonajesCarrusel";
+import { WhatsAppShare } from "@/components/ui/WhatsAppShare";
 import { FadeUp } from "@/components/ui/FadeUp";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
 
@@ -43,8 +49,10 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   const { slug, locale } = await params;
   setRequestLocale(locale);
 
-  const [personaje, t] = await Promise.all([
+  const [personaje, todosPersonajes, pases, t] = await Promise.all([
     getPersonaje(slug, locale),
+    getPersonajes({}),
+    getPases({}),
     getTranslations({ locale, namespace: "historia" }),
   ]);
 
@@ -56,9 +64,18 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
     : undefined;
   const style = getOrigenStyle(personaje.origen);
 
+  const pasesDelPersonaje = pases.filter((p) => p.personaje && p.personaje === personaje.nombre);
+  const festividad =
+    pasesDelPersonaje.length > 0
+      ? `${pasesDelPersonaje.length} ${pasesDelPersonaje.length === 1 ? "pase" : "pases"} del Niño Riobambeño`
+      : "Pases del Niño Riobambeño";
+
+  const otrosPersonajes = todosPersonajes.filter((p) => p.slug !== slug);
+
   return (
     <article>
       <ScrollToTop />
+
       {/* ── 1. Hero (gated: experiencia inmersiva = premio del desbloqueo) ── */}
       <HeroGated
         slug={personaje.slug}
@@ -74,7 +91,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         audioAmbiente={personaje.audioAmbiente}
       />
 
-      {/* ── 2. Resumen editorial ── */}
+      {/* ── 2. Resumen editorial + compartir ── */}
       <FadeUp>
         <section className="mx-auto max-w-3xl px-5 py-16 sm:px-6 sm:py-24">
           <div className="relative">
@@ -89,6 +106,10 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
               {personaje.resumen}
             </p>
           </div>
+          <div className="mt-8">
+            <WhatsAppShare nombre={personaje.nombre} />
+            <ColeccionCounter slug={personaje.slug} nombre={personaje.nombre} />
+          </div>
         </section>
       </FadeUp>
 
@@ -99,7 +120,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
 
             {/* Origen */}
             <div className="bg-stone-900/40 px-6 py-5">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-stone-600 mb-2">Origen</p>
+              <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-stone-600">Origen</p>
               <span
                 className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium"
                 style={{
@@ -108,24 +129,24 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
                   backgroundColor: `${style.accentColor}10`,
                 }}
               >
-                <span className="h-1.5 w-1.5 rounded-full flex-none" style={{ backgroundColor: style.accentColor }} />
+                <span className="h-1.5 w-1.5 flex-none rounded-full" style={{ backgroundColor: style.accentColor }} />
                 {style.label}
               </span>
             </div>
 
-            {/* Festividad */}
+            {/* Festividad — desde pases.json */}
             <div className="bg-stone-900/40 px-6 py-5">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-stone-600 mb-2">Festividad</p>
-              <p className="text-sm text-stone-300 leading-snug">Pase del Niño Riobambeño</p>
+              <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-stone-600">Festividad</p>
+              <p className="text-sm leading-snug text-stone-300">{festividad}</p>
             </div>
 
             {/* Nombres alt */}
             <div className="bg-stone-900/40 px-6 py-5">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-stone-600 mb-2">
+              <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-stone-600">
                 {personaje.nombresAlt.length > 1 ? "También conocido como" : "Nombre alternativo"}
               </p>
               {personaje.nombresAlt.length > 0 ? (
-                <p className="text-sm italic text-stone-400 leading-snug">
+                <p className="text-sm italic leading-snug text-stone-400">
                   {personaje.nombresAlt.join(", ")}
                 </p>
               ) : (
@@ -136,107 +157,26 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         </section>
       </FadeUp>
 
-      {/* ── 4. Historia ── */}
+      {/* ── 4. Cuándo y dónde verlo ── */}
+      <CuandoVerloSection
+        pases={pasesDelPersonaje}
+        accentColor={style.accentColor}
+        eyebrow={t("cuando_eyebrow")}
+        titulo={t("cuando_titulo")}
+      />
+
+      {/* ── 5. Historia (scrollytelling con sticky desktop + secreto interactivo) ── */}
       {personaje.narrativa && (
-        <FadeUp>
-          <section className="mx-auto max-w-3xl px-5 pb-20 sm:px-6 sm:pb-28">
-
-            {/* Título sección */}
-            <div className="mb-14 flex items-center gap-4">
-              <h2 className="font-serif text-2xl font-bold text-texto-claro sm:text-3xl">
-                {t("titulo_seccion")}
-              </h2>
-              <div className="h-px flex-1 bg-borde-sutil" />
-            </div>
-
-            {/* Leyenda — cita centrada */}
-            <div className="mb-16 text-center">
-              <span
-                className="-mb-5 block select-none font-serif text-7xl leading-none sm:text-8xl"
-                style={{ color: style.accentColor, opacity: 0.2 }}
-                aria-hidden="true"
-              >
-                &ldquo;
-              </span>
-              <p
-                className="font-serif text-xl italic leading-relaxed sm:text-2xl"
-                style={{ color: style.accentColor }}
-              >
-                {personaje.narrativa.leyenda}
-              </p>
-            </div>
-
-            {/* Capítulos con números */}
-            <div className="space-y-12">
-              {personaje.narrativa.capitulos.map((cap, i) => (
-                <div key={i} className="flex gap-5 sm:gap-8">
-                  <span
-                    className="select-none font-serif text-4xl font-bold leading-none text-stone-800 sm:text-5xl flex-none w-10 sm:w-14 text-right pt-1"
-                    aria-hidden="true"
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div className="min-w-0">
-                    <h3
-                      className="font-serif text-lg font-semibold mb-3 leading-snug"
-                      style={{ color: style.accentColor }}
-                    >
-                      {cap.titulo}
-                    </h3>
-                    <p className="text-stone-400 leading-relaxed text-base">
-                      {cap.texto}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Secreto — caja dramática */}
-            <div className="mt-16 overflow-hidden rounded-2xl">
-              {/* Header del secreto */}
-              <div
-                className="flex items-center gap-3 px-6 py-3.5"
-                style={{ backgroundColor: `${style.accentColor}22` }}
-              >
-                <svg
-                  width="14"
-                  height="14"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                  viewBox="0 0 24 24"
-                  style={{ color: style.accentColor }}
-                  aria-hidden="true"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-                <p
-                  className="text-[10px] uppercase tracking-[0.3em] font-medium"
-                  style={{ color: style.accentColor }}
-                >
-                  {t("secreto_label")}
-                </p>
-              </div>
-              {/* Cuerpo del secreto */}
-              <div
-                className="px-6 py-6"
-                style={{
-                  backgroundColor: `${style.accentColor}08`,
-                  borderLeft: `1px solid ${style.accentColor}20`,
-                  borderRight: `1px solid ${style.accentColor}20`,
-                  borderBottom: `1px solid ${style.accentColor}20`,
-                }}
-              >
-                <p className="text-stone-200 leading-relaxed text-base">
-                  {personaje.narrativa.secreto}
-                </p>
-              </div>
-            </div>
-          </section>
-        </FadeUp>
+        <NarrativaSection
+          leyenda={personaje.narrativa.leyenda}
+          secreto={personaje.narrativa.secreto}
+          capitulos={personaje.narrativa.capitulos}
+          accentColor={style.accentColor}
+          {...(personaje.artesanoFirma ? { artesanoFirma: personaje.artesanoFirma } : {})}
+        />
       )}
 
-      {/* ── 4b. Anatomía (experiencia v2 — solo con hotspots, gated por desbloqueo) ── */}
+      {/* ── 5b. Anatomía (experiencia v2 — solo con hotspots, gated por desbloqueo) ── */}
       {personaje.experiencia && personaje.hotspots?.length && imagenPortada ? (
         <AnatomiaGated
           slug={personaje.slug}
@@ -247,12 +187,42 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         />
       ) : null}
 
-      {/* ── 5. Galería ── */}
+      {/* ── 5c. Artesano (si el campo existe en el JSON) ── */}
+      {personaje.artesano && (
+        <ArtesanoSection
+          artesano={personaje.artesano}
+          nombre={personaje.nombre}
+          {...(personaje.origen ? { origen: personaje.origen } : {})}
+          accentColor={style.accentColor}
+        />
+      )}
+
+      {/* ── 6. Galería (3 grupos + lightbox + video) ── */}
       <GaleriaSection
         multimedia={personaje.multimedia}
         accentColor={style.accentColor}
         nombre={personaje.nombre}
       />
+
+      {/* ── 7. Cross-sell ── */}
+      {otrosPersonajes.length > 0 && (
+        <section className="border-t border-borde-sutil py-20 sm:py-28">
+          <div className="mx-auto max-w-7xl px-5 sm:px-6">
+            <div className="mb-10 text-center">
+              <p
+                className="mb-3 text-[10px] uppercase tracking-[0.3em]"
+                style={{ color: `${style.accentColor}80` }}
+              >
+                {t("coleccion_eyebrow")}
+              </p>
+              <h2 className="font-serif text-4xl font-bold text-texto-claro sm:text-5xl">
+                {t("coleccion_titulo")}
+              </h2>
+            </div>
+            <PersonajesCarrusel personajes={otrosPersonajes} />
+          </div>
+        </section>
+      )}
     </article>
   );
 }

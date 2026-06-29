@@ -100,7 +100,11 @@
     "compartir_whatsapp": "Compartir en WhatsApp",
     "compartir_mensaje": "Descubrí el secreto de {nombre} 🔑\n\n\"{secreto}\"\n\n— Solo para quienes tienen el imán Nunna ✨",
     "cta_qr_titulo": "La historia completa de {nombre} está en el imán.",
-    "cta_qr_boton": "Ver la experiencia completa"
+    "cta_qr_boton": "Ver la experiencia completa",
+    "coleccion_eyebrow": "Colección",
+    "coleccion_titulo": "Conoce a los otros seres",
+    "cuando_eyebrow": "En los pases",
+    "cuando_titulo": "Cuándo y dónde verlo"
   },
   "comun": {
     "cargando": "Cargando…",

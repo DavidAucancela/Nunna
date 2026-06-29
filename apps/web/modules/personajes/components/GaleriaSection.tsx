@@ -136,26 +136,46 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
                 </button>
               </div>
 
-              {/* Imagen activa */}
+              {/* Media activa — imagen o video */}
               <AnimatePresence mode="wait">
-                <motion.div
-                  key={active.id}
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.22, ease: "easeOut" }}
-                  className="relative h-[68vh] w-full max-w-xl"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Image
-                    src={active.url}
-                    alt={active.altText}
-                    fill
-                    className="object-contain"
-                    sizes="(max-width: 768px) 80vw, 576px"
-                    priority
-                  />
-                </motion.div>
+                {active.tipo === "video" ? (
+                  <motion.div
+                    key={active.id}
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.22, ease: "easeOut" }}
+                    className="w-full max-w-xl"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <video
+                      src={active.url}
+                      controls
+                      autoPlay
+                      playsInline
+                      className="max-h-[68vh] w-full rounded-lg object-contain"
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key={active.id}
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.22, ease: "easeOut" }}
+                    className="relative h-[68vh] w-full max-w-xl"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Image
+                      src={active.url}
+                      alt={active.altText}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 768px) 80vw, 576px"
+                      priority
+                    />
+                  </motion.div>
+                )}
               </AnimatePresence>
 
               {/* Caption */}
@@ -261,23 +281,39 @@ function ImageGrid({
             className="group relative aspect-[3/4] w-full overflow-hidden rounded-2xl border border-borde-sutil focus:outline-none"
             aria-label={`Ampliar: ${img.altText}`}
           >
-            <Image
-              src={img.url}
-              alt={img.altText}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.07]"
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
-            />
+            {img.tipo === "video" ? (
+              <video
+                src={img.url}
+                preload="metadata"
+                muted
+                playsInline
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.07]"
+              />
+            ) : (
+              <Image
+                src={img.url}
+                alt={img.altText}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.07]"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
+              />
+            )}
 
             {/* Hover overlay */}
             <div className="absolute inset-0 bg-fondo-oscuro/0 transition-colors duration-300 group-hover:bg-fondo-oscuro/25" />
 
-            {/* Icono expand */}
+            {/* Icono expandir / reproducir */}
             <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
               <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-stone-950/70 backdrop-blur-sm">
-                <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" className="text-white">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-                </svg>
+                {img.tipo === "video" ? (
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" className="ml-0.5 text-white" aria-hidden="true">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                ) : (
+                  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" className="text-white" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                  </svg>
+                )}
               </span>
             </div>
 
