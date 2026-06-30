@@ -373,64 +373,42 @@ function PasosScroll() {
         </div>
       </div>
 
-      {/* Móvil — carrusel táctil: visual + stepper con foco; swipe / botones / tap.
-          No depende del scroll (robusto en iOS). */}
-      <div className="md:hidden" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-        {/* Visual del nivel activo */}
-        <div className="flex justify-center">
-          <AnimatePresence mode="wait">
-            <motion.div key={`mv-${active}`} className="w-full" {...fade}>
-              <ActiveVisual />
+      {/* Móvil — pasos apilados verticalmente; cada uno entra al hacer scroll */}
+      <div className="space-y-20 md:hidden">
+        {PASOS.map((paso, i) => {
+          const Visual = paso.Visual;
+          return (
+            <motion.div
+              key={paso.num}
+              initial={reduce ? false : { opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.55, ease: "easeOut" }}
+              className="flex flex-col gap-8"
+            >
+              {/* Visual del paso */}
+              <div className="flex justify-center">
+                <Visual />
+              </div>
+
+              {/* Texto del paso */}
+              <div className="flex gap-4">
+                <span className="mt-1 shrink-0 font-serif text-4xl font-bold leading-none text-acento-dorado/30">
+                  {paso.num}
+                </span>
+                <div>
+                  <h3 className="font-serif text-xl font-bold text-texto-claro">{paso.titulo}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-stone-400">{paso.texto}</p>
+                </div>
+              </div>
+
+              {/* Separador entre pasos */}
+              {i < PASOS.length - 1 && (
+                <div className="mx-auto h-px w-16 bg-gradient-to-r from-transparent via-acento-dorado/30 to-transparent" />
+              )}
             </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Niveles — siempre visibles, el activo enfocado */}
-        <div className="mt-10">
-          <StepperList active={active} onSelect={setActive} reduce={reduce} />
-        </div>
-
-        {/* Controles */}
-        <div className="mt-8 flex items-center justify-between gap-4">
-          <button
-            type="button"
-            onClick={goPrev}
-            disabled={active <= 0}
-            aria-label="Anterior"
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-borde-sutil text-stone-300 transition-colors disabled:opacity-30 enabled:hover:border-acento-dorado enabled:hover:text-acento-dorado"
-          >
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
-          </button>
-
-          <div className="flex items-center gap-2">
-            {PASOS.map((p, i) => (
-              <button
-                key={p.num}
-                type="button"
-                onClick={() => setActive(i)}
-                aria-label={`Ir al paso ${p.num}`}
-                aria-current={i === active}
-                className={`h-2.5 rounded-full transition-all duration-300 ${
-                  i === active ? "w-6 bg-acento-dorado" : "w-2.5 bg-stone-600 hover:bg-stone-400"
-                }`}
-              />
-            ))}
-          </div>
-
-          <button
-            type="button"
-            onClick={goNext}
-            disabled={active >= PASOS.length - 1}
-            aria-label="Siguiente"
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-borde-sutil text-stone-300 transition-colors disabled:opacity-30 enabled:hover:border-acento-dorado enabled:hover:text-acento-dorado"
-          >
-            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-            </svg>
-          </button>
-        </div>
+          );
+        })}
       </div>
     </>
   );
