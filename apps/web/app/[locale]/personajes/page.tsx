@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { PersonajeCard } from "@/modules/personajes/components/PersonajeCard";
-import { FadeUp, FadeUpGroup, FadeUpItem } from "@/components/ui/FadeUp";
+import { PersonajesGrid } from "@/modules/personajes/components/PersonajesGrid";
+import { FadeUp } from "@/components/ui/FadeUp";
 import { getPersonajes } from "@/lib/data";
 
 interface PersonajesPageProps {
@@ -43,13 +43,7 @@ export default async function PersonajesPage({ params }: PersonajesPageProps) {
         <p className="mt-4 max-w-2xl text-lg text-stone-400">{t("descripcion")}</p>
       </header>
 
-      <FadeUpGroup className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {personajes.map((personaje) => (
-          <FadeUpItem key={personaje.id}>
-            <PersonajeCard personaje={personaje} />
-          </FadeUpItem>
-        ))}
-      </FadeUpGroup>
+      <PersonajesGrid personajes={personajes} />
 
       {/* Próximamente */}
       <FadeUp delay={0.2}>

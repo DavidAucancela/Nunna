@@ -219,7 +219,7 @@ export function DesbloquearForm({
             {t("ver_personaje", { nombre: unlocked.nombre })}
           </Link>
           <Link
-            href="/mis-personajes"
+            href="/personajes"
             className="rounded-full border border-borde-sutil px-6 py-3 text-sm font-medium text-texto-claro transition-colors hover:bg-stone-900"
           >
             {t("ver_coleccion")}
