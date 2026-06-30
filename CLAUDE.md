@@ -377,6 +377,29 @@ Modo oscuro por defecto.
   - Cadenas kichwa de namespaces `desbloquear`/`coleccion`/`logros` **tentativas** — revisar con hablante nativo.
 - **CI arreglado** (2026-06-28): conflicto de versión pnpm resuelto + `.eslintrc.json` añadido al web app +
   lint/type-check acotado a `@seres-del-pase/web` (la API NestJS no tiene config ESLint).
+- **Navbar rediseñado** (2026-06-29):
+  - Banderas de idioma: 🇪🇸 ES / 🇪🇨 QU / 🇺🇸 EN; mobile solo flag en botón compacto, popover con flag + label
+  - Glosario eliminado del navbar (accesible por footer); Personajes siempre visible
+  - Scroll to top instantáneo al navegar por cualquier link del navbar
+- **Grid `/personajes` con gating** (2026-06-29):
+  - `PersonajesGrid.tsx` componente cliente; cards muestran candado + botón a `/desbloquear` si no desbloqueado
+  - Sin `FadeUp` en la grilla (causaba flash negro en mobile por hydration con `opacity:0`)
+  - `unlocked = !gatingActive || !ready || coleccion.has(slug)` — sin Supabase todos accesibles
+- **Stories mode mobile — sección "Un pase, un camino"** (2026-06-29):
+  - Mapa fijo 45dvh en la parte superior; imagen rotativa + texto del waypoint en la parte inferior
+  - Barra de navegación con flechas ‹ › visibles + puntos clicables; swipe horizontal también funciona
+  - Progress bars al borde inferior del mapa; `easeTo` al waypoint activo, `fitBounds` en inicio/finale
+  - `attributionControl: false` — oculta el card "CARTO / OpenStreetMap" del mapa
+  - Link "Ver ficha" de waypoints → `/personajes` (catálogo)
+- **CalendarioGrid rediseñado** (2026-06-29):
+  - Grid 2 columnas (era 1); lightbox al clic en cards con foto (zoom nativo touch-action: pinch-zoom)
+  - `PaseCard`: imagen `aspect-[4/3]`, badge tipo sobre imagen, ícono zoom hover, metadatos compactos
+- **Landing — CTAs intercambiados** (2026-06-29):
+  - Hero: "Escanea tu QR" abre `QrScanner` (lazy); `MagneticButton` acepta `onClick` además de `href`
+  - `CtaFinal`: "Conoce el proyecto" → `/sobre`
+- **ProductoSection — "Cómo funciona" mobile** (2026-06-29):
+  - Reemplaza carrusel táctil por pasos apilados verticalmente con `whileInView` al hacer scroll
+  - Visual + número grande + título + texto; separador dorado entre pasos; desktop sin cambios
 
 ### 🔄 Siguiente
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
