@@ -4,6 +4,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 
 import { getPersonaje, getPersonajes, getPases } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
+import { GatedPageRedirect } from "@/modules/personajes/components/GatedPageRedirect";
 import { HeroGated } from "@/modules/personajes/components/HeroGated";
 import { AnatomiaGated } from "@/modules/personajes/components/AnatomiaGated";
 import { GaleriaSection } from "@/modules/personajes/components/GaleriaSection";
@@ -74,6 +75,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
 
   return (
     <article>
+      <GatedPageRedirect slug={personaje.slug} />
       <ScrollToTop />
 
       {/* ── 1. Hero (gated: experiencia inmersiva = premio del desbloqueo) ── */}
