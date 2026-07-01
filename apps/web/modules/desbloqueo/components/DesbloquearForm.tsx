@@ -105,7 +105,8 @@ export function DesbloquearForm({
         setPhase("code");
         break;
       case "not_authenticated":
-        // Sesión expirada: guardar el código y volver al paso de email para re-autenticar.
+        // Sesión expirada: limpiar error, guardar código y pedir re-autenticación por email.
+        setErrorKey(null);
         setPendingCode(code);
         setPhase("email");
         break;
