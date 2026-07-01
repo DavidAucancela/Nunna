@@ -1,7 +1,8 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, lazy, Suspense } from "react";
+const QrScanner = lazy(() => import("@/components/ui/QrScanner").then(m => ({ default: m.QrScanner })));
 import {
   motion,
   useMotionValue,
@@ -93,10 +94,12 @@ function NunnaTitle({
 /* ─── Botón magnético ─── */
 function MagneticButton({
   href,
+  onClick,
   variant,
   children,
 }: {
-  href: string;
+  href?: string;
+  onClick?: () => void;
   variant: "primary" | "secondary";
   children: React.ReactNode;
 }) {
@@ -125,7 +128,11 @@ function MagneticButton({
   return (
     <div ref={ref} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
       <motion.div style={{ x: sx, y: sy }}>
-        <Link href={href as "/personajes" | "/calendario" | "/sobre"} className={`${base} ${cls}`}>{children}</Link>
+        {href ? (
+          <Link href={href as "/personajes" | "/calendario" | "/sobre"} className={`${base} ${cls}`}>{children}</Link>
+        ) : (
+          <button type="button" onClick={onClick} className={`${base} ${cls}`}>{children}</button>
+        )}
       </motion.div>
     </div>
   );
@@ -138,6 +145,7 @@ export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
   const [hasHover, setHasHover] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
   useEffect(() => {
     setHasHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
   }, []);
@@ -217,9 +225,14 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 1.2 }}
           className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
         >
-          <MagneticButton href="/sobre" variant="primary">
-            Conoce este proyecto
+          <MagneticButton onClick={() => setScannerOpen(true)} variant="primary">
+            Escanea tu QR
           </MagneticButton>
+          {scannerOpen && (
+            <Suspense fallback={null}>
+              <QrScanner open={scannerOpen} onClose={() => setScannerOpen(false)} />
+            </Suspense>
+          )}
         </motion.div>
       </div>
 

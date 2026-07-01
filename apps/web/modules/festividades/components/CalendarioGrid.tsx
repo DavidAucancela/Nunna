@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 import type { PaseListItem } from "@seres-del-pase/types";
 
 const MESES = [
@@ -104,7 +105,7 @@ export function CalendarioGrid({ pases }: CalendarioGridProps) {
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {evs.map((pase) => (
                 <PaseCard key={pase.id} pase={pase} />
               ))}
@@ -116,73 +117,164 @@ export function CalendarioGrid({ pases }: CalendarioGridProps) {
   );
 }
 
-function PaseCard({ pase }: { pase: PaseListItem }) {
-  const acento = pase.color ?? "#C89B3C";
+function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
 
   return (
-    <article
-      className="overflow-hidden rounded-xl border border-borde-sutil bg-stone-900/40 transition-colors hover:border-acento-dorado/40"
-      style={{ borderLeftWidth: 3, borderLeftColor: acento }}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+      onClick={onClose}
     >
-      {pase.imagenPortada && (
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-stone-950">
-          <Image
-            src={pase.imagenPortada}
-            alt={`Información del ${pase.nombre}`}
-            fill
-            sizes="(max-width: 640px) 100vw, 33vw"
-            className="object-cover"
+      <motion.div
+        initial={{ scale: 0.92, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.92, opacity: 0 }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
+        className="relative max-h-[90dvh] max-w-[90vw]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={alt}
+          className="max-h-[90dvh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
+          style={{ touchAction: "pinch-zoom" }}
+        />
+        <button
+          onClick={onClose}
+          aria-label="Cerrar"
+          className="absolute -right-3 -top-3 flex h-8 w-8 items-center justify-center rounded-full bg-stone-800 text-stone-300 shadow-lg transition-colors hover:bg-stone-700 hover:text-white"
+        >
+          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function PaseCard({ pase }: { pase: PaseListItem }) {
+  const acento = pase.color ?? "#C89B3C";
+  const [lightbox, setLightbox] = useState<string | null>(null);
+  const ruta = pase.inicio && pase.fin ? `${pase.inicio} → ${pase.fin}` : pase.ruta;
+
+  return (
+    <>
+      <AnimatePresence>
+        {lightbox && (
+          <Lightbox
+            src={lightbox}
+            alt={`Fotografía de ${pase.nombre}`}
+            onClose={() => setLightbox(null)}
           />
+        )}
+      </AnimatePresence>
+
+      <article className="group flex flex-col overflow-hidden rounded-2xl border border-borde-sutil bg-stone-900/50 transition-all duration-300 hover:border-stone-700 hover:bg-stone-900/80">
+
+        {/* Imagen — clickable para lightbox */}
+        {pase.imagenPortada ? (
+          <button
+            type="button"
+            onClick={() => setLightbox(pase.imagenPortada!)}
+            className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden bg-stone-950"
+            aria-label={`Ver foto de ${pase.nombre}`}
+          >
+            <Image
+              src={pase.imagenPortada}
+              alt={pase.nombre}
+              fill
+              sizes="(max-width: 640px) 50vw, 33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            {/* Gradiente inferior para legibilidad del badge */}
+            <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 to-transparent" />
+            {/* Badge tipo sobre la imagen */}
+            {pase.tipo && (
+              <span
+                className="absolute bottom-2 left-2 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white"
+                style={{ backgroundColor: `${acento}cc` }}
+              >
+                {pase.tipo}
+              </span>
+            )}
+            {/* Ícono zoom en hover */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm">
+                <svg width="16" height="16" fill="none" stroke="white" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0015.803 15.803zM10.5 7.5v6m3-3h-6" />
+                </svg>
+              </div>
+            </div>
+          </button>
+        ) : (
+          /* Sin foto — franja de color con tipo */
+          <div className="flex h-2 w-full shrink-0" style={{ backgroundColor: acento }} />
+        )}
+
+        {/* Contenido */}
+        <div className="flex flex-1 flex-col gap-2.5 p-3">
+          {/* Título + badge tipo (si no hay imagen) */}
+          <div className="flex items-start justify-between gap-2">
+            <h4 className="font-serif text-sm font-bold leading-snug text-texto-claro sm:text-base">
+              {pase.nombre}
+            </h4>
+            {!pase.imagenPortada && pase.tipo && (
+              <span className="mt-0.5 shrink-0 rounded-full border border-stone-700 bg-stone-800 px-2 py-0.5 text-[9px] uppercase tracking-wider text-stone-400">
+                {pase.tipo}
+              </span>
+            )}
+          </div>
+
+          {/* Metadatos compactos */}
+          <div className="flex flex-col gap-1.5 text-xs text-stone-400">
+            {pase.horario && (
+              <span className="flex items-center gap-1.5">
+                <svg className="h-3.5 w-3.5 shrink-0" style={{ color: acento }} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {pase.horario}
+              </span>
+            )}
+            {ruta && (
+              <span className="flex items-start gap-1.5">
+                <svg className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: acento }} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                </svg>
+                <span className="line-clamp-2">{ruta}</span>
+              </span>
+            )}
+            {pase.personaje && (
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: acento }} />
+                <span style={{ color: acento }}>{pase.personaje}</span>
+              </span>
+            )}
+            {!pase.horario && pase.fechaDescripcion && (
+              <p className="mt-0.5 leading-relaxed text-stone-500">
+                {pase.fechaDescripcion}
+              </p>
+            )}
+          </div>
         </div>
-      )}
 
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-3">
-          <h4 className="font-serif text-base font-semibold text-texto-claro">
-            {pase.nombre}
-          </h4>
-          {pase.tipo && (
-            <span className="mt-0.5 shrink-0 rounded-full border border-stone-700 bg-stone-800 px-2 py-0.5 text-[10px] uppercase tracking-wider text-stone-400">
-              {pase.tipo}
-            </span>
-          )}
-        </div>
-
-        {/* Datos del recorrido oficial */}
-        {pase.horario && (
-          <p className="mt-3 flex items-center gap-2 text-sm text-stone-400">
-            <svg className="h-4 w-4 shrink-0 text-acento-dorado" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {pase.horario}
-          </p>
-        )}
-
-        {(pase.inicio || pase.fin || pase.ruta) && (
-          <p className="mt-2 flex items-start gap-2 text-sm text-stone-400">
-            <svg className="mt-0.5 h-4 w-4 shrink-0 text-acento-dorado" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-            </svg>
-            {pase.inicio && pase.fin ? `${pase.inicio} → ${pase.fin}` : pase.ruta}
-          </p>
-        )}
-
-        {pase.personaje && (
-          <p className="mt-2 flex items-center gap-2 text-sm">
-            <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: acento }} />
-            <span className="text-stone-500">Personaje:</span>
-            <span className="font-medium" style={{ color: acento }}>{pase.personaje}</span>
-          </p>
-        )}
-
-        {/* Festividades sin recorrido — solo descripción */}
-        {!pase.horario && pase.fechaDescripcion && (
-          <p className="mt-3 text-sm leading-relaxed text-stone-400">
-            {pase.fechaDescripcion}
-          </p>
-        )}
-      </div>
-    </article>
+        {/* Línea de acento en la base */}
+        <div className="h-[2px] w-full shrink-0 opacity-60" style={{ backgroundColor: acento }} />
+      </article>
+    </>
   );
 }

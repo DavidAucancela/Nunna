@@ -161,14 +161,37 @@ export function PaseMapSection({
       startedRef.current = false;
       setActiveIdx(-1);
       paintMap(0, true); // ruta completa
+      if (isMobileRef.current && mapRef.current) {
+        const lons = ruta.map((c) => c[0]);
+        const lats = ruta.map((c) => c[1]);
+        mapRef.current.fitBounds(
+          [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
+          { padding: { top: 80, bottom: 220, left: 40, right: 40 }, duration: reducedMotion ? 0 : 600 }
+        );
+      }
     } else if (idx === finaleIdx) {
       startedRef.current = true;
       setActiveIdx(idx);
       paintMap(1); // ruta completa, dot al final
+      if (isMobileRef.current && mapRef.current) {
+        const lons = ruta.map((c) => c[0]);
+        const lats = ruta.map((c) => c[1]);
+        mapRef.current.fitBounds(
+          [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
+          { padding: { top: 80, bottom: 220, left: 40, right: 40 }, duration: reducedMotion ? 0 : 600 }
+        );
+      }
     } else {
       startedRef.current = true;
       setActiveIdx(idx);
       paintMap(waypoints[idx]!.progress);
+      if (isMobileRef.current && mapRef.current) {
+        mapRef.current.easeTo({
+          center: waypoints[idx]!.coord,
+          zoom: 15.5,
+          duration: reducedMotion ? 0 : 600,
+        });
+      }
     }
   }
   // Ref para que los pines del mapa (creados una vez en el init) llamen al
@@ -333,7 +356,7 @@ export function PaseMapSection({
         center: centro,
         zoom,
         interactive: false,
-        attributionControl: { compact: true },
+        attributionControl: false,
       });
 
       mapRef.current = map;
@@ -691,7 +714,7 @@ export function PaseMapSection({
           >
             {activeWp && (
               <>
-                {/* Imagen rotativa — ocupa el alto disponible del panel */}
+                {/* Imagen rotativa */}
                 <div className="relative flex-1 min-h-0 overflow-hidden">
                   <AnimatePresence initial={false}>
                     <motion.div
@@ -734,7 +757,7 @@ export function PaseMapSection({
                   )}
                 </div>
 
-                {/* Texto — compacto para dejar más espacio a la foto */}
+                {/* Texto */}
                 <div className="flex-shrink-0 px-6 pt-2 pb-2.5">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-acento-dorado">
                     {activeWp.calle}
@@ -746,10 +769,7 @@ export function PaseMapSection({
                     &ldquo;{activeWp.leyenda}&rdquo;
                   </blockquote>
                   <Link
-                    href={{
-                      pathname: "/personajes/[slug]",
-                      params: { slug: activeWp.slug },
-                    }}
+                    href="/personajes"
                     className="mt-2 inline-flex min-h-[40px] items-center gap-1.5 text-[11px] uppercase tracking-[0.3em] text-acento-dorado/80 hover:text-acento-dorado transition-colors duration-200"
                   >
                     {t("ver_ficha")}
@@ -780,60 +800,80 @@ export function PaseMapSection({
     </>
   );
 
-  // ── Layout MÓVIL: carrusel táctil, sin scroll-pinning ──────────────────────
+  // ── Layout MÓVIL: Stories mode — mapa full-screen + bottom sheet flotante ──
   if (isMobile) {
     return (
-      <section ref={containerRef} className="relative border-y border-borde-sutil bg-fondo-oscuro">
-        {/* Mapa */}
-        <div className="relative h-[44vh]">
+      <section
+        ref={containerRef}
+        className="flex flex-col overflow-hidden border-y border-borde-sutil"
+        style={{ height: "calc(100dvh - 4rem)" }}
+      >
+        {/* MAPA — parte superior fija */}
+        <div className="relative shrink-0" style={{ height: "45dvh" }}>
           <div ref={mapContainerRef} className="absolute inset-0" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-fondo-oscuro/80 via-transparent to-fondo-oscuro/35" />
-          {mapHeader}
+          {/* Gradiente para legibilidad del header */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-32 bg-gradient-to-b from-fondo-oscuro/80 via-fondo-oscuro/20 to-transparent" />
+          {/* Cabecera sobre el mapa */}
+          <div className="absolute inset-x-0 top-0 z-20">
+            {mapHeader}
+          </div>
+          {/* Progress bars */}
+          <div className="absolute bottom-3 left-3 right-3 z-20 flex gap-1">
+            {navSeq.map((idx, i) => (
+              <div key={idx} className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/20">
+                <div
+                  className="h-full rounded-full bg-white transition-all ease-out"
+                  style={{
+                    width: navPos > i ? "100%" : navPos === i ? "100%" : "0%",
+                    transitionDuration: reducedMotion ? "0ms" : "400ms",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Tarjeta + controles */}
-        <div className="flex flex-col">
-          <div
-            className="relative h-[46vh] overflow-hidden"
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
-          >
+        {/* CONTENIDO — parte inferior con imagen + texto + flechas */}
+        <div
+          className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-fondo-oscuro"
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+          {/* storyCard ocupa todo el espacio */}
+          <div className="relative min-h-0 flex-1 overflow-hidden">
             {storyCard}
           </div>
 
-          {/* Controles del carrusel */}
-          <div className="flex items-center justify-between gap-3 border-t border-borde-sutil px-5 py-3">
+          {/* Fila inferior: flecha izq · puntos · flecha der */}
+          <div className="flex shrink-0 items-center justify-between gap-2 border-t border-borde-sutil px-4 py-3">
             <button
               type="button"
               onClick={goPrev}
               disabled={navPos <= 0}
               aria-label={t("anterior")}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-borde-sutil text-stone-300 transition-colors disabled:opacity-30 enabled:hover:border-acento-dorado enabled:hover:text-acento-dorado"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-borde-sutil bg-stone-900 text-stone-300 transition-all disabled:opacity-25 active:scale-95"
             >
-              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
               </svg>
             </button>
 
-            {/* Puntos de progreso (inicio + waypoints + cierre) */}
-            <div className="flex items-center gap-2">
-              {navSeq.map((idx) => (
+            <div className="flex items-center gap-1.5">
+              {navSeq.map((idx, i) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => goToIdx(idx)}
-                  aria-label={
-                    idx === -1
-                      ? t("titulo")
-                      : idx === finaleIdx
-                        ? t("finale_titulo")
-                        : `${t("ir_a")} ${waypoints[idx]!.label}`
-                  }
                   aria-current={idx === activeIdx ? "true" : undefined}
-                  className={`h-2.5 rounded-full transition-all duration-300 ${
-                    idx === activeIdx
-                      ? "w-6 bg-acento-dorado"
-                      : "w-2.5 bg-stone-600 hover:bg-stone-400"
+                  aria-label={
+                    idx === -1 ? t("titulo")
+                    : idx === finaleIdx ? t("finale_titulo")
+                    : `${t("ir_a")} ${waypoints[idx]!.label}`
+                  }
+                  className={`rounded-full transition-all duration-300 ${
+                    i === navPos
+                      ? "h-2 w-6 bg-acento-dorado"
+                      : "h-2 w-2 bg-stone-600 active:bg-stone-400"
                   }`}
                 />
               ))}
@@ -844,9 +884,9 @@ export function PaseMapSection({
               onClick={goNext}
               disabled={navPos >= navSeq.length - 1}
               aria-label={t("siguiente")}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-borde-sutil text-stone-300 transition-colors disabled:opacity-30 enabled:hover:border-acento-dorado enabled:hover:text-acento-dorado"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-borde-sutil bg-stone-900 text-stone-300 transition-all disabled:opacity-25 active:scale-95"
             >
-              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
             </button>
