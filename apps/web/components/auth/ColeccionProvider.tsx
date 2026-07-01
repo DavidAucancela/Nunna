@@ -136,11 +136,11 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
           return { status: "error" };
         }
         const row = (Array.isArray(data) ? data[0] : data) as
-          | { status?: string; personaje_slug?: string }
+          | { status?: string; slug?: string }
           | null
           | undefined;
         const status = (row?.status ?? "error") as RedeemStatus;
-        const slug = row?.personaje_slug ?? undefined;
+        const slug = row?.slug ?? undefined;
         if ((status === "ok" || status === "already_yours") && slug) {
           setColeccion((prev) => {
             const next = new Set(prev).add(slug);

@@ -63,7 +63,7 @@ create policy "user_unlocks_select_own"
 -- En 'ok' y 'already_yours' devuelve también el personaje_slug (para redirigir a su ficha).
 
 create or replace function public.redeem_code(p_code text)
-returns table (status text, personaje_slug text)
+returns table (status text, slug text)
 language plpgsql
 security definer
 set search_path = public
@@ -91,8 +91,8 @@ begin
 
   -- ¿Ya está este personaje en la colección del usuario? (p. ej. dos tarjetas del mismo ser)
   if exists (
-    select 1 from public.user_unlocks u
-    where u.user_id = v_uid and u.personaje_slug = v_slug
+    select 1 from public.user_unlocks uu
+    where uu.user_id = v_uid and uu.personaje_slug = v_slug
   ) then
     return query select 'already_yours'::text, v_slug;
     return;
