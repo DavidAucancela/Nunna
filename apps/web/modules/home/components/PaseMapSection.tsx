@@ -109,22 +109,6 @@ export function PaseMapSection({
   const [inView, setInView] = useState(false);
   const [photoIdx, setPhotoIdx] = useState(0);
 
-  // ── Móvil vs escritorio ──────────────────────────────────────────────────
-  // El recorrido por scroll (sticky 300vh) es frágil en móvil: iOS Safari congela
-  // las animaciones ligadas al scroll durante el desplazamiento por inercia. En
-  // móvil usamos un carrusel táctil (botones/swipe/pines) que NO depende del scroll.
-  const [isMobile, setIsMobile] = useState(false);
-  const isMobileRef = useRef(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const update = () => {
-      setIsMobile(mq.matches);
-      isMobileRef.current = mq.matches;
-    };
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
 
   // Pinta el mapa para un progreso dado (o la ruta completa). Compartido por el
   // scroll de escritorio y la navegación por carrusel en móvil.
@@ -160,46 +144,20 @@ export function PaseMapSection({
     if (idx === -1) {
       startedRef.current = false;
       setActiveIdx(-1);
-      paintMap(0, true); // ruta completa
-      if (isMobileRef.current && mapRef.current) {
-        const lons = ruta.map((c) => c[0]);
-        const lats = ruta.map((c) => c[1]);
-        mapRef.current.fitBounds(
-          [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
-          { padding: { top: 80, bottom: 220, left: 40, right: 40 }, duration: reducedMotion ? 0 : 600 }
-        );
-      }
+      paintMap(0, true);
     } else if (idx === finaleIdx) {
       startedRef.current = true;
       setActiveIdx(idx);
-      paintMap(1); // ruta completa, dot al final
-      if (isMobileRef.current && mapRef.current) {
-        const lons = ruta.map((c) => c[0]);
-        const lats = ruta.map((c) => c[1]);
-        mapRef.current.fitBounds(
-          [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
-          { padding: { top: 80, bottom: 220, left: 40, right: 40 }, duration: reducedMotion ? 0 : 600 }
-        );
-      }
+      paintMap(1);
     } else {
       startedRef.current = true;
       setActiveIdx(idx);
       paintMap(waypoints[idx]!.progress);
-      if (isMobileRef.current && mapRef.current) {
-        mapRef.current.easeTo({
-          center: waypoints[idx]!.coord,
-          zoom: 15.5,
-          duration: reducedMotion ? 0 : 600,
-        });
-      }
     }
   }
-  // Ref para que los pines del mapa (creados una vez en el init) llamen al
-  // goToIdx vigente sin closure obsoleto, y solo en móvil.
+  // Pines clicables: scroll al progreso del waypoint (funciona en móvil y escritorio).
   const onPinClickRef = useRef<(i: number) => void>(() => {});
-  onPinClickRef.current = (i: number) => {
-    if (isMobileRef.current) goToIdx(i);
-  };
+  onPinClickRef.current = (i: number) => scrollToWaypoint(i);
 
   const goNext = () => {
     const pos = navSeq.indexOf(activeIdx);
@@ -228,7 +186,7 @@ export function PaseMapSection({
   // Lleva el scroll hasta el punto donde el waypoint i se activa (solo escritorio).
   function scrollToProgress(rawProgress: number) {
     const el = containerRef.current;
-    if (!el || isMobileRef.current) return;
+    if (!el) return;
     const sectionTop = el.getBoundingClientRect().top + window.scrollY;
     const scrollable = el.offsetHeight - window.innerHeight;
     window.scrollTo({
@@ -246,10 +204,10 @@ export function PaseMapSection({
   function selectPase(slug: string) {
     if (slug === activePaseSlug) return;
     prevActiveIdxRef.current = -1;
-    startedRef.current = false; // el nuevo pase vuelve a mostrar la ruta completa
+    startedRef.current = false;
     setActiveIdx(-1);
     setActivePaseSlug(slug);
-    if (!isMobileRef.current) scrollToProgress(0); // reiniciar el recorrido (escritorio)
+    scrollToProgress(0);
   }
 
   const { scrollYProgress } = useScroll({
@@ -258,7 +216,6 @@ export function PaseMapSection({
   });
 
   useMotionValueEvent(scrollYProgress, "change", (raw) => {
-    if (isMobileRef.current) return; // en móvil el recorrido NO va por scroll
     const p = Math.max(0, Math.min(1, (raw - 0.04) / 0.92));
 
     // Estado inicial: sin scroll real todavía → mantener la ruta completa
@@ -519,7 +476,7 @@ export function PaseMapSection({
       dotMarkerRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView, activePaseSlug, ruta, waypoints, centro, zoom, isMobile]);
+  }, [inView, activePaseSlug, ruta, waypoints, centro, zoom]);
 
   const activeWp =
     activeIdx >= 0 && activeIdx < waypoints.length ? waypoints[activeIdx] : null;
@@ -668,11 +625,9 @@ export function PaseMapSection({
 
             <div className="mt-1 flex items-center gap-2 text-acento-dorado/80">
               <span className="text-[10px] uppercase tracking-[0.28em]">
-                {isMobile ? t("avanza_hint") : t("scroll_hint")}
+                {t("scroll_hint")}
               </span>
-              <span aria-hidden="true" className={isMobile ? "" : "motion-safe:animate-bounce"}>
-                {isMobile ? "→" : "↓"}
-              </span>
+              <span aria-hidden="true" className="motion-safe:animate-bounce">↓</span>
             </div>
           </motion.div>
         ) : isFinale ? (
@@ -800,103 +755,7 @@ export function PaseMapSection({
     </>
   );
 
-  // ── Layout MÓVIL: Stories mode — mapa full-screen + bottom sheet flotante ──
-  if (isMobile) {
-    return (
-      <section
-        ref={containerRef}
-        className="flex flex-col overflow-hidden border-y border-borde-sutil"
-        style={{ height: "calc(100dvh - 4rem)" }}
-      >
-        {/* MAPA — parte superior fija */}
-        <div className="relative shrink-0" style={{ height: "45dvh" }}>
-          <div ref={mapContainerRef} className="absolute inset-0" />
-          {/* Gradiente para legibilidad del header */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-32 bg-gradient-to-b from-fondo-oscuro/80 via-fondo-oscuro/20 to-transparent" />
-          {/* Cabecera sobre el mapa */}
-          <div className="absolute inset-x-0 top-0 z-20">
-            {mapHeader}
-          </div>
-          {/* Progress bars */}
-          <div className="absolute bottom-3 left-3 right-3 z-20 flex gap-1">
-            {navSeq.map((idx, i) => (
-              <div key={idx} className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/20">
-                <div
-                  className="h-full rounded-full bg-white transition-all ease-out"
-                  style={{
-                    width: navPos > i ? "100%" : navPos === i ? "100%" : "0%",
-                    transitionDuration: reducedMotion ? "0ms" : "400ms",
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CONTENIDO — parte inferior con imagen + texto + flechas */}
-        <div
-          className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-fondo-oscuro"
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
-        >
-          {/* storyCard ocupa todo el espacio */}
-          <div className="relative min-h-0 flex-1 overflow-hidden">
-            {storyCard}
-          </div>
-
-          {/* Fila inferior: flecha izq · puntos · flecha der */}
-          <div className="flex shrink-0 items-center justify-between gap-2 border-t border-borde-sutil px-4 py-3">
-            <button
-              type="button"
-              onClick={goPrev}
-              disabled={navPos <= 0}
-              aria-label={t("anterior")}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-borde-sutil bg-stone-900 text-stone-300 transition-all disabled:opacity-25 active:scale-95"
-            >
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-              </svg>
-            </button>
-
-            <div className="flex items-center gap-1.5">
-              {navSeq.map((idx, i) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => goToIdx(idx)}
-                  aria-current={idx === activeIdx ? "true" : undefined}
-                  aria-label={
-                    idx === -1 ? t("titulo")
-                    : idx === finaleIdx ? t("finale_titulo")
-                    : `${t("ir_a")} ${waypoints[idx]!.label}`
-                  }
-                  className={`rounded-full transition-all duration-300 ${
-                    i === navPos
-                      ? "h-2 w-6 bg-acento-dorado"
-                      : "h-2 w-2 bg-stone-600 active:bg-stone-400"
-                  }`}
-                />
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={goNext}
-              disabled={navPos >= navSeq.length - 1}
-              aria-label={t("siguiente")}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-borde-sutil bg-stone-900 text-stone-300 transition-all disabled:opacity-25 active:scale-95"
-            >
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // ── Layout ESCRITORIO: recorrido por scroll (sticky 300vh) ─────────────────
+  // ── Layout unificado: scroll-driven en móvil y escritorio ─────────────────
   return (
     <section
       ref={containerRef}
@@ -904,11 +763,39 @@ export function PaseMapSection({
       style={{ height: "300vh" }}
     >
       <div className="sticky top-16 h-[calc(100dvh-4rem)] overflow-hidden bg-fondo-oscuro flex flex-col md:flex-row">
-        {/* ── MAP — left 55% ── */}
-        <div className="relative h-[45vh] md:h-full md:w-[55%] flex-shrink-0">
+        {/* ── MAP — top 45dvh (móvil) / left 55% (desktop) ── */}
+        <div className="relative h-[45dvh] md:h-full md:w-[55%] flex-shrink-0">
           <div ref={mapContainerRef} className="absolute inset-0" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-fondo-oscuro/80 via-transparent to-fondo-oscuro/35 md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-fondo-oscuro/50" />
           {mapHeader}
+          {/* Progress bars — solo mobile */}
+          <div className="absolute bottom-3 left-3 right-3 z-20 flex gap-1 md:hidden">
+            {navSeq.map((idx, i) => (
+              <button
+                key={idx}
+                type="button"
+                aria-label={
+                  idx === -1 ? t("titulo")
+                  : idx === finaleIdx ? t("finale_titulo")
+                  : `${t("ir_a")} ${waypoints[idx]!.label}`
+                }
+                onClick={() => {
+                  if (idx === -1) scrollToProgress(0.005);
+                  else if (idx === finaleIdx) scrollToProgress(0.999);
+                  else scrollToWaypoint(idx);
+                }}
+                className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/20"
+              >
+                <div
+                  className="h-full rounded-full bg-white transition-all ease-out"
+                  style={{
+                    width: navPos > i ? "100%" : navPos === i ? "100%" : "0%",
+                    transitionDuration: reducedMotion ? "0ms" : "400ms",
+                  }}
+                />
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ── PANEL NARRADOR — right 45% ── */}
