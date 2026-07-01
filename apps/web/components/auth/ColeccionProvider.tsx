@@ -125,8 +125,15 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
       // Validación de formato antes de la red: evita llamadas inútiles a la RPC.
       if (!CODE_RE.test(normalized)) return { status: "invalid" };
       try {
+        // Verificar sesión activa antes de llamar la RPC (evita 400 por JWT expirado).
+        const { data: { session: liveSession } } = await supabase.auth.getSession();
+        if (!liveSession) return { status: "not_authenticated" };
+
         const { data, error } = await supabase.rpc("redeem_code", { p_code: normalized });
-        if (error) return { status: "error" };
+        if (error) {
+          console.error("[redeemCode] error:", error.message, error.details, error.hint, error.code);
+          return { status: "error" };
+        }
         const row = (Array.isArray(data) ? data[0] : data) as
           | { status?: string; personaje_slug?: string }
           | null
