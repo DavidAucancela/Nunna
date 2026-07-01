@@ -127,11 +127,28 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
       try {
         // Verificar sesión activa antes de llamar la RPC (evita 400 por JWT expirado).
         const { data: { session: liveSession } } = await supabase.auth.getSession();
+        console.log("[redeemCode] session:", liveSession ? `uid=${liveSession.user.id} role=${liveSession.user.role}` : "null");
         if (!liveSession) return { status: "not_authenticated" };
+
+        // Raw fetch para capturar el cuerpo exacto del error de PostgREST.
+        const rawRes = await fetch(
+          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/redeem_code`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "apikey": process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+              "Authorization": `Bearer ${liveSession.access_token}`,
+            },
+            body: JSON.stringify({ p_code: normalized }),
+          },
+        );
+        const rawBody = await rawRes.json().catch(() => null);
+        console.log("[redeemCode] raw response:", rawRes.status, rawBody);
 
         const { data, error } = await supabase.rpc("redeem_code", { p_code: normalized });
         if (error) {
-          console.error("[redeemCode] error:", error.message, error.details, error.hint, error.code);
+          console.error("[redeemCode] supabase error:", error.message, error.details, error.hint, error.code);
           return { status: "error" };
         }
         const row = (Array.isArray(data) ? data[0] : data) as
