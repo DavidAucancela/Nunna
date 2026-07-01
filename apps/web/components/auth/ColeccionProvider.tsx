@@ -125,8 +125,16 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
       // Validación de formato antes de la red: evita llamadas inútiles a la RPC.
       if (!CODE_RE.test(normalized)) return { status: "invalid" };
       try {
+        // getUser() verifica el JWT contra el servidor (no solo localStorage).
+        // getSession() puede devolver un token expirado sin saberlo → 400 en la RPC.
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) return { status: "not_authenticated" };
+
         const { data, error } = await supabase.rpc("redeem_code", { p_code: normalized });
-        if (error) return { status: "error" };
+        if (error) {
+          console.error("[redeemCode] error:", error.message);
+          return { status: "error" };
+        }
         const row = (Array.isArray(data) ? data[0] : data) as
           | { status?: string; personaje_slug?: string }
           | null
