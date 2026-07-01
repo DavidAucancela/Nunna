@@ -30,7 +30,7 @@ export interface PersonajeLite {
  *  redeeming → volvió del enlace, canjeando el código
  *  success   → desbloqueado ✓
  */
-type Phase = "code" | "checking" | "email" | "sending" | "link_sent" | "redeeming" | "success";
+type Phase = "code" | "checking" | "email" | "sending" | "link_sent" | "redeeming" | "success" | "already_yours";
 
 const CODE_LEN = 6;
 
@@ -87,10 +87,14 @@ export function DesbloquearForm({
     if (!mountedRef.current) return;
     switch (result.status) {
       case "ok":
-      case "already_yours":
         setUnlockedSlug(result.slug ?? null);
         setErrorKey(null);
         setPhase("success");
+        break;
+      case "already_yours":
+        setUnlockedSlug(result.slug ?? null);
+        setErrorKey(null);
+        setPhase("already_yours");
         break;
       case "invalid":
         setErrorKey("error_invalido");
@@ -196,6 +200,45 @@ export function DesbloquearForm({
 
   const accent = getOrigenStyle(unlocked?.origen ?? undefined).accentColor;
 
+  // ── Ya lo tienes ────────────────────────────────────────────────────────────
+  if (phase === "already_yours" && unlocked) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mx-auto max-w-md text-center"
+      >
+        <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-stone-800 text-stone-400">
+          <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+          </svg>
+        </div>
+        <h2 className="font-serif text-3xl font-bold text-texto-claro">
+          Ya tienes a {unlocked.nombre}
+        </h2>
+        <p className="mt-3 text-stone-400">
+          Este personaje ya está en tu colección. El código no puede usarse de nuevo.
+        </p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <Link
+            href={{ pathname: "/personajes/[slug]", params: { slug: unlocked.slug } }}
+            onClick={() => window.scrollTo({ top: 0, behavior: "instant" })}
+            className="rounded-full bg-stone-800 px-6 py-3 text-sm font-medium text-texto-claro transition-colors hover:bg-stone-700"
+          >
+            Ver a {unlocked.nombre}
+          </Link>
+          <button
+            type="button"
+            onClick={() => { setPhase("code"); setCode(""); setErrorKey(null); }}
+            className="rounded-full border border-borde-sutil px-6 py-3 text-sm font-medium text-stone-400 transition-colors hover:text-texto-claro"
+          >
+            Ingresar otro código
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
   // ── Éxito ───────────────────────────────────────────────────────────────────
   if (phase === "success" && unlocked) {
     return (
@@ -219,6 +262,7 @@ export function DesbloquearForm({
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Link
             href={{ pathname: "/personajes/[slug]", params: { slug: unlocked.slug } }}
+            onClick={() => window.scrollTo({ top: 0, behavior: "instant" })}
             className="rounded-full px-6 py-3 text-sm font-medium text-fondo-oscuro transition-transform hover:scale-[1.02]"
             style={{ backgroundColor: accent }}
           >
@@ -226,6 +270,7 @@ export function DesbloquearForm({
           </Link>
           <Link
             href="/personajes"
+            onClick={() => window.scrollTo({ top: 0, behavior: "instant" })}
             className="rounded-full border border-borde-sutil px-6 py-3 text-sm font-medium text-texto-claro transition-colors hover:bg-stone-900"
           >
             {t("ver_coleccion")}
