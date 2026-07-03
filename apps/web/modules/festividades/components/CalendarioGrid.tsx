@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import type { PaseListItem } from "@seres-del-pase/types";
+import { Link } from "@/i18n/navigation";
 
 const MESES = [
   "Enero", "Febrero", "Marzo", "Abril",
@@ -230,7 +231,9 @@ function PaseCard({ pase }: { pase: PaseListItem }) {
           {/* Título + badge tipo (si no hay imagen) */}
           <div className="flex items-start justify-between gap-2">
             <h4 className="font-serif text-sm font-bold leading-snug text-texto-claro sm:text-base">
-              {pase.nombre}
+              <Link href={{ pathname: "/pases/[slug]", params: { slug: pase.slug } }} className="hover:underline">
+                {pase.nombre}
+              </Link>
             </h4>
             {!pase.imagenPortada && pase.tipo && (
               <span className="mt-0.5 shrink-0 rounded-full border border-stone-700 bg-stone-800 px-2 py-0.5 text-[9px] uppercase tracking-wider text-stone-400">
