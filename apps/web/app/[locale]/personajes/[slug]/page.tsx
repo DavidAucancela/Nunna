@@ -4,6 +4,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 
 import { getPersonaje, getPersonajes, getPases } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
+import { localeAlternates } from "@/lib/seo";
 import { GatedPageRedirect } from "@/modules/personajes/components/GatedPageRedirect";
 import { HeroGated } from "@/modules/personajes/components/HeroGated";
 import { AnatomiaGated } from "@/modules/personajes/components/AnatomiaGated";
@@ -38,6 +39,7 @@ export async function generateMetadata({ params }: PersonajePageProps): Promise<
   return {
     title: personaje.nombre,
     description: personaje.resumen,
+    alternates: localeAlternates({ pathname: "/personajes/[slug]", params: { slug } }, locale),
     openGraph: {
       title: `${personaje.nombre} | Nunna`,
       description: personaje.resumen,
@@ -65,7 +67,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
     : undefined;
   const style = getOrigenStyle(personaje.origen);
 
-  const pasesDelPersonaje = pases.filter((p) => p.personaje && p.personaje === personaje.nombre);
+  const pasesDelPersonaje = pases.filter((p) => p.personajeSlug === personaje.slug);
   const festividad =
     pasesDelPersonaje.length > 0
       ? `${pasesDelPersonaje.length} ${pasesDelPersonaje.length === 1 ? "pase" : "pases"} del Niño Riobambeño`
