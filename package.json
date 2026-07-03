@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "turbo run build --filter @seres-del-pase/web",
+    "build": "node scripts/validate-data.mjs && turbo run build --filter @seres-del-pase/web",
+    "validate-data": "node scripts/validate-data.mjs",
     "start": "pnpm --filter @seres-del-pase/web start",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
