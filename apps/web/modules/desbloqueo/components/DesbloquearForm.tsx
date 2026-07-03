@@ -121,11 +121,23 @@ export function DesbloquearForm({
   }, []);
 
   // Tras volver del magic-link: sesión disponible + código pendiente → canjear.
+  // El código puede venir de la URL (?unlock_code=, sobrevive aunque el enlace se
+  // abra en otro navegador/dispositivo) o, si no está, de localStorage (mismo
+  // dispositivo). Depender solo de localStorage dejaba a la persona varada en el
+  // paso 1 cuando abría el correo en un contexto distinto al del formulario.
   useEffect(() => {
     if (!ready || !session || autoTriedRef.current) return;
-    const pending = consumePendingCode();
+
+    const url = new URL(window.location.href);
+    const fromUrl = url.searchParams.get("unlock_code");
+    const pending = fromUrl && CODE_RE.test(fromUrl) ? fromUrl : consumePendingCode();
     if (!pending) return;
+
     autoTriedRef.current = true;
+    if (fromUrl) {
+      url.searchParams.delete("unlock_code");
+      window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+    }
     setCode(pending);
     setPhase("redeeming");
     redeemCode(pending).then(handleResult);
@@ -182,7 +194,7 @@ export function DesbloquearForm({
     const normalized = code.trim().toUpperCase();
     setPhase("sending");
     setPendingCode(normalized);
-    const err = await signInWithEmail(email.trim());
+    const err = await signInWithEmail(email.trim(), normalized);
     if (!mountedRef.current) return;
     if (err) {
       consumePendingCode();
