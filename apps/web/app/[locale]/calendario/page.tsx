@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import { getPases } from "@/lib/data";
+import { localeAlternates } from "@/lib/seo";
 import { CalendarioGrid } from "@/modules/festividades/components/CalendarioGrid";
 
-export async function generateMetadata(): Promise<Metadata> {
+interface CalendarioPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({ params }: CalendarioPageProps): Promise<Metadata> {
+  const { locale } = await params;
   return {
     title: "Calendario festivo",
     description: "Fechas y festividades de los pases del Chimborazo — Riobamba, Ecuador.",
+    alternates: localeAlternates("/calendario", locale),
   };
 }
 

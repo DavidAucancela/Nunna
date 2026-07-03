@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 
 import { getPersonajes } from "@/lib/data";
+import { localeAlternates } from "@/lib/seo";
 import { FadeUp } from "@/components/ui/FadeUp";
 import { DesbloquearForm, type PersonajeLite } from "@/modules/desbloqueo/components/DesbloquearForm";
 
@@ -15,6 +16,7 @@ export async function generateMetadata({ params }: DesbloquearPageProps): Promis
   return {
     title: t("titulo"),
     description: t("subtitulo"),
+    alternates: localeAlternates("/desbloquear", locale),
   };
 }
 

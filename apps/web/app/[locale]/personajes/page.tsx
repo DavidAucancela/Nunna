@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { PersonajesGrid } from "@/modules/personajes/components/PersonajesGrid";
 import { FadeUp } from "@/components/ui/FadeUp";
 import { getPersonajes } from "@/lib/data";
+import { localeAlternates } from "@/lib/seo";
 
 interface PersonajesPageProps {
   params: Promise<{ locale: string }>;
@@ -14,6 +15,7 @@ export async function generateMetadata({ params }: PersonajesPageProps): Promise
   return {
     title: t("titulo"),
     description: t("descripcion"),
+    alternates: localeAlternates("/personajes", locale),
   };
 }
 
