@@ -53,3 +53,6 @@ apps/web/public/pases-videos/AQPBd*.mp4
 # Códigos de desbloqueo para imprenta — datos sensibles, no commitear
 codes.csv
 codes-*.csv
+
+# TypeScript incremental build info
+*.tsbuildinfo

@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { localeAlternates } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Sobre el proyecto | Personajes del Pase",
-  description:
-    "Personajes del Pase es un catálogo digital de los personajes de los pases riobambeños — tradición viva de Riobamba, Chimborazo, Ecuador.",
-};
+interface SobrePageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({ params }: SobrePageProps): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "Sobre el proyecto | Personajes del Pase",
+    description:
+      "Personajes del Pase es un catálogo digital de los personajes de los pases riobambeños — tradición viva de Riobamba, Chimborazo, Ecuador.",
+    alternates: localeAlternates("/sobre", locale),
+  };
+}
 
 export default function SobrePage() {
   return (

@@ -143,12 +143,24 @@ export function HeroSection() {
   const t = useTranslations("home");
   const reduced = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const [hasHover, setHasHover] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
+  // El video trae audio propio; empieza silenciado porque los navegadores exigen
+  // `muted` para permitir autoplay — el botón activa sonido con el primer gesto del usuario.
+  const [soundOn, setSoundOn] = useState(false);
   useEffect(() => {
     setHasHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
   }, []);
+
+  function toggleSound() {
+    const el = videoRef.current;
+    if (!el) return;
+    const next = !soundOn;
+    el.muted = !next;
+    setSoundOn(next);
+  }
 
   // Posición X del mouse normalizada a [-1, 1]
   const mouseXRaw = useMotionValue(0);
@@ -176,6 +188,7 @@ export function HeroSection() {
       {/* Video de fondo */}
       <div className="absolute inset-0 bg-fondo-oscuro">
         <video
+          ref={videoRef}
           autoPlay
           muted
           loop
@@ -188,6 +201,28 @@ export function HeroSection() {
           <source src="/pases-videos/main-header.mp4" type="video/mp4" />
         </video>
       </div>
+
+      {/* Toggle de sonido — grande y muy visible, opt-in (el video empieza mudo) */}
+      <button
+        type="button"
+        onClick={toggleSound}
+        aria-pressed={soundOn}
+        aria-label={soundOn ? t("hero.silenciar") : t("hero.activar_sonido")}
+        className="absolute bottom-6 right-5 z-20 flex h-14 w-14 items-center justify-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur-md transition-colors hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70 sm:bottom-8 sm:right-8 sm:h-16 sm:w-16"
+      >
+        {soundOn ? (
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H2v6h4l5 4z" />
+            <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+            <path d="M18.5 5.5a9 9 0 0 1 0 13" />
+          </svg>
+        ) : (
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H2v6h4l5 4z" />
+            <path d="m23 9-6 6M17 9l6 6" />
+          </svg>
+        )}
+      </button>
 
       {/* Overlays */}
       <div className="absolute inset-0 bg-fondo-oscuro/55" />

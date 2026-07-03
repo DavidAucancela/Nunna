@@ -11,7 +11,8 @@ export function GatedPageRedirect({ slug }: { slug: string }) {
   useEffect(() => {
     if (!gatingActive || !ready) return;
     if (!coleccion.has(slug)) {
-      router.replace("/desbloquear");
+      // Landing de desbloqueo del personaje concreto — conserva el contexto del QR escaneado.
+      router.replace({ pathname: "/desbloquear/[slug]", params: { slug } });
     }
   }, [gatingActive, ready, coleccion, slug, router]);
 

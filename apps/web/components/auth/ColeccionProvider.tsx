@@ -42,8 +42,14 @@ interface ColeccionContextValue {
   coleccion: Set<string>;
   /** ¿El personaje está desbloqueado? */
   has: (slug: string) => boolean;
-  /** Envía un magic-link al email. Devuelve un mensaje de error o null si ok. */
-  signInWithEmail: (email: string) => Promise<string | null>;
+  /**
+   * Envía un magic-link al email. Si se pasa `code`, viaja en la URL del enlace
+   * (query param `unlock_code`) para sobrevivir el regreso en OTRO navegador o
+   * dispositivo — depender solo de localStorage falla si el correo se abre en
+   * un contexto distinto al que llenó el formulario. Devuelve un mensaje de
+   * error o null si ok.
+   */
+  signInWithEmail: (email: string, code?: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   /** Verifica si un código existe y está sin canjear (sin auth, paso previo al magic-link). */
   checkCodeValid: (code: string) => Promise<boolean>;
@@ -182,10 +188,14 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
     };
   }, [applyColeccion, loadColeccion]);
 
-  const signInWithEmail = useCallback(async (email: string): Promise<string | null> => {
+  const signInWithEmail = useCallback(async (email: string, code?: string): Promise<string | null> => {
     if (!supabase) return "not_configured";
-    const emailRedirectTo =
-      typeof window !== "undefined" ? `${window.location.origin}${window.location.pathname}` : undefined;
+    let emailRedirectTo: string | undefined;
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.origin + window.location.pathname);
+      if (code) url.searchParams.set("unlock_code", code);
+      emailRedirectTo = url.toString();
+    }
     const { error } = await supabase.auth.signInWithOtp(
       emailRedirectTo ? { email, options: { emailRedirectTo } } : { email },
     );

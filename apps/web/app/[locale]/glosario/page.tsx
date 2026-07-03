@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { getGlosario } from "@/lib/data";
+import { localeAlternates } from "@/lib/seo";
 import { GlosarioClient } from "@/modules/glosario/components/GlosarioClient";
 
 interface GlosarioPageProps {
@@ -10,7 +11,7 @@ interface GlosarioPageProps {
 export async function generateMetadata({ params }: GlosarioPageProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "nav" });
-  return { title: t("glosario") };
+  return { title: t("glosario"), alternates: localeAlternates("/glosario", locale) };
 }
 
 export default async function GlosarioPage({ params }: GlosarioPageProps) {

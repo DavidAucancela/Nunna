@@ -14,7 +14,9 @@
       "titulo": "Nunna",
       "subtitulo": "Riobamba raymikuna ukupi causak runakunamanta",
       "cta_principal": "Runakunata riksiy",
-      "cta_secundario": "Watapurata qhaway"
+      "cta_secundario": "Watapurata qhaway",
+      "activar_sonido": "Uyarinata kichay",
+      "silenciar": "Upallachiy"
     },
     "intro": {
       "titulo": "Kawsak señalkunamanta",
@@ -73,7 +75,14 @@
     "orden_dia": "Punchawpa katiynin",
     "recorridos_oficiales": "Kikin ñankuna",
     "calendario_completo": "Tukuy watapura",
-    "nota": "Riobamba Alcaldíap 20 diciembre punchawpaq kikin ñankuna. Ñankunapas pachakunapas hamuq watakunapi hukchakunmanmi."
+    "nota": "Riobamba Alcaldíap 20 diciembre punchawpaq kikin ñankuna. Ñankunapas pachakunapas hamuq watakunapi hukchakunmanmi.",
+    "volver": "Raymikunaman kutiy",
+    "horario_label": "Pacha",
+    "ruta_label": "Ñan",
+    "tipo_label": "Wakichiq",
+    "personaje_label": "Riqsisqa runa",
+    "ver_ficha_personaje": "{nombre} qillqata rikuy",
+    "contenido_pendiente": "Kay pawkarpa willaykunan, fotokunan wakichisqa kachkanraq."
   },
   "error": {
     "404": "Mana tarirkanchu",

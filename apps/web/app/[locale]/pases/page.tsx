@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { getPases, getRecorridos } from "@/lib/data";
+import { localeAlternates } from "@/lib/seo";
 import { PaseMapSection } from "@/modules/home/components/PaseMapSection";
 
 interface PasesPageProps {
@@ -11,7 +12,11 @@ export async function generateMetadata({ params }: PasesPageProps): Promise<Meta
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "pases" });
 
-  return { title: t("titulo"), description: t("descripcion") };
+  return {
+    title: t("titulo"),
+    description: t("descripcion"),
+    alternates: localeAlternates("/pases", locale),
+  };
 }
 
 export default async function PasesPage({ params }: PasesPageProps) {

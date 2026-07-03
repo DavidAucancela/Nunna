@@ -14,7 +14,9 @@
       "titulo": "Nunna",
       "subtitulo": "Los personajes sagrados y festivos de los pases riobambeños",
       "cta_principal": "Conocer los personajes",
-      "cta_secundario": "Ver el calendario"
+      "cta_secundario": "Ver el calendario",
+      "activar_sonido": "Activar sonido",
+      "silenciar": "Silenciar"
     },
     "intro": {
       "titulo": "Un mundo de símbolos vivos",
@@ -73,7 +75,14 @@
     "orden_dia": "Orden del día",
     "recorridos_oficiales": "Recorridos oficiales",
     "calendario_completo": "Calendario completo",
-    "nota": "Recorridos oficiales emitidos por la Alcaldía de Riobamba para el 20 de diciembre. Las rutas y horarios pueden variar en ediciones futuras."
+    "nota": "Recorridos oficiales emitidos por la Alcaldía de Riobamba para el 20 de diciembre. Las rutas y horarios pueden variar en ediciones futuras.",
+    "volver": "Volver a Pases y Festividades",
+    "horario_label": "Horario",
+    "ruta_label": "Recorrido",
+    "tipo_label": "Organiza",
+    "personaje_label": "Personaje destacado",
+    "ver_ficha_personaje": "Ver la ficha de {nombre}",
+    "contenido_pendiente": "La historia y fotografías de este pase están en preparación."
   },
   "error": {
     "404": "Página no encontrada",

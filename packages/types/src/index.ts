@@ -21,7 +21,6 @@ export interface Narrativa {
   leyenda: string;
   secreto: string;
   capitulos: CapituloNarrativa[];
-  palabrasClave?: string[];
 }
 
 export interface Hotspot {
@@ -136,6 +135,8 @@ export interface PaseListItem
   inicio?: string;
   fin?: string;
   personaje?: string;
+  /** Slug del personaje destacado — clave de cruce con personajes.json (el nombre es solo display). */
+  personajeSlug?: string;
   color?: string;
 }
 

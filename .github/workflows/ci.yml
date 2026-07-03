@@ -30,6 +30,12 @@ jobs:
       - name: Type check
         run: pnpm --filter @seres-del-pase/web type-check
 
+      - name: Validate data integrity
+        run: pnpm validate-data
+
+      - name: Unit tests
+        run: pnpm --filter @seres-del-pase/web test
+
   build:
     name: Build
     runs-on: ubuntu-latest

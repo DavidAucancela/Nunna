@@ -15,6 +15,7 @@
     "inicio": "Av. Antonio José de Sucre",
     "fin": "Iglesia San Nicolás",
     "personaje": "Aya Uma",
+    "personajeSlug": "aya-uma",
     "color": "#C89B3C"
   },
   {
@@ -51,6 +52,7 @@
     "inicio": "Carabobo / Villarroel",
     "fin": "García Moreno",
     "personaje": "Payaso",
+    "personajeSlug": "payaso",
     "color": "#C89B3C"
   },
   {
@@ -69,6 +71,7 @@
     "inicio": "España (frente al colegio)",
     "fin": "Colón / Nueva York",
     "personaje": "Perro",
+    "personajeSlug": "perro",
     "color": "#B8312F"
   },
   {

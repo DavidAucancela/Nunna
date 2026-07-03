@@ -4,6 +4,7 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import { notFound } from "next/navigation";
 import { Fraunces } from "next/font/google";
 import { routing } from "@/i18n/routing";
+import { SITE_URL } from "@/lib/site-url";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MainContent } from "@/components/layout/MainContent";
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: LocaleLayoutProps): Promise<M
   const t = await getTranslations({ locale, namespace: "home.hero" });
 
   return {
-    metadataBase: new URL("https://seres-del-pase.ec"),
+    metadataBase: new URL(SITE_URL),
     title: {
       template: "%s | Nunna",
       default: t("titulo"),

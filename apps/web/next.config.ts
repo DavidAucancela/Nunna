@@ -16,8 +16,10 @@ const PERSONAJE_BASE_PATHS = [
 
 const nextConfig: NextConfig = {
   transpilePackages: ["maplibre-gl"],
+  // Optimización de imágenes activa (WebP + srcset responsive). Railway corre
+  // `next start`, que trae sharp integrado desde Next 15 — no requiere config extra.
   images: {
-    unoptimized: true,
+    formats: ["image/webp"],
   },
   // Contrato permanente del QR: un 301 por cada alias de slug × idioma, para que
   // los imanes ya impresos sigan llegando a la ficha aunque el slug cambie.
@@ -53,6 +55,12 @@ const nextConfig: NextConfig = {
             value:
               "<https://fonts.googleapis.com>; rel=preconnect, <https://fonts.gstatic.com>; rel=preconnect",
           },
+          // Básicos gratis: no rompen nada (sin CSP, que requeriría auditar cada script/estilo inline).
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          // El sitio no se embebe en iframes de terceros.
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=()" },
         ],
       },
     ];
