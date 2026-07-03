@@ -34,8 +34,7 @@ Implicaciones técnicas:
 | Estilos | Tailwind CSS v3 + PostCSS | `apps/web/tailwind.config.js` |
 | i18n | next-intl v3 (es / qu / en) | `apps/web/i18n/` + `apps/web/messages/` |
 | Datos | JSON estático en repo | `apps/web/lib/data/` |
-| Backend | NestJS (búsqueda semántica — Fase 3) | `apps/api/` |
-| Base de datos | PostgreSQL 16 (Supabase — Fase 3) | `prisma/schema.prisma` |
+| Auth + colección | Supabase (Postgres) | `supabase/schema.sql` |
 | Monorepo | Turborepo + pnpm workspaces | `turbo.json`, `pnpm-workspace.yaml` |
 
 > **Sin CMS.** Directus fue eliminado (2026-05-31) por costo. Los datos viven en JSON versionados en el repo.
@@ -66,21 +65,26 @@ pnpm install
 
 # Frontend (puerto 3030)
 pnpm --filter @seres-del-pase/web dev --port 3030
-
-# Solo API NestJS
-pnpm --filter @seres-del-pase/api dev
 ```
+
+> `apps/api/` (NestJS) y `prisma/` se eliminaron (2026-07-02) — eran exclusivamente para la búsqueda
+> semántica, descartada el 2026-06-21. No quedó ningún otro uso real; ver docs/PLAN-V3.md Fase 4.
 
 Frontend: **http://localhost:3030/es**
 
 ### Variables de entorno (`apps/web/.env.local`)
 ```
-# Reservadas para Fase 3 (búsqueda semántica con pgvector)
+# Auth + colección (desbloqueo de imanes)
 NEXT_PUBLIC_SUPABASE_URL=https://dhhesajpexcyainibwvl.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<JWT>
+
+# URL canónica (OG/sitemap/robots — lib/site-url.ts). Opcional: si falta, cae
+# al dominio de Railway. Cuando haya dominio propio, cambiarla aquí y en Railway.
+NEXT_PUBLIC_SITE_URL=https://nunnaec-production.up.railway.app
 ```
 
 No se necesitan variables de entorno para correr el frontend en desarrollo — los datos vienen del JSON.
+Sin las de Supabase el gating queda apagado (todo visible), que es lo cómodo en dev.
 
 ---
 
@@ -95,10 +99,11 @@ apps/web/
 │   │   ├── personajes/
 │   │   │   ├── page.tsx            → Grid de personajes
 │   │   │   └── [slug]/page.tsx     → ★★ DESTINO QR — ficha completa con historia
-│   │   ├── pases/page.tsx
+│   │   ├── pases/
+│   │   │   ├── page.tsx            → Grid + mapa "Un pase, un camino" (/mapa se fusionó aquí, con redirect)
+│   │   │   └── [slug]/page.tsx     → Detalle de pase (scaffold mínimo — solo datos logísticos, sin historia editorial)
 │   │   ├── calendario/page.tsx     → Pases y Festividades
 │   │   ├── glosario/page.tsx
-│   │   ├── mapa/page.tsx
 │   │   ├── desbloquear/page.tsx    → ★ canje de código de 6 chars (desbloqueo de imán)
 │   │   ├── mis-personajes/page.tsx → ★ colección del usuario + progreso + logros
 │   │   └── sobre/page.tsx
@@ -126,16 +131,20 @@ apps/web/
 │   │                                 pases.service.ts, glosario.service.ts,
 │   │                                 recorrido.service.ts (getRecorridos — multi-pase del mapa)
 │   ├── data/
-│   │   ├── personajes.json         → 9 personajes con narrativa, hotspots, imagenBanner, multimedia
-│   │   │                             (+ flags v2: experiencia, audioAmbiente)
+│   │   ├── personajes.json         → 4 personajes publicados (con narrativa, hotspots, imagenBanner,
+│   │   │                             multimedia + flags v2: experiencia, audioAmbiente); los 5 sin
+│   │   │                             imágenes se retiraron (2026-06-29) hasta tener assets
 │   │   ├── glosario.json           → 16 entradas kichwa
-│   │   ├── pases.json              → pases con fechas y rutas (grid /pases, /mapa, /calendario)
+│   │   ├── pases.json              → pases con fechas y rutas (grid /pases, /mapa, /calendario);
+│   │   │                             `personajeSlug` = clave de cruce con personajes.json
 │   │   └── recorrido.json          → mapa "Un pase, un camino": { defaultPaseSlug, pases[] }
-│   └── origen-styles.ts            → Estilos por tipo de origen
+│   ├── origen-styles.ts            → Estilos por tipo de origen
+│   ├── site-url.ts                 → SITE_URL (NEXT_PUBLIC_SITE_URL; base de OG/sitemap/robots)
+│   └── seo.ts                      → localeAlternates() — canonical + hreflang por página
 ├── public/
 │   ├── personajes/                 → Imágenes planas [slug]-*.png (retrato, banner, en-pase, presentación)
 │   ├── informacion_pases/          → Imágenes de los pases (antes public/pases/, movidas 2026-06-14)
-│   ├── pases-videos/               → Video de fondo del hero (pase-perros.mp4)
+│   ├── pases-videos/               → Video de fondo del hero (main-header.mp4, 4.4 MB comprimido)
 │   └── audio/                      → Audio ambiente del hero v2 ([slug]-ambiente.mp3) — ver README
 ├── i18n/routing.ts                 → Locales + pathnames
 ├── messages/                       → es.json / qu.json / en.json (incluye secciones "historia" y "experiencia")
@@ -177,7 +186,13 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 
 > **Imágenes de pases** (grid `/pases`, `/mapa`, `/calendario`): en `public/informacion_pases/`,
 > referenciadas por `pases.json` y `mapa/page.tsx` como `/informacion_pases/[archivo]`.
-> **Video del hero**: `public/pases-videos/pase-perros.mp4` (poster fallback = `aya-uma-banner.png`).
+> **Video del hero**: `public/pases-videos/main-header.mp4` (poster = `main-header-poster.jpg`).
+> Comprimido a 960×540 CRF 30 (6 MB, 2026-07-03) — **trae audio propio** (pista AAC 96k, no un
+> `<audio>` separado). El `<video>` arranca `muted` (exigencia de autoplay del navegador) y el botón
+> grande de sonido (`HeroSection.tsx`, esquina inferior derecha) alterna `video.muted` con el primer
+> gesto del usuario — mismo patrón que el toggle de audio ambiente en `HeroDespertar`. Si se reemplaza
+> el video, mantener el presupuesto (~6 MB) y preservar la pista de audio al comprimir con ffmpeg
+> (`-c:a aac -b:a 96k`, no omitir `-c:a`).
 > **Audio del hero v2**: `public/audio/[slug]-ambiente.mp3` (referenciado por `audioAmbiente` en
 > `personajes.json`). Opt-in, sin autoplay; si falta el archivo, el botón aparece pero no suena.
 > Ver `public/audio/README.md` para los nombres exactos esperados.
@@ -327,7 +342,7 @@ Modo oscuro por defecto.
 - Monorepo Turborepo + pnpm funcional
 - Frontend: todas las páginas con estilos completos (landing, personajes, detalle, pases, calendario, glosario, sobre, mapa)
 - i18n es/qu/en con rutas localizadas
-- Datos estáticos: 9 personajes (con `narrativa`, `hotspots`, `imagenBanner`, `multimedia`), 16 entradas glosario, 7 pases
+- Datos estáticos: 4 personajes publicados (con `narrativa`, `hotspots`, `imagenBanner`, `multimedia`), 16 entradas glosario, 14 pases
 - Build de producción SSG sin errores
 - Eliminación completa de Directus
 - Favicons SVG
@@ -370,7 +385,8 @@ Modo oscuro por defecto.
   - Gate: `experiencia && hotspots?.length && imagenPortada`; se inserta entre Historia y Galería
 - **Desbloqueo de imanes + colección sincronizada** (PR #25/#26, desplegado 2026-06-28):
   - Código de 6 caracteres bajo la tarjeta → canje atómico vía Supabase (RPC `redeem_code`) → colección por
-    cuenta (magic-link). El QR sigue navegando a la ficha pública (sin cambios). Ver decisión técnica abajo.
+    cuenta (magic-link). La URL del QR no cambia, pero la ficha es gated desde 2026-06-29 (redirect a
+    `/desbloquear/[slug]` si no está en la colección). Ver decisión técnica abajo.
   - Páginas `/desbloquear` y `/mis-personajes` (progreso + logros derivados); pestaña condicional en el nav.
   - Ficha gated: experiencia inmersiva = premio del desbloqueo (`HeroGated`/`AnatomiaGated`).
   - **En producción:** schema aplicado, lote-1 sembrado, envs en Railway, redirect en Supabase Auth configurado.
@@ -400,6 +416,18 @@ Modo oscuro por defecto.
 - **ProductoSection — "Cómo funciona" mobile** (2026-06-29):
   - Reemplaza carrusel táctil por pasos apilados verticalmente con `whileInView` al hacer scroll
   - Visual + número grande + título + texto; separador dorado entre pasos; desktop sin cambios
+- **Auditoría v3 — Fases 0/1/2 del plan** (`docs/PLAN-V3.md`, 2026-07-01):
+  - **Fase 0 (bugs):** `metadataBase` ahora sale de `NEXT_PUBLIC_SITE_URL` (`lib/site-url.ts`) con fallback
+    al dominio de Railway — arregla previews de WhatsApp que apuntaban a `seres-del-pase.ec`; `pases.json`
+    cruza con personajes por `personajeSlug` (el nombre queda solo como display — arregla huérfanos Rey
+    Moro/Curiquingue); `GatedPageRedirect` redirige a `/desbloquear/[slug]` (conserva el personaje del QR);
+    `*.tsbuildinfo` al gitignore; videos sin uso borrados de `public/pases-videos/`
+  - **Fase 1 (performance móvil):** optimización de imágenes de Next **activada** (se quitó
+    `images.unoptimized` — WebP + srcset; sharp viene integrado en `next start` desde Next 15);
+    video del hero comprimido 11.9 MB → 4.4 MB (960×540, CRF 32, sin audio)
+  - **Fase 2 (SEO):** `app/sitemap.ts` (páginas públicas × 3 locales con hreflang), `app/robots.ts`
+    (disallow /mis-personajes), `app/manifest.ts` (PWA básica); canonical + hreflang por página vía
+    `localeAlternates()` (`lib/seo.ts`) en todas las páginas públicas incluida la ficha
 
 ### 🔄 Siguiente
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
@@ -412,7 +440,8 @@ Modo oscuro por defecto.
 - **Experiencia v2** — Fases 2, 3, 5-12 del plan de 12 fases (Fases 1 y 4 ya implementadas)
 
 ### ⏳ Fase 2
-- Modo claro/oscuro ✅ (toggle junto a los idiomas, commit `58c591e`)
+- Modo claro/oscuro — el toggle se implementó (commit `58c591e`) pero hoy **no está en el Header**;
+  el sitio corre solo en oscuro (`html.dark` fijo en layout). Reintroducirlo es opcional.
 - Página de detalle de pase (`/pases/[slug]`)
 
 ### ⏳ Fase 3
@@ -431,8 +460,14 @@ Modo oscuro por defecto.
 Convierte la compra física en una experiencia que **sube de nivel**: cada tarjeta trae un **código de 6
 caracteres** impreso debajo; al canjearlo, el personaje entra a la **colección sincronizada por cuenta** del
 usuario y su ficha desbloquea la experiencia inmersiva. Branch: `feature/desbloqueo-coleccion-imanes`.
-- **El QR NO cambia.** Sigue navegando a la ficha pública (`/[locale]/personajes/[slug]`) — contrato intacto.
-  La **única llave de desbloqueo es el código de 6 caracteres** (vía accesible: se escribe a mano, sin cámara).
+- **La URL del QR no cambia** (`/[locale]/personajes/[slug]` — contrato de URL intacto), pero desde
+  2026-06-29 **la ficha es gated** (decisión del autor, ratificada 2026-07-01): el visitante sin el
+  personaje en su colección es redirigido client-side a `/desbloquear/[slug]` (`GatedPageRedirect`),
+  que conserva el contexto del personaje escaneado. La **única llave de desbloqueo es el código de 6
+  caracteres** (vía accesible: se escribe a mano, sin cámara).
+  ⚠ Limitación conocida: el gating es client-side sobre HTML SSG — el contenido narrativo viaja en el
+  HTML (view-source lo revela) y hay un flash breve de la ficha antes del redirect. Si se quiere un
+  teaser real, hay que partir la ficha en secciones client gated (pendiente, ver docs/PLAN-V3.md A5).
 - **⚠ Enciende Supabase en producción** (auth + colección). Se aparta del principio "todo estático / sin
   backend"; es el costo de la sincronización entre dispositivos (decisión explícita del autor). El sitio
   **sigue siendo SSG**: Supabase solo entra en runtime para auth y colección; el contenido sigue en JSON.
@@ -450,9 +485,17 @@ usuario y su ficha desbloquea la experiencia inmersiva. Branch: `feature/desbloq
 - **Cliente/estado:** `lib/supabase/client.ts` (degrada a `supabase=null` si faltan envs) +
   `components/auth/ColeccionProvider.tsx` (`useColeccion()`, `useDesbloqueo(slug)`), montado en `layout.tsx`
   dentro de `NextIntlClientProvider`. Cache en `localStorage` (`nunna:coleccion`) para hidratar sin parpadeo.
-  Auth: **magic-link** por email (`signInWithOtp`), sin contraseñas. El código pendiente se guarda
-  (`nunna:pending_code`) y el **formulario** lo canjea al volver del enlace (no el provider, para mostrar el
-  resultado). `emailRedirectTo` vuelve a `/desbloquear`.
+  Auth: **magic-link** por email (`signInWithOtp`), sin contraseñas. El código viaja de dos formas
+  redundantes hacia el regreso del enlace: (1) en la propia URL del `emailRedirectTo` como
+  `?unlock_code=` — sobrevive aunque el correo se abra en **otro navegador o dispositivo** — y (2) en
+  `localStorage` (`nunna:pending_code`) como respaldo same-device. El **formulario**
+  (`DesbloquearForm.tsx`) prioriza el query param sobre localStorage y lo canjea al volver del enlace
+  (no el provider, para mostrar el resultado). Supabase solo limpia el `#hash` de tokens al procesar el
+  magic-link (flujo implicit, confirmado en `auth-js`), nunca el query string, así que `?unlock_code=`
+  llega intacto. ⚠ **Fix 2026-07-03**: antes el código *solo* vivía en localStorage — si la persona
+  llenaba el formulario en un dispositivo y abría el correo en otro (frecuente), el auto-canje nunca
+  disparaba y quedaba varada en el paso 1 (pantalla de código) sin ningún mensaje de error. Ver tests
+  `signInWithEmail` en `ColeccionProvider.test.tsx`.
 - **Gating de la ficha (degradación segura):** `HeroGated` y `AnatomiaGated` reemplazan a
   `HeroDespertar`/`AnatomiaSection` directos. Lógica vía `useDesbloqueo(slug)`:
   - Sin `experiencia` → `ParallaxHero` (igual que siempre).
@@ -550,10 +593,6 @@ Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling
 - **tailwind.config.js CommonJS** — PostCSS no carga `.ts`
 - **Turbopack desactivado** — incompatible con `experimental.typedRoutes`
 
-### Prisma
-- **v5, no v6/v7** — v6 cambió API de datasource
-- Supabase reservado exclusivamente para Fase 3
-
 ### next-intl
 - `i18n/request.ts` usa `.default` en dynamic import — sin esto React tira error de serialización
 
@@ -633,14 +672,14 @@ El QR de cada imán físico codifica `/[locale]/personajes/<slug>`. Una vez impr
 | Slug | Nombre | Origen | Retrato | Banner | Narrativa | Experiencia v2 |
 |------|--------|--------|---------|--------|-----------|----------------|
 | aya-uma | Aya Uma | prehispanico | ✅ | ✅ | ✅ | ✅ |
-| curiquingue | Curiquingue | prehispanico | ❌ | ❌ | ✅ | ❌ |
-| sacha-runa | Sacha Runa | prehispanico | ❌ | ❌ | ✅ | ❌ |
 | payaso | Payaso | mixto | ✅ | ✅ | ✅ | ✅ |
-| rey-moro | Rey Moro | colonial | ❌ | ❌ | ✅ | ❌ |
-| capitan | Capitán | colonial | ❌ | ❌ | ✅ | ❌ |
-| angel | Ángel | colonial | ❌ | ❌ | ✅ | ❌ |
 | perro | Perro | prehispanico | ✅ | ✅ | ✅ | ✅ |
 | diablos-de-lata | Diablos de lata | mestizo | ✅ | ✅ | ✅ | ✅ |
+
+> **Retirados hasta tener imágenes** (2026-06-29): Curiquingue, Sacha Runa, Rey Moro, Capitán y Ángel
+> se sacaron de `personajes.json` (su narrativa está en el historial de git). El grid muestra sus cards
+> "próximamente" (`PersonajeCardProximo`, lista `PROXIMOS` en `personajes/page.tsx`). Al reincorporarlos,
+> reutilizar los **mismos slugs** (contrato QR) y devolverles su `personajeSlug` en `pases.json`.
 
 > **Experiencia v2** = flag `experiencia: true` en el JSON → usa `HeroDespertar` (Fase 1) + `AnatomiaSection`
 > (Fase 4, si tiene `hotspots[]`). Requiere imágenes completas; los 4 activos coinciden con los que tienen
@@ -675,7 +714,10 @@ node scripts/build-route.mjs
 # Requiere SUPABASE_SERVICE_ROLE_KEY. --dry-run = solo CSV, sin tocar la DB.
 node --env-file=.env.local scripts/seed-codes.mjs --count 20 --batch lote-1 > codes.csv
 
-# Prisma (Fase 3)
-./apps/api/node_modules/.bin/prisma generate --schema=prisma/schema.prisma
-./apps/api/node_modules/.bin/prisma migrate dev --schema=prisma/schema.prisma --name <nombre>
+# Integridad de datos — referencias huérfanas entre personajes.json/pases.json/recorrido.json.
+# Corre automáticamente antes de `pnpm build` y en CI; puede invocarse suelto:
+pnpm validate-data
+
+# Tests unitarios (servicios de lib/data + flujo de canje mockeando Supabase)
+pnpm --filter @seres-del-pase/web test
 ```
