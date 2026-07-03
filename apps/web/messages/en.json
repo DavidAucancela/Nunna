@@ -14,7 +14,9 @@
       "titulo": "Nunna",
       "subtitulo": "The sacred and festive characters of Riobamba's traditional celebrations",
       "cta_principal": "Meet the characters",
-      "cta_secundario": "View the calendar"
+      "cta_secundario": "View the calendar",
+      "activar_sonido": "Turn on sound",
+      "silenciar": "Mute"
     },
     "intro": {
       "titulo": "A world of living symbols",
@@ -73,7 +75,14 @@
     "orden_dia": "Order of the day",
     "recorridos_oficiales": "Official routes",
     "calendario_completo": "Full calendar",
-    "nota": "Official routes issued by Riobamba City Hall for December 20. Routes and times may vary in future editions."
+    "nota": "Official routes issued by Riobamba City Hall for December 20. Routes and times may vary in future editions.",
+    "volver": "Back to Celebrations & Festivities",
+    "horario_label": "Schedule",
+    "ruta_label": "Route",
+    "tipo_label": "Organized by",
+    "personaje_label": "Featured character",
+    "ver_ficha_personaje": "See {nombre}'s profile",
+    "contenido_pendiente": "The full story and photos for this pase are on their way."
   },
   "error": {
     "404": "Page not found",
