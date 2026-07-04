@@ -11,8 +11,7 @@ export function Footer() {
           <div>
             <p className="font-serif text-lg font-bold text-texto-claro">Nunna</p>
             <p className="mt-2 text-sm text-stone-500">
-              Catálogo cultural sobre los personajes de los pases de Riobamba y la provincia de
-              Chimborazo, Ecuador.
+              Catálogo cultural sobre los personajes de las fiestas populares del Ecuador.
             </p>
           </div>
 

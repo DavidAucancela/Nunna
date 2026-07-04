@@ -238,7 +238,7 @@ export function HeroSection() {
           transition={{ duration: 1.2, delay: 0.15 }}
           className="font-sans text-sm uppercase tracking-[0.3em] text-stone-500 sm:text-base"
         >
-          Riobamba · Chimborazo · Ecuador
+          Fiestas populares del Ecuador
         </motion.p>
 
         <NunnaTitle texto={t("hero.titulo")} mouseX={mouseXRaw} />

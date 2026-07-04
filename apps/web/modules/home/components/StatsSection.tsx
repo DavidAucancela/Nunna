@@ -18,7 +18,7 @@ export function StatsSection() {
       <div className="absolute inset-0">
         <Image
           src="/informacion_pases/inti-huayra.jpg"
-          alt="Pase del Niño Riobambeño"
+          alt="Personajes de un pase tradicional"
           fill
           className="object-cover"
           sizes="100vw"
@@ -41,7 +41,7 @@ export function StatsSection() {
               {" "}la tierra responde.&rdquo;
             </p>
             <footer className="mt-5 text-[10px] uppercase tracking-[0.3em] text-acento-dorado">
-              — Aya Uma · Pases del Niño Riobambeño
+              — Aya Uma · Fiestas populares del Ecuador
             </footer>
           </blockquote>
         </FadeUp>

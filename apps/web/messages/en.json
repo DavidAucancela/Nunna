@@ -12,7 +12,7 @@
   "home": {
     "hero": {
       "titulo": "Nunna",
-      "subtitulo": "The sacred and festive characters of Riobamba's traditional celebrations",
+      "subtitulo": "The sacred and festive characters of Ecuador's traditional celebrations",
       "cta_principal": "Meet the characters",
       "cta_secundario": "View the calendar",
       "activar_sonido": "Turn on sound",
@@ -20,7 +20,7 @@
     },
     "intro": {
       "titulo": "A world of living symbols",
-      "texto": "Riobamba's pases are far more than festivals. They are a universe of characters that synthesize centuries of Andean worldview, colonial faith, and mestizo creativity. We document them with the rigor they deserve."
+      "texto": "Ecuador's popular festivals are far more than celebrations. They are a universe of characters that synthesize centuries of Andean worldview, colonial faith, and mestizo creativity. We document them with the rigor they deserve."
     },
     "stats": {
       "seres": "Characters",
@@ -30,7 +30,7 @@
     "ritual": {
       "titulo": "The ritual of the pase",
       "subtitulo": "Living tradition",
-      "texto": "The Pase del Niño is Riobamba's most important celebration. Each December, the streets fill with characters who dance between the sacred and the festive, carrying centuries of Andean identity in every costume, every mask.",
+      "texto": "Popular festivals are the heart of Ecuadorian culture. Throughout the year, the streets fill with characters who dance between the sacred and the festive, carrying centuries of Andean identity in every costume, every mask.",
       "cta": "Explore celebrations & calendar"
     },
     "qr": {
@@ -50,7 +50,7 @@
       "pase_de_total": "{n} of {total} pases",
       "elige_pase": "Switch pase",
       "finale_titulo": "The pase reaches the church",
-      "finale_texto": "Each character played their part along the way. And this is just one of Riobamba's pases.",
+      "finale_texto": "Each character played their part along the way. And this is just one of Ecuador's many festivals.",
       "personaje": "Character",
       "anterior": "Previous",
       "siguiente": "Next",

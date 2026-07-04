@@ -70,8 +70,8 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   const pasesDelPersonaje = pases.filter((p) => p.personajeSlug === personaje.slug);
   const festividad =
     pasesDelPersonaje.length > 0
-      ? `${pasesDelPersonaje.length} ${pasesDelPersonaje.length === 1 ? "pase" : "pases"} del Niño Riobambeño`
-      : "Pases del Niño Riobambeño";
+      ? `${pasesDelPersonaje.length} ${pasesDelPersonaje.length === 1 ? "fiesta" : "fiestas"} popular${pasesDelPersonaje.length === 1 ? "" : "es"} del Ecuador`
+      : "Fiestas populares del Ecuador";
 
   const otrosPersonajes = todosPersonajes.filter((p) => p.slug !== slug);
 

@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: CalendarioPageProps): Promise
   const { locale } = await params;
   return {
     title: "Calendario festivo",
-    description: "Fechas y festividades de los pases del Chimborazo — Riobamba, Ecuador.",
+    description: "Fechas y festividades de las fiestas populares del Ecuador.",
     alternates: localeAlternates("/calendario", locale),
   };
 }
@@ -23,13 +23,13 @@ export default async function CalendarioPage() {
     <div className="mx-auto max-w-7xl px-6 py-12">
       <header className="mb-10">
         <p className="text-sm uppercase tracking-[0.2em] text-acento-dorado">
-          Chimborazo · Ecuador
+          Ecuador
         </p>
         <h1 className="mt-2 font-serif text-4xl font-bold text-texto-claro md:text-5xl">
           Calendario festivo
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-stone-400">
-          Los pases riobambeños se concentran en pocos meses del año. Elige un mes para ver sus
+          Las fiestas populares del Ecuador se concentran en pocos meses del año. Elige un mes para ver sus
           pases y festividades con horarios, rutas y personajes.
         </p>
       </header>

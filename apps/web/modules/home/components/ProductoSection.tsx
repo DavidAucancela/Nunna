@@ -151,7 +151,7 @@ const PASOS = [
     num: "01",
     kicker: "Lo físico",
     titulo: "Elige tu imán",
-    texto: "Cada imán es una pieza moldeada y pintada a mano: un ser de los pases riobambeños que vive en tu refrigeradora. No hay dos exactamente iguales.",
+    texto: "Cada imán es una pieza moldeada y pintada a mano: un ser de las fiestas populares del Ecuador que vive en tu refrigeradora. No hay dos exactamente iguales.",
     Visual: ImanVisual,
   },
   {
@@ -190,12 +190,12 @@ export function ProductoSection() {
             </h2>
             <p className="mx-auto mt-6 text-base leading-relaxed text-stone-400 md:text-lg">
               <span className="font-semibold text-texto-claro">Nunna</span> es un catálogo
-              vivo de los seres que dan vida a los pases riobambeños. Cada uno se vuelve un
+              vivo de los seres que dan vida a las fiestas populares del Ecuador. Cada uno se vuelve un
               imán artesanal: una pieza única que lleva, en su reverso, un código QR.
             </p>
             <p className="mx-auto mt-4 text-base leading-relaxed text-stone-400 md:text-lg">
               Al escanearlo aterrizas en la ficha del personaje —su historia y su cosmovisión
-              kichwa— para que cada imán sea también una puerta a la memoria de Riobamba.
+              kichwa— para que cada imán sea también una puerta a la memoria del Ecuador.
             </p>
           </div>
         </FadeUp>
