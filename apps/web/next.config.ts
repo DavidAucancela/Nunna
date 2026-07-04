@@ -7,10 +7,9 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 // Prefijos localizados de la ficha de personaje. DEBEN coincidir con
 // i18n/routing.ts → pathnames["/personajes/[slug]"]. El QR del imán codifica la
-// variante /es/ por defecto, pero cubrimos los 3 idiomas por seguridad.
+// variante /es/ por defecto, pero cubrimos los idiomas activos por seguridad.
 const PERSONAJE_BASE_PATHS = [
   "/es/personajes",
-  "/qu/runakunamanta",
   "/en/characters",
 ];
 
@@ -39,11 +38,18 @@ const nextConfig: NextConfig = {
     // deben coincidir con i18n/routing.ts → "/pases").
     const mapaRedirects = [
       { source: "/es/mapa", destination: "/es/pases", permanent: true },
-      { source: "/qu/mapa", destination: "/qu/pawkarkuna", permanent: true },
       { source: "/en/map", destination: "/en/celebrations", permanent: true },
     ];
 
-    return [...slugRedirects, ...mapaRedirects];
+    // El idioma quichua (qu) se retiró (2026-07-03). Redirigimos cualquier URL
+    // /qu/* remanente a su equivalente en español para no romper enlaces viejos.
+    // Los pases impresos codifican /es/, así que ningún imán queda afectado.
+    const quRedirects = [
+      { source: "/qu", destination: "/es", permanent: true },
+      { source: "/qu/:path*", destination: "/es", permanent: true },
+    ];
+
+    return [...slugRedirects, ...mapaRedirects, ...quRedirects];
   },
   async headers() {
     return [

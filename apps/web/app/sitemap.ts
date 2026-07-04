@@ -5,7 +5,7 @@ import { getPersonajes } from "@/lib/data";
 import { absoluteUrl, type LocalizedHref } from "@/lib/seo";
 
 /**
- * Sitemap con las páginas públicas × 3 locales (hreflang vía alternates).
+ * Sitemap con las páginas públicas × locales (hreflang vía alternates).
  * Fuera: /mis-personajes (contenido personal) y /desbloquear/[slug] (landing
  * transaccional del canje, sin valor de búsqueda).
  */
@@ -30,7 +30,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
     entry("/pases", 0.7),
     entry("/calendario", 0.7),
-    entry("/glosario", 0.5),
     entry("/sobre", 0.5),
     entry("/desbloquear", 0.5),
   ];

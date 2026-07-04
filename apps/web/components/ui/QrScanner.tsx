@@ -10,13 +10,13 @@ function resolverDestino(texto: string): string | null {
   const limpio = texto.trim();
   try {
     const url = new URL(limpio);
-    if (/\/(personajes|runakunamanta|characters)\//.test(url.pathname)) {
+    if (/\/(personajes|characters)\//.test(url.pathname)) {
       return url.pathname + url.search;
     }
     return null;
   } catch {
     // No es una URL completa: ¿es una ruta directa?
-    if (limpio.startsWith("/") && /\/(personajes|runakunamanta|characters)\//.test(limpio)) {
+    if (limpio.startsWith("/") && /\/(personajes|characters)\//.test(limpio)) {
       return limpio;
     }
     return null;

@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       // Colección personal del usuario — sin valor para buscadores.
-      disallow: ["/es/mis-personajes", "/qu/nuka-runakuna", "/en/my-characters"],
+      disallow: ["/es/mis-personajes", "/en/my-characters"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
