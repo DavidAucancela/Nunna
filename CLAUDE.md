@@ -32,7 +32,7 @@ Implicaciones técnicas:
 |------|-----------|-----------|
 | Frontend | Next.js 15.5 (App Router) + TypeScript | `apps/web/` |
 | Estilos | Tailwind CSS v3 + PostCSS | `apps/web/tailwind.config.js` |
-| i18n | next-intl v3 (es / qu / en) | `apps/web/i18n/` + `apps/web/messages/` |
+| i18n | next-intl v3 (es / en) | `apps/web/i18n/` + `apps/web/messages/` |
 | Datos | JSON estático en repo | `apps/web/lib/data/` |
 | Auth + colección | Supabase (Postgres) | `supabase/schema.sql` |
 | Monorepo | Turborepo + pnpm workspaces | `turbo.json`, `pnpm-workspace.yaml` |
@@ -103,7 +103,6 @@ apps/web/
 │   │   │   ├── page.tsx            → Grid + mapa "Un pase, un camino" (/mapa se fusionó aquí, con redirect)
 │   │   │   └── [slug]/page.tsx     → Detalle de pase (scaffold mínimo — solo datos logísticos, sin historia editorial)
 │   │   ├── calendario/page.tsx     → Pases y Festividades
-│   │   ├── glosario/page.tsx
 │   │   ├── desbloquear/page.tsx    → ★ canje de código de 6 chars (desbloqueo de imán)
 │   │   ├── mis-personajes/page.tsx → ★ colección del usuario + progreso + logros
 │   │   └── sobre/page.tsx
@@ -122,19 +121,17 @@ apps/web/
 │   │                                 GaleriaSection (3 tabs), NarrativaSection, PersonajesCarrusel,
 │   │                                 HotspotsViewer (superseded por AnatomiaSection), SimbolismoSection (sin uso)
 │   ├── desbloqueo/components/      → DesbloquearForm, ColeccionClient (★ desbloqueo de imanes)
-│   ├── festividades/components/    → CalendarioGrid
-│   └── glosario/components/        → GlosarioClient
+│   └── festividades/components/    → CalendarioGrid
 ├── lib/
 │   ├── supabase/client.ts          → ★ cliente Supabase browser (auth + colección; null si faltan envs)
 │   ├── data.ts                     → ★ barrel — re-exporta lib/services/*
 │   ├── services/                   → personajes.service.ts (toPersonaje, merge multimedia),
-│   │                                 pases.service.ts, glosario.service.ts,
+│   │                                 pases.service.ts,
 │   │                                 recorrido.service.ts (getRecorridos — multi-pase del mapa)
 │   ├── data/
 │   │   ├── personajes.json         → 4 personajes publicados (con narrativa, hotspots, imagenBanner,
 │   │   │                             multimedia + flags v2: experiencia, audioAmbiente); los 5 sin
 │   │   │                             imágenes se retiraron (2026-06-29) hasta tener assets
-│   │   ├── glosario.json           → 16 entradas kichwa
 │   │   ├── pases.json              → pases con fechas y rutas (grid /pases, /mapa, /calendario);
 │   │   │                             `personajeSlug` = clave de cruce con personajes.json
 │   │   └── recorrido.json          → mapa "Un pase, un camino": { defaultPaseSlug, pases[] }
@@ -147,7 +144,7 @@ apps/web/
 │   ├── pases-videos/               → Video de fondo del hero (main-header.mp4, 4.4 MB comprimido)
 │   └── audio/                      → Audio ambiente del hero v2 ([slug]-ambiente.mp3) — ver README
 ├── i18n/routing.ts                 → Locales + pathnames
-├── messages/                       → es.json / qu.json / en.json (incluye secciones "historia" y "experiencia")
+├── messages/                       → es.json / en.json (incluye secciones "historia" y "experiencia")
 ├── tailwind.config.js              → CommonJS, NO .ts
 └── next.config.ts
 ```
@@ -159,7 +156,7 @@ apps/web/
 Todas las páginas importan de `@/lib/data` (nunca de Directus ni de APIs externas).
 
 ```ts
-import { getPersonajes, getPersonaje, getPases, getGlosario } from "@/lib/data";
+import { getPersonajes, getPersonaje, getPases } from "@/lib/data";
 ```
 
 `lib/data.ts` es solo un barrel; la lógica vive en `lib/services/*.service.ts`.
@@ -340,9 +337,9 @@ Modo oscuro por defecto.
 
 ### ✅ Completado
 - Monorepo Turborepo + pnpm funcional
-- Frontend: todas las páginas con estilos completos (landing, personajes, detalle, pases, calendario, glosario, sobre, mapa)
-- i18n es/qu/en con rutas localizadas
-- Datos estáticos: 4 personajes publicados (con `narrativa`, `hotspots`, `imagenBanner`, `multimedia`), 16 entradas glosario, 14 pases
+- Frontend: todas las páginas con estilos completos (landing, personajes, detalle, pases, calendario, sobre, mapa)
+- i18n es/en con rutas localizadas (el idioma quichua `qu` se retiró — 2026-07-03)
+- Datos estáticos: 4 personajes publicados (con `narrativa`, `hotspots`, `imagenBanner`, `multimedia`), 14 pases
 - Build de producción SSG sin errores
 - Eliminación completa de Directus
 - Favicons SVG
@@ -555,6 +552,23 @@ Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling
   (swipe/botones/tap), **no depende del scroll** (robusto en iOS); el scroll del desktop se ignora en móvil
   (`track.offsetParent === null`).
 
+### Quichua (locale `qu`) y glosario retirados ⚠ (2026-07-03)
+En el marco del giro a escala nacional (ver `docs/PLAN-ESCALA-ECUADOR.md`), se retiró el **idioma
+quichua como opción de UI** y la **feature de glosario** por completo.
+- **i18n queda en `es` (default) + `en`.** `routing.ts` ya no lista `qu`; se borró `messages/qu.json`.
+  El selector del `Header` muestra solo ES 🇪🇨 / EN 🇺🇸 (la bandera de ES pasó a la de Ecuador, coherente
+  con el alcance nacional).
+- **Glosario eliminado entero:** ruta `/glosario` (+ `/glossary`), `app/[locale]/glosario/`,
+  `modules/glosario/`, `lib/services/glosario.service.ts`, `lib/data/glosario.json`, el export
+  `getGlosario` del barrel, el link del footer, y la clave `nav.glosario`. `validate-data.mjs` y el
+  healthcheck ya no lo referencian.
+- **Redirect de compatibilidad:** `next.config.ts` manda cualquier `/qu/*` remanente a `/es` (308).
+  Los imanes impresos codifican `/es/`, así que **ningún QR queda afectado** (contrato intacto).
+- **No reintroducir** el locale `qu` ni el glosario sin una decisión explícita. Los **nombres kichwa
+  de los personajes (`nombreKichwa`) se conservan** — son contenido, no la UI retirada (ver Ética).
+- ⚠ Deuda: varios cambios históricos abajo mencionan `qu`/glosario como parte del estado de su fecha;
+  se dejan como registro. El estado **actual** es el de esta decisión.
+
 ### Búsqueda semántica descartada ⚠ (2026-06-21)
 - La **búsqueda semántica no se implementará**. Era el motivo principal de Supabase/pgvector y NestJS en Fase 3.
 - Se eliminó: la página `app/[locale]/buscar/page.tsx`, la ruta `/buscar` (+ `/maskanakuy` qu / `/search` en) en `i18n/routing.ts`, el botón de búsqueda del `Header`, y las claves `nav.buscar` (es/qu/en).
@@ -692,7 +706,10 @@ Para agregar imágenes: copiar a `public/personajes/` y actualizar `imagenPortad
 
 ## Ética y contenido
 
-- **Kichwa primero**: "Aya Uma" antes que "Diablo Huma"
+- **Nombre originario primero** (en el CONTENIDO, no en la UI): "Aya Uma" antes que "Diablo Huma".
+  Aplica a los nombres de los personajes (`nombreKichwa` y equivalentes de cada lengua/región del
+  Ecuador). Nota: el idioma quichua como **opción de UI** (locale `qu`) y el glosario kichwa se
+  retiraron (2026-07-03, ver decisión abajo) — eso no afecta este principio de contenido.
 - **`altText` obligatorio** en todas las imágenes
 - **Citar fuentes** en cada testimonio
 - **Licencia**: código MIT, contenido CC BY-NC-SA 4.0
