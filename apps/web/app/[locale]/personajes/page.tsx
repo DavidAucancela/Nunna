@@ -37,7 +37,7 @@ export default async function PersonajesPage({ params }: PersonajesPageProps) {
     <div className="mx-auto max-w-7xl px-6 py-16">
       <header className="mb-12 mt-4">
         <p className="text-sm uppercase tracking-[0.2em] text-acento-dorado">
-          Chimborazo · Ecuador
+          Ecuador
         </p>
         <h1 className="mt-2 font-serif text-4xl font-bold text-texto-claro md:text-5xl">
           {t("titulo")}

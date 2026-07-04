@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: SobrePageProps): Promise<Meta
   return {
     title: "Sobre el proyecto | Personajes del Pase",
     description:
-      "Personajes del Pase es un catálogo digital de los personajes de los pases riobambeños — tradición viva de Riobamba, Chimborazo, Ecuador.",
+      "Nunna es un catálogo digital de los personajes de las fiestas populares del Ecuador — tradición viva de todo el país.",
     alternates: localeAlternates("/sobre", locale),
   };
 }
@@ -28,9 +28,9 @@ export default function SobrePage() {
 
       <div className="space-y-8 text-lg leading-relaxed text-stone-400">
         <p>
-          <strong className="text-texto-claro">Personajes del pase</strong> es un catálogo digital
-          dedicado a los personajes de los pases riobambeños — una tradición festiva viva de
-          Riobamba y la provincia de Chimborazo, Ecuador.
+          <strong className="text-texto-claro">Nunna</strong> es un catálogo digital
+          dedicado a los personajes de las fiestas populares del Ecuador — una tradición festiva
+          viva a lo largo de todo el país.
         </p>
 
         <p>

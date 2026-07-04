@@ -3,7 +3,6 @@
     "personajes": "Personajes",
     "pases": "Pases",
     "calendario": "Calendario",
-    "glosario": "Glosario",
     "mis_personajes": "Mis personajes",
     "sobre": "Sobre el proyecto",
     "idioma": "Idioma",
@@ -12,7 +11,7 @@
   "home": {
     "hero": {
       "titulo": "Nunna",
-      "subtitulo": "Los personajes sagrados y festivos de los pases riobambeños",
+      "subtitulo": "Los personajes sagrados y festivos de las fiestas populares del Ecuador",
       "cta_principal": "Conocer los personajes",
       "cta_secundario": "Ver el calendario",
       "activar_sonido": "Activar sonido",
@@ -20,7 +19,7 @@
     },
     "intro": {
       "titulo": "Un mundo de símbolos vivos",
-      "texto": "Los pases de Riobamba son mucho más que fiestas. Son un universo de personajes que sintetizan siglos de cosmovisión andina, fe colonial y creatividad mestiza. Aquí los documentamos con el rigor que merecen."
+      "texto": "Las fiestas populares del Ecuador son mucho más que celebraciones. Son un universo de personajes que sintetizan siglos de cosmovisión andina, fe colonial y creatividad mestiza. Aquí los documentamos con el rigor que merecen."
     },
     "stats": {
       "seres": "Personajes del pase",
@@ -30,7 +29,7 @@
     "ritual": {
       "titulo": "El ritual del pase",
       "subtitulo": "Tradición viva",
-      "texto": "El pase del Niño es la celebración más importante de Riobamba. Cada diciembre, las calles se llenan de personajes que danzan entre lo sagrado y lo festivo, portando siglos de identidad andina en cada traje, en cada máscara.",
+      "texto": "Las fiestas populares son el corazón de la cultura ecuatoriana. A lo largo del año, las calles se llenan de personajes que danzan entre lo sagrado y lo festivo, portando siglos de identidad andina en cada traje, en cada máscara.",
       "cta": "Explorar pases y festividades"
     },
     "qr": {
@@ -50,7 +49,7 @@
       "pase_de_total": "{n} de {total} pases",
       "elige_pase": "Cambia de pase",
       "finale_titulo": "El pase llega al templo",
-      "finale_texto": "Cada personaje cumplió su papel en el camino. Y este es solo uno de los pases de Riobamba.",
+      "finale_texto": "Cada personaje cumplió su papel en el camino. Y esta es solo una de las tantas fiestas del Ecuador.",
       "personaje": "Personaje",
       "anterior": "Anterior",
       "siguiente": "Siguiente",

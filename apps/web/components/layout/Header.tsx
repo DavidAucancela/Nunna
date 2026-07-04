@@ -13,8 +13,7 @@ const NAV_LINKS = [
 ] as const;
 
 const LOCALES = [
-  { code: "es", label: "ES", flag: "🇪🇸" },
-  { code: "qu", label: "QU", flag: "🇪🇨" },
+  { code: "es", label: "ES", flag: "🇪🇨" },
   { code: "en", label: "EN", flag: "🇺🇸" },
 ] as const;
 

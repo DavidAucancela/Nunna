@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Nunna — Seres del Pase del Niño",
+    name: "Nunna — Personajes de las fiestas del Ecuador",
     short_name: "Nunna",
     description:
-      "Catálogo de los personajes del Pase del Niño riobambeño: historia, leyenda y artesanía detrás de cada imán.",
+      "Catálogo de los personajes de las fiestas populares del Ecuador: historia, leyenda y artesanía detrás de cada imán.",
     start_url: "/es",
     display: "standalone",
     background_color: "#0F0E0C",

@@ -11,15 +11,14 @@ export function Footer() {
           <div>
             <p className="font-serif text-lg font-bold text-texto-claro">Nunna</p>
             <p className="mt-2 text-sm text-stone-500">
-              Catálogo cultural sobre los personajes de los pases de Riobamba y la provincia de
-              Chimborazo, Ecuador.
+              Catálogo cultural sobre los personajes de las fiestas populares del Ecuador.
             </p>
           </div>
 
           <div>
             <p className="mb-3 text-xs uppercase tracking-widest text-stone-500">Explorar</p>
             <ul className="space-y-2">
-              {(["pases", "calendario", "glosario"] as const).map((key) => (
+              {(["pases", "calendario"] as const).map((key) => (
                 <li key={key}>
                   <Link
                     href={`/${key}`}

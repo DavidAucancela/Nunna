@@ -27,11 +27,10 @@ const warnings = [];
 const err = (msg) => errors.push(msg);
 const warn = (msg) => warnings.push(msg);
 
-const [personajes, pases, recorrido, glosario] = await Promise.all([
+const [personajes, pases, recorrido] = await Promise.all([
   loadJson("personajes.json"),
   loadJson("pases.json"),
   loadJson("recorrido.json"),
-  loadJson("glosario.json"),
 ]);
 
 const personajeSlugs = new Set(personajes.map((p) => p.slug));
@@ -81,16 +80,6 @@ if (recorrido.defaultPaseSlug && !recorrido.pases?.some((rp) => rp.paseSlug === 
   err(`recorrido.json: defaultPaseSlug "${recorrido.defaultPaseSlug}" no está entre pases[]`);
 }
 
-// ── glosario.json — solo estructura mínima ──────────────────────────────────
-{
-  const seen = new Set();
-  for (const g of glosario) {
-    if (!g.id || !g.palabra) err(`glosario.json: entrada incompleta (id=${g.id ?? "?"})`);
-    if (seen.has(g.id)) err(`glosario.json: id duplicado "${g.id}"`);
-    seen.add(g.id);
-  }
-}
-
 if (warnings.length > 0) {
   console.warn(`⚠ validate-data: ${warnings.length} advertencia(s)\n`);
   for (const w of warnings) console.warn(`  - ${w}`);
@@ -105,5 +94,5 @@ if (errors.length > 0) {
 
 console.log(
   `✓ validate-data: ${personajes.length} personajes, ${pases.length} pases, ` +
-    `${recorrido.pases?.length ?? 0} recorridos, ${glosario.length} entradas de glosario — sin errores`,
+    `${recorrido.pases?.length ?? 0} recorridos — sin errores`,
 );
