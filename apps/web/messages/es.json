@@ -163,6 +163,7 @@
     "ver_personaje": "Conocer a {nombre}",
     "ver_coleccion": "Ver mi colección",
     "error_invalido": "Ese código no es válido. Revisa los 6 caracteres bajo tu tarjeta.",
+    "error_otro_personaje": "Este código pertenece a otro personaje. Usa el código de la tarjeta de este ser.",
     "error_ya_tuyo": "Ya tienes a este ser en tu colección.",
     "error_ya_canjeado": "Este código ya fue canjeado por otra cuenta.",
     "error_email": "No pudimos enviar el enlace. Revisa tu correo e inténtalo de nuevo.",

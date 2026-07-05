@@ -28,11 +28,11 @@ function wrapper({ children }: { children: ReactNode }) {
   return <ColeccionProvider>{children}</ColeccionProvider>;
 }
 
-async function redeem(code: string): Promise<RedeemResult> {
+async function redeem(code: string, expectedSlug?: string): Promise<RedeemResult> {
   const { result } = renderHook(() => useColeccion(), { wrapper });
   let res!: RedeemResult;
   await act(async () => {
-    res = await result.current.redeemCode(code);
+    res = await result.current.redeemCode(code, expectedSlug);
   });
   return res;
 }
@@ -54,12 +54,36 @@ describe("redeemCode", () => {
     expect(res.status).toBe("not_authenticated");
   });
 
-  it("normaliza el código a mayúsculas y llama a la RPC redeem_code", async () => {
+  it("normaliza el código a mayúsculas y llama a la RPC redeem_code (sin slug esperado)", async () => {
     mockedSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: "u1" } }, error: null });
     mockedSupabase.rpc.mockResolvedValue({ data: [{ status: "ok", slug: "aya-uma" }], error: null });
     const res = await redeem("abc123");
-    expect(mockedSupabase.rpc).toHaveBeenCalledWith("redeem_code", { p_code: "ABC123" });
+    expect(mockedSupabase.rpc).toHaveBeenCalledWith("redeem_code", {
+      p_code: "ABC123",
+      p_expected_slug: null,
+    });
     expect(res).toEqual({ status: "ok", slug: "aya-uma" });
+  });
+
+  it("pasa el slug esperado a la RPC cuando se provee", async () => {
+    mockedSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: "u1" } }, error: null });
+    mockedSupabase.rpc.mockResolvedValue({ data: [{ status: "ok", slug: "payaso" }], error: null });
+    await redeem("abc123", "payaso");
+    expect(mockedSupabase.rpc).toHaveBeenCalledWith("redeem_code", {
+      p_code: "ABC123",
+      p_expected_slug: "payaso",
+    });
+  });
+
+  it("propaga el status wrong_character (código de otro personaje)", async () => {
+    mockedSupabase.auth.getUser.mockResolvedValue({ data: { user: { id: "u1" } }, error: null });
+    mockedSupabase.rpc.mockResolvedValue({
+      data: [{ status: "wrong_character", slug: "payaso" }],
+      error: null,
+    });
+    const res = await redeem("ABC123", "aya-uma");
+    expect(res.status).toBe("wrong_character");
+    expect(res.slug).toBe("payaso");
   });
 
   it("un error de la RPC se degrada a status error, nunca lanza", async () => {
