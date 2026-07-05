@@ -59,10 +59,18 @@ create policy "user_unlocks_select_own"
 -- ── RPC de canje ─────────────────────────────────────────────────────────────
 -- Canjea un código y añade el personaje a la colección del usuario autenticado.
 -- Devuelve un estado tipado para que el frontend muestre el mensaje correcto.
---   status ∈ {ok, invalid, already_yours, already_redeemed_by_other, not_authenticated}
--- En 'ok' y 'already_yours' devuelve también el personaje_slug (para redirigir a su ficha).
+--   status ∈ {ok, invalid, wrong_character, already_yours, already_redeemed_by_other, not_authenticated}
+-- En 'ok' / 'already_yours' / 'wrong_character' devuelve también el personaje_slug real del código.
+--
+-- p_expected_slug (opcional): si se pasa, el código DEBE pertenecer a ese personaje;
+-- si no coincide se devuelve 'wrong_character' y no se canjea nada. Así cada personaje
+-- solo acepta sus propios códigos (control por personaje). En null → sin validación
+-- (canjea el personaje que el código traiga; p. ej. la página genérica /desbloquear).
 
-create or replace function public.redeem_code(p_code text)
+-- La firma cambió (se añadió un parámetro): hay que dropear la versión de 1 argumento.
+drop function if exists public.redeem_code(text);
+
+create or replace function public.redeem_code(p_code text, p_expected_slug text default null)
 returns table (status text, slug text)
 language plpgsql
 security definer
@@ -86,6 +94,12 @@ begin
 
   if v_slug is null then
     return query select 'invalid'::text, null::text;
+    return;
+  end if;
+
+  -- El código es válido pero pertenece a otro personaje distinto al esperado.
+  if p_expected_slug is not null and v_slug <> p_expected_slug then
+    return query select 'wrong_character'::text, v_slug;
     return;
   end if;
 
@@ -118,15 +132,21 @@ end;
 $$;
 
 -- Solo usuarios autenticados pueden canjear.
-revoke all on function public.redeem_code(text) from public;
-grant execute on function public.redeem_code(text) to authenticated;
+revoke all on function public.redeem_code(text, text) from public;
+grant execute on function public.redeem_code(text, text) to authenticated;
 
 -- ── RPC de pre-validación (sin auth) ─────────────────────────────────────────
 -- Comprueba si un código existe y está sin canjear, ANTES de pedir el correo.
 -- Devuelve true/false. No revela el personaje_slug ni datos del código.
 -- Accesible sin sesión (anon) — la RLS de unlock_codes sigue bloqueando SELECT directo.
+--
+-- p_expected_slug (opcional): si se pasa, además exige que el código pertenezca a
+-- ese personaje (rechaza códigos de otros personajes ya en la pre-validación).
 
-create or replace function public.check_code_valid(p_code text)
+-- La firma cambió (se añadió un parámetro): hay que dropear la versión de 1 argumento.
+drop function if exists public.check_code_valid(text);
+
+create or replace function public.check_code_valid(p_code text, p_expected_slug text default null)
 returns boolean
 language sql
 stable
@@ -137,12 +157,13 @@ as $$
     select 1 from public.unlock_codes
     where code = upper(btrim(p_code))
       and redeemed_by is null
+      and (p_expected_slug is null or personaje_slug = p_expected_slug)
   );
 $$;
 
-revoke all on function public.check_code_valid(text) from public;
-grant execute on function public.check_code_valid(text) to anon;
-grant execute on function public.check_code_valid(text) to authenticated;
+revoke all on function public.check_code_valid(text, text) from public;
+grant execute on function public.check_code_valid(text, text) to anon;
+grant execute on function public.check_code_valid(text, text) to authenticated;
 
 -- ── RPC de contador anónimo ───────────────────────────────────────────────────
 -- Devuelve cuántas personas han desbloqueado un personaje.

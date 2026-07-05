@@ -163,6 +163,7 @@
     "ver_personaje": "Meet {nombre}",
     "ver_coleccion": "View my collection",
     "error_invalido": "That code isn't valid. Check the 6 characters under your card.",
+    "error_otro_personaje": "This code belongs to another character. Use the code from this being's card.",
     "error_ya_tuyo": "You already have this being in your collection.",
     "error_ya_canjeado": "This code was already redeemed by another account.",
     "error_email": "We couldn't send the link. Check your email and try again.",

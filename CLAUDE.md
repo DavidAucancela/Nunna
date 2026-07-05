@@ -471,9 +471,15 @@ usuario y su ficha desbloquea la experiencia inmersiva. Branch: `feature/desbloq
 - **Backend** (`supabase/schema.sql`, aplicar a mano en el proyecto Supabase):
   - `unlock_codes` (catálogo de códigos; **sin policies RLS de lectura** → nunca se exponen al cliente).
   - `user_unlocks` (colección por usuario; RLS: cada quien lee solo la suya).
-  - RPC `redeem_code(p_code)` `SECURITY DEFINER` → canje atómico (un solo `UPDATE ... WHERE redeemed_by IS
-    NULL`); devuelve status tipado: `ok` / `invalid` / `already_yours` / `already_redeemed_by_other` /
-    `not_authenticated`. **Toda validación es server-side.**
+  - RPC `redeem_code(p_code, p_expected_slug default null)` `SECURITY DEFINER` → canje atómico (un solo
+    `UPDATE ... WHERE redeemed_by IS NULL`); devuelve status tipado: `ok` / `invalid` / `wrong_character` /
+    `already_yours` / `already_redeemed_by_other` / `not_authenticated`. **Toda validación es server-side.**
+    ⚠ **Validación por personaje (2026-07-04):** si `p_expected_slug` no es null y el código pertenece a
+    OTRO personaje, devuelve `wrong_character` sin canjear (cada personaje solo acepta sus propios códigos).
+    `check_code_valid(p_code, p_expected_slug default null)` acepta el mismo parámetro opcional. La firma
+    de ambas RPC cambió → el schema hace `drop function` de las versiones de 1 argumento antes de recrear.
+    **Re-aplicar `supabase/schema.sql` a mano tras este cambio.** Backward-compatible: `/desbloquear`
+    genérico (sin slug) pasa null y canjea el personaje que traiga el código.
 - **Siembra de códigos:** `scripts/seed-codes.mjs` genera códigos únicos de 6 caracteres (alfabeto sin
   ambiguos: sin `I/L/O/0/1`) por personaje e imprime un CSV `code,personaje_slug` para imprenta. Resuelve
   `@supabase/supabase-js` vía `createRequire` anclado a `apps/web` (la dep no está en la raíz del workspace).
@@ -493,6 +499,13 @@ usuario y su ficha desbloquea la experiencia inmersiva. Branch: `feature/desbloq
   llenaba el formulario en un dispositivo y abría el correo en otro (frecuente), el auto-canje nunca
   disparaba y quedaba varada en el paso 1 (pantalla de código) sin ningún mensaje de error. Ver tests
   `signInWithEmail` en `ColeccionProvider.test.tsx`.
+  ⚠ **Fix 2026-07-04 (redirección + robustez):** en un canje exitoso (`ok`/`already_yours`) el formulario
+  **redirige directo a `/personajes/[slug]`** (`router.replace`) en vez de mostrar una pantalla de éxito
+  estática — el usuario aterriza en la ficha inmersiva tras el enlace. `redeemCode` ya añadió el slug a la
+  colección local, así que `GatedPageRedirect` no rebota. Las pantallas `success`/`already_yours` quedan
+  solo como fallback (canje sin slug, no debería ocurrir). Además el auto-canje **reintenta** ante un
+  `not_authenticated` transitorio (ventana breve tras el clic donde la sesión existe pero `getUser()` aún
+  no valida el JWT nuevo) en vez de caer a la fase "email" mostrando el código.
 - **Gating de la ficha (degradación segura):** `HeroGated` y `AnatomiaGated` reemplazan a
   `HeroDespertar`/`AnatomiaSection` directos. Lógica vía `useDesbloqueo(slug)`:
   - Sin `experiencia` → `ParallaxHero` (igual que siempre).

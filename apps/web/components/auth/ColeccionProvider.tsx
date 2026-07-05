@@ -20,6 +20,7 @@ export const CODE_RE = /^[A-Z0-9]{6}$/;
 export type RedeemStatus =
   | "ok"
   | "invalid"
+  | "wrong_character"
   | "already_yours"
   | "already_redeemed_by_other"
   | "not_authenticated"
@@ -51,10 +52,16 @@ interface ColeccionContextValue {
    */
   signInWithEmail: (email: string, code?: string) => Promise<string | null>;
   signOut: () => Promise<void>;
-  /** Verifica si un código existe y está sin canjear (sin auth, paso previo al magic-link). */
-  checkCodeValid: (code: string) => Promise<boolean>;
-  /** Canjea un código de 6 caracteres. Requiere sesión. */
-  redeemCode: (code: string) => Promise<RedeemResult>;
+  /**
+   * Verifica si un código existe y está sin canjear (sin auth, paso previo al magic-link).
+   * Si se pasa `expectedSlug`, además exige que el código pertenezca a ese personaje.
+   */
+  checkCodeValid: (code: string, expectedSlug?: string) => Promise<boolean>;
+  /**
+   * Canjea un código de 6 caracteres. Requiere sesión. Si se pasa `expectedSlug`, el
+   * código debe pertenecer a ese personaje o se devuelve status `wrong_character`.
+   */
+  redeemCode: (code: string, expectedSlug?: string) => Promise<RedeemResult>;
   /** Recarga la colección desde Supabase. */
   refrescar: () => Promise<void>;
 }
@@ -112,12 +119,15 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
     }
   }, [applyColeccion]);
 
-  const checkCodeValid = useCallback(async (code: string): Promise<boolean> => {
+  const checkCodeValid = useCallback(async (code: string, expectedSlug?: string): Promise<boolean> => {
     if (!supabase) return false;
     const normalized = code.trim().toUpperCase();
     if (!CODE_RE.test(normalized)) return false;
     try {
-      const { data } = await supabase.rpc("check_code_valid", { p_code: normalized });
+      const { data } = await supabase.rpc("check_code_valid", {
+        p_code: normalized,
+        p_expected_slug: expectedSlug ?? null,
+      });
       return data === true;
     } catch {
       return false;
@@ -125,7 +135,7 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const redeemCode = useCallback(
-    async (code: string): Promise<RedeemResult> => {
+    async (code: string, expectedSlug?: string): Promise<RedeemResult> => {
       if (!supabase) return { status: "not_configured" };
       const normalized = code.trim().toUpperCase();
       // Validación de formato antes de la red: evita llamadas inútiles a la RPC.
@@ -136,7 +146,10 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError || !user) return { status: "not_authenticated" };
 
-        const { data, error } = await supabase.rpc("redeem_code", { p_code: normalized });
+        const { data, error } = await supabase.rpc("redeem_code", {
+          p_code: normalized,
+          p_expected_slug: expectedSlug ?? null,
+        });
         if (error) {
           console.error("[redeemCode] error:", error.message);
           return { status: "error" };

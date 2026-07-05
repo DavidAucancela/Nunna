@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import {
   useColeccion,
@@ -43,7 +43,12 @@ export function DesbloquearForm({
 }) {
   const t = useTranslations("desbloquear");
   const tc = useTranslations("coleccion");
+  const router = useRouter();
   const { ready, gatingActive, session, signInWithEmail, checkCodeValid, redeemCode } = useColeccion();
+
+  // Slug esperado: en /desbloquear/[slug] el código DEBE pertenecer a este personaje.
+  // En /desbloquear genérico (sin personajeActivo) va undefined → sin validación.
+  const expectedSlug = personajeActivo?.slug;
 
   const [code, setCode] = useState("");
   const [email, setEmail] = useState("");
@@ -83,42 +88,60 @@ export function DesbloquearForm({
     (unlockedSlug ? (personajes.find((p) => p.slug === unlockedSlug) ?? null) : null) ??
     (phase === "success" ? (personajeActivo ?? null) : null);
 
-  const handleResult = useCallback((result: RedeemResult) => {
-    if (!mountedRef.current) return;
-    switch (result.status) {
-      case "ok":
-        setUnlockedSlug(result.slug ?? null);
-        setErrorKey(null);
-        setPhase("success");
-        break;
-      case "already_yours":
-        setUnlockedSlug(result.slug ?? null);
-        setErrorKey(null);
-        setPhase("already_yours");
-        break;
-      case "invalid":
-        setErrorKey("error_invalido");
-        setPhase("code");
-        break;
-      case "already_redeemed_by_other":
-        setErrorKey("error_ya_canjeado");
-        setPhase("code");
-        break;
-      case "not_configured":
-        setErrorKey("no_configurado");
-        setPhase("code");
-        break;
-      case "not_authenticated":
-        // Sesión expirada: limpiar error, guardar código y pedir re-autenticación por email.
-        setErrorKey(null);
-        setPendingCode(code);
-        setPhase("email");
-        break;
-      default:
-        setErrorKey("error_generico");
-        setPhase("code");
-    }
-  }, []);
+  // `attemptedCode` se pasa explícitamente (no se cierra sobre `code`) para evitar
+  // el stale-closure: en el auto-canje `code` aún es "" cuando corre este callback.
+  const handleResult = useCallback(
+    (result: RedeemResult, attemptedCode: string) => {
+      if (!mountedRef.current) return;
+      switch (result.status) {
+        case "ok":
+        case "already_yours": {
+          // Éxito → directo a la ficha del personaje (redeemCode ya lo añadió a la
+          // colección local, así que GatedPageRedirect no rebota). El slug lo manda
+          // el canje; fallback al personaje de contexto.
+          const slug = result.slug ?? personajeActivo?.slug;
+          if (slug) {
+            setErrorKey(null);
+            setPhase("redeeming"); // mantiene el estado de carga hasta navegar
+            router.replace({ pathname: "/personajes/[slug]", params: { slug } });
+          } else {
+            // Sin slug (no debería ocurrir): cae a la pantalla estática de respaldo.
+            setUnlockedSlug(result.slug ?? null);
+            setErrorKey(null);
+            setPhase(result.status === "ok" ? "success" : "already_yours");
+          }
+          break;
+        }
+        case "invalid":
+          setErrorKey("error_invalido");
+          setPhase("code");
+          break;
+        case "wrong_character":
+          // El código es válido pero de OTRO personaje: no se canjea.
+          setErrorKey("error_otro_personaje");
+          setPhase("code");
+          break;
+        case "already_redeemed_by_other":
+          setErrorKey("error_ya_canjeado");
+          setPhase("code");
+          break;
+        case "not_configured":
+          setErrorKey("no_configurado");
+          setPhase("code");
+          break;
+        case "not_authenticated":
+          // Sesión expirada: limpiar error, guardar código y pedir re-autenticación por email.
+          setErrorKey(null);
+          setPendingCode(attemptedCode);
+          setPhase("email");
+          break;
+        default:
+          setErrorKey("error_generico");
+          setPhase("code");
+      }
+    },
+    [router, personajeActivo],
+  );
 
   // Tras volver del magic-link: sesión disponible + código pendiente → canjear.
   // El código puede venir de la URL (?unlock_code=, sobrevive aunque el enlace se
@@ -140,8 +163,20 @@ export function DesbloquearForm({
     }
     setCode(pending);
     setPhase("redeeming");
-    redeemCode(pending).then(handleResult);
-  }, [ready, session, redeemCode, handleResult]);
+
+    // Justo tras volver del magic-link hay una ventana breve donde la sesión existe
+    // pero getUser() aún no valida el JWT nuevo → not_authenticated transitorio.
+    // Reintentamos unas veces (con `pending` en memoria) antes de darnos por vencidos,
+    // para no caer a la fase "email" mostrando el código de nuevo.
+    (async () => {
+      let result = await redeemCode(pending, expectedSlug);
+      for (let i = 0; i < 3 && result.status === "not_authenticated"; i++) {
+        await new Promise((r) => setTimeout(r, 400));
+        result = await redeemCode(pending, expectedSlug);
+      }
+      handleResult(result, pending);
+    })();
+  }, [ready, session, redeemCode, handleResult, expectedSlug]);
 
   // ── Paso 1: verificar el código ─────────────────────────────────────────────
   const handleVerifyCode = async (e: React.FormEvent) => {
@@ -163,12 +198,16 @@ export function DesbloquearForm({
     // Con sesión: saltar el paso de email, canjear directamente.
     if (session) {
       setPhase("redeeming");
-      const result = await redeemCode(normalized);
-      handleResult(result);
+      const result = await redeemCode(normalized, expectedSlug);
+      handleResult(result, normalized);
       return;
     }
 
-    // Sin sesión: verificar el código contra la DB antes de pedir el correo.
+    // Sin sesión: verificar que el código exista y esté sin canjear antes de pedir
+    // el correo. La pre-validación NO pasa el slug esperado a propósito: el booleano
+    // no distingue "inexistente" de "de otro personaje", así el mensaje aquí es
+    // exacto ("código inválido"). La pertenencia al personaje se valida de forma
+    // autoritativa en el canje (redeem_code → wrong_character), con mensaje preciso.
     setPhase("checking");
     const valid = await checkCodeValid(normalized);
     if (!mountedRef.current) return;
