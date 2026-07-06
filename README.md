@@ -1,27 +1,25 @@
-# Seres del Pase
+# Nunna
 
-Catálogo digital + experiencia inmersiva sobre los personajes tradicionales de los pases riobambeños — Diablo Huma (Aya Uma), Curiquingue, Sacha Runa, y más.
+Catálogo digital de personajes ecuatorianos con imanes artesanales como producto físico. El comprador escanea el QR de la tarjeta del imán y aterriza directo en la ficha completa del personaje.
 
-**Autor:** Jonathan David Aucancela Maguana  
-**Stack:** Next.js 15 · NestJS · PostgreSQL · Directus · Supabase
+**Autor:** Jonathan David Aucancela Maguana
+**Stack:** Next.js 15.5 (App Router) · TypeScript · Tailwind CSS v3 · next-intl · Supabase
 
 ---
 
 ## Repositorio
 
-Monorepo con **Turborepo** + **pnpm workspaces**.
+Monorepo con **Turborepo** + **pnpm workspaces**. Solo `apps/web` está activo — sin CMS, sin backend propio; los datos viven en JSON versionado en el repo.
 
 ```
-seres-del-pase/
+Nunna/
 ├── apps/
-│   ├── web/        → Next.js 15 (sitio público)
-│   └── api/        → NestJS (búsqueda semántica, webhooks)
+│   └── web/        → Next.js 15.5 (sitio público, único servicio en producción)
 ├── packages/
-│   ├── types/      → tipos TypeScript compartidos
-│   ├── ui/         → componentes React base
-│   └── config/     → ESLint, TSConfig
-├── prisma/         → schema de base de datos
-└── directus/       → configuración del CMS
+│   ├── types/       → tipos TypeScript compartidos
+│   ├── ui/          → componentes React base
+│   └── config/      → ESLint, TSConfig
+└── supabase/        → schema.sql (auth + colección para el desbloqueo de imanes)
 ```
 
 ## Inicio rápido
@@ -30,36 +28,34 @@ seres-del-pase/
 
 - Node.js ≥ 20
 - pnpm ≥ 9
-- Docker (para Directus local)
-- Cuenta en Supabase (gratis)
 
 ### Instalación
 
 ```bash
-# Clonar y preparar
-git clone https://github.com/tu-usuario/seres-del-pase.git
-cd seres-del-pase
-
-# Variables de entorno
-cp .env.example .env.local
-# → edita .env.local con tus credenciales de Supabase y Directus
-
-# Instalar dependencias
+git clone <repo>
+cd Nunna
 pnpm install
 
-# Desarrollo
-pnpm dev
+pnpm --filter @seres-del-pase/web dev --port 3030
 ```
 
-El frontend estará en [http://localhost:3000](http://localhost:3000)  
-La API en [http://localhost:3001](http://localhost:3001)  
-Directus en [http://localhost:8055](http://localhost:8055)
+Frontend en [http://localhost:3030/es](http://localhost:3030/es). No se necesitan variables de entorno para desarrollo — los datos vienen del JSON. Sin las variables de Supabase (`apps/web/.env.local`), el gating del desbloqueo de imanes queda apagado (todo visible), que es lo cómodo en dev.
+
+### Comandos frecuentes
+
+```bash
+pnpm build                                          # build de producción (valida datos + SSG)
+pnpm --filter @seres-del-pase/web type-check        # tsc --noEmit
+pnpm --filter @seres-del-pase/web test              # vitest
+pnpm validate-data                                  # integridad de referencias entre los JSON
+```
 
 ## Documentación
 
-- [`docs/IMPLEMENTACION.md`](docs/IMPLEMENTACION.md) — guía paso a paso para construir el proyecto
-- [`docs/PLAN.md`](docs/PLAN.md) — plan maestro del proyecto
-- [`Guia.md`](Guia.md) — guía original completa
+- [`CLAUDE.md`](CLAUDE.md) — modelo de negocio, arquitectura, decisiones técnicas y estado actual (fuente principal para trabajar en el repo)
+- [`docs/PLAN-ESCALA-ECUADOR.md`](docs/PLAN-ESCALA-ECUADOR.md) — plan de escalado de Riobamba a personajes de todo Ecuador
+- [`docs/PLAN-V3.md`](docs/PLAN-V3.md) — auditoría y plan de mejoras (bugs, performance, SEO)
+- [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — historial de cambios
 
 ## Licencia
 

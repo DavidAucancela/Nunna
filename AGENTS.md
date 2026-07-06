@@ -9,9 +9,11 @@ Catálogo digital de personajes ecuatorianos. Imanes artesanales como producto f
 ```bash
 pnpm install                          # instalar todo
 pnpm --filter @seres-del-pase/web dev --port 3030   # frontend en :3030
-pnpm build                            # build SSG completo (usa turbo — solo web)
+pnpm build                            # build SSG completo (corre validate-data primero, usa turbo — solo web)
 pnpm --filter @seres-del-pase/web type-check        # tsc --noEmit (requiere build previo si turbo no corre)
-pnpm lint                             # turbo runt lint (lint + type-check en paralelo)
+pnpm lint                             # turbo run lint (lint + type-check en paralelo)
+pnpm --filter @seres-del-pase/web test              # vitest run (servicios de lib/data + ColeccionProvider)
+pnpm validate-data                    # referencias huérfanas entre personajes/pases/recorrido.json
 node scripts/build-route.mjs          # snap rutas del recorrido a calles (OSRM edición, no runtime)
 ```
 
@@ -37,16 +39,16 @@ Package manager: `pnpm@9.12.0` (>=9). Node >=20.
 - **Turbopack desactivado** — incompatible con `experimental.typedRoutes` en next.config.
 - **Prisma v5** (no v6/v7). Solo para Fase 3, no tocar ahora.
 - **next-intl v3**. `i18n/request.ts` usa `.default` en dynamic import — sin eso React da error de serialización.
-- **Sin `force-dynamic`** en páginas. SSG puro con `generateStaticParams`. Solo 3 locales: `es`, `qu`, `en`.
-- **Sin test framework configurado** — no hay jest/vitest ni tests escritos.
-- **`next.config.ts`**: `images.unoptimized: true` (Railway no corre Sharp en runtime, servía imágenes vacías en grids). `transpilePackages: ["maplibre-gl"]`.
+- **Sin `force-dynamic`** en páginas. SSG puro con `generateStaticParams`. Solo 2 locales: `es` (default), `en` — el locale `qu` y el glosario se retiraron el 2026-07-03, no reintroducir.
+- **Test framework: Vitest** + Testing Library (`apps/web/package.json` → `test`). Cubre servicios de `lib/data` y el flujo de canje (`ColeccionProvider.test.tsx`, mockeando Supabase).
+- **`next.config.ts`**: optimización de imágenes de `next/image` **activada** (se quitó `images.unoptimized`, Fase 1 perf 2026-07-01 — sharp viene integrado en `next start` desde Next 15). `transpilePackages: ["maplibre-gl"]`.
 - **`turbo.json`**: `type-check` depende de `^build`. Al ejecutar `pnpm --filter @seres-del-pase/web type-check` aislado, asegurar build previa o usar `turbo run type-check --filter @seres-del-pase/web`.
 
 ## Capa de datos
 
 Todas las páginas importan de `@/lib/data` (barrel → `lib/services/*.service.ts`):
 ```ts
-import { getPersonajes, getPersonaje, getPases, getGlosario, getRecorridos } from "@/lib/data";
+import { getPersonajes, getPersonaje, getPases, getRecorridos } from "@/lib/data";
 ```
 `getOrigenStyle` se importa por separado desde `@/lib/origen-styles`.
 
@@ -54,7 +56,11 @@ Los datos viven en `apps/web/lib/data/*.json` (versionados en git, sin CMS). Par
 
 ## Infra
 
-**Todo en Railway.** SSG export, `railpack.json` define build/start. No Vercel.
+**Todo en Railway.** SSG export, `railpack.json` define build/start. No Vercel. Supabase (Postgres) activo desde 2026-06-24 solo para auth + colección (desbloqueo de imanes) — el contenido sigue siendo JSON estático, la app sigue siendo SSG.
+
+## Desbloqueo de imanes (gating)
+
+Cada tarjeta trae un código de 6 caracteres → canje vía RPC `redeem_code` (Supabase, `supabase/schema.sql`) → el personaje entra a la colección del usuario (magic-link, sin contraseña) y la ficha `/personajes/[slug]` desbloquea su experiencia inmersiva (`HeroGated`/`AnatomiaGated`). La URL del QR no cambia; sin gating activo (envs de Supabase ausentes) todo queda visible. Ver "Decisiones técnicas clave" en `CLAUDE.md` para el detalle completo (estados del RPC, flujo del magic-link, degradación segura).
 
 ## Gotchas técnicos
 
