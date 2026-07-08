@@ -118,7 +118,7 @@ apps/web/
 │   ├── personajes/components/      → PersonajeCard, ParallaxHero, HeroDespertar (★ hero v2 inmersivo),
 │   │                                 HeroGated/AnatomiaGated (★ gating por desbloqueo),
 │   │                                 AnatomiaSection (★ Fase 4 — hotspots scroll-driven),
-│   │                                 GaleriaSection (3 tabs), NarrativaSection, PersonajesCarrusel,
+│   │                                 GaleriaSection (2 pestañas), NarrativaSection, PersonajesCarrusel,
 │   │                                 HotspotsViewer (superseded por AnatomiaSection), SimbolismoSection (sin uso)
 │   ├── desbloqueo/components/      → DesbloquearForm, ColeccionClient (★ desbloqueo de imanes)
 │   └── festividades/components/    → CalendarioGrid
@@ -177,9 +177,9 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 |----------------|-----|---------|
 | `imagenPortada` en JSON → `public/personajes/[slug].png` | Tarjetas del grid (`PersonajeCard`) | Retrato portrait |
 | `imagenBanner` en JSON → `public/personajes/[slug]-banner.png` | Hero de la ficha (`ParallaxHero`) | Landscape 1376×768 |
-| `multimedia[].url` con `titulo:"proceso"` → `public/personajes/[slug]-presentacion.png` | Galería tab "El imán" | Libre |
-| `multimedia[].url` con `titulo:"en-pase"` | Galería tab "En el pase" + waypoints del recorrido | Libre |
-| sin `titulo` / `titulo:"retrato"` | Galería tab "El personaje" | Libre |
+| `multimedia[].url` con `titulo:"proceso"` → `public/personajes/[slug]-presentacion.png` | Galería pestaña "El personaje y su imán" | Libre |
+| `multimedia[].url` con `titulo:"en-pase"` | Galería pestaña "En el pase" + waypoints del recorrido | Libre |
+| sin `titulo` / `titulo:"retrato"` | Galería pestaña "El personaje y su imán" | Libre |
 
 > **Imágenes de pases** (grid `/pases`, `/mapa`, `/calendario`): en `public/informacion_pases/`,
 > referenciadas por `pases.json` y `mapa/page.tsx` como `/informacion_pases/[archivo]`.
@@ -209,11 +209,14 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 }
 ```
 
-| `titulo` | Tab en galería |
+| `titulo` | Pestaña en galería |
 |----------|---------------|
-| `undefined` / `"retrato"` | El personaje |
-| `"proceso"` | El imán |
+| `undefined` / `"retrato"` | El personaje y su imán |
+| `"proceso"` | El personaje y su imán |
 | `"en-pase"` | En el pase |
+
+> Retrato y proceso comparten pestaña (unificados 2026-07-07, `GaleriaSection.tsx`); se ordenan
+> por el campo `orden` de cada `Media`. Solo quedan 2 pestañas en la galería.
 
 > Terminología estandarizada a **"imán"** en todo el código y datos (commit `b749f53`, 2026-06-11). No reintroducir "llavero".
 
@@ -231,7 +234,7 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 3. Ficha de datos     → origen (color acento) + festividad + nombresAlt
 4. Historia           → leyenda (cita centrada) + capítulos numerados + secreto del artesano
 4b. AnatomiaSection   → (experiencia + hotspots) Fase 4: visual sticky con pines + cards scroll-driven
-5. GaleriaSection     → 3 tabs: El personaje / El imán / En el pase
+5. GaleriaSection     → 2 pestañas: El personaje y su imán (unificados) / En el pase
 6. Cross-sell         → grid de otros personajes con imagen
 ```
 

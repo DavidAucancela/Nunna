@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Media } from "@seres-del-pase/types";
@@ -11,12 +11,31 @@ interface GaleriaSectionProps {
   nombre?: string;
 }
 
+interface Tab {
+  key: string;
+  label: string;
+  images: Media[];
+}
+
 export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSectionProps) {
   const [lightbox, setLightbox] = useState<{ images: Media[]; idx: number } | null>(null);
 
-  const retratos = multimedia.filter((m) => !m.titulo || m.titulo === "retrato");
-  const proceso  = multimedia.filter((m) => m.titulo === "proceso");
-  const enPase   = multimedia.filter((m) => m.titulo === "en-pase");
+  const tabs = useMemo<Tab[]>(() => {
+    const personaje = multimedia
+      .filter((m) => !m.titulo || m.titulo === "retrato" || m.titulo === "proceso")
+      .sort((a, b) => a.orden - b.orden);
+    const enPase = multimedia
+      .filter((m) => m.titulo === "en-pase")
+      .sort((a, b) => a.orden - b.orden);
+
+    return [
+      { key: "personaje", label: "El personaje y su imán", images: personaje },
+      { key: "en-pase", label: "En el pase", images: enPase },
+    ].filter((t) => t.images.length > 0);
+  }, [multimedia]);
+
+  const [activeTab, setActiveTab] = useState(0);
+  const current = tabs[activeTab] ?? tabs[0];
 
   const open  = (images: Media[], idx: number) => setLightbox({ images, idx });
   const close = useCallback(() => setLightbox(null), []);
@@ -44,12 +63,14 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
 
   const active = lightbox ? lightbox.images[lightbox.idx] : null;
 
+  if (!current) return null;
+
   return (
     <section className="border-y border-borde-sutil bg-stone-950 py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-6">
 
         {/* Encabezado */}
-        <div className="mb-12 text-center">
+        <div className="mb-10 text-center">
           <p className="text-[10px] uppercase tracking-[0.3em] mb-3" style={{ color: `${accentColor}80` }}>
             Imágenes
           </p>
@@ -61,39 +82,59 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
           )}
         </div>
 
-        {/* El personaje */}
-        <ImageGrid
-          label="El personaje"
-          images={retratos}
-          accentColor={accentColor}
-          onOpen={(idx) => open(retratos, idx)}
-        />
-
-        {/* El imán */}
-        {proceso.length > 0 && (
-          <>
-            <Divider accentColor={accentColor} />
-            <ImageGrid
-              label="El imán"
-              images={proceso}
-              accentColor={accentColor}
-              onOpen={(idx) => open(proceso, idx)}
-            />
-          </>
+        {/* Selector de sección */}
+        {tabs.length > 1 && (
+          <div className="mb-10 flex items-center justify-center">
+            <div className="inline-flex gap-1 rounded-full border border-borde-sutil bg-stone-900/60 p-1">
+              {tabs.map((tab, idx) => {
+                const isActive = idx === activeTab;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(idx)}
+                    className="relative rounded-full px-4 py-2 text-xs font-medium uppercase tracking-wider transition-colors sm:px-5"
+                    style={{ color: isActive ? "#0F0E0C" : "#a8a29e" }}
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId="galeria-tab-pill"
+                        className="absolute inset-0 rounded-full"
+                        style={{ backgroundColor: accentColor }}
+                        transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                      />
+                    )}
+                    <span className="relative flex items-center gap-1.5">
+                      {tab.label}
+                      <span
+                        className="text-[10px] tabular-nums"
+                        style={{ opacity: isActive ? 0.7 : 0.5 }}
+                      >
+                        {tab.images.length}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         )}
 
-        {/* En el pase */}
-        {enPase.length > 0 && (
-          <>
-            <Divider accentColor={accentColor} />
+        {/* Grid de la sección activa */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current.key}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+          >
             <ImageGrid
-              label="En el pase"
-              images={enPase}
+              images={current.images}
               accentColor={accentColor}
-              onOpen={(idx) => open(enPase, idx)}
+              onOpen={(idx) => open(current.images, idx)}
             />
-          </>
-        )}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* ── Lightbox ── */}
@@ -225,60 +266,36 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
   );
 }
 
-function Divider({ accentColor }: { accentColor: string }) {
-  return (
-    <div className="my-14 flex items-center gap-5">
-      <div className="h-px flex-1 bg-borde-sutil" />
-      <span className="select-none text-xs" style={{ color: `${accentColor}30` }} aria-hidden="true">✦</span>
-      <div className="h-px flex-1 bg-borde-sutil" />
-    </div>
-  );
-}
-
 function ImageGrid({
-  label,
   images,
   accentColor,
   onOpen,
 }: {
-  label: string;
   images: Media[];
   accentColor: string;
   onOpen: (idx: number) => void;
 }) {
   if (images.length === 0) return null;
 
-  const gridClass =
-    images.length === 1
-      ? "max-w-[200px]"
-      : images.length === 2
-      ? "grid grid-cols-2 gap-3 sm:gap-4 max-w-sm"
-      : "grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3";
-
   return (
-    <div>
-      {/* Label */}
-      <div className="mb-6 flex items-center gap-4">
-        <p
-          className="text-[10px] font-medium uppercase tracking-[0.25em]"
-          style={{ color: `${accentColor}90` }}
-        >
-          {label}
-        </p>
-        <div className="h-px flex-1 bg-borde-sutil" />
-      </div>
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+      {images.map((img, idx) => {
+        // La primera imagen se destaca ocupando 2 columnas/filas en pantallas medianas+
+        const featured = idx === 0 && images.length > 1;
 
-      {/* Grid de thumbnails */}
-      <div className={gridClass}>
-        {images.map((img, idx) => (
+        return (
           <motion.button
             key={img.id}
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.38, delay: idx * 0.09, ease: "easeOut" }}
+            transition={{ duration: 0.38, delay: idx * 0.07, ease: "easeOut" }}
             onClick={() => onOpen(idx)}
-            className="group relative aspect-[3/4] w-full overflow-hidden rounded-2xl border border-borde-sutil focus:outline-none"
+            className={`group relative w-full overflow-hidden rounded-2xl border border-borde-sutil focus:outline-none ${
+              featured
+                ? "col-span-2 aspect-[4/3] sm:col-span-2 sm:row-span-2 sm:aspect-square"
+                : "aspect-[3/4]"
+            }`}
             aria-label={`Ampliar: ${img.altText}`}
           >
             {img.tipo === "video" ? (
@@ -287,24 +304,32 @@ function ImageGrid({
                 preload="metadata"
                 muted
                 playsInline
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.07]"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
               />
             ) : (
               <Image
                 src={img.url}
                 alt={img.altText}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.07]"
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.06]"
+                sizes={
+                  featured
+                    ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 560px"
+                    : "(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 280px"
+                }
+                priority={featured}
               />
             )}
 
-            {/* Hover overlay */}
-            <div className="absolute inset-0 bg-fondo-oscuro/0 transition-colors duration-300 group-hover:bg-fondo-oscuro/25" />
+            {/* Degradado base — asegura contraste del ícono/caption incluso sin hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-fondo-oscuro/50 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
             {/* Icono expandir / reproducir */}
             <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-stone-950/70 backdrop-blur-sm">
+              <span
+                className="flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur-sm"
+                style={{ borderColor: `${accentColor}40`, backgroundColor: "rgba(15,14,12,0.7)" }}
+              >
                 {img.tipo === "video" ? (
                   <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" className="ml-0.5 text-white" aria-hidden="true">
                     <path d="M8 5v14l11-7z" />
@@ -320,12 +345,12 @@ function ImageGrid({
             {/* Descripción al hover */}
             {img.descripcion && (
               <div className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-fondo-oscuro to-transparent px-3 py-4 transition-transform duration-300 group-hover:translate-y-0">
-                <p className="text-[10px] leading-relaxed text-stone-300">{img.descripcion}</p>
+                <p className="text-[10px] leading-relaxed text-stone-300 sm:text-[11px]">{img.descripcion}</p>
               </div>
             )}
           </motion.button>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }
