@@ -78,12 +78,13 @@ export function CtaFinal() {
 
         <FadeUp delay={0.2}>
           <div className="mt-10 flex justify-center">
-            <a
-              href="/sobre"
+            <button
+              type="button"
+              onClick={() => setScannerOpen(true)}
               className="inline-flex items-center gap-2 rounded-full bg-acento-rojo px-10 py-4 text-sm font-semibold text-white shadow-lg shadow-acento-rojo/30 transition hover:bg-acento-rojo/90 hover:shadow-acento-rojo/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acento-dorado"
             >
-              Conoce el proyecto
-            </a>
+              Escanear QR
+            </button>
           </div>
         </FadeUp>
       </div>
