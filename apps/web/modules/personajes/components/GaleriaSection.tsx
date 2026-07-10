@@ -279,6 +279,7 @@ function ImageGrid({
 
   // Con pocas imágenes el bento (destacar la primera) deja huecos vacíos — solo
   // se activa desde 3 imágenes, donde hay suficiente contenido para balancear el grid.
+  // Ligado a gridClass: los casos de 1-2 imágenes de abajo asumen canFeature=false.
   const canFeature = images.length >= 3;
   const gridClass =
     images.length === 1

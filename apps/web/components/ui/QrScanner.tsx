@@ -38,6 +38,8 @@ export function QrScanner({ open, onClose }: { open: boolean; onClose: () => voi
     setCameraError(null);
     setHint(null);
 
+    // Si llegan varias lecturas inválidas seguidas, solo importa la última —
+    // no acumulamos historial de intentos fallidos, cada llamada reinicia el timer.
     const flashHint = (msg: string) => {
       setHint(msg);
       if (hintTimer.current) clearTimeout(hintTimer.current);
