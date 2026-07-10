@@ -277,11 +277,22 @@ function ImageGrid({
 }) {
   if (images.length === 0) return null;
 
+  // Con pocas imágenes el bento (destacar la primera) deja huecos vacíos — solo
+  // se activa desde 3 imágenes, donde hay suficiente contenido para balancear el grid.
+  // Ligado a gridClass: los casos de 1-2 imágenes de abajo asumen canFeature=false.
+  const canFeature = images.length >= 3;
+  const gridClass =
+    images.length === 1
+      ? "grid grid-cols-1 max-w-xs mx-auto sm:mx-0"
+      : images.length === 2
+      ? "grid grid-cols-2 gap-3 sm:gap-4 max-w-2xl"
+      : "grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4";
+
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+    <div className={gridClass}>
       {images.map((img, idx) => {
         // La primera imagen se destaca ocupando 2 columnas/filas en pantallas medianas+
-        const featured = idx === 0 && images.length > 1;
+        const featured = idx === 0 && canFeature;
 
         return (
           <motion.button

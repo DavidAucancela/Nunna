@@ -25,13 +25,26 @@ function resolverDestino(texto: string): string | null {
 
 export function QrScanner({ open, onClose }: { open: boolean; onClose: () => void }) {
   const scannerRef = useRef<import("html5-qrcode").Html5Qrcode | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // Error duro de cámara (permiso/no hay cámara): bloquea y cubre el visor.
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  // Aviso transitorio (QR no reconocido): franja no bloqueante, el escaneo sigue.
+  const [hint, setHint] = useState<string | null>(null);
+  const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!open) return;
 
     let cancelled = false;
-    setError(null);
+    setCameraError(null);
+    setHint(null);
+
+    // Si llegan varias lecturas inválidas seguidas, solo importa la última —
+    // no acumulamos historial de intentos fallidos, cada llamada reinicia el timer.
+    const flashHint = (msg: string) => {
+      setHint(msg);
+      if (hintTimer.current) clearTimeout(hintTimer.current);
+      hintTimer.current = setTimeout(() => setHint(null), 2800);
+    };
 
     (async () => {
       try {
@@ -51,7 +64,8 @@ export function QrScanner({ open, onClose }: { open: boolean; onClose: () => voi
               scanner.stop().catch(() => {});
               window.location.assign(destino);
             } else {
-              setError("Este QR no corresponde a un imán Nunna.");
+              // No cortamos el escaneo: seguimos leyendo por si aparece un QR válido.
+              flashHint("Este QR no corresponde a un imán Nunna.");
             }
           },
           () => {
@@ -61,7 +75,7 @@ export function QrScanner({ open, onClose }: { open: boolean; onClose: () => voi
       } catch (err) {
         if (cancelled) return;
         const name = (err as { name?: string })?.name;
-        setError(
+        setCameraError(
           name === "NotAllowedError"
             ? "Necesitamos permiso para usar la cámara. Habilítalo en tu navegador."
             : name === "NotFoundError"
@@ -73,6 +87,7 @@ export function QrScanner({ open, onClose }: { open: boolean; onClose: () => voi
 
     return () => {
       cancelled = true;
+      if (hintTimer.current) clearTimeout(hintTimer.current);
       const s = scannerRef.current;
       scannerRef.current = null;
       if (s) {
@@ -120,11 +135,27 @@ export function QrScanner({ open, onClose }: { open: boolean; onClose: () => voi
 
             <div className="relative aspect-square overflow-hidden rounded-2xl bg-stone-950">
               <div id={READER_ID} className="h-full w-full [&_video]:h-full [&_video]:w-full [&_video]:object-cover" />
-              {error && (
+
+              {/* Error duro de cámara — cubre el visor (no hay nada que escanear). */}
+              {cameraError && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-stone-950/90 px-6 text-center">
-                  <p className="text-sm leading-relaxed text-stone-300">{error}</p>
+                  <p className="text-sm leading-relaxed text-stone-300">{cameraError}</p>
                 </div>
               )}
+
+              {/* Aviso transitorio — franja inferior, la cámara sigue visible y escaneando. */}
+              <AnimatePresence>
+                {!cameraError && hint && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute inset-x-3 bottom-3 rounded-xl bg-stone-950/85 px-4 py-2.5 text-center backdrop-blur-sm"
+                  >
+                    <p className="text-xs leading-relaxed text-stone-200">{hint}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <p className="mt-4 text-center text-xs leading-relaxed text-stone-500">
