@@ -15,8 +15,22 @@ function resolverDestino(texto: string): string | null {
     }
     return null;
   } catch {
-    // No es una URL completa: ¿es una ruta directa?
-    if (limpio.startsWith("/") && /\/(personajes|characters)\//.test(limpio)) {
+    // No es una URL con esquema (ej. QR generado a mano sin "https://",
+    // como "nunna-ecu.com/es/personajes/aya-uma"): reintenta anteponiendo
+    // "https://" antes de rendirse.
+    if (!limpio.startsWith("/")) {
+      try {
+        const url = new URL(`https://${limpio}`);
+        if (/\/(personajes|characters)\//.test(url.pathname)) {
+          return url.pathname + url.search;
+        }
+      } catch {
+        // sigue sin ser una URL válida
+      }
+      return null;
+    }
+    // ¿Es una ruta directa?
+    if (/\/(personajes|characters)\//.test(limpio)) {
       return limpio;
     }
     return null;
