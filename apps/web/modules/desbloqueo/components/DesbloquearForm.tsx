@@ -242,7 +242,7 @@ export function DesbloquearForm({
       setErrorKey("error_invalido");
       return;
     }
-    if (!email.trim()) {
+    if (!session && !email.trim()) {
       setErrorKey("email_requerido");
       return;
     }
@@ -475,23 +475,27 @@ export function DesbloquearForm({
           )}
         </AnimatePresence>
 
-        <label htmlFor="email" className="mt-6 block text-sm font-medium text-texto-claro">
-          {t("email_label")}
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder={t("email_placeholder")}
-          className="mt-2 w-full rounded-xl border border-borde-sutil bg-stone-900/50 px-4 py-3 text-texto-claro placeholder:text-stone-600 focus:border-acento-dorado focus:outline-none"
-          aria-describedby="email-ayuda"
-        />
-        <p id="email-ayuda" className="mt-2 text-xs text-stone-500">
-          {t("email_ayuda")}
-        </p>
+        {!session && (
+          <>
+            <label htmlFor="email" className="mt-6 block text-sm font-medium text-texto-claro">
+              {t("email_label")}
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("email_placeholder")}
+              className="mt-2 w-full rounded-xl border border-borde-sutil bg-stone-900/50 px-4 py-3 text-texto-claro placeholder:text-stone-600 focus:border-acento-dorado focus:outline-none"
+              aria-describedby="email-ayuda"
+            />
+            <p id="email-ayuda" className="mt-2 text-xs text-stone-500">
+              {t("email_ayuda")}
+            </p>
+          </>
+        )}
 
         <AnimatePresence>
           {errorKey && (
@@ -509,7 +513,12 @@ export function DesbloquearForm({
 
         <button
           type="submit"
-          disabled={busy || code.length < CODE_LEN || !email.trim()}
+          disabled={
+            busy ||
+            code.length < CODE_LEN ||
+            (!session && !email.trim()) ||
+            (gatingActive && codeCheck !== "valid")
+          }
           className="mt-6 w-full rounded-full bg-acento-dorado px-6 py-3.5 text-sm font-semibold text-fondo-oscuro transition-all hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-40"
         >
           {phase === "redeeming"
