@@ -165,6 +165,52 @@ revoke all on function public.check_code_valid(text, text) from public;
 grant execute on function public.check_code_valid(text, text) to anon;
 grant execute on function public.check_code_valid(text, text) to authenticated;
 
+-- ── RPC de pre-validación con status detallado (sin auth) ──────────────────
+-- Igual que check_code_valid pero devuelve un status tipado en vez de boolean,
+-- para que el frontend distinga "código inválido" de "código de otro personaje"
+-- en tiempo real, antes de enviar el formulario. No expone el slug real del
+-- código salvo que ya coincida con p_expected_slug.
+--   status ∈ {valid, invalid, wrong_character, already_redeemed}
+
+create or replace function public.check_code_status(p_code text, p_expected_slug text)
+returns table (status text)
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+declare
+  v_slug text;
+  v_redeemed boolean;
+begin
+  select uc.personaje_slug, (uc.redeemed_by is not null)
+    into v_slug, v_redeemed
+  from public.unlock_codes uc
+  where uc.code = upper(btrim(p_code));
+
+  if v_slug is null then
+    return query select 'invalid'::text;
+    return;
+  end if;
+
+  if v_slug <> p_expected_slug then
+    return query select 'wrong_character'::text;
+    return;
+  end if;
+
+  if v_redeemed then
+    return query select 'already_redeemed'::text;
+    return;
+  end if;
+
+  return query select 'valid'::text;
+end;
+$$;
+
+revoke all on function public.check_code_status(text, text) from public;
+grant execute on function public.check_code_status(text, text) to anon;
+grant execute on function public.check_code_status(text, text) to authenticated;
+
 -- ── RPC de contador anónimo ───────────────────────────────────────────────────
 -- Devuelve cuántas personas han desbloqueado un personaje.
 -- Accesible sin sesión (anon) — no revela qué usuarios, solo el total.

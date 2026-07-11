@@ -5,6 +5,7 @@ import { useParams, usePathname as useRawPathname, useRouter as useNextRouter } 
 import { useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useColeccion } from "@/components/auth/ColeccionProvider";
 
 const NAV_LINKS = [
   { key: "personajes", href: "/personajes" },
@@ -25,6 +26,7 @@ export function Header() {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
   const [langOpen, setLangOpen] = useState(false);
+  const { gatingActive, session } = useColeccion();
 
   const switchLocale = (code: string) => {
     const segments = rawPathname.split("/");
@@ -74,6 +76,25 @@ export function Header() {
 
         {/* Selector de idioma + tema */}
         <div className="flex shrink-0 items-center gap-2">
+          {/* Indicador de sesión — solo si hay gating activo y sesión iniciada */}
+          {gatingActive && session && (
+            <Link
+              href="/mis-personajes"
+              onClick={() => window.scrollTo({ top: 0, behavior: "instant" })}
+              title={session.user?.email ?? undefined}
+              className="flex items-center gap-1.5 rounded-full border border-borde-sutil px-2.5 py-1 text-xs font-medium text-stone-300 transition-colors hover:border-acento-dorado hover:text-texto-claro"
+            >
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+                />
+              </svg>
+              <span className="hidden sm:inline">{t("mis_personajes")}</span>
+            </Link>
+          )}
+
           {/* Escritorio — pills siempre visibles */}
           <div className="hidden items-center gap-0.5 rounded-lg border border-borde-sutil p-0.5 md:flex">
             {LOCALES.map(({ code, label, flag }) => (

@@ -26,7 +26,7 @@ interface HeroGatedProps {
  * Decide el hero de la ficha según el estado de desbloqueo del usuario:
  *  - Sin experiencia v2 → ParallaxHero (igual que siempre).
  *  - Con experiencia v2 y desbloqueado (o backend apagado) → HeroDespertar (premio).
- *  - Con experiencia v2 y bloqueado → ParallaxHero (teaser) + CTA a /desbloquear.
+ *  - Con experiencia v2 y bloqueado → ParallaxHero (teaser) + CTA a /desbloquear/[slug].
  * El teaser también se muestra antes de resolver el estado, para no parpadear ni
  * romper la hidratación.
  */
@@ -79,7 +79,7 @@ export function HeroGated(props: HeroGatedProps) {
               </div>
             </div>
             <Link
-              href="/desbloquear"
+              href={{ pathname: "/desbloquear/[slug]", params: { slug } }}
               className="flex-none rounded-full px-5 py-2.5 text-sm font-semibold text-fondo-oscuro transition-transform hover:scale-[1.03]"
               style={{ backgroundColor: props.accentColor }}
             >

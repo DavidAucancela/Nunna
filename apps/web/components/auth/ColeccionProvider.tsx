@@ -32,6 +32,9 @@ export interface RedeemResult {
   slug?: string | undefined;
 }
 
+/** Status detallado de check_code_status — distingue inválido de "otro personaje". */
+export type CodeStatus = "valid" | "invalid" | "wrong_character" | "already_redeemed" | "not_configured" | "error";
+
 interface ColeccionContextValue {
   /** El provider terminó su primera carga (sesión + colección). */
   ready: boolean;
@@ -57,6 +60,12 @@ interface ColeccionContextValue {
    * Si se pasa `expectedSlug`, además exige que el código pertenezca a ese personaje.
    */
   checkCodeValid: (code: string, expectedSlug?: string) => Promise<boolean>;
+  /**
+   * Verifica en tiempo real (sin auth) si un código es válido PARA ESTE personaje,
+   * distinguiendo "no existe" de "es de otro personaje" de "ya fue canjeado".
+   * Usado por el botón "Verificar" del formulario de desbloqueo combinado.
+   */
+  checkCodeStatus: (code: string, expectedSlug: string) => Promise<CodeStatus>;
   /**
    * Canjea un código de 6 caracteres. Requiere sesión. Si se pasa `expectedSlug`, el
    * código debe pertenecer a ese personaje o se devuelve status `wrong_character`.
@@ -131,6 +140,23 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
       return data === true;
     } catch {
       return false;
+    }
+  }, []);
+
+  const checkCodeStatus = useCallback(async (code: string, expectedSlug: string): Promise<CodeStatus> => {
+    if (!supabase) return "not_configured";
+    const normalized = code.trim().toUpperCase();
+    if (!CODE_RE.test(normalized)) return "invalid";
+    try {
+      const { data, error } = await supabase.rpc("check_code_status", {
+        p_code: normalized,
+        p_expected_slug: expectedSlug,
+      });
+      if (error) return "error";
+      const row = (Array.isArray(data) ? data[0] : data) as { status?: string } | null | undefined;
+      return (row?.status as CodeStatus) ?? "error";
+    } catch {
+      return "error";
     }
   }, []);
 
@@ -233,10 +259,22 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
       signInWithEmail,
       signOut,
       checkCodeValid,
+      checkCodeStatus,
       redeemCode,
       refrescar: loadColeccion,
     }),
-    [ready, session, coleccion, has, signInWithEmail, signOut, checkCodeValid, redeemCode, loadColeccion],
+    [
+      ready,
+      session,
+      coleccion,
+      has,
+      signInWithEmail,
+      signOut,
+      checkCodeValid,
+      checkCodeStatus,
+      redeemCode,
+      loadColeccion,
+    ],
   );
 
   return <ColeccionContext.Provider value={value}>{children}</ColeccionContext.Provider>;

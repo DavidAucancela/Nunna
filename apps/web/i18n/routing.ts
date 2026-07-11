@@ -30,11 +30,7 @@ export const routing = defineRouting({
       es: "/sobre",
       en: "/about",
     },
-    "/desbloquear": {
-      es: "/desbloquear",
-      en: "/unlock",
-    },
-    // Landing de desbloqueo por personaje — destino del QR impreso en la tarjeta.
+    // Landing de desbloqueo por personaje — única ruta de desbloqueo (sin genérico).
     "/desbloquear/[slug]": {
       es: "/desbloquear/[slug]",
       en: "/unlock/[slug]",

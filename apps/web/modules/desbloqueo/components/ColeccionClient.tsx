@@ -74,7 +74,7 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
           <h2 className="font-serif text-2xl font-bold text-texto-claro">{t("vacio_titulo")}</h2>
           <p className="mx-auto mt-2 max-w-sm text-stone-400">{t("vacio_texto")}</p>
           <Link
-            href="/desbloquear"
+            href="/personajes"
             className="mt-6 inline-block rounded-full bg-acento-dorado px-6 py-3 text-sm font-semibold text-fondo-oscuro transition-transform hover:scale-[1.02]"
           >
             {t("desbloquear_cta")}

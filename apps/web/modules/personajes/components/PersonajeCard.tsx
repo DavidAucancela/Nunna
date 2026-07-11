@@ -113,7 +113,7 @@ export function PersonajeCard({ personaje, unlocked = true, priority = false }: 
               </svg>
             </div>
             <Link
-              href="/desbloquear"
+              href={{ pathname: "/desbloquear/[slug]", params: { slug: personaje.slug } }}
               onClick={(e) => e.stopPropagation()}
               className="rounded-full border border-acento-dorado/60 bg-stone-950/80 px-4 py-1.5 text-xs font-medium text-acento-dorado backdrop-blur-sm transition-colors hover:bg-acento-dorado hover:text-fondo-oscuro"
             >
