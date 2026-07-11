@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useRouter } from "@/i18n/navigation";
 import { getOrigenStyle } from "@/lib/origen-styles";
+import { DespertarAnimation } from "./DespertarAnimation";
 import {
   useColeccion,
   setPendingCode,
@@ -46,7 +47,7 @@ export function DesbloquearForm({
   const t = useTranslations("desbloquear");
   const tc = useTranslations("coleccion");
   const router = useRouter();
-  const { ready, gatingActive, session, signInWithEmail, checkCodeStatus, redeemCode } = useColeccion();
+  const { ready, gatingActive, session, coleccion, signInWithEmail, checkCodeStatus, redeemCode } = useColeccion();
 
   // Único personaje válido: en /desbloquear/[slug] el código DEBE pertenecer a este.
   const expectedSlug = personajeActivo.slug;
@@ -57,6 +58,8 @@ export function DesbloquearForm({
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [codeCheck, setCodeCheck] = useState<CodeCheck>("idle");
   const [unlockedSlug, setUnlockedSlug] = useState<string | null>(null);
+  const [showDespertar, setShowDespertar] = useState(false);
+  const despertarSlugRef = useRef<string | null>(null);
   const autoTriedRef = useRef(false);
   const mountedRef = useRef(true);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -120,7 +123,13 @@ export function DesbloquearForm({
           if (slug) {
             setErrorKey(null);
             setPhase("redeeming"); // mantiene el estado de carga hasta navegar
-            router.replace({ pathname: "/personajes/[slug]", params: { slug } });
+            if (result.status === "ok") {
+              // Desbloqueo nuevo: animación "Despertar" primero; navega en onDone.
+              despertarSlugRef.current = slug;
+              setShowDespertar(true);
+            } else {
+              router.replace({ pathname: "/personajes/[slug]", params: { slug } });
+            }
           } else {
             // Sin slug (no debería ocurrir): cae a la pantalla estática de respaldo.
             setUnlockedSlug(result.slug ?? null);
@@ -538,6 +547,20 @@ export function DesbloquearForm({
 
         <div className="text-center">{soporteLink}</div>
       </form>
+      {showDespertar && despertarSlugRef.current && (
+        <DespertarAnimation
+          personajes={personajes}
+          unlockedSlugs={[...coleccion, despertarSlugRef.current]}
+          nombreNuevo={
+            personajes.find((p) => p.slug === despertarSlugRef.current)?.nombre ??
+            personajeActivo.nombre
+          }
+          onDone={() => {
+            const slug = despertarSlugRef.current;
+            if (slug) router.replace({ pathname: "/personajes/[slug]", params: { slug } });
+          }}
+        />
+      )}
       {toast}
     </>
   );
