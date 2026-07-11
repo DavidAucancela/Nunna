@@ -5,36 +5,31 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const READER_ID = "nunna-qr-reader";
 
+const RUTA_PERSONAJE = /\/(personajes|characters)\//;
+
 /** Extrae la ruta interna (/[locale]/personajes/[slug]) de lo que decodifique el QR. */
 function resolverDestino(texto: string): string | null {
   const limpio = texto.trim();
-  try {
-    const url = new URL(limpio);
-    if (/\/(personajes|characters)\//.test(url.pathname)) {
-      return url.pathname + url.search;
-    }
-    return null;
-  } catch {
-    // No es una URL con esquema (ej. QR generado a mano sin "https://",
-    // como "nunna-ecu.com/es/personajes/aya-uma"): reintenta anteponiendo
-    // "https://" antes de rendirse.
-    if (!limpio.startsWith("/")) {
-      try {
-        const url = new URL(`https://${limpio}`);
-        if (/\/(personajes|characters)\//.test(url.pathname)) {
-          return url.pathname + url.search;
-        }
-      } catch {
-        // sigue sin ser una URL válida
-      }
-      return null;
-    }
-    // ¿Es una ruta directa?
-    if (/\/(personajes|characters)\//.test(limpio)) {
-      return limpio;
-    }
-    return null;
+
+  // Ruta relativa directa (empieza con "/"): no es una URL, se usa tal cual.
+  if (limpio.startsWith("/")) {
+    return RUTA_PERSONAJE.test(limpio) ? limpio : null;
   }
+
+  // Puede ser una URL completa ("https://...") o un QR generado a mano sin
+  // esquema ("nunna-ecu.com/es/personajes/aya-uma") — se intenta tal cual y,
+  // si no es una URL válida, se reintenta anteponiendo "https://".
+  for (const candidato of [limpio, `https://${limpio}`]) {
+    try {
+      const url = new URL(candidato);
+      if (RUTA_PERSONAJE.test(url.pathname)) {
+        return url.pathname + url.search;
+      }
+    } catch {
+      // no es una URL válida con este candidato, se prueba el siguiente
+    }
+  }
+  return null;
 }
 
 export function QrScanner({ open, onClose }: { open: boolean; onClose: () => void }) {
