@@ -14,9 +14,6 @@ const PERSONAJE_BASE_PATHS = [
 ];
 
 const nextConfig: NextConfig = {
-  // Reduce el footprint de memoria en Railway: `next start` corre sobre el
-  // bundle podado (.next/standalone) en vez de cargar node_modules completo.
-  output: "standalone",
   transpilePackages: ["maplibre-gl"],
   // Optimización de imágenes activa (WebP + srcset responsive). Railway corre
   // `next start`, que trae sharp integrado desde Next 15 — no requiere config extra.
