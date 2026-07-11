@@ -31,6 +31,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry("/pases", 0.7),
     entry("/calendario", 0.7),
     entry("/sobre", 0.5),
-    entry("/desbloquear", 0.5),
   ];
 }

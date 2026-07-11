@@ -112,6 +112,56 @@ describe("redeemCode", () => {
   });
 });
 
+describe("checkCodeStatus", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("rechaza formato inválido sin llegar a la red", async () => {
+    const { result } = renderHook(() => useColeccion(), { wrapper });
+    let status!: string;
+    await act(async () => {
+      status = await result.current.checkCodeStatus("abc", "aya-uma");
+    });
+    expect(status).toBe("invalid");
+    expect(mockedSupabase.rpc).not.toHaveBeenCalled();
+  });
+
+  it("llama a check_code_status con el código normalizado y el slug esperado", async () => {
+    mockedSupabase.rpc.mockResolvedValue({ data: [{ status: "valid" }], error: null });
+    const { result } = renderHook(() => useColeccion(), { wrapper });
+    let status!: string;
+    await act(async () => {
+      status = await result.current.checkCodeStatus("abc123", "aya-uma");
+    });
+    expect(mockedSupabase.rpc).toHaveBeenCalledWith("check_code_status", {
+      p_code: "ABC123",
+      p_expected_slug: "aya-uma",
+    });
+    expect(status).toBe("valid");
+  });
+
+  it("distingue wrong_character de invalid", async () => {
+    mockedSupabase.rpc.mockResolvedValue({ data: [{ status: "wrong_character" }], error: null });
+    const { result } = renderHook(() => useColeccion(), { wrapper });
+    let status!: string;
+    await act(async () => {
+      status = await result.current.checkCodeStatus("ABC123", "aya-uma");
+    });
+    expect(status).toBe("wrong_character");
+  });
+
+  it("un error de RPC se degrada a status error, nunca lanza", async () => {
+    mockedSupabase.rpc.mockResolvedValue({ data: null, error: { message: "boom" } });
+    const { result } = renderHook(() => useColeccion(), { wrapper });
+    let status!: string;
+    await act(async () => {
+      status = await result.current.checkCodeStatus("ABC123", "aya-uma");
+    });
+    expect(status).toBe("error");
+  });
+});
+
 describe("signInWithEmail", () => {
   beforeEach(() => {
     vi.clearAllMocks();
