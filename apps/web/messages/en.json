@@ -148,6 +148,7 @@
     "titulo": "Awaken your being",
     "subtitulo": "Enter the 6-character code printed under your card to awaken the character and add it to your collection.",
     "codigo_label": "Card code",
+    "despertar_titulo": "You have awakened {nombre}",
     "codigo_placeholder": "e.g. K7M2QP",
     "email_label": "Your email",
     "email_placeholder": "you@example.com",

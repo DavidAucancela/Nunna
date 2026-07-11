@@ -148,6 +148,7 @@
     "titulo": "Despierta a tu ser",
     "subtitulo": "Ingresa el código de 6 caracteres impreso bajo tu tarjeta para despertar al personaje y sumarlo a tu colección.",
     "codigo_label": "Código de la tarjeta",
+    "despertar_titulo": "Has despertado a {nombre}",
     "codigo_placeholder": "Ej. K7M2QP",
     "email_label": "Tu correo",
     "email_placeholder": "tucorreo@ejemplo.com",
