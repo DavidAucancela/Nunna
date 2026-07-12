@@ -428,6 +428,29 @@ Modo oscuro por defecto.
   - **Fase 2 (SEO):** `app/sitemap.ts` (páginas públicas × 3 locales con hreflang), `app/robots.ts`
     (disallow /mis-personajes), `app/manifest.ts` (PWA básica); canonical + hreflang por página vía
     `localeAlternates()` (`lib/seo.ts`) en todas las páginas públicas incluida la ficha
+- **Fixes de verificación del desbloqueo** (PR #45, 2026-07-11):
+  - El botón de submit ahora respeta `checkCodeStatus` en tiempo real — antes solo se deshabilitaba por
+    longitud/email, dejando pasar submits que ya se sabían inválidos hasta volver del magic-link
+  - Con sesión activa ya no se pide correo (el campo se oculta; el canje va directo por `redeemCode`)
+  - Se encontró y corrigió que `check_code_status` no estaba aplicada en el Supabase de producción
+    (404 "function not found") — el primer fix del submit bloqueaba el desbloqueo para todos hasta
+    aplicar la función faltante; ahora el submit solo bloquea ante un estado CONFIRMADO de código malo,
+    nunca por un error de red/RPC, y `checkCodeStatus` loguea el error en consola para diagnosticarlo
+  - Animación "Despertar" a pantalla completa (`DespertarAnimation.tsx`) tras un canje exitoso: grid
+    2×2 de los 4 personajes que se ilumina escalonadamente según la colección, navega a la ficha al
+    terminar (~2.2s; inmediata con `prefers-reduced-motion`)
+- **Rediseño cinematográfico de la ficha** (PR #46, 2026-07-11/12):
+  - Hero (`HeroDespertar`): entrada con zoom-out + blur que se disuelve, capa de partículas de luz
+    (`useParticleCanvas`, canvas nativo sin librerías)
+  - "La Voz del Espíritu" (`QuoteRevelacion`, nuevo): el resumen editorial se pinta palabra por
+    palabra sincronizado al scroll; línea de los tres mundos (Uku/Kay/Hanan Pacha) para origen
+    prehispánico
+  - "Los Números Sagrados" (`StatsAnimados`, nuevo): la ficha de datos pasa de grilla plana a tarjetas
+    con ícono SVG animado (chakana/máscara/convergencia), contador incremental y tilt 3D (`useTilt3D`)
+  - `NarrativaSection`: capítulos en scrollytelling sticky (desktop) con número split-flap, serpiente
+    de progreso SVG y términos kichwa con tooltip; `SecretoRitual` (nuevo) reemplaza el bloque estático
+    del secreto del artesano
+  - `PersonajesEscenario` (nuevo) reemplaza `PersonajesCarrusel` en el cross-sell final
 
 ### 🔄 Siguiente
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
@@ -455,6 +478,17 @@ Modo oscuro por defecto.
 ---
 
 ## Decisiones técnicas clave
+
+### `output: "standalone"` probado y revertido ⚠ (2026-07-11)
+Se intentó reducir el consumo de RAM en Railway (el proceso vía `pnpm start` deja 3 procesos Node vivos
+simultáneos, ~384MB combinados) cambiando a `output: "standalone"` + `node .next/standalone/apps/web/server.js`
+directo (~156MB, un solo proceso). **Funcionó en local** (build + start verificados con curl a rutas reales,
+imágenes optimizadas, `/api/health`) pero **causó un 502 total en producción** al desplegarse en Railway —
+causa raíz no diagnosticada (el deploy se revirtió antes de investigar logs de arranque). Commit revertido
+(`abbff05` revierte el merge del PR #44). **No reintroducir `output: "standalone"` sin antes reproducir el
+fallo real de Railway** (ideal: un entorno de staging o revisar `Deploy Logs` del intento anterior si
+Railway los conserva) — que funcione en local con `next start`/`node server.js` no fue suficiente evidencia
+la vez pasada.
 
 ### Desbloqueo de imanes + colección sincronizada (desplegado 2026-06-28)
 Convierte la compra física en una experiencia que **sube de nivel**: cada tarjeta trae un **código de 6
@@ -754,3 +788,13 @@ pnpm validate-data
 # Tests unitarios (servicios de lib/data + flujo de canje mockeando Supabase)
 pnpm --filter @seres-del-pase/web test
 ```
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).

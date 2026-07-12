@@ -36,7 +36,7 @@ git clone <repo>
 cd Nunna
 pnpm install
 
-pnpm --filter @seres-del-pase/web dev --port 3030
+pnpm --filter @seres-del-pase/web dev --port 3039
 ```
 
 Frontend en [http://localhost:3030/es](http://localhost:3030/es). No se necesitan variables de entorno para desarrollo — los datos vienen del JSON. Sin las variables de Supabase (`apps/web/.env.local`), el gating del desbloqueo de imanes queda apagado (todo visible), que es lo cómodo en dev.
