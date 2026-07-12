@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { SecretoRitual } from "./SecretoRitual";
 
 interface Capitulo {
   titulo: string;
@@ -14,11 +15,110 @@ interface NarrativaSectionProps {
   capitulos: Capitulo[];
   accentColor: string;
   artesanoFirma?: string;
+  /** Palabras clave de la narrativa (JSON) — reciben énfasis y, si son kichwa, tooltip. */
+  palabrasClave?: string[];
 }
 
-export function NarrativaSection({ leyenda, secreto, capitulos, accentColor, artesanoFirma }: NarrativaSectionProps) {
+/**
+ * Significados kichwa de los términos que aparecen en las narrativas.
+ * Solo las palabras presentes aquí muestran tooltip; el resto de
+ * `palabrasClave` recibe un énfasis tipográfico suave.
+ * ⚠ Traducciones tentativas — revisar con hablante nativo (misma deuda que
+ * los namespaces kichwa de i18n).
+ */
+const KICHWA_GLOSARIO: Record<string, string> = {
+  "aya": "espíritu, ánima",
+  "uma": "cabeza",
+  "aya uma": "cabeza del espíritu",
+  "pachamama": "Madre Tierra",
+  "kay pacha": "el mundo del aquí y ahora",
+  "uku pacha": "el mundo de adentro, el de los ancestros",
+  "hanan pacha": "el mundo de arriba",
+  "allku": "perro",
+  "supay": "espíritu dual del mundo de adentro",
+};
+
+function esLetra(ch: string | undefined): boolean {
+  return !!ch && /\p{L}/u.test(ch);
+}
+
+/**
+ * Envuelve las palabras clave del texto: términos con entrada en el glosario
+ * kichwa → underline punteado + tooltip; el resto → énfasis suave. La
+ * detección respeta límites de palabra aun con tildes (sin \b, que falla
+ * con caracteres no ASCII).
+ */
+function renderConTerminos(texto: string, terminos: string[], accentColor: string): ReactNode {
+  if (terminos.length === 0) return texto;
+
+  const escaped = [...terminos]
+    .sort((a, b) => b.length - a.length)
+    .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const re = new RegExp(`(${escaped.join("|")})`, "giu");
+  const parts = texto.split(re);
+
+  return parts.map((part, i) => {
+    const esTermino = i % 2 === 1;
+    if (!esTermino) return part;
+
+    const prev = parts[i - 1];
+    const next = parts[i + 1];
+    const limpio = !esLetra(prev?.slice(-1)) && !esLetra(next?.charAt(0));
+    if (!limpio) return part;
+
+    const significado = KICHWA_GLOSARIO[part.toLowerCase()];
+    if (!significado) {
+      return (
+        <em key={i} className="not-italic font-medium text-texto-claro">
+          {part}
+        </em>
+      );
+    }
+    return <TerminoKichwa key={i} termino={part} significado={significado} accentColor={accentColor} />;
+  });
+}
+
+/** Palabra kichwa con tooltip de traducción al hover/focus. */
+function TerminoKichwa({
+  termino,
+  significado,
+  accentColor,
+}: {
+  termino: string;
+  significado: string;
+  accentColor: string;
+}) {
+  return (
+    <span className="group relative inline-block">
+      <span
+        tabIndex={0}
+        className="cursor-help font-medium underline decoration-dotted underline-offset-4 focus-visible:outline-none"
+        style={{ color: accentColor, textDecorationColor: `${accentColor}70` }}
+      >
+        {termino}
+      </span>
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 w-max max-w-[220px] -translate-x-1/2 rounded-lg border border-borde-sutil bg-stone-900 px-3 py-2 text-xs not-italic leading-snug text-stone-300 opacity-0 shadow-xl transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100"
+      >
+        <span className="mb-0.5 block text-[9px] uppercase tracking-[0.25em]" style={{ color: accentColor }}>
+          Kichwa
+        </span>
+        {significado}
+      </span>
+    </span>
+  );
+}
+
+export function NarrativaSection({
+  leyenda,
+  secreto,
+  capitulos,
+  accentColor,
+  artesanoFirma,
+  palabrasClave,
+}: NarrativaSectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [secretoVisible, setSecretoVisible] = useState(false);
   const reduced = useReducedMotion();
   const chapterRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -39,6 +139,21 @@ export function NarrativaSection({ leyenda, secreto, capitulos, accentColor, art
     return () => observers.forEach((obs) => obs?.disconnect());
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduced]);
+
+  // ── Serpiente de progreso: el camino del pase entre capítulos ──
+  const n = capitulos.length;
+  const SERP_W = 160;
+  const SERP_H = 40;
+  const puntos = capitulos.map((_, i) => ({
+    x: n === 1 ? SERP_W / 2 : 12 + (i * (SERP_W - 24)) / (n - 1),
+    y: i % 2 === 0 ? 15 : 25,
+  }));
+  const serpPath = puntos.reduce((d, p, i) => {
+    if (i === 0) return `M ${p.x} ${p.y}`;
+    const prev = puntos[i - 1]!;
+    const mx = (prev.x + p.x) / 2;
+    return `${d} C ${mx} ${prev.y}, ${mx} ${p.y}, ${p.x} ${p.y}`;
+  }, "");
 
   return (
     <section className="border-t border-borde-sutil">
@@ -74,11 +189,17 @@ export function NarrativaSection({ leyenda, secreto, capitulos, accentColor, art
                   exit={{ opacity: 0, y: -14 }}
                   transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <span
-                    className="block font-mono text-[7rem] font-bold leading-none select-none"
-                    style={{ color: accentColor, opacity: 0.10 }}
-                  >
-                    0{activeIndex + 1}
+                  {/* Número split-flap: gira sobre su bisagra superior al cambiar */}
+                  <span className="block" style={{ perspective: 500 }}>
+                    <motion.span
+                      className="block font-mono text-[7rem] font-bold leading-none select-none"
+                      style={{ color: accentColor, transformOrigin: "50% 0%" }}
+                      initial={reduced ? { opacity: 0.10 } : { rotateX: -85, opacity: 0 }}
+                      animate={{ rotateX: 0, opacity: 0.10 }}
+                      transition={{ duration: 0.55, ease: [0.22, 1.4, 0.36, 1] }}
+                    >
+                      0{activeIndex + 1}
+                    </motion.span>
                   </span>
                   <h3 className="mt-2 font-serif text-3xl font-bold leading-tight text-texto-claro sm:text-4xl">
                     {capitulos[activeIndex]?.titulo}
@@ -99,20 +220,40 @@ export function NarrativaSection({ leyenda, secreto, capitulos, accentColor, art
                 </motion.div>
               </AnimatePresence>
 
-              {/* Chapter dots progress */}
-              <div className="mt-12 flex gap-2">
-                {capitulos.map((_, i) => (
+              {/* Serpiente de progreso — recorre el camino entre capítulos */}
+              <div className="relative mt-10 h-10 w-40">
+                <svg
+                  viewBox={`0 0 ${SERP_W} ${SERP_H}`}
+                  className="absolute inset-0 h-full w-full"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path d={serpPath} stroke="#2A2724" strokeWidth="1.5" strokeLinecap="round" />
+                  <motion.path
+                    d={serpPath}
+                    stroke={accentColor}
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: n > 1 ? Math.max(activeIndex / (n - 1), 0.001) : 1 }}
+                    transition={{ duration: reduced ? 0 : 0.6, ease: "easeInOut" }}
+                  />
+                </svg>
+                {puntos.map((p, i) => (
                   <button
                     key={i}
                     onClick={() => {
                       chapterRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "center" });
                     }}
-                    className="h-1 rounded-full transition-all duration-400"
+                    className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border transition-colors duration-300"
                     style={{
-                      width: activeIndex === i ? 24 : 8,
-                      backgroundColor: activeIndex === i ? accentColor : "#2A2724",
+                      left: `${(p.x / SERP_W) * 100}%`,
+                      top: `${(p.y / SERP_H) * 100}%`,
+                      borderColor: i <= activeIndex ? accentColor : "#2A2724",
+                      backgroundColor: i <= activeIndex ? accentColor : "#0F0E0C",
                     }}
                     aria-label={`Ir al capítulo ${i + 1}`}
+                    aria-current={activeIndex === i}
                   />
                 ))}
               </div>
@@ -148,7 +289,7 @@ export function NarrativaSection({ leyenda, secreto, capitulos, accentColor, art
                   transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                   className="text-lg leading-relaxed text-stone-300"
                 >
-                  {chapter.texto}
+                  {renderConTerminos(chapter.texto, palabrasClave ?? [], accentColor)}
                 </motion.p>
               </div>
             ))}
@@ -156,82 +297,8 @@ export function NarrativaSection({ leyenda, secreto, capitulos, accentColor, art
         </div>
       </div>
 
-      {/* ── Secreto reveal card ── */}
-      <div className="mx-auto max-w-3xl px-5 pb-20 pt-2 sm:px-6">
-        <motion.div
-          initial={reduced ? false : { opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.6 }}
-        >
-          <button
-            onClick={() => setSecretoVisible((v) => !v)}
-            className="w-full rounded-2xl border p-6 text-left transition-colors duration-300"
-            style={{
-              borderColor: secretoVisible ? `${accentColor}50` : "#2A2724",
-              backgroundColor: secretoVisible ? `${accentColor}0A` : "transparent",
-            }}
-          >
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <svg
-                  width="14" height="14" fill="none" stroke="currentColor"
-                  strokeWidth={1.5} viewBox="0 0 24 24"
-                  style={{ color: accentColor }}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round"
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <span
-                  className="text-[9px] uppercase tracking-[0.32em]"
-                  style={{ color: accentColor }}
-                >
-                  Secreto del artesano
-                </span>
-              </div>
-              <motion.svg
-                width="14" height="14" fill="none" stroke="currentColor"
-                strokeWidth={1.5} viewBox="0 0 24 24"
-                animate={{ rotate: secretoVisible ? 180 : 0 }}
-                transition={{ duration: 0.3 }}
-                style={{ color: accentColor, flexShrink: 0 }}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </motion.svg>
-            </div>
-
-            <AnimatePresence mode="wait">
-              {!secretoVisible ? (
-                <motion.p
-                  key="hint"
-                  initial={{ opacity: 1 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.2 }}
-                  className="text-sm italic text-stone-600"
-                >
-                  Hay algo sobre este personaje que pocos saben...
-                </motion.p>
-              ) : (
-                <motion.p
-                  key="secreto"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.35 }}
-                  className="text-base leading-relaxed text-stone-300"
-                >
-                  {secreto}
-                  {artesanoFirma && (
-                    <span className="mt-3 block text-right text-xs italic text-stone-600">
-                      · {artesanoFirma}
-                    </span>
-                  )}
-                </motion.p>
-              )}
-            </AnimatePresence>
-          </button>
-        </motion.div>
-      </div>
+      {/* ── El Ritual del Desbloqueo — secreto del artesano ── */}
+      <SecretoRitual secreto={secreto} accentColor={accentColor} artesanoFirma={artesanoFirma} />
     </section>
   );
 }

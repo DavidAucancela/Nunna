@@ -13,9 +13,10 @@ import { NarrativaSection } from "@/modules/personajes/components/NarrativaSecti
 import { CuandoVerloSection } from "@/modules/personajes/components/CuandoVerloSection";
 import { ArtesanoSection } from "@/modules/personajes/components/ArtesanoSection";
 import { ColeccionCounter } from "@/modules/personajes/components/ColeccionCounter";
-import { PersonajesCarrusel } from "@/modules/personajes/components/PersonajesCarrusel";
+import { PersonajesEscenario } from "@/modules/personajes/components/PersonajesEscenario";
+import { QuoteRevelacion } from "@/modules/personajes/components/QuoteRevelacion";
+import { StatsAnimados } from "@/modules/personajes/components/StatsAnimados";
 import { WhatsAppShare } from "@/components/ui/WhatsAppShare";
-import { FadeUp } from "@/components/ui/FadeUp";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
 
 interface PersonajePageProps {
@@ -95,71 +96,24 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         audioAmbiente={personaje.audioAmbiente}
       />
 
-      {/* ── 2. Resumen editorial + compartir ── */}
-      <FadeUp>
-        <section className="mx-auto max-w-3xl px-5 py-16 sm:px-6 sm:py-24">
-          <div className="relative">
-            <span
-              className="absolute -top-4 -left-1 select-none font-serif text-8xl leading-none sm:-left-4"
-              style={{ color: style.accentColor, opacity: 0.15 }}
-              aria-hidden="true"
-            >
-              &ldquo;
-            </span>
-            <p className="relative font-serif text-2xl font-light leading-relaxed text-texto-claro sm:text-3xl">
-              {personaje.resumen}
-            </p>
-          </div>
-          <div className="mt-8">
-            <WhatsAppShare nombre={personaje.nombre} />
-            <ColeccionCounter slug={personaje.slug} nombre={personaje.nombre} />
-          </div>
-        </section>
-      </FadeUp>
+      {/* ── 2. La Voz del Espíritu — resumen pintado por scroll + compartir ── */}
+      <QuoteRevelacion
+        texto={personaje.resumen}
+        accentColor={style.accentColor}
+        origen={personaje.origen}
+      >
+        <WhatsAppShare nombre={personaje.nombre} />
+        <ColeccionCounter slug={personaje.slug} nombre={personaje.nombre} />
+      </QuoteRevelacion>
 
-      {/* ── 3. Ficha de datos ── */}
-      <FadeUp>
-        <section className="mx-auto max-w-3xl px-5 pb-16 sm:px-6">
-          <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-borde-sutil bg-borde-sutil sm:grid-cols-3">
-
-            {/* Origen */}
-            <div className="bg-stone-900/40 px-6 py-5">
-              <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-stone-600">Origen</p>
-              <span
-                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium"
-                style={{
-                  color: style.accentColor,
-                  borderColor: `${style.accentColor}40`,
-                  backgroundColor: `${style.accentColor}10`,
-                }}
-              >
-                <span className="h-1.5 w-1.5 flex-none rounded-full" style={{ backgroundColor: style.accentColor }} />
-                {style.label}
-              </span>
-            </div>
-
-            {/* Festividad — desde pases.json */}
-            <div className="bg-stone-900/40 px-6 py-5">
-              <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-stone-600">Festividad</p>
-              <p className="text-sm leading-snug text-stone-300">{festividad}</p>
-            </div>
-
-            {/* Nombres alt */}
-            <div className="bg-stone-900/40 px-6 py-5">
-              <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-stone-600">
-                {personaje.nombresAlt.length > 1 ? "También conocido como" : "Nombre alternativo"}
-              </p>
-              {personaje.nombresAlt.length > 0 ? (
-                <p className="text-sm italic leading-snug text-stone-400">
-                  {personaje.nombresAlt.join(", ")}
-                </p>
-              ) : (
-                <p className="text-sm text-stone-700">—</p>
-              )}
-            </div>
-          </div>
-        </section>
-      </FadeUp>
+      {/* ── 3. Los Números Sagrados — ficha de datos ── */}
+      <StatsAnimados
+        origenLabel={style.label}
+        accentColor={style.accentColor}
+        festividadCount={pasesDelPersonaje.length}
+        festividadTexto={festividad}
+        nombresAlt={personaje.nombresAlt}
+      />
 
       {/* ── 4. Cuándo y dónde verlo ── */}
       <CuandoVerloSection
@@ -177,6 +131,9 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
           capitulos={personaje.narrativa.capitulos}
           accentColor={style.accentColor}
           {...(personaje.artesanoFirma ? { artesanoFirma: personaje.artesanoFirma } : {})}
+          {...(personaje.narrativa.palabrasClave?.length
+            ? { palabrasClave: personaje.narrativa.palabrasClave }
+            : {})}
         />
       )}
 
@@ -223,7 +180,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
                 {t("coleccion_titulo")}
               </h2>
             </div>
-            <PersonajesCarrusel personajes={otrosPersonajes} />
+            <PersonajesEscenario personajes={otrosPersonajes} />
           </div>
         </section>
       )}

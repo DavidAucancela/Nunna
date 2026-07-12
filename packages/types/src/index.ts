@@ -21,6 +21,8 @@ export interface Narrativa {
   leyenda: string;
   secreto: string;
   capitulos: CapituloNarrativa[];
+  /** Términos a enfatizar en los capítulos; los kichwa muestran tooltip con su significado. */
+  palabrasClave?: string[];
 }
 
 export interface Hotspot {
@@ -78,6 +80,8 @@ export interface PersonajeListItem
   extends Pick<Personaje, "id" | "slug" | "nombre" | "nombreKichwa" | "resumen" | "origen"> {
   imagenPortada?: string;
   totalPases: number;
+  /** Frase de la narrativa — texto de relación en el escenario de cross-sell. */
+  leyenda?: string;
 }
 
 // ── Variante regional ────────────────────────────────────────────────────────
