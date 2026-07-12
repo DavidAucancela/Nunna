@@ -93,55 +93,77 @@ export function AnatomiaSection({ imagen, hotspots, accentColor, nombre }: Anato
         <div className="lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
           {/* ── Visual sticky con pines ── */}
           <div className="sticky top-16 z-10 -mx-5 mb-2 self-start bg-fondo-oscuro/80 px-5 pb-4 pt-2 backdrop-blur-sm sm:mx-0 sm:px-0 sm:backdrop-blur-none lg:top-24 lg:bg-transparent lg:pb-0">
-            <div className="relative mx-auto h-[32vh] w-full max-w-[15rem] sm:h-[40vh] sm:max-w-xs lg:h-[72vh] lg:max-w-none">
-              <Image
-                src={imagen.url}
-                alt={imagen.altText}
-                fill
-                className="object-contain"
-                sizes="(max-width: 1024px) 80vw, 45vw"
-                priority
-              />
+            <div className="relative mx-auto h-[32vh] w-full max-w-[15rem] overflow-hidden sm:h-[40vh] sm:max-w-xs lg:h-[72vh] lg:max-w-none">
+              {/* Zoom hacia el elemento activo: el conjunto imagen+pines escala con
+                  origen en el pin, así el pin activo queda anclado en su sitio */}
+              <motion.div
+                className="absolute inset-0"
+                animate={{
+                  scale: reduced ? 1 : 1.22,
+                  transformOrigin: `${hotspots[activeIdx]?.x ?? 50}% ${hotspots[activeIdx]?.y ?? 50}%`,
+                }}
+                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                <Image
+                  src={imagen.url}
+                  alt={imagen.altText}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 1024px) 80vw, 45vw"
+                  priority
+                />
 
-              {/* Pines */}
-              {hotspots.map((h, i) => {
-                const isActive = i === activeIdx;
-                return (
-                  <button
-                    key={h.id}
-                    type="button"
-                    onClick={() => goTo(i)}
-                    className="absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-full"
-                    style={{ left: `${h.x}%`, top: `${h.y}%` }}
-                    aria-label={h.titulo}
-                    aria-current={isActive}
-                  >
-                    {!isActive && !reduced && (
-                      <motion.span
-                        className="absolute inset-0 rounded-full"
-                        style={{ border: `1.5px solid ${accentColor}` }}
-                        animate={{ scale: [1, 2.4], opacity: [0.7, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeOut", delay: i * 0.4 }}
-                      />
-                    )}
-                    <motion.span
-                      className="relative flex items-center justify-center rounded-full border-2 font-sans text-[10px] font-bold"
-                      style={{
-                        width: isActive ? 26 : 20,
-                        height: isActive ? 26 : 20,
-                        backgroundColor: isActive ? accentColor : `${accentColor}CC`,
-                        borderColor: isActive ? "white" : `${accentColor}80`,
-                        color: isActive ? "#0F0E0C" : "transparent",
-                        boxShadow: isActive ? `0 0 0 4px ${accentColor}30` : "none",
-                      }}
-                      animate={{ scale: isActive ? 1 : 0.9 }}
-                      transition={{ duration: 0.2 }}
+                {/* Pines */}
+                {hotspots.map((h, i) => {
+                  const isActive = i === activeIdx;
+                  return (
+                    <button
+                      key={h.id}
+                      type="button"
+                      onClick={() => goTo(i)}
+                      className="absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-full"
+                      style={{ left: `${h.x}%`, top: `${h.y}%` }}
+                      aria-label={h.titulo}
+                      aria-current={isActive}
                     >
-                      {i + 1}
-                    </motion.span>
-                  </button>
-                );
-              })}
+                      {/* Onda sonora: anillos concéntricos escalonados en el pin activo */}
+                      {isActive && !reduced &&
+                        [0, 0.55, 1.1].map((delay) => (
+                          <motion.span
+                            key={delay}
+                            className="absolute inset-0 rounded-full"
+                            style={{ border: `1.5px solid ${accentColor}` }}
+                            animate={{ scale: [1, 2.8], opacity: [0.8, 0] }}
+                            transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut", delay }}
+                          />
+                        ))}
+                      {!isActive && !reduced && (
+                        <motion.span
+                          className="absolute inset-0 rounded-full"
+                          style={{ border: `1.5px solid ${accentColor}` }}
+                          animate={{ scale: [1, 2.4], opacity: [0.7, 0] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "easeOut", delay: i * 0.4 }}
+                        />
+                      )}
+                      <motion.span
+                        className="relative flex items-center justify-center rounded-full border-2 font-sans text-[10px] font-bold"
+                        style={{
+                          width: isActive ? 26 : 20,
+                          height: isActive ? 26 : 20,
+                          backgroundColor: isActive ? accentColor : `${accentColor}CC`,
+                          borderColor: isActive ? "white" : `${accentColor}80`,
+                          color: isActive ? "#0F0E0C" : "transparent",
+                          boxShadow: isActive ? `0 0 0 4px ${accentColor}30` : "none",
+                        }}
+                        animate={{ scale: isActive ? 1 : 0.9 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {i + 1}
+                      </motion.span>
+                    </button>
+                  );
+                })}
+              </motion.div>
             </div>
 
             {/* Mini-nav de elementos (debajo del visual) — fila con scroll en móvil */}

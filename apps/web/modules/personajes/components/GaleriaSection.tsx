@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Media } from "@seres-del-pase/types";
@@ -19,6 +19,7 @@ interface Tab {
 
 export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSectionProps) {
   const [lightbox, setLightbox] = useState<{ images: Media[]; idx: number } | null>(null);
+  const touchStartX = useRef<number | null>(null);
 
   const tabs = useMemo<Tab[]>(() => {
     const personaje = multimedia
@@ -160,6 +161,17 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               className="fixed inset-0 z-[100] flex flex-col items-center justify-center px-4 sm:px-14 md:px-20"
+              onTouchStart={(e) => {
+                touchStartX.current = e.touches[0]?.clientX ?? null;
+              }}
+              onTouchEnd={(e) => {
+                const startX = touchStartX.current;
+                touchStartX.current = null;
+                const endX = e.changedTouches[0]?.clientX;
+                if (startX == null || endX == null) return;
+                const dx = endX - startX;
+                if (Math.abs(dx) > 48) go(dx < 0 ? 1 : -1);
+              }}
             >
               {/* Barra superior */}
               <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-5 py-4">
@@ -224,10 +236,10 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
                 {active.descripcion && (
                   <motion.p
                     key={`cap-${active.id}`}
-                    initial={{ opacity: 0, y: 6 }}
+                    initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                     className="mt-5 max-w-xs text-center text-[11px] leading-relaxed text-stone-500"
                   >
                     {active.descripcion}
@@ -302,6 +314,11 @@ function ImageGrid({
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.38, delay: idx * 0.07, ease: "easeOut" }}
             onClick={() => onOpen(idx)}
+            whileHover={{
+              y: -6,
+              borderColor: `${accentColor}70`,
+              boxShadow: `0 14px 34px -10px rgba(0,0,0,0.55), 0 0 26px -8px ${accentColor}50`,
+            }}
             className={`group relative w-full overflow-hidden rounded-2xl border border-borde-sutil focus:outline-none ${
               featured
                 ? "col-span-2 aspect-[4/3] sm:col-span-2 sm:row-span-2 sm:aspect-square"

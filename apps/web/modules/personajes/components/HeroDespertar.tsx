@@ -16,6 +16,7 @@ import {
 } from "framer-motion";
 import { StaggerLetters } from "@/components/ui/FadeUp";
 import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
+import { useParticleCanvas } from "@/modules/personajes/hooks/useParticleCanvas";
 import type { TipoOrigen } from "@seres-del-pase/types";
 
 interface HeroDespertarProps {
@@ -60,6 +61,14 @@ export function HeroDespertar({
   const [soundOn, setSoundOn] = useState(false);
 
   const fuente = imagenBanner ?? imagen;
+
+  // 12 puntos de luz (los 12 cuernos del Aya Uma; genérico para el resto)
+  const { canvasRef } = useParticleCanvas({
+    count: 12,
+    color: accentColor,
+    mode: "drift",
+    enabled: awakened,
+  });
 
   // Cada cambio de personaje vuelve al inicio y reinicia la tensión.
   useEffect(() => {
@@ -166,18 +175,30 @@ export function HeroDespertar({
         className="absolute left-0 right-0"
         style={{ top: "-15%", bottom: "-15%", y: yMascara, x: xMascara, translateY: yMascaraM }}
       >
-        {fuente ? (
-          <Image
-            src={fuente.url}
-            alt={fuente.altText}
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-          />
-        ) : (
-          <OrigenPlaceholder origen={origen} nombre={nombre} variant="hero" className="h-full w-full" />
-        )}
+        {/* Entrada cinematográfica: zoom-out desde recorte extremo + blur que se disuelve */}
+        <motion.div
+          className="absolute inset-0"
+          initial={false}
+          animate={
+            awakened || reduced
+              ? { scale: 1, filter: "blur(0px)" }
+              : { scale: 1.35, filter: "blur(18px)" }
+          }
+          transition={{ duration: reduced ? 0 : 1.5, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {fuente ? (
+            <Image
+              src={fuente.url}
+              alt={fuente.altText}
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+            />
+          ) : (
+            <OrigenPlaceholder origen={origen} nombre={nombre} variant="hero" className="h-full w-full" />
+          )}
+        </motion.div>
       </motion.div>
 
       {/* ── Capa 3: ornamentos (resplandor del acento + viñeta, rápido) ── */}
@@ -192,6 +213,13 @@ export function HeroDespertar({
           }}
         />
       </motion.div>
+
+      {/* ── Capa de partículas: 12 puntos de luz que ascienden (canvas nativo) ── */}
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[5] h-full w-full mix-blend-screen"
+      />
 
       {/* Gradientes dramáticos — funden hacia el fondo de la página (claro u oscuro) */}
       <div className="absolute inset-0 bg-gradient-to-t from-fondo-oscuro via-fondo-oscuro/60 to-transparent" />
@@ -212,14 +240,27 @@ export function HeroDespertar({
 
       {/* Toggle de sonido — muy visible, opt-in */}
       {audioAmbiente && (
-        <>
+        <div className="absolute right-5 top-20 z-30 sm:right-6">
           <audio ref={audioRef} src={audioAmbiente} loop preload="none" />
+          {/* Ondas del sonido ambiente — solo mientras suena */}
+          {soundOn &&
+            !reduced &&
+            [0, 0.9].map((delay) => (
+              <motion.span
+                key={delay}
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 rounded-full border"
+                style={{ borderColor: accentColor }}
+                animate={{ scale: [1, 1.45], opacity: [0.55, 0] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut", delay }}
+              />
+            ))}
           <button
             type="button"
             onClick={toggleSound}
             aria-pressed={soundOn}
             aria-label={soundOn ? t("silenciar") : t("activar_sonido")}
-            className="absolute right-5 top-20 z-30 flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3.5 py-2 text-xs text-white backdrop-blur-md transition-colors hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70 sm:right-6"
+            className="relative flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3.5 py-2 text-xs text-white backdrop-blur-md transition-colors hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70"
           >
             {soundOn ? (
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -235,7 +276,7 @@ export function HeroDespertar({
             )}
             <span className="hidden sm:inline">{soundOn ? t("silenciar") : t("activar_sonido")}</span>
           </button>
-        </>
+        </div>
       )}
 
       {/* Contenido del hero — aparece al despertar */}
@@ -315,14 +356,29 @@ export function HeroDespertar({
           className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 flex flex-col items-center gap-2"
         >
           <span className="text-[9px] uppercase tracking-[0.28em] text-stone-400">{t("descubrir")}</span>
-          <motion.div
-            animate={reduced ? { y: 0 } : { y: [0, 6, 0] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" className="text-stone-400">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </motion.div>
+          {/* Línea que se dibuja hacia abajo — invitación al descenso */}
+          <svg width="2" height="36" viewBox="0 0 2 36" fill="none" aria-hidden="true">
+            <motion.line
+              x1="1"
+              y1="0"
+              x2="1"
+              y2="36"
+              stroke={accentColor}
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              initial={reduced ? false : { pathLength: 0, opacity: 1 }}
+              animate={
+                reduced
+                  ? { pathLength: 1, opacity: 0.7 }
+                  : { pathLength: [0, 1, 1], opacity: [0.9, 0.9, 0] }
+              }
+              transition={
+                reduced
+                  ? { duration: 0 }
+                  : { duration: 2.2, times: [0, 0.72, 1], repeat: Infinity, ease: "easeInOut" }
+              }
+            />
+          </svg>
         </motion.div>
       )}
 
