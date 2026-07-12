@@ -14,6 +14,15 @@ const PERSONAJE_BASE_PATHS = [
 ];
 
 const nextConfig: NextConfig = {
+  // Reduce el footprint de memoria en Railway: `next start` corre sobre el
+  // bundle podado (.next/standalone) en vez de cargar node_modules completo.
+  // ⚠ El server.js standalone hace `hostname = process.env.HOSTNAME || "0.0.0.0"`.
+  // Docker setea HOSTNAME al ID del contenedor en TODO contenedor — sin forzar
+  // HOSTNAME=0.0.0.0 en el comando de arranque (ver package.json → start), el
+  // server queda escuchando solo en esa interfaz literal y el healthcheck de
+  // Railway nunca lo alcanza (502 + crash-loop, ya reproducido y revertido el
+  // 2026-07-11 — ver CLAUDE.md).
+  output: "standalone",
   transpilePackages: ["maplibre-gl"],
   // Optimización de imágenes activa (WebP + srcset responsive). Railway corre
   // `next start`, que trae sharp integrado desde Next 15 — no requiere config extra.

@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start -p ${PORT:-3000}",
+    "build": "next build && cp -r public .next/standalone/apps/web/public && cp -r .next/static .next/standalone/apps/web/.next/static",
+    "start": "PORT=${PORT:-3000} HOSTNAME=0.0.0.0 node .next/standalone/apps/web/server.js",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
