@@ -34,15 +34,15 @@ export default async function PersonajesPage({ params }: PersonajesPageProps) {
   const personajes = await getPersonajes({ locale, withImage: true });
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
-      <header className="mb-12 mt-4">
-        <p className="text-sm uppercase tracking-[0.2em] text-acento-dorado">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-16">
+      <header className="mb-6 mt-2 sm:mb-12 sm:mt-4">
+        <p className="text-xs uppercase tracking-[0.2em] text-acento-dorado sm:text-sm">
           Ecuador
         </p>
-        <h1 className="mt-2 font-serif text-4xl font-bold text-texto-claro md:text-5xl">
+        <h1 className="mt-1 font-serif text-2xl font-bold text-texto-claro sm:mt-2 sm:text-4xl md:text-5xl">
           {t("titulo")}
         </h1>
-        <p className="mt-4 max-w-2xl text-lg text-stone-400">{t("descripcion")}</p>
+        <p className="mt-2 max-w-2xl text-sm text-stone-400 sm:mt-4 sm:text-lg">{t("descripcion")}</p>
       </header>
 
       <PersonajesGrid personajes={personajes} />

@@ -479,16 +479,28 @@ Modo oscuro por defecto.
 
 ## Decisiones técnicas clave
 
-### `output: "standalone"` probado y revertido ⚠ (2026-07-11)
-Se intentó reducir el consumo de RAM en Railway (el proceso vía `pnpm start` deja 3 procesos Node vivos
-simultáneos, ~384MB combinados) cambiando a `output: "standalone"` + `node .next/standalone/apps/web/server.js`
-directo (~156MB, un solo proceso). **Funcionó en local** (build + start verificados con curl a rutas reales,
-imágenes optimizadas, `/api/health`) pero **causó un 502 total en producción** al desplegarse en Railway —
-causa raíz no diagnosticada (el deploy se revirtió antes de investigar logs de arranque). Commit revertido
-(`abbff05` revierte el merge del PR #44). **No reintroducir `output: "standalone"` sin antes reproducir el
-fallo real de Railway** (ideal: un entorno de staging o revisar `Deploy Logs` del intento anterior si
-Railway los conserva) — que funcione en local con `next start`/`node server.js` no fue suficiente evidencia
-la vez pasada.
+### `output: "standalone"` — reintroducido con fix (2026-07-12, PR #47)
+**Activo en producción.** El intento original (PR #44, 2026-07-11) causó 502 + crash-loop en Railway y se
+revirtió (`abbff05`) sin diagnosticar la causa. Investigado el 2026-07-12 con `railway logs <deployment-id> -d`
+sobre el deploy fallido (`97703ef3…`): el server arrancaba limpio (`✓ Ready in ~340ms`, sin errores) pero
+Railway lo mataba cada **~8-9 minutos** (`Stopping Container` → `ELIFECYCLE Command failed` → reinicio,
+en loop). Causa raíz: `Local`/`Network` en los logs mostraban el **mismo hostname literal del contenedor**
+(`d43c7c3d0337`) en vez de `localhost`/`0.0.0.0` — el `server.js` standalone de Next hace
+`hostname = process.env.HOSTNAME || "0.0.0.0"`, y Docker setea `HOSTNAME` al ID del contenedor en **todo**
+contenedor por defecto. El server quedaba escuchando solo en esa interfaz, inalcanzable para el healthcheck
+externo de Railway → nunca pasaba a "healthy" → crash-loop hasta que Railway se rendía. Es un gotcha conocido
+de Next standalone en cualquier PaaS basado en Docker, no algo específico de esta app.
+
+**Fix:** forzar `HOSTNAME=0.0.0.0` explícito en el comando de arranque (`apps/web/package.json` → `start`):
+```
+"start": "PORT=${PORT:-3000} HOSTNAME=0.0.0.0 node .next/standalone/apps/web/server.js"
+```
+Verificado local (reproducido el bug con `HOSTNAME=<id-fake>` → conexión rechazada; confirmado el fix con
+`HOSTNAME=0.0.0.0` → `Network: 0.0.0.0`, curl 200) y en producción (`railway logs` sin patrón de crash-loop,
+`deployment list` en `SUCCESS`, curl 200 en `/api/health` y rutas reales vía `https://nunna-ecu.com`).
+Reduce el footprint de memoria: ~384MB en 3 procesos Node (`next start` vía 2 capas de pnpm) → ~156MB en 1
+solo proceso. **Si se toca el start command de Railway de nuevo, no quitar `HOSTNAME=0.0.0.0`** — sin él
+vuelve el crash-loop, aunque el build y el arranque local se vean perfectos.
 
 ### Desbloqueo de imanes + colección sincronizada (desplegado 2026-06-28)
 Convierte la compra física en una experiencia que **sube de nivel**: cada tarjeta trae un **código de 6

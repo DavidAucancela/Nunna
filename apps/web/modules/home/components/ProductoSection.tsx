@@ -149,23 +149,20 @@ function FichaVisual() {
 const PASOS = [
   {
     num: "01",
-    kicker: "Lo físico",
     titulo: "Elige tu imán",
-    texto: "Cada imán es una pieza moldeada y pintada a mano: un ser de las fiestas populares del Ecuador que vive en tu refrigeradora. No hay dos exactamente iguales.",
+    texto: "Cada imán está hecho y pintado a mano: un personaje de las fiestas del Ecuador para tu refrigeradora. No hay dos iguales.",
     Visual: ImanVisual,
   },
   {
     num: "02",
-    kicker: "El puente",
     titulo: "Escanea el QR",
-    texto: "Apunta la cámara de tu teléfono al código del reverso. Sin apps ni descargas — en segundos cruzas del objeto físico a su historia.",
+    texto: "El código está en la parte de atrás de la tarjeta. Apunta la cámara de tu teléfono — no necesitas instalar nada.",
     Visual: QrVisual,
   },
   {
     num: "03",
-    kicker: "Lo digital",
-    titulo: "Descubre al ser",
-    texto: "Aterrizas en la ficha completa: leyenda, capítulos, simbolismo y la cosmovisión kichwa que le da sentido — en español, kichwa e inglés.",
+    titulo: "Descubre su historia",
+    texto: "Se abre la ficha del personaje: su leyenda, su significado y su origen kichwa — en español, kichwa e inglés.",
     Visual: FichaVisual,
   },
 ];
@@ -214,13 +211,15 @@ function StepperList({
   active,
   onSelect,
   reduce,
+  compact = false,
 }: {
   active: number;
   onSelect: (i: number) => void;
   reduce: boolean | null;
+  compact?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-5">
+    <div className={`flex flex-col ${compact ? "gap-3" : "gap-5"}`}>
       {PASOS.map((p, i) => {
         const isActive = i === active;
         return (
@@ -233,29 +232,26 @@ function StepperList({
             className="text-left focus-visible:outline-none"
             style={{ transformOrigin: "left center" }}
             animate={{
-              opacity: isActive ? 1 : 0.3,
-              scale: isActive ? 1 : 0.82,
-              filter: isActive ? "blur(0px)" : "blur(2.5px)",
+              opacity: isActive ? 1 : 0.35,
+              scale: isActive ? 1 : 0.86,
+              filter: isActive ? "blur(0px)" : "blur(2px)",
             }}
             transition={{ duration: reduce ? 0 : 0.45, ease: "easeOut" }}
           >
-            <div className="flex items-center gap-3">
-              <span
-                className={`font-serif font-bold leading-none transition-colors ${
-                  isActive
-                    ? "text-5xl text-acento-dorado/30 md:text-6xl"
-                    : "text-3xl text-acento-dorado/20"
-                }`}
-              >
-                {p.num}
-              </span>
-              <span className="text-[11px] uppercase tracking-[0.3em] text-acento-dorado">
-                {p.kicker}
-              </span>
-            </div>
+            <span
+              className={`font-serif font-bold leading-none transition-colors ${
+                isActive
+                  ? `text-acento-dorado/30 ${compact ? "text-3xl" : "text-5xl md:text-6xl"}`
+                  : `text-acento-dorado/20 ${compact ? "text-xl" : "text-3xl"}`
+              }`}
+            >
+              {p.num}
+            </span>
             <h3
-              className={`mt-2 font-serif font-bold text-texto-claro ${
-                isActive ? "text-2xl md:text-4xl" : "text-xl md:text-2xl"
+              className={`mt-1 font-serif font-bold text-texto-claro ${
+                isActive
+                  ? compact ? "text-lg" : "text-2xl md:text-4xl"
+                  : compact ? "text-base" : "text-xl md:text-2xl"
               }`}
             >
               {p.titulo}
@@ -268,9 +264,11 @@ function StepperList({
                   animate={{ opacity: 1, height: "auto" }}
                   exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
                   transition={{ duration: reduce ? 0 : 0.4, ease: "easeOut" }}
-                  className="max-w-md overflow-hidden text-base leading-relaxed text-stone-400 md:text-lg"
+                  className={`overflow-hidden leading-relaxed text-stone-400 ${
+                    compact ? "max-w-full text-sm" : "max-w-md text-base md:text-lg"
+                  }`}
                 >
-                  <span className="block pt-4">{p.texto}</span>
+                  <span className={`block ${compact ? "pt-2" : "pt-3"}`}>{p.texto}</span>
                 </motion.p>
               )}
             </AnimatePresence>
@@ -288,7 +286,8 @@ function PasosScroll() {
   const trackMobileRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
 
-  // El progreso del scroll dentro del track visible elige el punto activo.
+  // El progreso del scroll dentro del track visible (desktop o móvil) elige el
+  // punto activo — el scroll de la página sigue siendo la fuente de verdad.
   useEffect(() => {
     const onScroll = () => {
       const track = trackDesktopRef.current?.offsetParent !== null
@@ -312,15 +311,17 @@ function PasosScroll() {
     };
   }, []);
 
-  // Clic en un punto → desplaza al centro de su tramo; el scroll fija el estado.
+  // Clic/swipe en un punto → desplaza al centro de su tramo; el scroll fija el
+  // estado, así los botones y el swipe quedan sincronizados con el scroll real.
   const goTo = (i: number) => {
+    const clamped = Math.min(PASOS.length - 1, Math.max(0, i));
     const track = trackDesktopRef.current?.offsetParent !== null
       ? trackDesktopRef.current
       : trackMobileRef.current;
     if (!track) return;
     const rect = track.getBoundingClientRect();
     const total = Math.max(rect.height - window.innerHeight, 1);
-    const targetScrolled = ((i + 0.5) / PASOS.length) * total;
+    const targetScrolled = ((clamped + 0.5) / PASOS.length) * total;
     const delta = rect.top + targetScrolled;
     window.scrollTo({ top: window.scrollY + delta, behavior: reduce ? "auto" : "smooth" });
   };
@@ -332,6 +333,20 @@ function PasosScroll() {
     animate: { opacity: 1, y: 0 },
     exit: reduce ? { opacity: 0 } : { opacity: 0, y: -12 },
     transition: { duration: reduce ? 0 : 0.4, ease: "easeOut" as const },
+  };
+
+  // Swipe horizontal (móvil) — un gesto de más de 40px mueve un paso, vía goTo
+  // (mismo mecanismo que los botones y el scroll: scrollTo al tramo del paso).
+  const touchStartX = useRef<number | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0]?.clientX ?? null;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null) return;
+    const dx = (e.changedTouches[0]?.clientX ?? 0) - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) < 40) return;
+    goTo(active + (dx < 0 ? 1 : -1));
   };
 
   return (
@@ -354,29 +369,20 @@ function PasosScroll() {
         </div>
       </div>
 
-      {/* Móvil — sticky scroll igual al desktop pero en una columna */}
-      <div className="md:hidden" ref={trackMobileRef} style={{ height: `${PASOS.length * 100}vh` }}>
-        <div className="sticky top-16 flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-8 px-1">
-
-          {/* Dots indicadores arriba */}
-          <div className="flex gap-2">
-            {PASOS.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                aria-label={`Ir al paso ${i + 1}`}
-                onClick={() => goTo(i)}
-                className="h-1.5 rounded-full transition-all duration-300"
-                style={{
-                  width: i === active ? "2rem" : "0.375rem",
-                  backgroundColor: i === active ? "var(--color-acento-dorado, #C89B3C)" : "rgba(120,113,108,0.4)",
-                }}
-              />
-            ))}
-          </div>
-
+      {/* Móvil — sticky scroll igual al desktop (el scroll de la página sigue
+          cambiando el paso) + swipe horizontal + flechas + tap directo en cada
+          paso, todo sincronizado por goTo(). Los pasos inactivos quedan visibles
+          y difuminados arriba/abajo para no perder la orientación. */}
+      <div
+        className="md:hidden"
+        ref={trackMobileRef}
+        style={{ height: `${PASOS.length * 100}vh` }}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        <div className="sticky top-16 flex h-[calc(100vh-4rem)] flex-col items-center justify-center gap-6 px-5">
           {/* Visual */}
-          <div className="flex w-full max-w-xs justify-center">
+          <div className="flex w-full max-w-[220px] justify-center">
             <AnimatePresence mode="wait">
               <motion.div key={`mv-${active}`} className="w-full" {...fade}>
                 <ActiveVisual />
@@ -384,36 +390,36 @@ function PasosScroll() {
             </AnimatePresence>
           </div>
 
-          {/* Texto */}
-          <AnimatePresence mode="wait">
-            <motion.div key={`mt-${active}`} className="w-full max-w-xs" {...fade}>
-              <div className="flex gap-3">
-                <span className="mt-0.5 shrink-0 font-serif text-3xl font-bold leading-none text-acento-dorado/30">
-                  {paso.num}
-                </span>
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.25em] text-acento-dorado">
-                    {paso.kicker}
-                  </p>
-                  <h3 className="mt-1 font-serif text-xl font-bold text-texto-claro">
-                    {paso.titulo}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-stone-400">{paso.texto}</p>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Hint de scroll */}
-          {active < PASOS.length - 1 && (
-            <motion.p
-              animate={reduce ? {} : { opacity: [0.4, 1, 0.4] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="text-[10px] uppercase tracking-[0.2em] text-stone-600"
+          {/* Flechas + los 3 pasos como botones. items-start + mt fija las flechas
+              a la altura del número, sin saltar verticalmente cuando el paso
+              activo crece por la descripción. */}
+          <div className="flex w-full max-w-xs items-start gap-2">
+            <button
+              type="button"
+              aria-label="Paso anterior"
+              disabled={active === 0}
+              onClick={() => goTo(active - 1)}
+              className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-borde-sutil text-lg text-texto-claro transition-opacity disabled:opacity-20"
             >
-              Sigue bajando
-            </motion.p>
-          )}
+              ‹
+            </button>
+            <div className="flex-1">
+              <StepperList active={active} onSelect={goTo} reduce={reduce} compact />
+            </div>
+            <button
+              type="button"
+              aria-label="Paso siguiente"
+              disabled={active === PASOS.length - 1}
+              onClick={() => goTo(active + 1)}
+              className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-borde-sutil text-lg text-texto-claro transition-opacity disabled:opacity-20"
+            >
+              ›
+            </button>
+          </div>
+
+          <p className="text-[10px] uppercase tracking-[0.2em] text-stone-600">
+            Desliza, toca un paso o sigue bajando
+          </p>
         </div>
       </div>
     </>
