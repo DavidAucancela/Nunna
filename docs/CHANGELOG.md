@@ -2,6 +2,75 @@
 
 ---
 
+## [0.3.0] — 2026-07-12 — Rediseño cinematográfico de la ficha + fixes de desbloqueo
+
+> ⚠ Entre 0.2.0 y esta versión hubo trabajo no registrado aquí (eliminación de Directus,
+> desbloqueo de imanes, experiencia v2 fases 1/4, retiro del quichua/glosario, etc.).
+> El registro fiel de ese período vive en `CLAUDE.md` (Estado actual + Decisiones) y el
+> historial de git. Esta entrada cubre los PR #45 y #46.
+
+### Rediseño cinematográfico de `/personajes/[slug]` (PR #46)
+
+**Componentes nuevos** (`modules/personajes/`)
+- `QuoteRevelacion.tsx` — "La Voz del Espíritu": el resumen editorial se pinta palabra por
+  palabra sincronizado al scroll; comilla con glow del acento; línea de los tres mundos
+  (Uku/Kay/Hanan Pacha) con hover, solo para origen prehispánico
+- `StatsAnimados.tsx` — "Los Números Sagrados": ficha de datos como tarjetas con tilt 3D,
+  íconos SVG que se dibujan (chakana / máscara / convergencia) y contador animado de
+  festividades (cruce real con `pases.json`)
+- `SecretoRitual.tsx` — "El Ritual del Desbloqueo": partículas doradas orbitando la card
+  sellada → convergencia → destello radial → texto que se descifra carácter a carácter →
+  sello circular "SECRETO REVELADO"; una sola vía (revelado queda revelado)
+- `PersonajesEscenario.tsx` — cross-sell como escenario teatral 3D: tarjeta central al
+  frente, laterales en perspectiva (`rotateY ±15°`); hover/tap la trae al centro y muestra
+  su leyenda como texto de relación. Reemplaza a `PersonajesCarrusel` en la ficha
+- `hooks/useParticleCanvas.ts` — canvas nativo compartido (modos `drift`/`orbit`,
+  `converge()`, cleanup rAF, apagado con reduced-motion)
+- `hooks/useTilt3D.ts` — tilt 3D con springs según posición del mouse
+
+**Componentes refactorizados**
+- `HeroDespertar.tsx` — entrada cinematográfica al despertar (zoom-out 1.35→1.0 + blur que
+  se disuelve), 12 puntos de luz en canvas, ondas concéntricas en el botón de audio mientras
+  suena, indicador de scroll como línea SVG que se dibuja
+- `NarrativaSection.tsx` — número de capítulo con flip split-flap, serpiente SVG de progreso
+  entre capítulos (puntos clicables), `palabrasClave` del JSON enfatizadas en los capítulos y
+  términos kichwa con tooltip de traducción (glosario **tentativo** — revisar con hablante
+  nativo); el secreto delega en `SecretoRitual`
+- `AnatomiaSection.tsx` — zoom suave (1.22) hacia el hotspot activo con `transformOrigin` en
+  el pin (queda anclado); anillos concéntricos escalonados tipo onda sonora en el pin activo
+- `GaleriaSection.tsx` — efecto carta al hover (elevación + glow del acento), swipe
+  horizontal en el lightbox, caption con entrada desde abajo
+
+**Tipos y datos**
+- `Narrativa.palabrasClave?` y `PersonajeListItem.leyenda?` en `@seres-del-pase/types`;
+  `toListItem()` mapea la leyenda (texto de relación del escenario)
+
+**Decisiones**
+- Sin GSAP (decisión previa del proyecto se mantiene): todo con Framer Motion + canvas nativo
+- Anatomía sigue vertical en móvil (IntersectionObserver) — el scroll horizontal scroll-linked
+  es lo que iOS Safari congela
+- Todo respeta `prefers-reduced-motion` y los acentos por origen existentes
+
+### Fixes de verificación del desbloqueo (PR #45)
+- El submit respeta `checkCodeStatus` en tiempo real; solo bloquea ante código CONFIRMADO
+  como inválido, nunca por error de red/RPC (la función faltaba en el Supabase de producción
+  y el primer fix bloqueaba todos los canjes)
+- Con sesión activa ya no se pide correo (canje directo por `redeemCode`)
+- `DespertarAnimation.tsx` — animación a pantalla completa tras el canje: grid 2×2 de los 4
+  personajes que se ilumina según la colección y navega a la ficha (~2.2s; inmediata con
+  `prefers-reduced-motion`)
+
+### Infraestructura
+- `output: "standalone"` probado y **revertido** (PR #44 → revert): ~156MB vs ~384MB en local,
+  pero 502 total al desplegar en Railway. No reintroducir sin reproducir el fallo real
+  (ver decisión en `CLAUDE.md`)
+
+### Documentación
+- `CLAUDE.md`: registra PR #45/#46 y la decisión del revert de standalone
+- `docs/CHANGELOG.md`: esta entrada
+
+---
+
 ## [0.2.0] — 2026-05-25 — MVP conectado + catálogo base
 
 ### Modelo de negocio definido
