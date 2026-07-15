@@ -24,10 +24,18 @@ const nextConfig: NextConfig = {
   // 2026-07-11 — ver CLAUDE.md).
   output: "standalone",
   transpilePackages: ["maplibre-gl"],
-  // Optimización de imágenes activa (WebP + srcset responsive). Railway corre
-  // `next start`, que trae sharp integrado desde Next 15 — no requiere config extra.
+  // ⚠ Optimización de imágenes DESACTIVADA a propósito para bajar costo de RAM en
+  // Railway (2026-07-15). El costo del hosting es la RAM del servidor Node encendido
+  // 24/7; `sharp` (la optimización on-the-fly de next/image) carga libs nativas y
+  // dispara RAM/CPU en cada request de imagen. Como ya servimos nuestros propios
+  // `.webp` (ver convención de imágenes en CLAUDE.md), las imágenes se sirven como
+  // archivos estáticos cacheables, sin procesamiento en runtime. Tradeoff aceptado:
+  // sin resize/srcset automático (payload algo mayor), pero el ancho de banda no es
+  // el costo aquí — la RAM sí. Si algún día se migra a un host estático/CDN (plan de
+  // costos, Opción B), esto ya queda alineado. Para reactivar sharp: quitar
+  // `unoptimized` y volver a `formats: ["image/webp"]`.
   images: {
-    formats: ["image/webp"],
+    unoptimized: true,
   },
   // Contrato permanente del QR: un 301 por cada alias de slug × idioma, para que
   // los imanes ya impresos sigan llegando a la ficha aunque el slug cambie.
