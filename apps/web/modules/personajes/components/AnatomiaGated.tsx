@@ -10,6 +10,7 @@ interface AnatomiaGatedProps {
   hotspots: Hotspot[];
   accentColor: string;
   nombre: string;
+  embedded?: boolean;
 }
 
 /**

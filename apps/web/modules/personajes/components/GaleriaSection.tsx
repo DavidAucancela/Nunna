@@ -9,36 +9,23 @@ interface GaleriaSectionProps {
   multimedia: Media[];
   accentColor: string;
   nombre?: string;
+  /** Modo compuesto: sin el <section>/fondo propio (se inserta dentro de otra sección). */
+  embedded?: boolean;
 }
 
-interface Tab {
-  key: string;
-  label: string;
-  images: Media[];
-}
-
-export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSectionProps) {
+export function GaleriaSection({ multimedia, accentColor, nombre, embedded = false }: GaleriaSectionProps) {
   const [lightbox, setLightbox] = useState<{ images: Media[]; idx: number } | null>(null);
   const touchStartX = useRef<number | null>(null);
 
-  const tabs = useMemo<Tab[]>(() => {
-    const personaje = multimedia
-      .filter((m) => !m.titulo || m.titulo === "retrato" || m.titulo === "proceso")
-      .sort((a, b) => a.orden - b.orden);
-    const enPase = multimedia
-      .filter((m) => m.titulo === "en-pase")
-      .sort((a, b) => a.orden - b.orden);
-
-    return [
-      { key: "personaje", label: "El personaje y su imán", images: personaje },
-      { key: "en-pase", label: "En el pase", images: enPase },
-    ].filter((t) => t.images.length > 0);
+  // Galería unificada: una sola grilla con todas las fotos del personaje
+  // (imán + en el pase), ordenadas por `orden`. Las de pase van primero para
+  // dar protagonismo a las fotos reales de la festividad.
+  const images = useMemo<Media[]>(() => {
+    const rank = (m: Media) => (m.titulo === "en-pase" ? 0 : 1);
+    return [...multimedia].sort((a, b) => rank(a) - rank(b) || a.orden - b.orden);
   }, [multimedia]);
 
-  const [activeTab, setActiveTab] = useState(0);
-  const current = tabs[activeTab] ?? tabs[0];
-
-  const open  = (images: Media[], idx: number) => setLightbox({ images, idx });
+  const open  = (imgs: Media[], idx: number) => setLightbox({ images: imgs, idx });
   const close = useCallback(() => setLightbox(null), []);
   const go    = useCallback((dir: -1 | 1) => {
     setLightbox((lb) =>
@@ -64,78 +51,35 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
 
   const active = lightbox ? lightbox.images[lightbox.idx] : null;
 
-  if (!current) return null;
+  if (images.length === 0) return null;
+
+  const Wrapper = embedded ? "div" : "section";
 
   return (
-    <section className="border-y border-borde-sutil bg-stone-950 py-20 sm:py-28">
+    <Wrapper className={embedded ? "" : "border-y border-borde-sutil bg-stone-950 py-20 sm:py-28"}>
       <div className="mx-auto max-w-7xl px-5 sm:px-6">
 
         {/* Encabezado */}
         <div className="mb-10 text-center">
           <p className="text-[10px] uppercase tracking-[0.3em] mb-3" style={{ color: `${accentColor}80` }}>
-            Imágenes
+            {embedded ? "Movimiento II" : "Imágenes"}
           </p>
-          <h2 className="font-serif text-4xl font-bold text-texto-claro sm:text-5xl">Galería</h2>
-          {nombre && (
+          <h2 className={`font-serif font-bold text-texto-claro ${embedded ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl"}`}>
+            Galería
+          </h2>
+          {nombre && !embedded && (
             <p className="mt-2 font-serif text-lg italic" style={{ color: accentColor }}>
               {nombre}
             </p>
           )}
         </div>
 
-        {/* Selector de sección */}
-        {tabs.length > 1 && (
-          <div className="mb-10 flex items-center justify-center">
-            <div className="inline-flex gap-1 rounded-full border border-borde-sutil bg-stone-900/60 p-1">
-              {tabs.map((tab, idx) => {
-                const isActive = idx === activeTab;
-                return (
-                  <button
-                    key={tab.key}
-                    onClick={() => setActiveTab(idx)}
-                    className="relative rounded-full px-4 py-2 text-xs font-medium uppercase tracking-wider transition-colors sm:px-5"
-                    style={{ color: isActive ? "#0F0E0C" : "#a8a29e" }}
-                  >
-                    {isActive && (
-                      <motion.span
-                        layoutId="galeria-tab-pill"
-                        className="absolute inset-0 rounded-full"
-                        style={{ backgroundColor: accentColor }}
-                        transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                      />
-                    )}
-                    <span className="relative flex items-center gap-1.5">
-                      {tab.label}
-                      <span
-                        className="text-[10px] tabular-nums"
-                        style={{ opacity: isActive ? 0.7 : 0.5 }}
-                      >
-                        {tab.images.length}
-                      </span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Grid de la sección activa */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={current.key}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-          >
-            <ImageGrid
-              images={current.images}
-              accentColor={accentColor}
-              onOpen={(idx) => open(current.images, idx)}
-            />
-          </motion.div>
-        </AnimatePresence>
+        {/* Grid unificado */}
+        <ImageGrid
+          images={images}
+          accentColor={accentColor}
+          onOpen={(idx) => open(images, idx)}
+        />
       </div>
 
       {/* ── Lightbox ── */}
@@ -274,7 +218,7 @@ export function GaleriaSection({ multimedia, accentColor, nombre }: GaleriaSecti
           </>
         )}
       </AnimatePresence>
-    </section>
+    </Wrapper>
   );
 }
 

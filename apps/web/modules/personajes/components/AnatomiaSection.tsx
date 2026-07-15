@@ -11,6 +11,8 @@ interface AnatomiaSectionProps {
   hotspots: Hotspot[];
   accentColor: string;
   nombre: string;
+  /** Modo compuesto: sin el <section>/borde propio (se inserta dentro de otra sección). */
+  embedded?: boolean;
 }
 
 /**
@@ -20,7 +22,7 @@ interface AnatomiaSectionProps {
  * clicables (saltan a su bloque); en móvil la secuencia avanza con el scroll.
  * La card muestra significado + material + quién lo fabrica. Respeta reduced-motion.
  */
-export function AnatomiaSection({ imagen, hotspots, accentColor, nombre }: AnatomiaSectionProps) {
+export function AnatomiaSection({ imagen, hotspots, accentColor, nombre, embedded = false }: AnatomiaSectionProps) {
   const reduced = useReducedMotion();
   const t = useTranslations("anatomia");
   const [activeIdx, setActiveIdx] = useState(0);
@@ -76,8 +78,10 @@ export function AnatomiaSection({ imagen, hotspots, accentColor, nombre }: Anato
     });
   }
 
+  const Wrapper = embedded ? "div" : "section";
+
   return (
-    <section className="border-t border-borde-sutil py-16 sm:py-24">
+    <Wrapper className={embedded ? "" : "border-t border-borde-sutil py-16 sm:py-24"}>
       <div className="mx-auto max-w-6xl px-5 sm:px-6">
         {/* Encabezado */}
         <div className="mb-10 sm:mb-14">
@@ -244,6 +248,6 @@ export function AnatomiaSection({ imagen, hotspots, accentColor, nombre }: Anato
           </div>
         </div>
       </div>
-    </section>
+    </Wrapper>
   );
 }

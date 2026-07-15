@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { PresentacionBeat } from "@seres-del-pase/types";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 
@@ -7,9 +8,8 @@ import { getOrigenStyle } from "@/lib/origen-styles";
 import { localeAlternates } from "@/lib/seo";
 import { GatedPageRedirect } from "@/modules/personajes/components/GatedPageRedirect";
 import { HeroGated } from "@/modules/personajes/components/HeroGated";
-import { AnatomiaGated } from "@/modules/personajes/components/AnatomiaGated";
-import { GaleriaSection } from "@/modules/personajes/components/GaleriaSection";
-import { NarrativaSection } from "@/modules/personajes/components/NarrativaSection";
+import { PersonajeVisualSection } from "@/modules/personajes/components/PersonajeVisualSection";
+import { HistoriaPresentacion } from "@/modules/personajes/components/HistoriaPresentacion";
 import { CuandoVerloSection } from "@/modules/personajes/components/CuandoVerloSection";
 import { ArtesanoSection } from "@/modules/personajes/components/ArtesanoSection";
 import { ColeccionCounter } from "@/modules/personajes/components/ColeccionCounter";
@@ -76,6 +76,25 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
 
   const otrosPersonajes = todosPersonajes.filter((p) => p.slug !== slug);
 
+  // Beats del modo presentación: si el JSON trae `presentacion` (visuales del
+  // autor + frases breves) se usa tal cual; si no, se derivan de los capítulos
+  // de la narrativa para que la ficha funcione ya, antes de tener los assets.
+  // El fallback reutiliza las imágenes existentes del personaje como visual de
+  // cada beat (rota entre ellas); sin imágenes cae al placeholder por origen.
+  const imagenesBeat = personaje.multimedia.filter((m) => m.tipo === "imagen");
+  const presentacionBeats: PresentacionBeat[] = personaje.presentacion?.length
+    ? personaje.presentacion
+    : (personaje.narrativa?.capitulos ?? []).map((c, i) => {
+        const img = imagenesBeat[i % Math.max(imagenesBeat.length, 1)];
+        return {
+          id: `cap-${i}`,
+          altText: img?.altText ?? `${personaje.nombre} — ${c.titulo}`,
+          titulo: c.titulo,
+          texto: c.texto,
+          ...(img ? { visual: img.url } : {}),
+        };
+      });
+
   return (
     <article>
       <GatedPageRedirect slug={personaje.slug} />
@@ -123,32 +142,21 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         titulo={t("cuando_titulo")}
       />
 
-      {/* ── 5. Historia (scrollytelling con sticky desktop + secreto interactivo) ── */}
-      {personaje.narrativa && (
-        <NarrativaSection
+      {/* ── 5. Modo presentación (visuales + frases breves; leyenda + secreto) ── */}
+      {personaje.narrativa && presentacionBeats.length > 0 && (
+        <HistoriaPresentacion
           leyenda={personaje.narrativa.leyenda}
+          beats={presentacionBeats}
           secreto={personaje.narrativa.secreto}
-          capitulos={personaje.narrativa.capitulos}
           accentColor={style.accentColor}
-          {...(personaje.artesanoFirma ? { artesanoFirma: personaje.artesanoFirma } : {})}
-          {...(personaje.narrativa.palabrasClave?.length
-            ? { palabrasClave: personaje.narrativa.palabrasClave }
-            : {})}
+          nombre={personaje.nombre}
+          origen={personaje.origen}
+          artesanoFirma={personaje.artesanoFirma}
+          palabrasClave={personaje.narrativa.palabrasClave}
         />
       )}
 
-      {/* ── 5b. Anatomía (experiencia v2 — solo con hotspots, gated por desbloqueo) ── */}
-      {personaje.experiencia && personaje.hotspots?.length && imagenPortada ? (
-        <AnatomiaGated
-          slug={personaje.slug}
-          imagen={imagenPortada}
-          hotspots={personaje.hotspots}
-          accentColor={style.accentColor}
-          nombre={personaje.nombre}
-        />
-      ) : null}
-
-      {/* ── 5c. Artesano (si el campo existe en el JSON) ── */}
+      {/* ── 5b. Artesano (si el campo existe en el JSON) ── */}
       {personaje.artesano && (
         <ArtesanoSection
           artesano={personaje.artesano}
@@ -158,11 +166,17 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         />
       )}
 
-      {/* ── 6. Galería (3 grupos + lightbox + video) ── */}
-      <GaleriaSection
-        multimedia={personaje.multimedia}
-        accentColor={style.accentColor}
+      {/* ── 6. El personaje — Anatomía (gated) + Galería fusionadas ── */}
+      <PersonajeVisualSection
+        slug={personaje.slug}
         nombre={personaje.nombre}
+        accentColor={style.accentColor}
+        multimedia={personaje.multimedia}
+        imagen={imagenPortada}
+        hotspots={personaje.hotspots}
+        experiencia={personaje.experiencia}
+        eyebrow={t("visual_eyebrow")}
+        titulo={t("visual_titulo")}
       />
 
       {/* ── 7. Cross-sell ── */}
