@@ -118,7 +118,10 @@ apps/web/
 │   ├── personajes/components/      → PersonajeCard, ParallaxHero, HeroDespertar (★ hero v2 inmersivo),
 │   │                                 HeroGated/AnatomiaGated (★ gating por desbloqueo),
 │   │                                 AnatomiaSection (★ Fase 4 — hotspots scroll-driven),
-│   │                                 GaleriaSection (2 pestañas), NarrativaSection, PersonajesCarrusel,
+│   │                                 GaleriaSection (grilla única — imán + en-pase combinados),
+│   │                                 HistoriaPresentacion (★ modo presentación — beats visuales),
+│   │                                 PersonajeVisualSection (★ fusión Anatomía+Galería), NarrativaSection (sin uso),
+│   │                                 kichwaGlosario (helper compartido), PersonajesCarrusel,
 │   │                                 HotspotsViewer (superseded por AnatomiaSection), SimbolismoSection (sin uso)
 │   ├── desbloqueo/components/      → DesbloquearForm, ColeccionClient (★ desbloqueo de imanes)
 │   └── festividades/components/    → CalendarioGrid
@@ -177,9 +180,9 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 |----------------|-----|---------|
 | `imagenPortada` en JSON → `public/personajes/[slug].png` | Tarjetas del grid (`PersonajeCard`) | Retrato portrait |
 | `imagenBanner` en JSON → `public/personajes/[slug]-banner.png` | Hero de la ficha (`ParallaxHero`) | Landscape 1376×768 |
-| `multimedia[].url` con `titulo:"proceso"` → `public/personajes/[slug]-presentacion.png` | Galería pestaña "El personaje y su imán" | Libre |
-| `multimedia[].url` con `titulo:"en-pase"` | Galería pestaña "En el pase" + waypoints del recorrido | Libre |
-| sin `titulo` / `titulo:"retrato"` | Galería pestaña "El personaje y su imán" | Libre |
+| `multimedia[].url` con `titulo:"proceso"` → `public/personajes/[slug]-presentacion.png` | Galería unificada (foto del imán) | Libre |
+| `multimedia[].url` con `titulo:"en-pase"` → `public/personajes/[slug]-pase-N.webp` | Galería unificada (van primero) + waypoints del recorrido + beats de la presentación | Libre |
+| sin `titulo` / `titulo:"retrato"` | Galería unificada | Libre |
 
 > **Imágenes de pases** (grid `/pases`, `/mapa`, `/calendario`): en `public/informacion_pases/`,
 > referenciadas por `pases.json` y `mapa/page.tsx` como `/informacion_pases/[archivo]`.
@@ -195,28 +198,34 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 > Ver `public/audio/README.md` para los nombres exactos esperados.
 > No usar carpetas con espacios en `public/` — rompen las URLs.
 
-### Galería — convención del campo `titulo`
+### Galería unificada — convención del campo `titulo` (2026-07-14)
+
+La galería es **una sola grilla** (sin pestañas, `GaleriaSection.tsx`): combina todas las fotos del
+personaje. Las de pase (`titulo:"en-pase"`) van **primero** (protagonismo a la festividad), luego el
+resto por `orden`. El `titulo` ya no crea pestañas — solo define el **rank** de aparición y qué fotos
+alimentan el recorrido (`en-pase`). Las 3 primeras imágenes también alimentan los beats del modo
+presentación (fallback), así que basta con cargar fotos reales de pase para actualizar galería +
+presentación + recorrido a la vez.
 
 ```json
 {
-  "id": "aya-uma-presentacion",
+  "id": "payaso-pase-1",
   "tipo": "imagen",
-  "url": "/personajes/aya-uma-presentacion.png",
-  "altText": "Imán Aya Uma — presentación individual",
-  "titulo": "proceso",
+  "url": "/personajes/payaso-pase-1.webp",
+  "altText": "Payaso en el pase del Niño Rey de la Paz",
+  "titulo": "en-pase",
   "descripcion": "Texto que aparece en hover",
   "orden": 1
 }
 ```
 
-| `titulo` | Pestaña en galería |
+| `titulo` | Rol en la galería unificada |
 |----------|---------------|
-| `undefined` / `"retrato"` | El personaje y su imán |
-| `"proceso"` | El personaje y su imán |
-| `"en-pase"` | En el pase |
+| `"en-pase"` | Foto real de pase — va **primero** + waypoints del recorrido + beats de presentación |
+| `undefined` / `"retrato"` / `"proceso"` | Foto del personaje / imán — va después, por `orden` |
 
-> Retrato y proceso comparten pestaña (unificados 2026-07-07, `GaleriaSection.tsx`); se ordenan
-> por el campo `orden` de cada `Media`. Solo quedan 2 pestañas en la galería.
+> Antes había 2 pestañas ("El personaje y su imán" / "En el pase"); se fusionaron en una grilla única
+> (2026-07-14), ordenada por rank (`en-pase` primero) y luego por el campo `orden` de cada `Media`.
 
 > Terminología estandarizada a **"imán"** en todo el código y datos (commit `b749f53`, 2026-06-11). No reintroducir "llavero".
 
@@ -226,19 +235,48 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 
 **Propósito:** destino del QR — ficha completa, la historia va integrada (no existe ruta `/historia` separada).
 
-### Estructura de la ficha (desde 2026-06-04)
+### Estructura de la ficha (rediseño "modo presentación" — 2026-07-13)
 
 ```
-1. Hero               → HeroDespertar (si experiencia:true) | ParallaxHero (resto) — imagen + nombre + origen
-2. Resumen            → 1 párrafo lead editorial
-3. Ficha de datos     → origen (color acento) + festividad + nombresAlt
-4. Historia           → leyenda (cita centrada) + capítulos numerados + secreto del artesano
-4b. AnatomiaSection   → (experiencia + hotspots) Fase 4: visual sticky con pines + cards scroll-driven
-5. GaleriaSection     → 2 pestañas: El personaje y su imán (unificados) / En el pase
-6. Cross-sell         → grid de otros personajes con imagen
+1. Hero                    → HeroGated: HeroDespertar (experiencia+desbloqueado) | ParallaxHero (resto)
+2. QuoteRevelacion         → resumen pintado por scroll
+3. StatsAnimados           → ficha de datos (origen + festividad + nombresAlt)
+4. CuandoVerloSection      → pases donde desfila
+5. HistoriaPresentacion ★  → MODO PRESENTACIÓN: leyenda + beats visuales (1 visual + frase breve
+                             c/u, efectos de entrada avanzados) + SecretoRitual. Reemplaza el texto
+                             largo de NarrativaSection (los capítulos ya no se apilan como muro).
+6. PersonajeVisualSection ★→ FUSIÓN Anatomía (gated, pines sobre el retrato) + Galería en UNA sola
+                             sección (cabecera paraguas "El personaje", dos movimientos, un solo fondo).
+7. Cross-sell              → PersonajesEscenario (otros personajes)
 ```
 
-**Eliminado de la ficha:** SimbolismoSection, HotspotsViewer, Testimonios, Tags, WhatsAppShare, ScrollProgress.
+★ = introducido en el rediseño 2026-07-13. `NarrativaSection.tsx` queda en el repo pero **ya no se
+usa** en la ficha (su helper kichwa se extrajo a `modules/personajes/kichwaGlosario.tsx`, compartido
+con `HistoriaPresentacion`). `AnatomiaSection`/`GaleriaSection` ganaron un prop `embedded` (sin
+`<section>`/header propio) para componerse dentro de `PersonajeVisualSection`.
+
+**Modo presentación (`HistoriaPresentacion.tsx`):** secuencia de "beats" — cada beat es un elemento
+visual grande + una frase corta, revelado con `whileInView` (IntersectionObserver, robusto iOS; no
+scroll-linked), imagen que se disuelve desde zoom+blur y texto escalonado. Los visuales los **genera
+el autor**: campo `presentacion[]` en `personajes.json` (ver abajo). **Fallback:** si `presentacion`
+falta, los beats se derivan de `narrativa.capitulos` reutilizando las imágenes existentes del
+personaje como visual — la ficha funciona ya, antes de tener los assets dedicados.
+
+```json
+"presentacion": [
+  {
+    "id": "origen",
+    "visual": "/personajes/aya-uma-historia-1.webp",  // opcional; si falta → OrigenPlaceholder
+    "altText": "…",
+    "kicker": "El origen",        // eyebrow corto opcional (si falta, muestra "N de total")
+    "titulo": "Frase corta",
+    "texto": "1–2 frases máximo."
+  }
+]
+```
+
+**Eliminado de la ficha:** SimbolismoSection, HotspotsViewer, Testimonios, Tags, ScrollProgress; el
+muro de capítulos de NarrativaSection (reemplazado por el modo presentación).
 
 ### Datos en `personajes.json` que usa la ficha
 

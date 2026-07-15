@@ -112,7 +112,13 @@
     "coleccion_eyebrow": "Colección",
     "coleccion_titulo": "Conoce a los otros seres",
     "cuando_eyebrow": "En los pases",
-    "cuando_titulo": "Cuándo y dónde verlo"
+    "cuando_titulo": "Cuándo y dónde verlo",
+    "visual_eyebrow": "El personaje",
+    "visual_titulo": "Míralo de cerca"
+  },
+  "presentacion": {
+    "eyebrow": "Su historia",
+    "contador": "{n} de {total}"
   },
   "comun": {
     "cargando": "Cargando…",

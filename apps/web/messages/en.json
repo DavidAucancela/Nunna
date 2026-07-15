@@ -112,7 +112,13 @@
     "coleccion_eyebrow": "Collection",
     "coleccion_titulo": "Meet the other beings",
     "cuando_eyebrow": "In the parades",
-    "cuando_titulo": "When and where to see them"
+    "cuando_titulo": "When and where to see them",
+    "visual_eyebrow": "The character",
+    "visual_titulo": "See it up close"
+  },
+  "presentacion": {
+    "eyebrow": "Their story",
+    "contador": "{n} of {total}"
   },
   "comun": {
     "cargando": "Loading…",

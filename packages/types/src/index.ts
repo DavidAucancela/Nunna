@@ -25,6 +25,24 @@ export interface Narrativa {
   palabrasClave?: string[];
 }
 
+/**
+ * "Beat" del modo presentación de la ficha: un elemento visual (que genera el
+ * autor) con una frase breve. La secuencia de beats reemplaza el texto largo de
+ * la narrativa. `visual` es opcional → si falta, el beat cae a un placeholder.
+ */
+export interface PresentacionBeat {
+  id: string;
+  /** /personajes/[slug]-historia-N.webp — lo genera el autor; si falta, se usa placeholder. */
+  visual?: string;
+  altText: string;
+  /** Eyebrow corto opcional ("El origen"). */
+  kicker?: string;
+  /** Frase corta / título del beat. */
+  titulo?: string;
+  /** 1–2 frases máximo. */
+  texto?: string;
+}
+
 export interface Hotspot {
   id: string;
   x: number;
@@ -64,6 +82,8 @@ export interface Personaje {
   /** Datos completos del artesano que creó el imán físico. */
   artesano?: Artesano;
   narrativa?: Narrativa;
+  /** Secuencia visual del modo presentación (reemplaza el texto largo si existe). */
+  presentacion?: PresentacionBeat[];
   hotspots?: Hotspot[];
   variantes: VariantePersonaje[];
   elementos: ElementoTraje[];
