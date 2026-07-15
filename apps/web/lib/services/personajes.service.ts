@@ -41,6 +41,7 @@ function toPersonaje(p: PersonajeRaw): Personaje {
     updatedAt: p.updatedAt,
   };
   if (p.nombreKichwa) personaje.nombreKichwa = p.nombreKichwa;
+  if ("resumenCorto" in p && p.resumenCorto) personaje.resumenCorto = p.resumenCorto as string;
   if (p.simbolismo) personaje.simbolismo = p.simbolismo;
   if (p.origen) personaje.origen = p.origen as TipoOrigen;
   if (p.publicadoEn) personaje.publicadoEn = p.publicadoEn;

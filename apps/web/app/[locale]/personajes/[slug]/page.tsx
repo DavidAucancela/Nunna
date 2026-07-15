@@ -23,6 +23,19 @@ interface PersonajePageProps {
   params: Promise<{ locale: string; slug: string }>;
 }
 
+/**
+ * Corta el resumen en un gancho corto (primera frase) + el resto, para que la
+ * primera pantalla de la ficha no sea un muro de texto. Corte simple en el
+ * primer `.`/`!`/`?` seguido de espacio — suficiente para el resumen editorial
+ * controlado de `personajes.json` (sin abreviaturas problemáticas).
+ */
+function primeraFrase(texto: string): { hook: string; resto: string | undefined } {
+  const match = texto.match(/^([\s\S]*?[.!?])\s+([\s\S]*)$/);
+  if (!match) return { hook: texto, resto: undefined };
+  const [, hook, resto] = match;
+  return { hook: (hook ?? texto).trim(), resto: resto?.trim() || undefined };
+}
+
 export async function generateStaticParams() {
   const personajes = await getPersonajes({});
   return personajes.map((p) => ({ slug: p.slug }));
@@ -76,6 +89,13 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
 
   const otrosPersonajes = todosPersonajes.filter((p) => p.slug !== slug);
 
+  // Gancho corto de la primera pantalla: si el JSON trae `resumenCorto` se usa
+  // tal cual (y todo el `resumen` queda como "resto" plegado); si no, se deriva
+  // la primera frase del resumen y el resto queda plegado bajo "Leer más".
+  const { hook, resto } = personaje.resumenCorto
+    ? { hook: personaje.resumenCorto, resto: personaje.resumen }
+    : primeraFrase(personaje.resumen);
+
   // Beats del modo presentación: si el JSON trae `presentacion` (visuales del
   // autor + frases breves) se usa tal cual; si no, se derivan de los capítulos
   // de la narrativa para que la ficha funcione ya, antes de tener los assets.
@@ -115,9 +135,10 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         audioAmbiente={personaje.audioAmbiente}
       />
 
-      {/* ── 2. La Voz del Espíritu — resumen pintado por scroll + compartir ── */}
+      {/* ── 2. La Voz del Espíritu — gancho pintado por scroll + resto plegado ── */}
       <QuoteRevelacion
-        texto={personaje.resumen}
+        hook={hook}
+        resto={resto}
         accentColor={style.accentColor}
         origen={personaje.origen}
       >

@@ -235,25 +235,60 @@ presentación + recorrido a la vez.
 
 **Propósito:** destino del QR — ficha completa, la historia va integrada (no existe ruta `/historia` separada).
 
-### Estructura de la ficha (rediseño "modo presentación" — 2026-07-13)
+### Estructura de la ficha (rediseño "modo presentación" — 2026-07-13, enganche 2026-07-15)
 
 ```
 1. Hero                    → HeroGated: HeroDespertar (experiencia+desbloqueado) | ParallaxHero (resto)
-2. QuoteRevelacion         → resumen pintado por scroll
+2. QuoteRevelacion ★★      → gancho corto pintado por scroll + resto plegado bajo "Leer más"
 3. StatsAnimados           → ficha de datos (origen + festividad + nombresAlt)
 4. CuandoVerloSection      → pases donde desfila
 5. HistoriaPresentacion ★  → MODO PRESENTACIÓN: leyenda + beats visuales (1 visual + frase breve
                              c/u, efectos de entrada avanzados) + SecretoRitual. Reemplaza el texto
                              largo de NarrativaSection (los capítulos ya no se apilan como muro).
-6. PersonajeVisualSection ★→ FUSIÓN Anatomía (gated, pines sobre el retrato) + Galería en UNA sola
-                             sección (cabecera paraguas "El personaje", dos movimientos, un solo fondo).
+6. PersonajeVisualSection ★→ FUSIÓN Anatomía v2 ★★ (gated, pines + lupa close-up + spotlight +
+                             descubrimiento + sello final) + Galería, en UNA sola sección (cabecera
+                             paraguas "El personaje", dos movimientos, un solo fondo).
 7. Cross-sell              → PersonajesEscenario (otros personajes)
 ```
 
-★ = introducido en el rediseño 2026-07-13. `NarrativaSection.tsx` queda en el repo pero **ya no se
-usa** en la ficha (su helper kichwa se extrajo a `modules/personajes/kichwaGlosario.tsx`, compartido
-con `HistoriaPresentacion`). `AnatomiaSection`/`GaleriaSection` ganaron un prop `embedded` (sin
-`<section>`/header propio) para componerse dentro de `PersonajeVisualSection`.
+★ = rediseño 2026-07-13. ★★ = mejoras de enganche 2026-07-15. `NarrativaSection.tsx` queda en el
+repo pero **ya no se usa** en la ficha (su helper kichwa se extrajo a
+`modules/personajes/kichwaGlosario.tsx`, compartido con `HistoriaPresentacion`).
+`AnatomiaSection`/`GaleriaSection` ganaron un prop `embedded` (sin `<section>`/header propio) para
+componerse dentro de `PersonajeVisualSection`.
+
+**Primera pantalla — gancho + plegado (`QuoteRevelacion.tsx`, 2026-07-15):** el `resumen` completo
+(74–119 palabras) ya no se pinta entero palabra por palabra — solo el **gancho** (~1 frase) recibe
+ese efecto; el resto queda en un bloque plegado bajo "Leer más" (`historia.leer_mas`/`leer_menos`),
+**siempre en el DOM** (SEO intacto, verificado por `view-source`). Fuente del gancho: campo opcional
+`resumenCorto` en `personajes.json` (si existe, TODO el `resumen` queda como "resto" plegado); si
+falta, `primeraFrase()` (`page.tsx`) deriva el gancho cortando en el primer `.`/`!`/`?`. Objetivo:
+que gancho + ficha de datos se lean como una sola escena en el primer scroll (antes el resumen solo
+ya llenaba el viewport completo en móvil).
+
+**Anatomía v2 — "el corazón del premio" (`AnatomiaSection.tsx`, 2026-07-15):** sobre la base de la
+Fase 4 (pines + scroll-driven), se agregó:
+- **Lupa close-up** en cada card: medallón circular con la MISMA foto del imán como
+  `background-image` a `420%` size, `background-position: {h.x}% {h.y}%` — recorte ampliado exacto
+  del elemento, sin generar assets nuevos (usa las coords `x,y` ya calibradas del hotspot).
+- **Spotlight**: overlay radial que ilumina la figura en el punto activo y atenúa el resto; se mueve
+  con `framer-motion` (`animate={{left,top}}`) usando las mismas coords % del hotspot activo.
+- **Conector pin→card** (desktop `lg+`): línea SVG del pin activo al borde del visual — el pin activo
+  es el ancla del zoom (`transformOrigin`), así su posición en pantalla coincide siempre con `h.x%,h.y%`
+  del contenedor sin escalar, sea cual sea el `activeIdx`.
+- **Descubrimiento persistente**: `Set<number>` de índices visitados en `localStorage`
+  (`nunna:anatomia:<slug>`) — pines/chips marcan ✓, contador "`n` de `total` descubiertos" + anillo de
+  progreso SVG en el encabezado.
+- **Sello final "Anatomía completa"**: bloque de cierre tras el último elemento. Si el usuario
+  completa la secuencia **en esta sesión**, dispara `useParticleCanvas` (`mode:"orbit"` + `converge()`,
+  mismo hook que `SecretoRitual.tsx`) antes de revelar el sello (mismo motivo SVG `textPath` circular
+  del secreto del artesano). Si ya venía completo del localStorage, se muestra directo sin animación
+  (guard con `useRef`, sin condiciones de carrera entre efectos — la lectura inicial de localStorage es
+  síncrona vía lazy `useState`, seguro porque `AnatomiaSection` solo monta client-side tras el gating).
+- **Fix móvil**: el fondo del visual sticky pasó de `bg-fondo-oscuro/80` (translúcido, el texto se
+  transparentaba debajo) a opaco + degradado inferior suave.
+- Bloques de scroll compactados (`min-h-72vh`→`56vh` desktop, `52vh`→`42vh` móvil) — menos vacío negro
+  entre elementos.
 
 **Modo presentación (`HistoriaPresentacion.tsx`):** secuencia de "beats" — cada beat es un elemento
 visual grande + una frase corta, revelado con `whileInView` (IntersectionObserver, robusto iOS; no

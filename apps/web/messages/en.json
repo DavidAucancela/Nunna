@@ -114,7 +114,9 @@
     "cuando_eyebrow": "In the parades",
     "cuando_titulo": "When and where to see them",
     "visual_eyebrow": "The character",
-    "visual_titulo": "See it up close"
+    "visual_titulo": "See it up close",
+    "leer_mas": "Read more",
+    "leer_menos": "Read less"
   },
   "presentacion": {
     "eyebrow": "Their story",
@@ -147,7 +149,12 @@
     "hint": "Scroll to explore each part of the costume.",
     "contador": "Element {n} of {total}",
     "material": "Material",
-    "artesano": "Who makes it"
+    "artesano": "Who makes it",
+    "descubiertos": "{n} of {total} discovered",
+    "sello_titulo": "Anatomy complete",
+    "sello_texto": "You now know every piece of {nombre}. This is the full view of your magnet.",
+    "faltan_uno": "1 element left to discover — tap a pin or keep scrolling",
+    "faltan_varios": "{n} elements left to discover — tap a pin or keep scrolling"
   },
   "desbloquear": {
     "eyebrow": "Unlock your magnet",

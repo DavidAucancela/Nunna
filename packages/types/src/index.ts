@@ -69,6 +69,12 @@ export interface Personaje {
   nombreKichwa?: string;
   nombresAlt: string[];
   resumen: string;
+  /**
+   * Gancho corto (~1 frase) que se pinta grande en la primera pantalla de la
+   * ficha; el resto del `resumen` queda plegado bajo "Leer más". Si falta, se
+   * deriva la primera frase del `resumen`.
+   */
+  resumenCorto?: string;
   descripcion: string;
   simbolismo?: string;
   origen?: TipoOrigen;
