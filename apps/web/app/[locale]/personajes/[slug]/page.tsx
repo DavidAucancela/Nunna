@@ -92,9 +92,12 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   // Gancho corto de la primera pantalla: si el JSON trae `resumenCorto` se usa
   // tal cual (y todo el `resumen` queda como "resto" plegado); si no, se deriva
   // la primera frase del resumen y el resto queda plegado bajo "Leer más".
-  const { hook, resto } = personaje.resumenCorto
+  // Fallback al nombre si el resumen llegara vacío (dato mal cargado) — evita
+  // pintar una cita vacía en la primera pantalla.
+  const { hook: hookDerivado, resto } = personaje.resumenCorto
     ? { hook: personaje.resumenCorto, resto: personaje.resumen }
     : primeraFrase(personaje.resumen);
+  const hook = hookDerivado || personaje.nombre;
 
   // Beats del modo presentación: si el JSON trae `presentacion` (visuales del
   // autor + frases breves) se usa tal cual; si no, se derivan de los capítulos

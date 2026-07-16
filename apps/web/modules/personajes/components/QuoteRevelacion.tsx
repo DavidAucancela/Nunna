@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   motion,
   useReducedMotion,
@@ -44,6 +44,13 @@ export function QuoteRevelacion({ hook, resto, accentColor, origen, children }: 
   const reduced = useReducedMotion();
   const t = useTranslations("historia");
   const [abierto, setAbierto] = useState(false);
+
+  // Si el componente sobrevive una navegación entre personajes sin remount
+  // (p.ej. reconciliación de React entre rutas hermanas), el "Leer más" no
+  // debe quedar abierto mostrando el resumen plegado del personaje anterior.
+  useEffect(() => {
+    setAbierto(false);
+  }, [resto]);
 
   const { scrollYProgress } = useScroll({
     target: ref,

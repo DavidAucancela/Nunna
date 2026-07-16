@@ -48,15 +48,36 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const chipRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  const [visited, setVisited] = useState<Set<number>>(() => loadVisited(slug, hotspots.length));
-  const yaCompletoAlCargar = useRef(hotspots.length > 0 && visited.size >= hotspots.length);
-  const [selloRevelado, setSelloRevelado] = useState(yaCompletoAlCargar.current);
+  // Arranca vacío en ambos entornos (SSR-safe) — se hidrata desde localStorage
+  // en un efecto más abajo. Necesario porque este componente SÍ puede
+  // server-renderizarse cuando el gating está apagado (useDesbloqueo resuelve
+  // `resolved=true` de inmediato si no hay Supabase configurado), así que leer
+  // localStorage en el inicializador de useState causaría mismatch de hidratación.
+  const [visited, setVisited] = useState<Set<number>>(() => new Set());
+  const yaCompletoAlCargar = useRef(false);
+  const [selloRevelado, setSelloRevelado] = useState(false);
   const { canvasRef: selloCanvasRef, converge: selloConverge } = useParticleCanvas({
     count: 24,
     color: accentColor,
     mode: "orbit",
     enabled: !selloRevelado,
   });
+
+  // Carga el progreso guardado (client-only) y se re-sincroniza si el usuario
+  // navega de un personaje a otro sin que el componente llegue a desmontarse
+  // (el `slug` cambiaría de prop pero el estado `visited` seguiría siendo el
+  // del personaje anterior sin este efecto). Debe declararse ANTES del efecto
+  // que marca `activeIdx` como visitado: React corre los efectos de un mismo
+  // commit en orden de declaración, así que este `setVisited(loaded)`
+  // (reemplazo completo) se aplica antes que el `setVisited(prev => ...)`
+  // (suma funcional) del siguiente efecto — sin perder el elemento activo.
+  useEffect(() => {
+    const loaded = loadVisited(slug, hotspots.length);
+    const completo = hotspots.length > 0 && loaded.size >= hotspots.length;
+    yaCompletoAlCargar.current = completo;
+    setVisited(loaded);
+    setSelloRevelado(completo);
+  }, [slug, hotspots.length]);
 
   // En el layout apilado (<lg) el visual va sticky arriba; en escritorio es de 2 columnas.
   useEffect(() => {
@@ -123,9 +144,21 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
     yaCompletoAlCargar.current = true;
     if (reduced) {
       setSelloRevelado(true);
-    } else {
-      selloConverge(() => setSelloRevelado(true));
+      return;
     }
+    // Red de seguridad: si el canvas nunca llega a obtener contexto 2D (entorno
+    // atípico) `converge()` jamás dispararía su callback y el sello quedaría
+    // bloqueado para siempre. La celebración es un extra — nunca debe impedir
+    // que el premio (el sello) se revele.
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    selloConverge(() => {
+      if (timeoutId) clearTimeout(timeoutId);
+      setSelloRevelado(true);
+    });
+    timeoutId = setTimeout(() => setSelloRevelado(true), 1500);
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [visited, hotspots.length, reduced, selloConverge, selloRevelado]);
 
   function goTo(i: number) {
@@ -213,7 +246,7 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
                       aria-label={h.titulo}
                       aria-current={isActive}
                     >
-                      {/* Onda sonora: solo invita a explorar los elementos aún no descubiertos */}
+                      {/* Onda sonora: refuerza cuál es el pin activo (visitado o no) */}
                       {isActive && !reduced &&
                         [0, 0.55, 1.1].map((delay) => (
                           <motion.span
