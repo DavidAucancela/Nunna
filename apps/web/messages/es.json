@@ -114,7 +114,9 @@
     "cuando_eyebrow": "En los pases",
     "cuando_titulo": "Cuándo y dónde verlo",
     "visual_eyebrow": "El personaje",
-    "visual_titulo": "Míralo de cerca"
+    "visual_titulo": "Míralo de cerca",
+    "leer_mas": "Leer más",
+    "leer_menos": "Leer menos"
   },
   "presentacion": {
     "eyebrow": "Su historia",
@@ -147,7 +149,12 @@
     "hint": "Desplázate para recorrer cada elemento del traje.",
     "contador": "Elemento {n} de {total}",
     "material": "Material",
-    "artesano": "Quién lo hace"
+    "artesano": "Quién lo hace",
+    "descubiertos": "{n} de {total} descubiertos",
+    "sello_titulo": "Anatomía completa",
+    "sello_texto": "Ya conoces cada pieza del {nombre}. Esta es la vista completa de tu imán.",
+    "faltan_uno": "Te falta 1 elemento por descubrir — toca un pin o sigue el scroll",
+    "faltan_varios": "Te faltan {n} elementos por descubrir — toca un pin o sigue el scroll"
   },
   "desbloquear": {
     "eyebrow": "Desbloquea tu imán",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   motion,
   useReducedMotion,
@@ -8,10 +8,14 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
+import { useTranslations } from "next-intl";
 import type { TipoOrigen } from "@seres-del-pase/types";
 
 interface QuoteRevelacionProps {
-  texto: string;
+  /** Gancho corto (~1 frase) — es lo único que se pinta grande al scroll. */
+  hook: string;
+  /** Resto del resumen — queda plegado bajo "Leer más" (siempre en el DOM, SEO). */
+  resto?: string | undefined;
   accentColor: string;
   origen?: TipoOrigen | undefined;
   /** Slot para acciones bajo la cita (compartir, contador de colección). */
@@ -35,22 +39,31 @@ const TRES_MUNDOS = [
  * un glow del color de origen. Para personajes prehispánicos se muestra la
  * línea de los tres mundos (Uku / Kay / Hanan Pacha).
  */
-export function QuoteRevelacion({ texto, accentColor, origen, children }: QuoteRevelacionProps) {
+export function QuoteRevelacion({ hook, resto, accentColor, origen, children }: QuoteRevelacionProps) {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
+  const t = useTranslations("historia");
+  const [abierto, setAbierto] = useState(false);
+
+  // Si el componente sobrevive una navegación entre personajes sin remount
+  // (p.ej. reconciliación de React entre rutas hermanas), el "Leer más" no
+  // debe quedar abierto mostrando el resumen plegado del personaje anterior.
+  useEffect(() => {
+    setAbierto(false);
+  }, [resto]);
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start 0.9", "start 0.35"],
+    offset: ["start 0.85", "start 0.5"],
   });
 
-  const palabras = useMemo(() => texto.split(/\s+/).filter(Boolean), [texto]);
+  const palabras = useMemo(() => hook.split(/\s+/).filter(Boolean), [hook]);
 
   // La comilla emerge de casi invisible a presencia luminosa
   const comillaOpacity = useTransform(scrollYProgress, [0, 1], [0.05, 0.25]);
 
   return (
-    <section ref={ref} className="mx-auto max-w-3xl px-5 py-16 sm:px-6 sm:py-24">
+    <section ref={ref} className="relative mx-auto max-w-3xl px-5 pb-8 pt-14 sm:px-6 sm:pt-20">
       <div className="relative">
         <motion.span
           className="absolute -top-4 -left-1 select-none font-serif text-8xl leading-none sm:-left-4"
@@ -66,7 +79,7 @@ export function QuoteRevelacion({ texto, accentColor, origen, children }: QuoteR
 
         <p className="relative font-serif text-2xl font-light leading-relaxed sm:text-3xl">
           {reduced ? (
-            <span style={{ color: BRIGHT }}>{texto}</span>
+            <span style={{ color: BRIGHT }}>{hook}</span>
           ) : (
             palabras.map((palabra, i) => (
               <PalabraPintada
@@ -79,11 +92,47 @@ export function QuoteRevelacion({ texto, accentColor, origen, children }: QuoteR
             ))
           )}
         </p>
+
+        {/* ── Resto del resumen — siempre en el DOM (SEO), plegado hasta "Leer más" ── */}
+        {resto && (
+          <div className="mt-4">
+            <motion.div
+              initial={false}
+              animate={{ height: abierto ? "auto" : 0 }}
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <p className="pb-1 pt-1 text-base leading-relaxed text-stone-400 sm:text-lg">{resto}</p>
+            </motion.div>
+            <button
+              type="button"
+              onClick={() => setAbierto((v) => !v)}
+              className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider transition-colors"
+              style={{ color: accentColor }}
+              aria-expanded={abierto}
+            >
+              {abierto ? t("leer_menos") : t("leer_mas")}
+              <motion.svg
+                width="10"
+                height="10"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                animate={{ rotate: abierto ? 180 : 0 }}
+                transition={{ duration: 0.25 }}
+                aria-hidden="true"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </motion.svg>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── Línea de los tres mundos — solo cosmovisión prehispánica ── */}
       {origen === "prehispanico" && (
-        <div className="mt-14 sm:mt-16">
+        <div className="mt-10 sm:mt-12">
           <div className="relative">
             <svg
               className="w-full"

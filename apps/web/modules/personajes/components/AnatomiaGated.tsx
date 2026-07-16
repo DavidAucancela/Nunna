@@ -21,5 +21,5 @@ interface AnatomiaGatedProps {
 export function AnatomiaGated({ slug, ...props }: AnatomiaGatedProps) {
   const { resolved, unlocked } = useDesbloqueo(slug);
   if (!resolved || !unlocked) return null;
-  return <AnatomiaSection {...props} />;
+  return <AnatomiaSection slug={slug} {...props} />;
 }
