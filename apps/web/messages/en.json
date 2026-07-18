@@ -12,7 +12,7 @@
     "hero": {
       "titulo": "Nunna",
       "subtitulo": "The sacred and festive characters of Ecuador's traditional celebrations",
-      "cta_principal": "Meet the characters",
+      "cta_principal": "Awaken a character",
       "cta_secundario": "View the calendar",
       "activar_sonido": "Turn on sound",
       "silenciar": "Mute"
@@ -32,10 +32,10 @@
       "texto": "Popular festivals are the heart of Ecuadorian culture. Throughout the year, the streets fill with characters who dance between the sacred and the festive, carrying centuries of Andean identity in every costume, every mask.",
       "cta": "Explore celebrations & calendar"
     },
-    "qr": {
-      "titulo": "Do you have a magnet?",
-      "texto": "Scan the QR code on your card to discover the full story of the character.",
-      "cta": "View all characters"
+    "proyecto": {
+      "titulo": "Behind every magnet, a story",
+      "texto": "Nunna documents the characters of Ecuador's traditional festivals. Learn why this project exists.",
+      "cta": "Learn about the project"
     },
     "recorrido": {
       "eyebrow": "The route",
