@@ -172,6 +172,7 @@
     "canjeando": "Awakening…",
     "enlace_enviado_titulo": "Check your email",
     "enlace_enviado_texto": "We sent a link to {email}. Open it on this device and your being will awaken automatically.",
+    "enlace_enviado_login_texto": "We sent a link to {email}. Open it on this device to sign in.",
     "exito_titulo": "{nombre} has awakened!",
     "exito_texto": "It's now part of your collection.",
     "ver_personaje": "Meet {nombre}",
@@ -184,7 +185,6 @@
     "email_requerido": "Enter your email to save your collection.",
     "error_generico": "Something went wrong. Please try again.",
     "no_configurado": "Unlocking isn't available right now.",
-    "no_camara": "No camera access? Type the code by hand — it's the most accessible way.",
     "ficha_titulo": "Awaken {nombre}",
     "ficha_texto": "Enter the code under your card to live its full experience.",
     "ficha_boton": "Unlock",
@@ -197,8 +197,7 @@
     "cambiar": "Change",
     "desbloquear_personaje": "Unlock {nombre}",
     "subtitulo_personaje": "Enter the code under your {nombre} card to unlock the full experience.",
-    "explorar_sin_desbloquear": "Just want to explore?",
-    "ver_ficha": "View {nombre} full page"
+    "ya_tienes_cuenta": "Already have an account?"
   },
   "coleccion": {
     "titulo": "My characters",
