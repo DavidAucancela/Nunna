@@ -172,6 +172,7 @@
     "canjeando": "Despertando…",
     "enlace_enviado_titulo": "Revisa tu correo",
     "enlace_enviado_texto": "Te enviamos un enlace a {email}. Ábrelo en este dispositivo y tu ser despertará automáticamente.",
+    "enlace_enviado_login_texto": "Te enviamos un enlace a {email}. Ábrelo en este dispositivo para iniciar sesión.",
     "exito_titulo": "¡{nombre} ha despertado!",
     "exito_texto": "Ya forma parte de tu colección.",
     "ver_personaje": "Conocer a {nombre}",
@@ -184,7 +185,6 @@
     "email_requerido": "Ingresa tu correo para guardar tu colección.",
     "error_generico": "Algo salió mal. Inténtalo de nuevo.",
     "no_configurado": "El desbloqueo no está disponible en este momento.",
-    "no_camara": "¿Sin acceso a la cámara? Escribe el código a mano: es la forma más accesible.",
     "ficha_titulo": "Despierta a {nombre}",
     "ficha_texto": "Ingresa el código bajo tu tarjeta para vivir su experiencia completa.",
     "ficha_boton": "Desbloquear",
@@ -197,8 +197,7 @@
     "cambiar": "Cambiar",
     "desbloquear_personaje": "Desbloquear a {nombre}",
     "subtitulo_personaje": "Ingresa el código bajo tu tarjeta de {nombre} para despertar su experiencia completa.",
-    "explorar_sin_desbloquear": "¿Solo quieres explorar?",
-    "ver_ficha": "Ver la ficha de {nombre}"
+    "ya_tienes_cuenta": "¿Ya tienes cuenta?"
   },
   "coleccion": {
     "titulo": "Mis personajes",

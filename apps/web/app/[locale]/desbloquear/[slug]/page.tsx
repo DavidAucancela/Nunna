@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
 
 import { getPersonaje, getPersonajes } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
@@ -111,17 +110,6 @@ export default async function DesbloquearSlugPage({ params }: Props) {
           </div>
 
           <DesbloquearForm personajes={lookup} personajeActivo={personajeActivo} />
-
-          {/* Enlace a la ficha pública — siempre visible */}
-          <p className="mt-10 text-center text-xs text-stone-600">
-            {t("explorar_sin_desbloquear")}{" "}
-            <Link
-              href={{ pathname: "/personajes/[slug]", params: { slug: personaje.slug } }}
-              className="text-stone-500 underline underline-offset-2 hover:text-stone-400"
-            >
-              {t("ver_ficha", { nombre: personaje.nombre })}
-            </Link>
-          </p>
         </FadeUp>
       </section>
     </div>

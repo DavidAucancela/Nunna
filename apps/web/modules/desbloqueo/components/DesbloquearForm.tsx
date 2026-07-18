@@ -60,27 +60,19 @@ export function DesbloquearForm({
   const [codeCheck, setCodeCheck] = useState<CodeCheck>("idle");
   const [unlockedSlug, setUnlockedSlug] = useState<string | null>(null);
   const [showDespertar, setShowDespertar] = useState(false);
+  const [loginOnlySend, setLoginOnlySend] = useState(false);
   const despertarSlugRef = useRef<string | null>(null);
   const autoTriedRef = useRef(false);
   const mountedRef = useRef(true);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const checkSeqRef = useRef(0);
-
-  // Aviso rápido no bloqueante (toast) — no cambia de fase ni cierra la pantalla.
-  const [hint, setHint] = useState<string | null>(null);
-  const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const flashHint = useCallback((msg: string) => {
-    setHint(msg);
-    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
-    hintTimerRef.current = setTimeout(() => setHint(null), 3200);
-  }, []);
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       if (debounceRef.current) clearTimeout(debounceRef.current);
-      if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     };
   }, []);
 
@@ -219,11 +211,8 @@ export function DesbloquearForm({
       const status = await checkCodeStatus(normalized, expectedSlug);
       if (!mountedRef.current || seq !== checkSeqRef.current) return;
       setCodeCheck(status);
-      if (status === "wrong_character") flashHint(t("error_otro_personaje"));
-      else if (status === "already_redeemed") flashHint(t("error_ya_canjeado"));
-      else if (status === "invalid") flashHint(t("error_invalido"));
     },
-    [gatingActive, checkCodeStatus, expectedSlug, flashHint, t],
+    [gatingActive, checkCodeStatus, expectedSlug],
   );
 
   const handleCodeChange = (value: string) => {
@@ -247,8 +236,9 @@ export function DesbloquearForm({
     e.preventDefault();
     setErrorKey(null);
     const normalized = code.trim().toUpperCase();
+    const loginOnly = !session && normalized === "";
 
-    if (!CODE_RE.test(normalized)) {
+    if (!loginOnly && !CODE_RE.test(normalized)) {
       setErrorKey("error_invalido");
       return;
     }
@@ -270,11 +260,19 @@ export function DesbloquearForm({
     }
 
     setPhase("sending");
-    setPendingCode(normalized);
-    const err = await signInWithEmail(email.trim(), normalized);
+    setLoginOnlySend(loginOnly);
+    if (loginOnly) {
+      // Descarta cualquier código pendiente de un intento previo (p.ej. un
+      // not_authenticated viejo en otro personaje) para que el auto-canje al
+      // volver del enlace no dispare sobre un código que esta persona no escribió.
+      consumePendingCode();
+    } else {
+      setPendingCode(normalized);
+    }
+    const err = await signInWithEmail(email.trim(), loginOnly ? undefined : normalized);
     if (!mountedRef.current) return;
     if (err) {
-      consumePendingCode();
+      if (!loginOnly) consumePendingCode();
       setErrorKey("error_email");
       setPhase("form");
       return;
@@ -297,23 +295,6 @@ export function DesbloquearForm({
     >
       {t("contactar_soporte")}
     </a>
-  );
-
-  // ── Toast no bloqueante — vive a nivel raíz, sobrevive cualquier cambio de fase ──
-  const toast = (
-    <AnimatePresence>
-      {hint && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 12 }}
-          role="status"
-          className="fixed inset-x-5 bottom-6 z-50 mx-auto max-w-sm rounded-xl border border-borde-sutil bg-stone-950/95 px-4 py-3 text-center text-sm text-texto-claro shadow-xl backdrop-blur-sm"
-        >
-          {hint}
-        </motion.div>
-      )}
-    </AnimatePresence>
   );
 
   // ── Ya lo tienes ────────────────────────────────────────────────────────────
@@ -353,7 +334,6 @@ export function DesbloquearForm({
             </button>
           </div>
         </motion.div>
-        {toast}
       </>
     );
   }
@@ -397,7 +377,6 @@ export function DesbloquearForm({
             </Link>
           </div>
         </motion.div>
-        {toast}
       </>
     );
   }
@@ -417,7 +396,9 @@ export function DesbloquearForm({
             </svg>
           </div>
           <h2 className="font-serif text-2xl font-bold text-texto-claro">{t("enlace_enviado_titulo")}</h2>
-          <p className="mt-3 text-stone-400">{t("enlace_enviado_texto", { email })}</p>
+          <p className="mt-3 text-stone-400">
+            {t(loginOnlySend ? "enlace_enviado_login_texto" : "enlace_enviado_texto", { email })}
+          </p>
           <button
             onClick={volver}
             className="mt-6 text-xs text-stone-500 underline underline-offset-2 hover:text-stone-400"
@@ -426,7 +407,6 @@ export function DesbloquearForm({
           </button>
           {soporteLink}
         </motion.div>
-        {toast}
       </>
     );
   }
@@ -450,7 +430,7 @@ export function DesbloquearForm({
             onChange={(e) => handleCodeChange(e.target.value)}
             placeholder={t("codigo_placeholder")}
             className="w-full rounded-xl border border-borde-sutil bg-stone-900/50 px-4 py-3 text-center font-mono text-2xl tracking-[0.4em] text-texto-claro placeholder:tracking-normal placeholder:text-stone-600 focus:border-acento-dorado focus:outline-none"
-            aria-describedby="codigo-ayuda codigo-estado"
+            aria-describedby="codigo-estado"
           />
           <button
             type="button"
@@ -461,9 +441,6 @@ export function DesbloquearForm({
             {codeCheck === "checking" ? t("verificando") : t("verificar")}
           </button>
         </div>
-        <p id="codigo-ayuda" className="mt-2 text-xs text-stone-500">
-          {t("no_camara")}
-        </p>
 
         {/* Indicador inline de la verificación en tiempo real — no bloquea el formulario */}
         <AnimatePresence>
@@ -487,13 +464,28 @@ export function DesbloquearForm({
 
         {!session && (
           <>
-            <label htmlFor="email" className="mt-6 block text-sm font-medium text-texto-claro">
+            <p className="mt-6 text-xs text-stone-500">
+              {t("ya_tienes_cuenta")}{" "}
+              <button
+                type="button"
+                onClick={() => {
+                  handleCodeChange("");
+                  emailInputRef.current?.focus();
+                }}
+                className="text-stone-400 underline underline-offset-2 hover:text-texto-claro"
+              >
+                {tc("iniciar_sesion")}
+              </button>
+            </p>
+
+            <label htmlFor="email" className="mt-3 block text-sm font-medium text-texto-claro">
               {t("email_label")}
             </label>
             <input
               id="email"
               name="email"
               type="email"
+              ref={emailInputRef}
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -525,9 +517,12 @@ export function DesbloquearForm({
           type="submit"
           disabled={
             busy ||
-            code.length < CODE_LEN ||
-            (!session && !email.trim()) ||
-            (gatingActive && codeCheck !== "valid")
+            !(
+              (!session && code.length === 0 && email.trim().length > 0) ||
+              (code.length === CODE_LEN &&
+                (session || email.trim().length > 0) &&
+                (!gatingActive || codeCheck === "valid"))
+            )
           }
           className="mt-6 w-full rounded-full bg-acento-dorado px-6 py-3.5 text-sm font-semibold text-fondo-oscuro transition-all hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-40"
         >
@@ -537,7 +532,9 @@ export function DesbloquearForm({
               ? t("enviando")
               : session
                 ? t("boton_despertar")
-                : t("boton_enviar_enlace")}
+                : code.length === 0
+                  ? tc("iniciar_sesion")
+                  : t("boton_enviar_enlace")}
         </button>
 
         {session?.user?.email && (
@@ -562,7 +559,6 @@ export function DesbloquearForm({
           }}
         />
       )}
-      {toast}
     </>
   );
 }
