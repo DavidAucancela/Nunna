@@ -49,6 +49,7 @@ export default async function DesbloquearSlugPage({ params }: Props) {
     nombre: p.nombre,
     origen: p.origen ?? null,
     imagenPortada: p.imagenPortada ?? null,
+    imagenBanner: p.imagenBanner ?? null,
   }));
 
   const personajeActivo: PersonajeLite = lookup.find((p) => p.slug === slug) ?? {
@@ -56,21 +57,25 @@ export default async function DesbloquearSlugPage({ params }: Props) {
     nombre: personaje.nombre,
     origen: personaje.origen ?? null,
     imagenPortada: null,
+    imagenBanner: null,
   };
 
   const origenStyle = getOrigenStyle(personajeActivo.origen ?? undefined);
+  // El banner (landscape) encaja de lleno en este hero ancho/bajo; el retrato
+  // (portrait, pensado para PersonajeCard) es solo fallback si aún no hay banner.
+  const heroImagen = personajeActivo.imagenBanner ?? personajeActivo.imagenPortada;
 
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       {/* Hero del personaje */}
       <div className="relative flex min-h-[55vw] max-h-[420px] w-full items-end overflow-hidden bg-fondo-oscuro sm:min-h-[320px]">
-        {personajeActivo.imagenPortada ? (
+        {heroImagen ? (
           <>
             <Image
-              src={personajeActivo.imagenPortada}
+              src={heroImagen}
               alt={personajeActivo.nombre}
               fill
-              className="object-cover object-top"
+              className={personajeActivo.imagenBanner ? "object-cover" : "object-cover object-top"}
               priority
               sizes="100vw"
             />

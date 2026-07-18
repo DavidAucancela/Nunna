@@ -16,7 +16,7 @@
     "simbolismo": "Representa la dualidad fundamental del cosmos andino: vida y muerte, pasado y futuro, Kay Pacha y Uku Pacha. Los doce cuernos symbolizan el ciclo anual completo. La doble máscara recuerda que el tiempo andino no es lineal sino circular: el futuro ya ocurrió en otro ciclo. El fuete que golpea la tierra es el pulso del pase, el corazón visible de la comunicación entre mundos.",
     "origen": "prehispanico",
     "imagenPortada": "/personajes/aya-uma.webp",
-    "imagenBanner": "/personajes/aya-uma-banner.webp",
+    "imagenBanner": "/headers/aya-uma-banner.webp",
     "narrativa": {
       "leyenda": "Donde el espíritu camina, la tierra responde.",
       "palabrasClave": [
@@ -149,7 +149,7 @@
     "simbolismo": "Representa la función social de la crítica mediante la risa. En el espacio ritual del pase, el Payaso tiene licencia para decir lo que nadie más puede. Es el guardián de la verdad disfrazado de entretenimiento. Su máscara fija de sonrisa contrasta con la posibilidad de decir cosas dolorosas: la risa como estrategia de supervivencia cultural.",
     "origen": "mixto",
     "imagenPortada": "/personajes/payaso.webp",
-    "imagenBanner": "/personajes/payaso-banner.webp",
+    "imagenBanner": "/headers/payaso-banner.webp",
     "narrativa": {
       "leyenda": "La máscara sonríe fija. La verdad no necesita permiso para salir.",
       "palabrasClave": [
@@ -290,7 +290,7 @@
     "simbolismo": "Representa el mundo doméstico y la lealtad, en contraste con los personajes más solemnes o salvajes del pase. El Allku es el puente entre lo cotidiano y lo ritual: un animal familiar que en el contexto del pase adquiere dimensiones cósmicas. Su relación con el Aya Uma refleja el vínculo entre el guardián humano y su compañero animal.",
     "origen": "prehispanico",
     "imagenPortada": "/personajes/perro.webp",
-    "imagenBanner": "/personajes/perro-banner.webp",
+    "imagenBanner": "/headers/perro-banner.webp",
     "narrativa": {
       "leyenda": "El Allku guarda el umbral que ningún humano puede cruzar solo.",
       "palabrasClave": [
@@ -421,7 +421,7 @@
     "simbolismo": "Representan la rebeldía y el sincretismo religioso. La máscara roja de hojalata combina el imaginario del diablo cristiano —introducido para intimidar a las comunidades— con el poder del Supay andino, habitante del Uku Pacha. Los Diablos de lata son la prueba de que la resistencia cultural no siempre toma la forma del rechazo: a veces consiste en tomar el símbolo del opresor y darle vuelta.",
     "origen": "mestizo",
     "imagenPortada": "/personajes/diablos-de-lata.webp",
-    "imagenBanner": "/personajes/diablos-de-lata-banner.webp",
+    "imagenBanner": "/headers/diablos-de-lata-banner.webp",
     "narrativa": {
       "leyenda": "Tomaron el símbolo del miedo y lo convirtieron en el corazón de la fiesta.",
       "palabrasClave": [
