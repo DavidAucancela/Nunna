@@ -1,8 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { useRef, useEffect, useState, lazy, Suspense } from "react";
-const QrScanner = lazy(() => import("@/components/ui/QrScanner").then(m => ({ default: m.QrScanner })));
+import { useRef, useEffect, useState } from "react";
 import {
   motion,
   useMotionValue,
@@ -146,7 +145,6 @@ export function HeroSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const [hasHover, setHasHover] = useState(false);
-  const [scannerOpen, setScannerOpen] = useState(false);
   // El video trae audio propio; empieza silenciado porque los navegadores exigen
   // `muted` para permitir autoplay — el botón activa sonido con el primer gesto del usuario.
   const [soundOn, setSoundOn] = useState(false);
@@ -260,14 +258,9 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 1.2 }}
           className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
         >
-          <MagneticButton onClick={() => setScannerOpen(true)} variant="primary">
-            Escanea tu QR
+          <MagneticButton href="/personajes" variant="primary">
+            {t("hero.cta_principal")}
           </MagneticButton>
-          {scannerOpen && (
-            <Suspense fallback={null}>
-              <QrScanner open={scannerOpen} onClose={() => setScannerOpen(false)} />
-            </Suspense>
-          )}
         </motion.div>
       </div>
 

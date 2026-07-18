@@ -12,7 +12,7 @@
     "hero": {
       "titulo": "Nunna",
       "subtitulo": "Los personajes sagrados y festivos de las fiestas populares del Ecuador",
-      "cta_principal": "Conocer los personajes",
+      "cta_principal": "Despierta a un personaje",
       "cta_secundario": "Ver el calendario",
       "activar_sonido": "Activar sonido",
       "silenciar": "Silenciar"
@@ -32,10 +32,10 @@
       "texto": "Las fiestas populares son el corazón de la cultura ecuatoriana. A lo largo del año, las calles se llenan de personajes que danzan entre lo sagrado y lo festivo, portando siglos de identidad andina en cada traje, en cada máscara.",
       "cta": "Explorar pases y festividades"
     },
-    "qr": {
-      "titulo": "¿Tienes un imán?",
-      "texto": "Escanea el código QR de tu tarjeta para descubrir la historia completa del ser.",
-      "cta": "Ver todos los personajes"
+    "proyecto": {
+      "titulo": "Detrás de cada imán hay una historia",
+      "texto": "Nunna documenta a los personajes de las fiestas populares del Ecuador. Conoce por qué nació este proyecto.",
+      "cta": "Conoce el proyecto"
     },
     "recorrido": {
       "eyebrow": "El recorrido",
