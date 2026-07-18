@@ -110,9 +110,17 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
     return () => obs.disconnect();
   }, [hotspots.length, isMobile]);
 
-  // En móvil, mantener visible el chip activo dentro del mini-nav de scroll horizontal.
+  // En móvil, mantener visible el chip activo dentro del mini-nav de scroll
+  // horizontal — pero no en el mount inicial: si el usuario aún no llegó a esta
+  // sección (vive muy por debajo del fold), `scrollIntoView({block:"nearest"})`
+  // secuestraría el scroll de toda la ventana para revelar el chip.
+  const chipScrollArmado = useRef(false);
   useEffect(() => {
     if (!isMobile) return;
+    if (!chipScrollArmado.current) {
+      chipScrollArmado.current = true;
+      return;
+    }
     chipRefs.current[activeIdx]?.scrollIntoView({
       behavior: reduced ? "auto" : "smooth",
       inline: "center",

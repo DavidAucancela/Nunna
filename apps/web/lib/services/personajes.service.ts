@@ -14,6 +14,7 @@ function toListItem(p: PersonajeRaw): PersonajeListItem {
   if (p.nombreKichwa) item.nombreKichwa = p.nombreKichwa;
   if (p.origen) item.origen = p.origen as TipoOrigen;
   if (p.imagenPortada) item.imagenPortada = p.imagenPortada;
+  if (p.imagenBanner) item.imagenBanner = p.imagenBanner;
   if (p.narrativa?.leyenda) item.leyenda = p.narrativa.leyenda;
   return item;
 }

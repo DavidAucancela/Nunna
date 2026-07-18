@@ -20,6 +20,7 @@ export interface PersonajeLite {
   nombre: string;
   origen: string | null;
   imagenPortada: string | null;
+  imagenBanner: string | null;
 }
 
 /**

@@ -105,6 +105,7 @@ export interface Personaje {
 export interface PersonajeListItem
   extends Pick<Personaje, "id" | "slug" | "nombre" | "nombreKichwa" | "resumen" | "origen"> {
   imagenPortada?: string;
+  imagenBanner?: string;
   totalPases: number;
   /** Frase de la narrativa — texto de relación en el escenario de cross-sell. */
   leyenda?: string;
