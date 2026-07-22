@@ -1,12 +1,15 @@
 {
   "nav": {
+    "inicio": "Home",
     "personajes": "Characters",
     "pases": "Parades",
     "calendario": "Calendar",
     "mis_personajes": "My characters",
     "sobre": "About",
     "idioma": "Language",
-    "tema": "Toggle theme"
+    "tema": "Toggle theme",
+    "abrir_menu": "Open menu",
+    "cerrar_menu": "Close menu"
   },
   "home": {
     "hero": {
@@ -212,7 +215,13 @@
     "sesion_iniciada": "Signed in as {email}",
     "cerrar_sesion": "Sign out",
     "iniciar_sesion": "Sign in",
-    "ver_personaje": "View profile"
+    "ver_personaje": "View profile",
+    "bienvenida_titulo": "Welcome to your collection!",
+    "bienvenida_subtitulo": "Here's how Nunna works:",
+    "bienvenida_paso1": "Every magnet comes with a 6-character code under the card.",
+    "bienvenida_paso2": "Redeem it on the character's page to unlock its full experience.",
+    "bienvenida_paso3": "Everything you unlock is saved here — sign in with your email on any device to see it.",
+    "bienvenida_boton": "Got it"
   },
   "logros": {
     "origen_completo": "{origen} Master",

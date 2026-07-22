@@ -16,6 +16,10 @@ vi.mock("@/lib/supabase/client", () => ({
   supabaseEnabled: true,
 }));
 
+vi.mock("@/i18n/navigation", () => ({
+  useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
+}));
+
 import { supabase } from "@/lib/supabase/client";
 import { ColeccionProvider, useColeccion, type RedeemResult } from "./ColeccionProvider";
 

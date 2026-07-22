@@ -10,6 +10,7 @@ import {
   useColeccion,
   setPendingCode,
   consumePendingCode,
+  setPendingLoginOnly,
   CODE_RE,
   type RedeemResult,
   type CodeStatus,
@@ -266,6 +267,9 @@ export function DesbloquearForm({
       // not_authenticated viejo en otro personaje) para que el auto-canje al
       // volver del enlace no dispare sobre un código que esta persona no escribió.
       consumePendingCode();
+      // Marca este envío como "solo login": ColeccionProvider lo lee al volver
+      // del enlace para mandar a /mis-personajes (con tutorial la primera vez).
+      setPendingLoginOnly();
     } else {
       setPendingCode(normalized);
     }

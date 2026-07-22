@@ -1,12 +1,15 @@
 {
   "nav": {
+    "inicio": "Inicio",
     "personajes": "Personajes",
     "pases": "Pases",
     "calendario": "Calendario",
     "mis_personajes": "Mis personajes",
     "sobre": "Sobre el proyecto",
     "idioma": "Idioma",
-    "tema": "Cambiar tema"
+    "tema": "Cambiar tema",
+    "abrir_menu": "Abrir menú",
+    "cerrar_menu": "Cerrar menú"
   },
   "home": {
     "hero": {
@@ -212,7 +215,13 @@
     "sesion_iniciada": "Sesión de {email}",
     "cerrar_sesion": "Cerrar sesión",
     "iniciar_sesion": "Iniciar sesión",
-    "ver_personaje": "Ver ficha"
+    "ver_personaje": "Ver ficha",
+    "bienvenida_titulo": "¡Bienvenido a tu colección!",
+    "bienvenida_subtitulo": "Así funciona Nunna:",
+    "bienvenida_paso1": "Cada imán trae un código de 6 caracteres bajo la tarjeta.",
+    "bienvenida_paso2": "Canjéalo en la ficha del personaje para desbloquear su experiencia completa.",
+    "bienvenida_paso3": "Todo lo que desbloquees queda guardado aquí — entra con tu correo desde cualquier dispositivo para verlo.",
+    "bienvenida_boton": "Entendido"
   },
   "logros": {
     "origen_completo": "Maestro {origen}",

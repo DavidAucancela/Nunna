@@ -11,6 +11,9 @@ import {
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase, supabaseEnabled } from "@/lib/supabase/client";
+import { SITE_URL } from "@/lib/site-url";
+import { useRouter } from "@/i18n/navigation";
+import { WelcomeModal } from "./WelcomeModal";
 
 /** Formato del código impreso: 6 caracteres alfanuméricos en mayúsculas. */
 export const CODE_RE = /^[A-Z0-9]{6}$/;
@@ -81,6 +84,8 @@ const ColeccionContext = createContext<ColeccionContextValue | null>(null);
 
 const CACHE_KEY = "nunna:coleccion";
 const PENDING_CODE_KEY = "nunna:pending_code";
+const LOGIN_ONLY_KEY = "nunna:pending_login_only";
+const WELCOME_KEY = "nunna:bienvenida_vista";
 
 function readCache(): string[] {
   if (typeof window === "undefined") return [];
@@ -109,6 +114,8 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
   );
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(!supabaseEnabled);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const router = useRouter();
   // Secuencia para descartar respuestas obsoletas de cargas concurrentes (latest-wins).
   const loadSeqRef = useRef(0);
 
@@ -215,6 +222,16 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
       setSession(newSession);
       if (newSession) {
         if (event === "INITIAL_SESSION" || event === "SIGNED_IN") loadColeccion();
+        // Volvió de un login sin código (magic-link "solo iniciar sesión"): siempre
+        // aterriza en su colección, con un tutorial breve la primera vez que se logea.
+        if (event === "SIGNED_IN" && consumePendingLoginOnly()) {
+          router.replace("/mis-personajes");
+          try {
+            if (!window.localStorage.getItem(WELCOME_KEY)) setShowWelcome(true);
+          } catch {
+            /* ignore */
+          }
+        }
       } else {
         applyColeccion([]);
       }
@@ -225,13 +242,20 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
       active = false;
       sub.subscription.unsubscribe();
     };
-  }, [applyColeccion, loadColeccion]);
+  }, [applyColeccion, loadColeccion, router]);
 
   const signInWithEmail = useCallback(async (email: string, code?: string): Promise<string | null> => {
     if (!supabase) return "not_configured";
     let emailRedirectTo: string | undefined;
     if (typeof window !== "undefined") {
-      const url = new URL(window.location.origin + window.location.pathname);
+      // El sitio responde en más de un dominio (Railway + dominio propio). Si el
+      // enlace se arma con window.location.origin, la persona queda "atada" al
+      // dominio que estaba usando al pedirlo — confuso si no es el canónico.
+      // En producción, el enlace siempre apunta al dominio canónico (SITE_URL);
+      // en local se respeta window.location.origin para poder probar el flujo.
+      const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+      const base = isLocal ? window.location.origin : SITE_URL;
+      const url = new URL(base + window.location.pathname);
       if (code) url.searchParams.set("unlock_code", code);
       emailRedirectTo = url.toString();
     }
@@ -277,7 +301,23 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
     ],
   );
 
-  return <ColeccionContext.Provider value={value}>{children}</ColeccionContext.Provider>;
+  return (
+    <ColeccionContext.Provider value={value}>
+      {children}
+      {showWelcome && (
+        <WelcomeModal
+          onClose={() => {
+            try {
+              window.localStorage.setItem(WELCOME_KEY, "1");
+            } catch {
+              /* ignore */
+            }
+            setShowWelcome(false);
+          }}
+        />
+      )}
+    </ColeccionContext.Provider>
+  );
 }
 
 export function useColeccion(): ColeccionContextValue {
@@ -323,5 +363,25 @@ export function consumePendingCode(): string | null {
     return v;
   } catch {
     return null;
+  }
+}
+
+/** Marca que el próximo magic-link es un login sin código (sin personaje que canjear). */
+export function setPendingLoginOnly() {
+  try {
+    window.localStorage.setItem(LOGIN_ONLY_KEY, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Lee y borra la marca de login sin código (tras volver del magic-link). */
+export function consumePendingLoginOnly(): boolean {
+  try {
+    const v = window.localStorage.getItem(LOGIN_ONLY_KEY);
+    if (v) window.localStorage.removeItem(LOGIN_ONLY_KEY);
+    return v === "1";
+  } catch {
+    return false;
   }
 }
