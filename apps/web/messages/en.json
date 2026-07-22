@@ -1,12 +1,15 @@
 {
   "nav": {
+    "inicio": "Home",
     "personajes": "Characters",
     "pases": "Parades",
     "calendario": "Calendar",
     "mis_personajes": "My characters",
     "sobre": "About",
     "idioma": "Language",
-    "tema": "Toggle theme"
+    "tema": "Toggle theme",
+    "abrir_menu": "Open menu",
+    "cerrar_menu": "Close menu"
   },
   "home": {
     "hero": {
