@@ -118,7 +118,32 @@ function QrVisual() {
   );
 }
 
-/* — Paso 03: la ficha del ser — */
+/* — Paso 03: el código de desbloqueo — */
+function CodigoVisual() {
+  const CODE = ["A", "7", "K", "9", "M", "2"];
+  return (
+    <PhoneMock>
+      <div className="flex h-full flex-col items-center justify-center gap-5 bg-gradient-to-b from-stone-900 to-stone-950 p-6">
+        <p className="text-[10px] uppercase tracking-[0.25em] text-stone-500">Debajo de la tarjeta</p>
+        <div className="flex gap-1.5">
+          {CODE.map((c, i) => (
+            <div
+              key={i}
+              className="flex h-11 w-8 items-center justify-center rounded-md border border-acento-dorado/40 bg-stone-900 font-serif text-lg font-bold text-acento-dorado"
+            >
+              {c}
+            </div>
+          ))}
+        </div>
+        <p className="text-center text-xs leading-relaxed text-stone-500">
+          Tu código de 6 caracteres<br />— lo desbloquea solo una vez —
+        </p>
+      </div>
+    </PhoneMock>
+  );
+}
+
+/* — Paso 04: la ficha del ser — */
 function FichaVisual() {
   return (
     <PhoneMock>
@@ -156,13 +181,19 @@ const PASOS = [
   {
     num: "02",
     titulo: "Escanea el QR",
-    texto: "El código está en la parte de atrás de la tarjeta. Apunta la cámara de tu teléfono — no necesitas instalar nada.",
+    texto: "El código QR está en la parte de atrás de la tarjeta. Apunta la cámara de tu teléfono — no necesitas instalar nada.",
     Visual: QrVisual,
   },
   {
     num: "03",
+    titulo: "Ingresa tu código",
+    texto: "Debajo de la tarjeta hay un código de 6 caracteres. Escríbelo para desbloquear al personaje y sumarlo a tu colección.",
+    Visual: CodigoVisual,
+  },
+  {
+    num: "04",
     titulo: "Descubre su historia",
-    texto: "Se abre la ficha del personaje: su leyenda, su significado y su origen kichwa — en español, kichwa e inglés.",
+    texto: "Se abre la ficha completa: su leyenda, su significado y su origen kichwa — en español e inglés.",
     Visual: FichaVisual,
   },
 ];
@@ -191,8 +222,8 @@ export function ProductoSection() {
               imán artesanal: una pieza única que lleva, en su reverso, un código QR.
             </p>
             <p className="mx-auto mt-4 text-base leading-relaxed text-stone-400 md:text-lg">
-              Al escanearlo aterrizas en la ficha del personaje —su historia y su cosmovisión
-              kichwa— para que cada imán sea también una puerta a la memoria del Ecuador.
+              Al escanearlo y desbloquearlo con tu código llegas a su ficha —su historia y su
+              cosmovisión kichwa— para que cada imán sea también una puerta a la memoria del Ecuador.
             </p>
           </div>
         </FadeUp>
