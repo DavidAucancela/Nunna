@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import type { PaseListItem } from "@seres-del-pase/types";
@@ -17,7 +16,7 @@ interface Props {
 }
 
 /**
- * Las 4 secciones de una provincia: Recorrido, Galería, Calendario, Información.
+ * Las 3 secciones de una provincia: Recorrido, Calendario, Información.
  * "Recorrido" cae a un estado "próximamente" cuando la provincia está marcada
  * (tiene pases en el calendario) pero ninguno tiene ruta trazada todavía —
  * hoy el caso de la mayoría de las provincias sembradas desde el PDF de
@@ -33,13 +32,6 @@ export function ProvinciaDetalle({ provincia, recorridos, pasesInfo }: Props) {
     amazonia: t("region.amazonia"),
     insular: t("region.insular"),
   };
-
-  const galeria = useMemo(() => {
-    const vistas = new Set<string>();
-    return provincia.pases
-      .filter((p) => p.imagenPortada && !vistas.has(p.imagenPortada) && vistas.add(p.imagenPortada))
-      .map((p) => ({ url: p.imagenPortada!, alt: p.nombre, slug: p.slug }));
-  }, [provincia.pases]);
 
   const paseInfo = useMemo(() => {
     const conRecorrido = new Set(recorridos.pases.map((r) => r.paseSlug));
@@ -78,31 +70,6 @@ export function ProvinciaDetalle({ provincia, recorridos, pasesInfo }: Props) {
       </section>
 
       <div className="mx-auto max-w-7xl space-y-16 px-6">
-        {/* ── Galería minimalista ── */}
-        {galeria.length > 0 && (
-          <section>
-            <p className="mb-5 text-xs uppercase tracking-[0.25em] text-acento-dorado">
-              {t("galeria_titulo")}
-            </p>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-              {galeria.map((foto) => (
-                <div
-                  key={foto.slug}
-                  className="relative aspect-square overflow-hidden rounded-xl border border-borde-sutil bg-stone-900"
-                >
-                  <Image
-                    src={foto.url}
-                    alt={foto.alt}
-                    fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
         {/* ── Calendario ── */}
         <section id="calendario-provincia" className="scroll-mt-16">
           <p className="mb-5 text-xs uppercase tracking-[0.25em] text-acento-dorado">

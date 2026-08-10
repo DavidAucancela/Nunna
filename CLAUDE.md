@@ -117,7 +117,7 @@ apps/web/
 │   │                                 ProductoSection, OrigenesSection, StatsSection, MarqueeStrip, CtaFinal
 │   ├── pases/components/           → ★ PasesExplorador (orquestador: mapa siempre montado + detalle
 │   │                                 de provincia debajo), MapaEcuador (SVG nacional con zoom real),
-│   │                                 ProvinciaDetalle (4 secciones: Recorrido/Galería/Calendario/
+│   │                                 ProvinciaDetalle (3 secciones: Recorrido/Calendario/
 │   │                                 Información — reutiliza CalendarioGrid), PaseMapSection
 │   │                                 (recorrido MapLibre; vivía en modules/home/ hasta 2026-08-10)
 │   ├── personajes/components/      → PersonajeCard, ParallaxHero, HeroDespertar (★ hero v2 inmersivo),
@@ -536,7 +536,7 @@ Modo oscuro por defecto.
 - **Mapa nacional de Ecuador en `/pases` + fusión de `/calendario`** (2026-08-10):
   - `/pases` pasó de un recorrido con selector de chips a un explorador de una sola página: mapa de
     Ecuador siempre montado (`MapaEcuador.tsx`, SVG con zoom real vía `motion.g`) + detalle de
-    provincia debajo (`ProvinciaDetalle.tsx`, 4 secciones: Recorrido/Galería/Calendario/Información)
+    provincia debajo (`ProvinciaDetalle.tsx`, 3 secciones: Recorrido/Calendario/Información)
   - `/calendario` se fusionó dentro (redirect 308, mismo patrón que `/mapa`); `CalendarioGrid` sigue
     siendo el mismo componente, ahora consumido como la sección Calendario de cada provincia
   - Modelo de datos nuevo: `lib/data/provincias.json` (catálogo cerrado de 24 provincias),
@@ -697,7 +697,7 @@ Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling
 
 ### Calendario — solo meses con pases (2026-06-22)
 > ⚠ `/calendario` se fusionó dentro de `/pases` el 2026-08-10 (redirect 308) — `CalendarioGrid` sigue
-> siendo el mismo componente, ahora consumido como una de las 4 secciones de `ProvinciaDetalle` en
+> siendo el mismo componente, ahora consumido como una de las 3 secciones de `ProvinciaDetalle` en
 > vez de tener su propia página. El resto de esta nota describe su comportamiento, que no cambió.
 - `/calendario` ya **no** muestra el grid de los 12 meses. `CalendarioGrid` presenta **solo los meses con
   eventos** como chips con contador (Ene · Abr · Nov · Dic); al elegir uno se ven sus pases **agrupados por
@@ -793,8 +793,8 @@ El QR de cada imán físico codifica `/[locale]/personajes/<slug>`. Una vez impr
 `/pases` absorbió a `/calendario` (redirect 308, mismo patrón que `/mapa` → `/pases`) y pasó de
 "un recorrido con chips" a una página continua de una sola vista (`PasesExplorador.tsx`): el mapa
 de Ecuador (`MapaEcuador.tsx`) queda **siempre montado** — nunca se reemplaza por otro componente —
-y al elegir una provincia hace **zoom real** sobre ella; debajo aparecen sus 4 secciones
-(`ProvinciaDetalle.tsx`): Recorrido, Galería, Calendario, Información. Implementa la "Fase 3 — Mapa
+y al elegir una provincia hace **zoom real** sobre ella; debajo aparecen sus 3 secciones
+(`ProvinciaDetalle.tsx`): Recorrido, Calendario, Información. Implementa la "Fase 3 — Mapa
 nacional" de `docs/PLAN-ESCALA-ECUADOR.md` y arrastró su Fase 1 (modelo de datos), porque no existía
 **ni un solo campo geográfico** en los JSON hasta esa fecha.
 
@@ -821,7 +821,7 @@ nacional" de `docs/PLAN-ESCALA-ECUADOR.md` y arrastró su Fase 1 (modelo de dato
   `aspect-*` de Tailwind bajo animación.
 - **Con zoom activo se ocultan**: los botones-marcador individuales (ya no hace falta clicar nada
   ahí — la provincia enfocada es evidente por el encabezado debajo) y el índice de provincias
-  lateral (las 4 secciones ocupan ese espacio).
+  lateral (las 3 secciones ocupan ese espacio).
 - **`PaseMapSection` (Recorrido) se monta y desmonta** dentro de `ProvinciaDetalle` según si la
   provincia tiene ≥1 pase con ruta trazada; si no, un placeholder "próximamente"
   (`pases.mapa.recorrido_proximamente`). Un MapLibre dormido retiene un contexto WebGL vivo y el
@@ -841,9 +841,9 @@ nacional" de `docs/PLAN-ESCALA-ECUADOR.md` y arrastró su Fase 1 (modelo de dato
 - La atribución "Alcaldía de Riobamba · Chimborazo" vive en la sección Información de esa provincia
   únicamente (`provincia.slug === "chimborazo"`), donde es cierta; `/pases` ya no tiene `<header>`
   visible — el mapa es lo primero que se ve.
-- **Galería** deriva de `imagenPortada` de los pases de la provincia (deduplicado); si ninguno tiene
-  imagen (la mayoría de las provincias sembradas desde el PDF de referencia, ver
-  `docs/AGREGAR-PROVINCIA.md`), la sección se oculta entera — no hay placeholder vacío.
+- **Sin sección de galería**: se probó una grilla de `imagenPortada` de los pases de la provincia,
+  pero se retiró (2026-08-10) — la mayoría de las provincias sembradas desde el PDF de referencia no
+  tienen imagen todavía (ver `docs/AGREGAR-PROVINCIA.md`) y una grilla casi siempre vacía no aportaba.
 - **Calendario** reutiliza `CalendarioGrid` sin cambios, acotado a `provincia.pases` — el mismo
   componente que antes vivía en `/calendario`.
 - Geometría: `scripts/build-provincias-svg.mjs` (a mano, salida commiteada — como `build-route.mjs`).
