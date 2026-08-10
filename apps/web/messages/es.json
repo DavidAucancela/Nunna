@@ -3,7 +3,6 @@
     "inicio": "Inicio",
     "personajes": "Personajes",
     "pases": "Pases",
-    "calendario": "Calendario",
     "mis_personajes": "Mis personajes",
     "sobre": "Sobre el proyecto",
     "idioma": "Idioma",
@@ -14,7 +13,7 @@
   "home": {
     "hero": {
       "titulo": "Nunna",
-      "subtitulo": "Los personajes sagrados y festivos de las fiestas populares del Ecuador",
+      "subtitulo": "Los personajes de las fiestas populares del Ecuador",
       "cta_principal": "Despierta a un personaje",
       "cta_secundario": "Ver el calendario",
       "activar_sonido": "Activar sonido",
@@ -36,7 +35,7 @@
       "cta": "Explorar pases y festividades"
     },
     "proyecto": {
-      "titulo": "Detrás de cada imán hay una historia",
+      "titulo": "Detrás de cada personaje hay una historia",
       "texto": "Nunna documenta a los personajes de las fiestas populares del Ecuador. Conoce por qué nació este proyecto.",
       "cta": "Conoce el proyecto"
     },
@@ -84,7 +83,31 @@
     "tipo_label": "Organiza",
     "personaje_label": "Personaje destacado",
     "ver_ficha_personaje": "Ver la ficha de {nombre}",
-    "contenido_pendiente": "La historia y fotografías de este pase están en preparación."
+    "contenido_pendiente": "La historia y fotografías de este pase están en preparación.",
+    "intro_nacional": "Cada provincia del Ecuador guarda sus propias fiestas. Explora el mapa y sigue, calle por calle, el recorrido de cada pase.",
+    "mapa": {
+      "eyebrow": "El mapa",
+      "titulo": "Un país, muchas fiestas",
+      "intro": "Toca una provincia para recorrer sus pases.",
+      "elige_provincia": "Elige una provincia",
+      "provincias_con_pases": "{count, plural, =1 {# provincia con pases} other {# provincias con pases}}",
+      "pases_count": "{count, plural, =1 {# pase} other {# pases}}",
+      "pases_en": "Pases en {provincia}",
+      "ver_recorrido": "Ver el recorrido",
+      "recorrido_proximamente": "El recorrido de este pase está en preparación — todavía no tiene ruta trazada calle por calle.",
+      "galeria_titulo": "Galería",
+      "calendario_titulo": "Calendario",
+      "informacion_titulo": "Sobre esta fiesta",
+      "ecuador": "Ecuador",
+      "mapa_alt": "Mapa del Ecuador con las provincias que tienen pases en el calendario",
+      "atribucion": "",
+      "region": {
+        "sierra": "Sierra",
+        "costa": "Costa",
+        "amazonia": "Amazonía",
+        "insular": "Insular"
+      }
+    }
   },
   "error": {
     "404": "Página no encontrada",

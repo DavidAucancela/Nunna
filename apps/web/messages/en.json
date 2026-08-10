@@ -3,7 +3,6 @@
     "inicio": "Home",
     "personajes": "Characters",
     "pases": "Parades",
-    "calendario": "Calendar",
     "mis_personajes": "My characters",
     "sobre": "About",
     "idioma": "Language",
@@ -84,7 +83,31 @@
     "tipo_label": "Organized by",
     "personaje_label": "Featured character",
     "ver_ficha_personaje": "See {nombre}'s profile",
-    "contenido_pendiente": "The full story and photos for this pase are on their way."
+    "contenido_pendiente": "The full story and photos for this pase are on their way.",
+    "intro_nacional": "Every province of Ecuador keeps its own celebrations. Explore the map and follow each pase, street by street.",
+    "mapa": {
+      "eyebrow": "The map",
+      "titulo": "One country, many celebrations",
+      "intro": "Tap a province to walk through its pases.",
+      "elige_provincia": "Choose a province",
+      "provincias_con_pases": "{count, plural, =1 {# province with pases} other {# provinces with pases}}",
+      "pases_count": "{count, plural, =1 {# pase} other {# pases}}",
+      "pases_en": "Pases in {provincia}",
+      "ver_recorrido": "Follow the route",
+      "recorrido_proximamente": "This pase's route is still being traced street by street.",
+      "galeria_titulo": "Gallery",
+      "calendario_titulo": "Calendar",
+      "informacion_titulo": "About this celebration",
+      "ecuador": "Ecuador",
+      "mapa_alt": "Map of Ecuador showing the provinces with pases in the calendar",
+      "atribucion": "Provincial boundaries: geoBoundaries (CC BY 4.0)",
+      "region": {
+        "sierra": "Sierra",
+        "costa": "Coast",
+        "amazonia": "Amazon",
+        "insular": "Galápagos"
+      }
+    }
   },
   "error": {
     "404": "Page not found",

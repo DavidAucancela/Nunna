@@ -100,9 +100,9 @@ apps/web/
 │   │   │   ├── page.tsx            → Grid de personajes
 │   │   │   └── [slug]/page.tsx     → ★★ DESTINO QR — ficha completa con historia
 │   │   ├── pases/
-│   │   │   ├── page.tsx            → Grid + mapa "Un pase, un camino" (/mapa se fusionó aquí, con redirect)
+│   │   │   ├── page.tsx            → ★ mapa nacional con zoom + calendario fusionado (/mapa y /calendario
+│   │   │   │                         se fusionaron aquí, ambos con redirect)
 │   │   │   └── [slug]/page.tsx     → Detalle de pase (scaffold mínimo — solo datos logísticos, sin historia editorial)
-│   │   ├── calendario/page.tsx     → Pases y Festividades
 │   │   ├── desbloquear/page.tsx    → ★ canje de código de 6 chars (desbloqueo de imán)
 │   │   ├── mis-personajes/page.tsx → ★ colección del usuario + progreso + logros
 │   │   └── sobre/page.tsx
@@ -113,8 +113,13 @@ apps/web/
 │   └── ui/                         → FadeUp, AnimatedCounter, ScrollProgress, ScrollToTop,
 │                                     WhatsAppShare, OrigenPlaceholder, LenisProvider
 ├── modules/                        → ★ Componentes por feature
-│   ├── home/components/            → HeroSection, PaseMapSection (recorrido), PersonajesShowcase,
+│   ├── home/components/            → HeroSection, PersonajesShowcase,
 │   │                                 ProductoSection, OrigenesSection, StatsSection, MarqueeStrip, CtaFinal
+│   ├── pases/components/           → ★ PasesExplorador (orquestador: mapa siempre montado + detalle
+│   │                                 de provincia debajo), MapaEcuador (SVG nacional con zoom real),
+│   │                                 ProvinciaDetalle (4 secciones: Recorrido/Galería/Calendario/
+│   │                                 Información — reutiliza CalendarioGrid), PaseMapSection
+│   │                                 (recorrido MapLibre; vivía en modules/home/ hasta 2026-08-10)
 │   ├── personajes/components/      → PersonajeCard, ParallaxHero, HeroDespertar (★ hero v2 inmersivo),
 │   │                                 HeroGated/AnatomiaGated (★ gating por desbloqueo),
 │   │                                 AnatomiaSection (★ Fase 4 — hotspots scroll-driven),
@@ -135,9 +140,13 @@ apps/web/
 │   │   ├── personajes.json         → 4 personajes publicados (con narrativa, hotspots, imagenBanner,
 │   │   │                             multimedia + flags v2: experiencia, audioAmbiente); los 5 sin
 │   │   │                             imágenes se retiraron (2026-06-29) hasta tener assets
-│   │   ├── pases.json              → pases con fechas y rutas (grid /pases, /mapa, /calendario);
-│   │   │                             `personajeSlug` = clave de cruce con personajes.json
-│   │   └── recorrido.json          → mapa "Un pase, un camino": { defaultPaseSlug, pases[] }
+│   │   ├── pases.json              → pases con fechas y rutas (todo vive en /pases: mapa, calendario);
+│   │   │                             `personajeSlug` = clave de cruce con personajes.json;
+│   │   │                             `provincia` = clave de cruce con provincias.json
+│   │   ├── recorrido.json          → mapa "Un pase, un camino": { defaultPaseSlug, pases[] }
+│   │   ├── provincias.json         → ★ catálogo cerrado de las 24 provincias { slug, nombre, region }
+│   │   └── provincias-geo.json     → ★ GENERADO por scripts/build-provincias-svg.mjs — paths SVG
+│   │                                 proyectados + centroides + recuadro de Galápagos. No editar a mano.
 │   ├── origen-styles.ts            → Estilos por tipo de origen
 │   ├── site-url.ts                 → SITE_URL (NEXT_PUBLIC_SITE_URL; base de OG/sitemap/robots)
 │   └── seo.ts                      → localeAlternates() — canonical + hreflang por página
@@ -184,8 +193,8 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 | `multimedia[].url` con `titulo:"en-pase"` → `public/personajes/[slug]-pase-N.webp` | Galería unificada (van primero) + waypoints del recorrido + beats de la presentación | Libre |
 | sin `titulo` / `titulo:"retrato"` | Galería unificada | Libre |
 
-> **Imágenes de pases** (grid `/pases`, `/mapa`, `/calendario`): en `public/informacion_pases/`,
-> referenciadas por `pases.json` y `mapa/page.tsx` como `/informacion_pases/[archivo]`.
+> **Imágenes de pases** (mapa nacional, calendario y tarjetas de `/pases`): en
+> `public/informacion_pases/`, referenciadas por `pases.json` como `/informacion_pases/[archivo]`.
 > **Video del hero**: `public/pases-videos/main-header.mp4` (poster = `main-header-poster.jpg`).
 > Comprimido a 960×540 CRF 30 (6 MB, 2026-07-03) — **trae audio propio** (pista AAC 96k, no un
 > `<audio>` separado). El `<video>` arranca `muted` (exigencia de autoplay del navegador) y el botón
@@ -415,7 +424,7 @@ Modo oscuro por defecto.
 - Monorepo Turborepo + pnpm funcional
 - Frontend: todas las páginas con estilos completos (landing, personajes, detalle, pases, calendario, sobre, mapa)
 - i18n es/en con rutas localizadas (el idioma quichua `qu` se retiró — 2026-07-03)
-- Datos estáticos: 4 personajes publicados (con `narrativa`, `hotspots`, `imagenBanner`, `multimedia`), 14 pases
+- Datos estáticos: 4 personajes publicados (con `narrativa`, `hotspots`, `imagenBanner`, `multimedia`), 23 pases en 6 provincias
 - Build de producción SSG sin errores
 - Eliminación completa de Directus
 - Favicons SVG
@@ -524,6 +533,23 @@ Modo oscuro por defecto.
     de progreso SVG y términos kichwa con tooltip; `SecretoRitual` (nuevo) reemplaza el bloque estático
     del secreto del artesano
   - `PersonajesEscenario` (nuevo) reemplaza `PersonajesCarrusel` en el cross-sell final
+- **Mapa nacional de Ecuador en `/pases` + fusión de `/calendario`** (2026-08-10):
+  - `/pases` pasó de un recorrido con selector de chips a un explorador de una sola página: mapa de
+    Ecuador siempre montado (`MapaEcuador.tsx`, SVG con zoom real vía `motion.g`) + detalle de
+    provincia debajo (`ProvinciaDetalle.tsx`, 4 secciones: Recorrido/Galería/Calendario/Información)
+  - `/calendario` se fusionó dentro (redirect 308, mismo patrón que `/mapa`); `CalendarioGrid` sigue
+    siendo el mismo componente, ahora consumido como la sección Calendario de cada provincia
+  - Modelo de datos nuevo: `lib/data/provincias.json` (catálogo cerrado de 24 provincias),
+    `provincia`/`ciudad` en `pases.json`, `provincias-geo.json` (generado por
+    `scripts/build-provincias-svg.mjs` desde geoBoundaries CC BY 4.0)
+  - El mapa marca provincias con **pases en el calendario** (no solo con recorrido trazado) —
+    una provincia puede aparecer y aun así mostrar "próximamente" en su sección Recorrido
+  - **9 festividades sembradas** desde `docs/fiestas_y_manifestaciones_ecuatorianas.pdf` (fuentes
+    institucionales citadas): Mama Negra (Cotopaxi), Diablada Pillareña (Tungurahua), Pase del Niño
+    Viajero (Azuay), Pase del Niño Rey de Reyes (Chimborazo), Carnaval de Guaranda (Bolívar), Inti
+    Raymi (multi-región), Fiesta de San Juan (Imbabura), Fiestas de Quito (Pichincha), Fiesta del
+    Yamor (Imbabura) — ninguna tiene recorrido trazado todavía, ver `docs/AGREGAR-PROVINCIA.md`
+  - Ver la sección técnica completa más abajo (`### /pases — mapa nacional...`)
 
 ### 🔄 Siguiente
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
@@ -532,7 +558,10 @@ Modo oscuro por defecto.
 - **Revisar kichwa** de namespaces `desbloquear`/`coleccion`/`logros`/`experiencia`/`anatomia` con hablante nativo
 - **Recorrido — datos reales** de Mercado Santa Rosa y Niño Rey de la Paz: coords ancla exactas, personajes que
   desfilan, fotos propias. Tras editar coords en `recorrido.json`: `node scripts/build-route.mjs`
-- Añadir los demás pases de `pases.json` al recorrido (hoy 3 de ~10)
+- **Trazar recorrido real** (coords + waypoints) para las 9 festividades sembradas desde el PDF —
+  hoy solo 3 pases de Chimborazo tienen ruta; el resto (Cotopaxi, Tungurahua, Azuay, Bolívar,
+  Imbabura, Pichincha) muestra "próximamente" en su sección Recorrido. Ver `docs/AGREGAR-PROVINCIA.md`
+- Añadir los demás pases de Chimborazo al recorrido (hoy 3 de 15)
 - **Experiencia v2** — Fases 2, 3, 5-12 del plan de 12 fases (Fases 1 y 4 ya implementadas)
 
 ### ⏳ Fase 2
@@ -667,6 +696,9 @@ Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling
 - ⚠ Cadenas kichwa del namespace `experiencia` son **tentativas** — revisar con hablante nativo.
 
 ### Calendario — solo meses con pases (2026-06-22)
+> ⚠ `/calendario` se fusionó dentro de `/pases` el 2026-08-10 (redirect 308) — `CalendarioGrid` sigue
+> siendo el mismo componente, ahora consumido como una de las 4 secciones de `ProvinciaDetalle` en
+> vez de tener su propia página. El resto de esta nota describe su comportamiento, que no cambió.
 - `/calendario` ya **no** muestra el grid de los 12 meses. `CalendarioGrid` presenta **solo los meses con
   eventos** como chips con contador (Ene · Abr · Nov · Dic); al elegir uno se ven sus pases **agrupados por
   día** en grid de tarjetas (`PaseCard` con imagen de `informacion_pases` + tipo/horario/ruta/personaje).
@@ -756,6 +788,68 @@ El QR de cada imán físico codifica `/[locale]/personajes/<slug>`. Una vez impr
 - **No poner `text-shimmer` en el padre** cuando los hijos son `motion.span` con `whileHover`
 - El problema: `scale` en `whileHover` crea un nuevo compositing layer para el span; ese layer hereda `color: transparent` del padre pero pierde acceso al gradiente `background-clip: text` del `h1` → letra invisible
 - **Solución**: aplicar `text-shimmer` directamente en cada `motion.span`, no en el `h1` contenedor
+
+### `/pases` — mapa nacional con zoom + fusión de `/calendario` (2026-08-10, rediseño mismo día)
+`/pases` absorbió a `/calendario` (redirect 308, mismo patrón que `/mapa` → `/pases`) y pasó de
+"un recorrido con chips" a una página continua de una sola vista (`PasesExplorador.tsx`): el mapa
+de Ecuador (`MapaEcuador.tsx`) queda **siempre montado** — nunca se reemplaza por otro componente —
+y al elegir una provincia hace **zoom real** sobre ella; debajo aparecen sus 4 secciones
+(`ProvinciaDetalle.tsx`): Recorrido, Galería, Calendario, Información. Implementa la "Fase 3 — Mapa
+nacional" de `docs/PLAN-ESCALA-ECUADOR.md` y arrastró su Fase 1 (modelo de datos), porque no existía
+**ni un solo campo geográfico** en los JSON hasta esa fecha.
+
+- **La vista nacional es SVG, no MapLibre.** Sin tiles ni red: pinta al instante en móvil, se
+  estiliza con la paleta y viaja en el HTML estático. MapLibre se queda solo donde aporta —
+  la ruta real sobre calles, dentro de la sección Recorrido. Ver `docs/AGREGAR-PROVINCIA.md` para
+  sumar provincias.
+- **Se marcan las provincias con pases en el calendario** (`getProvinciasConPases()`,
+  `provincias.service.ts` — mismo criterio de "`mes` presente" que ya usaba `CalendarioGrid`), **no**
+  las que tienen recorrido trazado — ese criterio más estricto se usó hasta la fusión con
+  `/calendario` y se abandonó a propósito: una provincia puede estar marcada y aun así mostrar
+  "próximamente" en su sección Recorrido si nadie trazó la ruta todavía.
+- **Zoom real, no cambio de vista:** `MapaEcuador` recibe `provinciaActiva: string | null` y anima
+  un `<motion.g>` (x/y/scale, framer-motion) que envuelve los `<path>` de las 24 provincias hasta
+  encuadrar la elegida — el mismo SVG persiste, no se desmonta. El bbox de cada provincia se calcula
+  una vez al cargar el módulo parseando los números del `path` (sin tocar `provincias-geo.json`).
+  ⚠ **El `<svg>` necesita `preserveAspectRatio="xMidYMid slice"` explícito** — el default
+  (`meet`) *encaja* el contenido dentro del contenedor con barras, no lo *recorta*; con `meet` el
+  cambio de aspecto del contenedor (retrato completo → banner apaisado al hacer zoom) solo achata
+  el mapa completo, sin dar sensación de acercamiento. `slice` recorta como `background-size:cover`,
+  que es lo que hace que el `motion.g` zoom se vea real.
+- El contenedor cambia de aspecto (retrato completo del país → banner apaisado ~1.9:1 al enfocar)
+  animando `padding-bottom` en % vía framer-motion — más confiable que alternar la utilidad
+  `aspect-*` de Tailwind bajo animación.
+- **Con zoom activo se ocultan**: los botones-marcador individuales (ya no hace falta clicar nada
+  ahí — la provincia enfocada es evidente por el encabezado debajo) y el índice de provincias
+  lateral (las 4 secciones ocupan ese espacio).
+- **`PaseMapSection` (Recorrido) se monta y desmonta** dentro de `ProvinciaDetalle` según si la
+  provincia tiene ≥1 pase con ruta trazada; si no, un placeholder "próximamente"
+  (`pases.mapa.recorrido_proximamente`). Un MapLibre dormido retiene un contexto WebGL vivo y el
+  navegador tiene un cupo pequeño; desmontar dispara el `map.remove()` que ya existía.
+  ⚠ **`PaseMapSection` NO tiene scroll-pin propio** (se quitó el 2026-08-10 — existió brevemente en
+  la arquitectura anterior de 3 vistas separadas). Ahora que Recorrido es una sección más entre
+  otras, un scroll-pin propio *hijackea* el scroll del usuario hacia sí misma, saltándose el mapa
+  con zoom y el encabezado de la provincia. En su lugar, `PasesExplorador.seleccionar()` hace
+  `anclaRef.current?.scrollIntoView()` **antes** de montar/desmontar nada — como el contenedor de
+  Recorrido queda por debajo del mapa+encabezado (fuera del viewport en ese momento),
+  `useScroll({ target, offset:["start start","end end"] })` arranca en progreso ≈0 sin ayuda extra.
+  No reintroducir el scroll-pin propio sin repensar esta interacción completa.
+- **`AnimatePresence` alrededor de `ProvinciaDetalle`** (no de toda la página): en SSG
+  `provinciaSlug` arranca en `null`, así que no hay nada que parpadee al hidratar — solo anima la
+  entrada/salida real al navegar. El `<svg>` del mapa nunca tuvo fade de entrada (debe verse antes
+  de hidratar).
+- La atribución "Alcaldía de Riobamba · Chimborazo" vive en la sección Información de esa provincia
+  únicamente (`provincia.slug === "chimborazo"`), donde es cierta; `/pases` ya no tiene `<header>`
+  visible — el mapa es lo primero que se ve.
+- **Galería** deriva de `imagenPortada` de los pases de la provincia (deduplicado); si ninguno tiene
+  imagen (la mayoría de las provincias sembradas desde el PDF de referencia, ver
+  `docs/AGREGAR-PROVINCIA.md`), la sección se oculta entera — no hay placeholder vacío.
+- **Calendario** reutiliza `CalendarioGrid` sin cambios, acotado a `provincia.pases` — el mismo
+  componente que antes vivía en `/calendario`.
+- Geometría: `scripts/build-provincias-svg.mjs` (a mano, salida commiteada — como `build-route.mjs`).
+  ⚠ Los archivos de geoBoundaries en `raw.githubusercontent.com` son **punteros de Git LFS**; hay que
+  pasar por la API, que devuelve una URL anclada a un commit. El script verifica que llegaron 24
+  features y falla si un nombre no está en `NOMBRE_A_SLUG` en vez de inventar un slug.
 
 ### MapLibre GL en PaseMapSection (`PaseMapSection.tsx`)
 - **Dos layouts por breakpoint** (2026-06-21): el recorrido por **scroll-pinned** (sticky `300vh`) es frágil

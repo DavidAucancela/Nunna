@@ -58,6 +58,14 @@ const nextConfig: NextConfig = {
       { source: "/en/map", destination: "/en/celebrations", permanent: true },
     ];
 
+    // /calendario se fusionó dentro de /pases (2026-08-10): el mapa nacional ya
+    // marca las provincias con pases en el calendario y su detalle incluye la
+    // sección Calendario. Mismo patrón que /mapa.
+    const calendarioRedirects = [
+      { source: "/es/calendario", destination: "/es/pases", permanent: true },
+      { source: "/en/calendar", destination: "/en/celebrations", permanent: true },
+    ];
+
     // El idioma quichua (qu) se retiró (2026-07-03). Redirigimos cualquier URL
     // /qu/* remanente a su equivalente en español para no romper enlaces viejos.
     // Los pases impresos codifican /es/, así que ningún imán queda afectado.
@@ -66,7 +74,7 @@ const nextConfig: NextConfig = {
       { source: "/qu/:path*", destination: "/es", permanent: true },
     ];
 
-    return [...slugRedirects, ...mapaRedirects, ...quRedirects];
+    return [...slugRedirects, ...mapaRedirects, ...calendarioRedirects, ...quRedirects];
   },
   async headers() {
     return [

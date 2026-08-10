@@ -56,3 +56,11 @@ codes-*.csv
 
 # TypeScript incremental build info
 *.tsbuildinfo
+
+# Graphify knowledge graph — output generado localmente, no versionar
+graphify-out/
+
+# Config local de Claude Code (no confundir con .claude/skills/ ya trackeados como run-web/)
+.claude/settings.json
+.claude/CLAUDE.md
+.claude/skills/graphify/

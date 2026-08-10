@@ -16,11 +16,11 @@ export async function getPases(_options: GetPasesOptions): Promise<PaseListItem[
       fechaDescripcion: p.fechaDescripcion,
       totalPersonajes: p.totalPersonajes,
     };
-    if (p.mes !== null) pase.mes = p.mes;
-    if (p.dia !== null) pase.dia = p.dia;
+    if (typeof p.mes === "number") pase.mes = p.mes;
+    if (typeof p.dia === "number") pase.dia = p.dia;
     if (p.imagenPortada) pase.imagenPortada = p.imagenPortada;
     // Datos opcionales del recorrido oficial (solo pases con ruta publicada)
-    for (const key of ["tipo", "horario", "ruta", "inicio", "fin", "personaje", "personajeSlug", "color"] as const) {
+    for (const key of ["tipo", "horario", "ruta", "inicio", "fin", "personaje", "personajeSlug", "color", "provincia", "ciudad"] as const) {
       const value = raw[key];
       if (typeof value === "string") pase[key] = value;
     }

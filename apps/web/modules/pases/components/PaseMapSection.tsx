@@ -646,13 +646,21 @@ export function PaseMapSection({
             <p className="text-stone-400 font-serif text-sm leading-relaxed max-w-[300px]">
               {t("finale_texto")}
             </p>
-            <Link
-              href="/calendario"
+            {/* El calendario ya no es una página aparte — es la siguiente sección
+                de la misma provincia (ver id="calendario-provincia" en
+                ProvinciaDetalle). Un botón que baja hasta ahí, no un Link. */}
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("calendario-provincia")
+                  ?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" })
+              }
               className="mt-2 inline-flex min-h-[44px] items-center gap-2 rounded-full border border-acento-dorado/60 bg-acento-dorado/10 px-5 text-[11px] uppercase tracking-[0.25em] text-acento-dorado hover:bg-acento-dorado/20 transition-colors duration-200"
             >
               {t("ver_calendario")}
               <span aria-hidden="true">→</span>
-            </Link>
+            </button>
           </motion.div>
         ) : (
           <motion.div

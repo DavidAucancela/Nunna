@@ -22,10 +22,6 @@ export const routing = defineRouting({
       es: "/pases/[slug]",
       en: "/celebrations/[slug]",
     },
-    "/calendario": {
-      es: "/calendario",
-      en: "/calendar",
-    },
     "/sobre": {
       es: "/sobre",
       en: "/about",

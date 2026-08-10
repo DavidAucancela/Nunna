@@ -73,3 +73,22 @@ export async function getRecorridos(): Promise<Recorridos> {
     pases: recorridoRaw.pases.map(toRecorridoPase),
   };
 }
+
+/**
+ * Acota los recorridos a un conjunto de pases y fija cuál abre.
+ *
+ * El mapa nacional entra a una provincia a la vez: si se le pasara el objeto completo,
+ * el selector interno de `PaseMapSection` dejaría saltar al recorrido de OTRA provincia
+ * y el breadcrumb quedaría mintiendo.
+ */
+export function acotarRecorridos(
+  recorridos: Recorridos,
+  paseSlugs: string[],
+  defaultPaseSlug: string
+): Recorridos {
+  const permitidos = new Set(paseSlugs);
+  return {
+    defaultPaseSlug,
+    pases: recorridos.pases.filter((p) => permitidos.has(p.paseSlug)),
+  };
+}

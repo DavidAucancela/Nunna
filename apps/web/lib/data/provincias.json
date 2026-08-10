@@ -1,0 +1,29 @@
+[
+  { "slug": "azuay", "nombre": "Azuay", "region": "sierra" },
+  { "slug": "bolivar", "nombre": "Bolívar", "region": "sierra" },
+  { "slug": "canar", "nombre": "Cañar", "region": "sierra" },
+  { "slug": "carchi", "nombre": "Carchi", "region": "sierra" },
+  { "slug": "chimborazo", "nombre": "Chimborazo", "region": "sierra" },
+  { "slug": "cotopaxi", "nombre": "Cotopaxi", "region": "sierra" },
+  { "slug": "imbabura", "nombre": "Imbabura", "region": "sierra" },
+  { "slug": "loja", "nombre": "Loja", "region": "sierra" },
+  { "slug": "pichincha", "nombre": "Pichincha", "region": "sierra" },
+  { "slug": "tungurahua", "nombre": "Tungurahua", "region": "sierra" },
+
+  { "slug": "el-oro", "nombre": "El Oro", "region": "costa" },
+  { "slug": "esmeraldas", "nombre": "Esmeraldas", "region": "costa" },
+  { "slug": "guayas", "nombre": "Guayas", "region": "costa" },
+  { "slug": "los-rios", "nombre": "Los Ríos", "region": "costa" },
+  { "slug": "manabi", "nombre": "Manabí", "region": "costa" },
+  { "slug": "santa-elena", "nombre": "Santa Elena", "region": "costa" },
+  { "slug": "santo-domingo-de-los-tsachilas", "nombre": "Santo Domingo de los Tsáchilas", "region": "costa" },
+
+  { "slug": "morona-santiago", "nombre": "Morona Santiago", "region": "amazonia" },
+  { "slug": "napo", "nombre": "Napo", "region": "amazonia" },
+  { "slug": "orellana", "nombre": "Orellana", "region": "amazonia" },
+  { "slug": "pastaza", "nombre": "Pastaza", "region": "amazonia" },
+  { "slug": "sucumbios", "nombre": "Sucumbíos", "region": "amazonia" },
+  { "slug": "zamora-chinchipe", "nombre": "Zamora Chinchipe", "region": "amazonia" },
+
+  { "slug": "galapagos", "nombre": "Galápagos", "region": "insular" }
+]
