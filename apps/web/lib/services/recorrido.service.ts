@@ -75,11 +75,13 @@ export async function getRecorridos(): Promise<Recorridos> {
 }
 
 /**
- * Acota los recorridos a un conjunto de pases y fija cuál abre.
+ * Acota los recorridos a un conjunto de pases (los de una sola provincia).
  *
- * El mapa nacional entra a una provincia a la vez: si se le pasara el objeto completo,
- * el selector interno de `PaseMapSection` dejaría saltar al recorrido de OTRA provincia
- * y el breadcrumb quedaría mintiendo.
+ * `RecorridosProvincia` dibuja TODOS los recorridos que recibe a la vez — si se
+ * le pasara el objeto completo (todas las provincias), mostraría rutas de otras
+ * provincias mezcladas con la que el usuario tiene enfocada. `defaultPaseSlug`
+ * queda como metadato sin uso activo hoy (no hay selector de "cuál abre"), se
+ * conserva por si algún consumidor futuro lo necesita.
  */
 export function acotarRecorridos(
   recorridos: Recorridos,

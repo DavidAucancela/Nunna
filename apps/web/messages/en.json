@@ -38,24 +38,6 @@
       "titulo": "Behind every magnet, a story",
       "texto": "Nunna documents the characters of Ecuador's traditional festivals. Learn why this project exists.",
       "cta": "Learn about the project"
-    },
-    "recorrido": {
-      "eyebrow": "The route",
-      "titulo": "One pase, one path",
-      "fecha": "December 20 · Inst. Tecnológico Riobamba",
-      "scroll_hint": "Scroll to follow the pase",
-      "ver_ficha": "View full profile",
-      "ver_calendario": "View pase calendar",
-      "ir_a": "Go to",
-      "ver_foto": "View photo {n}",
-      "pase_de_total": "{n} of {total} pases",
-      "elige_pase": "Switch pase",
-      "finale_titulo": "The pase reaches the church",
-      "finale_texto": "Each character played their part along the way. And this is just one of Ecuador's many festivals.",
-      "personaje": "Character",
-      "anterior": "Previous",
-      "siguiente": "Next",
-      "avanza_hint": "Tap next to walk the pase"
     }
   },
   "personajes": {
@@ -95,6 +77,8 @@
       "pases_en": "Pases in {provincia}",
       "ver_recorrido": "Follow the route",
       "recorrido_proximamente": "This pase's route is still being traced street by street.",
+      "recorrido_titulo": "Route",
+      "leyenda_titulo": "Pases on this route",
       "calendario_titulo": "Calendar",
       "informacion_titulo": "About this celebration",
       "ecuador": "Ecuador",

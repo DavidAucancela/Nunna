@@ -38,24 +38,6 @@
       "titulo": "Detrás de cada personaje hay una historia",
       "texto": "Nunna documenta a los personajes de las fiestas populares del Ecuador. Conoce por qué nació este proyecto.",
       "cta": "Conoce el proyecto"
-    },
-    "recorrido": {
-      "eyebrow": "El recorrido",
-      "titulo": "Un pase, un camino",
-      "fecha": "20 de diciembre · Inst. Tecnológico Riobamba",
-      "scroll_hint": "Desplázate para seguir el pase",
-      "ver_ficha": "Ver ficha completa",
-      "ver_calendario": "Ver calendario de pases",
-      "ir_a": "Ir a",
-      "ver_foto": "Ver foto {n}",
-      "pase_de_total": "{n} de {total} pases",
-      "elige_pase": "Cambia de pase",
-      "finale_titulo": "El pase llega al templo",
-      "finale_texto": "Cada personaje cumplió su papel en el camino. Y esta es solo una de las tantas fiestas del Ecuador.",
-      "personaje": "Personaje",
-      "anterior": "Anterior",
-      "siguiente": "Siguiente",
-      "avanza_hint": "Avanza para recorrer el pase"
     }
   },
   "personajes": {
@@ -95,11 +77,13 @@
       "pases_en": "Pases en {provincia}",
       "ver_recorrido": "Ver el recorrido",
       "recorrido_proximamente": "El recorrido de este pase está en preparación — todavía no tiene ruta trazada calle por calle.",
+      "recorrido_titulo": "Recorrido",
+      "leyenda_titulo": "Pases de este recorrido",
       "calendario_titulo": "Calendario",
       "informacion_titulo": "Sobre esta fiesta",
       "ecuador": "Ecuador",
       "mapa_alt": "Mapa del Ecuador con las provincias que tienen pases en el calendario",
-      "atribucion": "",
+      "atribucion": "Límites provinciales: geoBoundaries (CC BY 4.0)",
       "region": {
         "sierra": "Sierra",
         "costa": "Costa",

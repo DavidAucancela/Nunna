@@ -1,50 +1,91 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
+import type { Map as MapLibreMap, Marker as MapLibreMarker } from "maplibre-gl";
 import type { ProvinciaConPases, Region } from "@/lib/services/provincias.service";
-import geo from "@/lib/data/provincias-geo.json";
+import { TILE_STYLE } from "@/lib/map/tile-style";
+import { boundsFromFeatureCollection, boundsFromGeoJSON, type LngLatBoundsTuple } from "@/lib/map/bounds";
+import provinciasGeoRaw from "@/lib/data/provincias.geo.json";
 
-const [VB_W, VB_H] = geo.viewBox.split(" ").slice(2).map(Number) as [number, number];
+interface ProvinciaFeature {
+  type: "Feature";
+  properties: { slug: string; nombre: string; region: Region; centroide: [number, number] };
+  geometry: GeoJSON.Polygon | GeoJSON.MultiPolygon;
+}
+const provinciasGeo = provinciasGeoRaw as unknown as {
+  features: ProvinciaFeature[];
+};
+
 const ORDEN_REGIONES: Region[] = ["sierra", "costa", "amazonia", "insular"];
 
-// Aspecto retrato (todo el país) vs. banner apaisado (una provincia enfocada),
-// expresado como padding-bottom % — más confiable de animar con framer-motion
-// que alternar la utilidad `aspect-*` de Tailwind.
-const ASPECT_PAIS = `${(VB_H / VB_W) * 100}%`;
-const ASPECT_ZOOM = "52%";
-
-interface Bbox {
-  minX: number;
-  maxX: number;
-  minY: number;
-  maxY: number;
+// Precalculado una sola vez al cargar el módulo — provincias.geo.json es estático.
+const BOUNDS_POR_SLUG = new Map<string, LngLatBoundsTuple>();
+const CENTROIDE_POR_SLUG = new Map<string, [number, number]>();
+for (const f of provinciasGeo.features) {
+  const b = boundsFromGeoJSON(f.geometry);
+  if (b) BOUNDS_POR_SLUG.set(f.properties.slug, b);
+  CENTROIDE_POR_SLUG.set(f.properties.slug, f.properties.centroide);
 }
-
-function bboxFromPath(d: string): Bbox {
-  const nums = (d.match(/-?\d+(?:\.\d+)?/g) ?? []).map(Number);
-  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  for (let i = 0; i < nums.length; i += 2) {
-    const x = nums[i]!, y = nums[i + 1]!;
-    if (x < minX) minX = x;
-    if (x > maxX) maxX = x;
-    if (y < minY) minY = y;
-    if (y > maxY) maxY = y;
-  }
-  return { minX, maxX, minY, maxY };
+// Bounds nacional por defecto: solo continental — Galápagos (region "insular")
+// queda fuera a propósito, si se incluyera el salto oceánico empequeñecería el
+// continente. Hoy ninguna provincia insular tiene festividades cargadas.
+const boundsContinentalCalculado = boundsFromFeatureCollection(
+  provinciasGeo.features.filter((f) => f.properties.region !== "insular").map((f) => f.geometry)
+);
+if (!boundsContinentalCalculado) {
+  throw new Error("No se pudo calcular el bounds continental — provincias.geo.json vacío o corrupto");
 }
+const BOUNDS_CONTINENTAL: LngLatBoundsTuple = boundsContinentalCalculado;
 
-// Se calcula una sola vez al cargar el módulo — provincias-geo.json es estático.
-const BBOXES = new Map(geo.provincias.map((p) => [p.slug, bboxFromPath(p.path)]));
+const COLOR_SELECCIONADA = "#B8312F"; // acento-rojo
+const COLOR_CON_CONTENIDO = "#1F4D3F"; // acento-jade
+const COLOR_ATENUADA = "#292524"; // stone-800
 
-function transformPara(bbox: Bbox, padding = 70) {
-  const w = Math.max(bbox.maxX - bbox.minX, 1);
-  const h = Math.max(bbox.maxY - bbox.minY, 1);
-  const cx = (bbox.minX + bbox.maxX) / 2;
-  const cy = (bbox.minY + bbox.maxY) / 2;
-  const scale = Math.min((VB_W - padding * 2) / w, (VB_H - padding * 2) / h, 7);
-  return { x: VB_W / 2 - cx * scale, y: VB_H / 2 - cy * scale, scale };
+function marcadorProvincia(nombre: string, ariaLabel: string): HTMLButtonElement {
+  const el = document.createElement("button");
+  el.type = "button";
+  el.setAttribute("aria-label", ariaLabel);
+  el.style.cssText = [
+    "display:flex",
+    "align-items:center",
+    "gap:0.45rem",
+    "background:transparent",
+    "border:none",
+    "padding:6px",
+    "cursor:pointer",
+    "min-height:44px",
+  ].join(";");
+
+  const dot = document.createElement("span");
+  dot.style.cssText = [
+    "width:14px",
+    "height:14px",
+    "border-radius:9999px",
+    "background:#C89B3C",
+    "box-shadow:0 0 0 4px rgba(200,155,60,0.25)",
+    "flex-shrink:0",
+    "transition:transform 150ms ease",
+  ].join(";");
+  dot.setAttribute("data-role", "dot");
+
+  const label = document.createElement("span");
+  label.textContent = nombre;
+  label.style.cssText = [
+    "white-space:nowrap",
+    "font-size:11px",
+    "font-weight:600",
+    "color:#EFEAE0",
+    "background:rgba(15,14,12,0.85)",
+    "border:1px solid #2A2724",
+    "border-radius:6px",
+    "padding:2px 7px",
+  ].join(";");
+
+  el.appendChild(dot);
+  el.appendChild(label);
+  return el;
 }
 
 interface Props {
@@ -55,29 +96,33 @@ interface Props {
 }
 
 /**
- * Mapa nacional con zoom real. En vista país el SVG es solo la pieza visual
- * (`aria-hidden`); la superficie interactiva son botones HTML reales encima —
- * así el teclado, el foco y el lector de pantalla funcionan sin reimplementar
- * nada, y el área de toque no depende del tamaño del polígono (Chimborazo mide
- * ~25 px a escala nacional). Al enfocar una provincia el mismo SVG se anima con
- * un `motion.g` (x/y/scale) hasta encuadrarla — no se desmonta ni se reemplaza
- * por otro mapa — y los marcadores se ocultan (ya no hace falta clicar nada ahí:
- * la provincia enfocada es evidente por el encabezado que va debajo).
+ * Mapa nacional MapLibre con zoom real. Una sola instancia de mapa persiste
+ * durante toda la vida de `/pases`: al enfocar una provincia se anima la
+ * cámara (`fitBounds`) desde el extent nacional al de la provincia — no se
+ * desmonta ni se reemplaza por otro mapa. Las provincias con festividades se
+ * pintan (jade) y llevan un marcador HTML accesible con el nombre siempre
+ * visible; el resto del territorio queda atenuado y sin ningún elemento
+ * interactivo asociado.
  */
 export function MapaEcuador({ provincias, provinciaActiva, onSelect }: Props) {
   const t = useTranslations("pases.mapa");
   const reduced = useReducedMotion();
   const [hover, setHover] = useState<string | null>(null);
 
-  const activas = new Map(provincias.map((p) => [p.slug, p]));
-  const [ix, iy, iw, ih] = geo.insetRect;
-  const zoomed = provinciaActiva != null;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<MapLibreMap | null>(null);
+  const markersRef = useRef<Map<string, MapLibreMarker>>(new Map());
+  const prevSeleccionadaRef = useRef<string | null>(null);
+  const initialCameraAppliedRef = useRef(false);
+  // Los efectos de abajo leen `mapRef.current`, pero el mapa se crea de forma
+  // async (import dinámico de maplibre-gl) — sin este estado, los efectos que
+  // dependen de `provincias`/`provinciaActiva` correrían en el mount inicial
+  // ANTES de que `mapRef.current` exista y nunca se re-ejecutarían solos.
+  const [mapReady, setMapReady] = useState(false);
 
-  const transform = useMemo(() => {
-    if (!provinciaActiva) return { x: 0, y: 0, scale: 1 };
-    const bbox = BBOXES.get(provinciaActiva);
-    return bbox ? transformPara(bbox) : { x: 0, y: 0, scale: 1 };
-  }, [provinciaActiva]);
+  const zoomed = provinciaActiva != null;
+  const conContenidoSlugs = useMemo(() => new Set(provincias.map((p) => p.slug)), [provincias]);
+  const provinciaPorSlug = useMemo(() => new Map(provincias.map((p) => [p.slug, p])), [provincias]);
 
   const regionLabel: Record<Region, string> = {
     sierra: t("region.sierra"),
@@ -91,108 +136,206 @@ export function MapaEcuador({ provincias, provinciaActiva, onSelect }: Props) {
     provincias: provincias.filter((p) => p.region === region),
   })).filter((g) => g.provincias.length > 0);
 
-  const provinciaActivaNombre = provinciaActiva ? activas.get(provinciaActiva)?.nombre : undefined;
+  // ── Init del mapa (una sola vez) ────────────────────────────────────────
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    let map: MapLibreMap | undefined;
+    let cancelled = false;
+
+    (async () => {
+      const maplibregl = (await import("maplibre-gl")).default;
+      if (cancelled) return;
+
+      map = new maplibregl.Map({
+        container,
+        style: TILE_STYLE,
+        bounds: BOUNDS_CONTINENTAL,
+        fitBoundsOptions: { padding: 32, duration: 0 },
+        attributionControl: { compact: true },
+      });
+      mapRef.current = map;
+
+      const m = map;
+      m.on("error", (e: unknown) => console.error("[MapLibre]", e));
+
+      m.on("load", () => {
+        m.addSource("provincias", {
+          type: "geojson",
+          data: provinciasGeoRaw as GeoJSON.FeatureCollection,
+          promoteId: "slug",
+        });
+
+        m.addLayer({
+          id: "provincias-fill",
+          type: "fill",
+          source: "provincias",
+          paint: {
+            "fill-color": [
+              "case",
+              ["boolean", ["feature-state", "seleccionada"], false],
+              COLOR_SELECCIONADA,
+              ["boolean", ["feature-state", "conContenido"], false],
+              COLOR_CON_CONTENIDO,
+              COLOR_ATENUADA,
+            ],
+            "fill-opacity": [
+              "case",
+              ["boolean", ["feature-state", "conContenido"], false],
+              0.82,
+              0.32,
+            ],
+          },
+        });
+
+        m.addLayer({
+          id: "provincias-line",
+          type: "line",
+          source: "provincias",
+          paint: {
+            "line-color": [
+              "case",
+              ["boolean", ["feature-state", "seleccionada"], false],
+              COLOR_SELECCIONADA,
+              ["boolean", ["feature-state", "conContenido"], false],
+              "#C89B3C",
+              "#44403c",
+            ],
+            "line-width": [
+              "case",
+              ["boolean", ["feature-state", "conContenido"], false],
+              1.4,
+              0.8,
+            ],
+            "line-opacity": 0.9,
+          },
+        });
+
+        // `feature-state` no se puede fijar hasta que la fuente termine de
+        // procesar sus datos — `idle` es la señal segura (dispara una sola
+        // vez tras el primer render completo del estilo).
+        m.once("idle", () => {
+          for (const slug of conContenidoSlugs) {
+            m.setFeatureState({ source: "provincias", id: slug }, { conContenido: true });
+          }
+          setMapReady(true);
+        });
+      });
+    })();
+
+    return () => {
+      cancelled = true;
+      markersRef.current.forEach((marker) => marker.remove());
+      markersRef.current.clear();
+      map?.remove();
+      mapRef.current = null;
+      initialCameraAppliedRef.current = false;
+      setMapReady(false);
+    };
+    // Solo se inicializa una vez — provincias/onSelect se leen vía refs/closures actualizados abajo.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Marcadores accesibles (uno por provincia con contenido) ─────────────
+  // Depende de `mapReady`, no solo de `provincias`: el mapa se crea de forma
+  // async, así que este efecto debe poder re-correr en cuanto el mapa exista,
+  // no solo cuando cambie la lista de provincias (que en la práctica es
+  // estable durante toda la vida de la página).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+
+    let cancelled = false;
+    void import("maplibre-gl").then(({ Marker }) => {
+      if (cancelled) return;
+      markersRef.current.forEach((marker) => marker.remove());
+      markersRef.current.clear();
+      for (const provincia of provincias) {
+        const centroide = CENTROIDE_POR_SLUG.get(provincia.slug);
+        if (!centroide) continue;
+        const el = marcadorProvincia(
+          provincia.nombre,
+          `${provincia.nombre} — ${t("pases_count", { count: provincia.pases.length })}`
+        );
+        el.addEventListener("click", () => onSelect(provincia.slug));
+        el.addEventListener("mouseenter", () => setHover(provincia.slug));
+        el.addEventListener("mouseleave", () => setHover(null));
+        el.addEventListener("focus", () => setHover(provincia.slug));
+        el.addEventListener("blur", () => setHover(null));
+        const marker = new Marker({ element: el, anchor: "left" }).setLngLat(centroide).addTo(map);
+        marker.getElement().style.display = provinciaActiva ? "none" : "";
+        markersRef.current.set(provincia.slug, marker);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [provincias, mapReady]);
+
+  // ── Estado visual + cámara al cambiar de provincia ──────────────────────
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+
+    const prev = prevSeleccionadaRef.current;
+    if (prev && prev !== provinciaActiva) {
+      map.setFeatureState({ source: "provincias", id: prev }, { seleccionada: false });
+    }
+    if (provinciaActiva) {
+      map.setFeatureState({ source: "provincias", id: provinciaActiva }, { seleccionada: true });
+    }
+    prevSeleccionadaRef.current = provinciaActiva;
+
+    // El primer disparo de este efecto llega apenas `mapReady` pasa a true con
+    // `provinciaActiva` todavía en null — el constructor del mapa ya encuadró
+    // el extent nacional (`bounds: BOUNDS_CONTINENTAL`), así que animar de
+    // nuevo a lo mismo sería un parpadeo gratuito. Solo se anima cuando hay
+    // un cambio real de provincia.
+    const esPrimerDisparo = !initialCameraAppliedRef.current;
+    initialCameraAppliedRef.current = true;
+    const bounds = provinciaActiva ? BOUNDS_POR_SLUG.get(provinciaActiva) : BOUNDS_CONTINENTAL;
+    if (bounds && !(esPrimerDisparo && !provinciaActiva)) {
+      map.fitBounds(bounds, {
+        padding: provinciaActiva ? 56 : 32,
+        maxZoom: 10,
+        duration: reduced ? 0 : 900,
+      });
+    }
+
+    // Los marcadores solo se ven en vista país — enfocada la provincia, el
+    // encabezado que va debajo ya la identifica.
+    markersRef.current.forEach((marker) => {
+      marker.getElement().style.display = provinciaActiva ? "none" : "";
+    });
+  }, [provinciaActiva, reduced, mapReady]);
+
+  // Hover/focus (solo vista país): mismo tratamiento visual que "seleccionada".
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || zoomed || !mapReady) return;
+    if (hover) map.setFeatureState({ source: "provincias", id: hover }, { seleccionada: true });
+    return () => {
+      if (hover) map.setFeatureState({ source: "provincias", id: hover }, { seleccionada: false });
+    };
+  }, [hover, zoomed, mapReady]);
+
+  const provinciaActivaNombre = provinciaActiva
+    ? provinciaPorSlug.get(provinciaActiva)?.nombre
+    : undefined;
 
   return (
     <div className={zoomed ? "" : "grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-12"}>
       {/* ── Mapa ── */}
-      {/* El alto lo fija el aspecto (vía padding-bottom animado), así que en vista
-          país se acota el ancho — sin tope, en escritorio pasaría de 1000px de alto. */}
       <div className={zoomed ? "relative w-full" : "relative mx-auto w-full max-w-[24rem] lg:max-w-[30rem]"}>
-        <motion.div
-          className="relative w-full overflow-hidden"
-          animate={{ paddingBottom: zoomed ? ASPECT_ZOOM : ASPECT_PAIS }}
-          transition={{ duration: reduced ? 0 : 0.7, ease: [0.22, 0.61, 0.36, 1] }}
+        <div
+          className="relative w-full overflow-hidden transition-[padding-bottom] duration-700 ease-out"
+          style={{ paddingBottom: zoomed ? "52%" : "112%" }}
           role={zoomed ? "img" : undefined}
-          aria-label={zoomed ? provinciaActivaNombre : undefined}
+          aria-label={zoomed ? provinciaActivaNombre : t("mapa_alt")}
         >
-          {/* preserveAspectRatio="slice": cuando el contenedor cambia a la
-              proporción apaisada del zoom, el SVG debe RECORTAR (cover) en vez
-              de encajar con barras — si no, el zoom del `motion.g` no tiene
-              nada que recortar y el país entero se ve más chato, no más cerca. */}
-          <svg
-            viewBox={geo.viewBox}
-            preserveAspectRatio="xMidYMid slice"
-            className="absolute inset-0 h-full w-full"
-            aria-hidden={zoomed ? undefined : "true"}
-          >
-            <motion.g
-              animate={transform}
-              transition={{ duration: reduced ? 0 : 0.7, ease: [0.22, 0.61, 0.36, 1] }}
-              style={{ transformOrigin: "0px 0px" }}
-            >
-              {/* Recuadro de Galápagos: va aparte porque en su posición real
-                  dejaría el continente diminuto. Se oculta al hacer zoom
-                  (queda casi siempre fuera de cuadro). */}
-              {!zoomed && (
-                <rect
-                  x={ix}
-                  y={iy}
-                  width={iw}
-                  height={ih}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                  strokeDasharray="6 5"
-                  className="text-borde-sutil"
-                  vectorEffect="non-scaling-stroke"
-                />
-              )}
-
-              {geo.provincias.map((p) => {
-                const activa = activas.has(p.slug);
-                const esLaActiva = p.slug === provinciaActiva;
-                const enfocada = !zoomed && hover === p.slug;
-                return (
-                  <path
-                    key={p.slug}
-                    d={p.path}
-                    vectorEffect="non-scaling-stroke"
-                    className={
-                      esLaActiva || enfocada
-                        ? "fill-acento-rojo/90 stroke-acento-dorado"
-                        : activa
-                          ? "fill-acento-jade stroke-acento-dorado"
-                          : "fill-stone-800/40 stroke-stone-700/50"
-                    }
-                    strokeWidth={activa ? 1.6 : 1}
-                    style={{ transition: reduced ? undefined : "fill 220ms ease" }}
-                  />
-                );
-              })}
-            </motion.g>
-          </svg>
-
-          {/* Superficie interactiva: un botón por provincia con calendario.
-              Solo en vista país — al hacer zoom la provincia ya es evidente
-              por el encabezado que sigue debajo. */}
-          {!zoomed &&
-            provincias.map((p) => {
-              const figura = geo.provincias.find((g) => g.slug === p.slug);
-              if (!figura) return null;
-              const cx = figura.centroide[0] ?? 0;
-              const cy = figura.centroide[1] ?? 0;
-              return (
-                <button
-                  key={p.slug}
-                  type="button"
-                  onClick={() => onSelect(p.slug)}
-                  onMouseEnter={() => setHover(p.slug)}
-                  onMouseLeave={() => setHover(null)}
-                  onFocus={() => setHover(p.slug)}
-                  onBlur={() => setHover(null)}
-                  aria-label={`${p.nombre} — ${t("pases_count", { count: p.pases.length })}`}
-                  className="group absolute flex min-h-11 min-w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70"
-                  style={{ left: `${(cx / VB_W) * 100}%`, top: `${(cy / VB_H) * 100}%` }}
-                >
-                  <span className="absolute h-4 w-4 rounded-full bg-acento-dorado shadow-[0_0_0_4px_rgba(200,155,60,0.25)] transition-transform group-hover:scale-125 group-focus-visible:scale-125" />
-                  <span className="pointer-events-none absolute top-1/2 left-[calc(50%+0.9rem)] hidden -translate-y-1/2 whitespace-nowrap rounded-md border border-borde-sutil bg-fondo-oscuro/95 px-2 py-1 text-xs font-medium text-texto-claro group-hover:block group-focus-visible:block">
-                    {p.nombre}
-                  </span>
-                </button>
-              );
-            })}
-        </motion.div>
+          <div ref={containerRef} className="absolute inset-0" />
+        </div>
 
         {!zoomed && (
           <p className="mt-3 text-center text-[11px] text-stone-600 lg:text-left">{t("atribucion")}</p>
@@ -201,7 +344,7 @@ export function MapaEcuador({ provincias, provinciaActiva, onSelect }: Props) {
 
       {/* ── Índice de provincias: la otra mitad del control, no un respaldo.
           Desaparece al hacer zoom — las secciones de la provincia ocupan ese
-          espacio. ── */}
+          espacio. También es la vía de navegación accesible por teclado. ── */}
       {!zoomed && (
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-acento-dorado">

@@ -120,18 +120,20 @@ pnpm --filter @seres-del-pase/web test
 
 ## La geometría del mapa (normalmente no hace falta tocarla)
 
-`apps/web/lib/data/provincias-geo.json` tiene las 24 figuras ya proyectadas y está commiteado.
-Solo se regenera si cambian los límites o el diseño del lienzo:
+`apps/web/lib/data/provincias.geo.json` tiene las 24 figuras (GeoJSON real en lon/lat, para el mapa
+MapLibre) y está commiteado. Solo se regenera si cambian los límites de la fuente:
 
 ```bash
-node scripts/build-provincias-svg.mjs
+node scripts/build-provincias-geojson.mjs
 ```
 
-Descarga los límites de geoBoundaries (CC BY 4.0), simplifica con Douglas–Peucker, proyecta a un
-viewBox fijo y escribe el archivo. Notas:
+Descarga los límites de geoBoundaries (CC BY 4.0) y simplifica con Douglas–Peucker (la descarga y el
+mapeo de nombres viven en `scripts/lib/provincias-fuente.mjs`, compartidos por si algún día hace
+falta otra proyección de los mismos datos). Notas:
 
-- **Galápagos va en un recuadro aparte** (`insetRect`): en su posición real dejaría el continente
-  diminuto. El recuadro está medido para no pisar la costa de Esmeraldas — agrandarlo la pisa.
-- Si sube el peso del archivo, ajusta `TOLERANCIA` en el script (hoy 1.1 → ~28 KB).
+- No hay recuadro aparte para Galápagos (a diferencia de la vieja versión SVG): las coordenadas son
+  geográficas reales. El mapa nacional (`MapaEcuador.tsx`) excluye Galápagos del encuadre por
+  defecto a propósito (ver CLAUDE.md, sección `/pases`) — no afecta a este script.
+- Si sube el peso del archivo, ajusta `TOLERANCIA_GRADOS` en el script (hoy 0.006° → ~225 KB).
 - Si geoBoundaries renombra una provincia, el script **falla a propósito** en vez de inventar un
-  slug: hay que agregar el nombre nuevo a `NOMBRE_A_SLUG`.
+  slug: hay que agregar el nombre nuevo a `NOMBRE_A_SLUG` en `scripts/lib/provincias-fuente.mjs`.

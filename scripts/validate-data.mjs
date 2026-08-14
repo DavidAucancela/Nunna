@@ -43,8 +43,8 @@ const [personajes, pases, recorrido, provincias] = await Promise.all([
   loadJson("provincias.json"),
 ]);
 
-// Generado por scripts/build-provincias-svg.mjs — puede no existir aún.
-const provinciasGeo = await loadJsonOptional("provincias-geo.json");
+// Generado por scripts/build-provincias-geojson.mjs — puede no existir aún.
+const provinciasGeo = await loadJsonOptional("provincias.geo.json");
 
 const personajeSlugs = new Set(personajes.map((p) => p.slug));
 const paseSlugs = new Set(pases.map((p) => p.slug));
@@ -120,22 +120,20 @@ for (const p of pases) {
   }
 }
 
-// ── provincias-geo.json → toda provincia marcable debe tener figura dibujable ─
+// ── provincias.geo.json → toda provincia marcable debe tener figura dibujable ─
 if (provinciasGeo) {
-  const geoSlugs = new Set([
-    ...(provinciasGeo.provincias ?? []).map((p) => p.slug),
-    ...(provinciasGeo.inset?.provincias ?? []).map((p) => p.slug),
-  ]);
+  const geoSlugs = new Set((provinciasGeo.features ?? []).map((f) => f.properties?.slug));
   for (const slug of geoSlugs) {
     if (!provinciaSlugs.has(slug)) {
-      err(`provincias-geo.json: figura "${slug}" no existe en provincias.json`);
+      err(`provincias.geo.json: figura "${slug}" no existe en provincias.json`);
     }
   }
-  // Una provincia con pases pero sin figura es un bug visual silencioso.
-  const conRecorrido = new Set((recorrido.pases ?? []).map((rp) => rp.paseSlug));
-  for (const p of pases) {
-    if (p.provincia && conRecorrido.has(p.slug) && !geoSlugs.has(p.provincia)) {
-      err(`provincias-geo.json: falta la figura de "${p.provincia}" (requerida por el recorrido "${p.slug}")`);
+  // Una provincia con pases pero sin figura es un bug visual silencioso (el
+  // mapa nacional no podría pintarla ni encuadrarla al hacer zoom).
+  const conPasesEnCalendario = new Set(pases.filter((p) => p.mes != null).map((p) => p.provincia));
+  for (const provinciaSlug of conPasesEnCalendario) {
+    if (provinciaSlug && !geoSlugs.has(provinciaSlug)) {
+      err(`provincias.geo.json: falta la figura de "${provinciaSlug}" (tiene pases en el calendario)`);
     }
   }
 }
@@ -155,5 +153,5 @@ if (errors.length > 0) {
 console.log(
   `✓ validate-data: ${personajes.length} personajes, ${pases.length} pases, ` +
     `${recorrido.pases?.length ?? 0} recorridos, ${provincias.length} provincias` +
-    `${provinciasGeo ? "" : " (sin provincias-geo.json)"} — sin errores`,
+    `${provinciasGeo ? "" : " (sin provincias.geo.json)"} — sin errores`,
 );
