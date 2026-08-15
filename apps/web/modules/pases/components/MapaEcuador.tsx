@@ -342,7 +342,14 @@ export function MapaEcuador({ provincias, provinciaActiva, onSelect }: Props) {
           role={zoomed ? "img" : undefined}
           aria-label={zoomed ? provinciaActivaNombre : t("mapa_alt")}
         >
-          <div ref={containerRef} className="absolute inset-0" />
+          {/* style inline (no className) — el propio CSS de maplibre-gl fuerza
+              `.maplibregl-map { position: relative }` sobre este contenedor
+              apenas se inicializa el mapa, y le gana a la clase `absolute` de
+              Tailwind por orden de carga. Con `position` en inline style
+              (máxima especificidad) el `inset-0` no se pierde y el contenedor
+              conserva su tamaño real — sin esto el mapa cae al canvas por
+              defecto de MapLibre (480×300) y se ve en blanco/negro. */}
+          <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
         </div>
 
         {!zoomed && (
