@@ -570,6 +570,13 @@ Modo oscuro por defecto.
     completo; `pases.mapa.atribucion` (vacío en es.json) corregido
 
 ### 🔄 Siguiente
+- **⚠ Abrir PR a `main` para `feat/selector-pases-recorrido`** (rama ya en origin, commit
+  `eb7f322`): añade botones por pase en `RecorridosProvincia` (antes "Todos" era el único
+  modo) + grilla "Personajes de este pase" al elegir uno. Se abrió como PR #67 contra
+  `fix/mapa-ecuador-setfeaturestate-crash` (necesario para poder probarlo, porque sin esos
+  fixes el mapa no renderiza) pero esa rama base se mergeó a `main` de forma independiente
+  por otro PR (#64) — el commit del selector quedó huérfano, nunca llegó a `main`. Ver
+  `docs/CHANGELOG.md` [0.5.0] para el detalle completo.
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
 - Fotografías reales "En el pase" (`titulo: "en-pase"`) y del imán físico (`titulo: "proceso"`) para la galería
 - **Audios reales** del hero v2 en `public/audio/` (4 archivos: `[slug]-ambiente.mp3` por personaje con `experiencia: true`)

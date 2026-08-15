@@ -2,6 +2,82 @@
 
 ---
 
+## [0.5.0] — 2026-08-15 — Mapa nacional MapLibre, fixes de producción y setup de Resend
+
+Cubre PR #63–#68. #63 (mapa nacional + fusión de `/calendario`) ya estaba documentado en
+`CLAUDE.md` (sección `/pases`); esta entrada se enfoca en los fixes y features posteriores,
+descubiertos al revisar el sitio recién desplegado.
+
+### Fixes en producción (PR #64, #65, #66)
+
+- **Crash al navegar fuera de `/pases`** (`MapaEcuador.tsx`): los 4 `useEffect` del mapa
+  limpian en orden de declaración al desmontar; el cleanup del efecto de Hover corría
+  después del de Init (que ya había llamado `map.remove()`), y seguía llamando
+  `setFeatureState` sobre un mapa MapLibre ya destruido → `Cannot read properties of
+  undefined (reading 'setFeatureState')`, tumbaba toda la app. Fix: ref `mapRemovedRef`
+  marcado en el cleanup de Init, respetado por el cleanup de Hover.
+- **Mapa nacional se veía completamente en negro**: `maplibre-gl` trae su propia hoja de
+  estilos con `.maplibregl-map { position: relative }`, que se aplica al contenedor apenas
+  se inicializa el mapa y le gana a la clase `absolute` de Tailwind por orden de carga de
+  CSS. Sin `position: absolute`, `inset-0` deja de funcionar, el contenedor colapsa a
+  `height: 0`, y MapLibre cae a su canvas por defecto (480×300). Fix: mover
+  `position`/`inset` a inline style (máxima especificidad, gana siempre sobre cualquier
+  stylesheet externa).
+- **Fotos de portada desactualizadas**: nuevas fotos del imán (fondo transparente,
+  recortadas al bounding box) para Payaso, Diablos de lata y Perro — la de Perro traía
+  mucho espacio vacío alrededor de la figura en el archivo original. Aya Uma no cambió.
+  Mismo path que las portadas actuales (`public/personajes/[slug].webp`), sin tocar
+  `personajes.json` ni ningún componente.
+- **Resumen editorial se veía como un muro de texto** en `QuoteRevelacion.tsx` (reproducido
+  en Aya Uma): el `resto` plegado bajo "Leer más" se pintaba en un solo `<p>` con el string
+  crudo de `personajes.json`; cuando el resumen trae varios párrafos separados por línea en
+  blanco, el navegador colapsa esos `\n\n` a un espacio. Fix: separar `resto` por línea en
+  blanco y renderizar cada párrafo en su propio `<p>` con espaciado entre ellos.
+
+### Selector de pases en `RecorridosProvincia.tsx` (PR #67 — ⚠ ver Pendientes)
+
+Provincias con varios pases trazados (ej. Chimborazo, 3 rutas) solo mostraban todas las
+rutas a la vez, con los personajes visibles únicamente al pasar el mouse por cada marcador
+del mapa uno por uno. Los chips de la leyenda (color ↔ pase) ahora son botones:
+- **"Todos"** — comportamiento original, las N rutas a la vez.
+- **Un pase específico** — atenúa/oculta las demás rutas y marcadores, la cámara encuadra
+  solo esa ruta (`fitBounds`), y aparece una grilla "Personajes de este pase" (foto + link
+  a la ficha) para no depender de pasar el mouse marcador por marcador.
+- Con un solo pase trazado no cambia nada (sigue como leyenda simple, sin botón).
+
+### Email del magic-link — Resend como SMTP custom (PR #68, solo docs)
+
+El correo del magic-link (`ColeccionProvider.signInWithEmail`) sale hoy por el SMTP
+compartido de Supabase: rate-limit bajo, mala reputación de IP (cae en spam) y sin
+branding. Se agrega el runbook completo (`supabase/RESEND-SETUP.md`) + plantillas HTML
+branded (`supabase/email-templates/{magic-link,confirm-signup}.html`) para configurar
+Resend como SMTP custom de Supabase Auth. **No toca código de la app** — mismo
+`signInWithOtp`, mismo `?unlock_code=` en la URL. Los pasos manuales (verificar dominio en
+Resend, cargar credenciales en el dashboard de Supabase, pegar las plantillas) quedan
+pendientes de ejecución — ver Pendientes abajo.
+
+### Pendientes
+
+- **⚠ PR #67 no llegó a `main`.** Se abrió con base `fix/mapa-ecuador-setfeaturestate-crash`
+  (para poder probarlo, ya que sin esos fixes el mapa no renderiza) y se mergeó ahí — pero
+  esa rama se mergeó a `main` de forma independiente por otro PR (#64), dejando el commit
+  del selector de pases (`eb7f322`) huérfano en una rama que ya no apunta a nada útil desde
+  `main`. El código no se perdió (`git ls-remote` confirma que
+  `feat/selector-pases-recorrido` sigue en origin), pero **hay que abrir un PR nuevo de
+  `feat/selector-pases-recorrido` contra `main`** para que el selector de pases llegue a
+  producción.
+- **Resend**: pasos manuales fuera del repo (dominio verificado, credenciales SMTP,
+  plantillas pegadas en el dashboard) — sin esto el gating sigue funcionando igual, solo
+  que el correo sigue saliendo del SMTP default de Supabase.
+- **WhatsApp como canal alternativo** (código de desbloqueo o magic-link): evaluado a nivel
+  de viabilidad, no implementado. Dos rutas posibles — Supabase Phone Auth + Twilio Verify
+  (nativo, pero requiere número de WhatsApp Business aprobado por Meta, trámite de
+  días/semanas) o reenviar el mismo magic-link por WhatsApp desde un endpoint server-side
+  nuevo (primer uso real de `SERVICE_ROLE_KEY` en runtime, rompe un poco el "sin backend
+  propio"). Sin decisión tomada.
+
+---
+
 ## [0.3.0] — 2026-07-12 — Rediseño cinematográfico de la ficha + fixes de desbloqueo
 
 > ⚠ Entre 0.2.0 y esta versión hubo trabajo no registrado aquí (eliminación de Directus,
