@@ -181,7 +181,7 @@ const PASOS = [
   {
     num: "02",
     titulo: "Escanea el QR",
-    texto: "El código QR está en la parte de atrás de la tarjeta. Apunta la cámara de tu teléfono.",
+    texto: "El código QR está en la parte de atrás de la tarjeta. Apunta la cámara de tu teléfono — no necesitas instalar nada.",
     Visual: QrVisual,
   },
   {
@@ -193,7 +193,7 @@ const PASOS = [
   {
     num: "04",
     titulo: "Descubre su historia",
-    texto: "Se abre la ficha completa: su leyenda y su significado.",
+    texto: "Se abre la ficha completa: su leyenda, su significado y su origen kichwa — en español e inglés.",
     Visual: FichaVisual,
   },
 ];
@@ -222,8 +222,8 @@ export function ProductoSection() {
               imán artesanal: una pieza única que lleva, en su reverso, un código QR.
             </p>
             <p className="mx-auto mt-4 text-base leading-relaxed text-stone-400 md:text-lg">
-              Al escanearlo y desbloquearlo con tu código llegas a su ficha 
-              para que cada imán sea una puerta a la memoria del Ecuador.
+              Al escanearlo y desbloquearlo con tu código llegas a su ficha —su historia y su
+              cosmovisión kichwa— para que cada imán sea también una puerta a la memoria del Ecuador.
             </p>
           </div>
         </FadeUp>
