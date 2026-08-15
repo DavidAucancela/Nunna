@@ -694,6 +694,29 @@ usuario y su ficha desbloquea la experiencia inmersiva. Branch: `feature/desbloq
   `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` configuradas en Railway, URL de producción
   (`https://nunnaec-production.up.railway.app/**`) permitida como redirect del magic-link en Supabase Auth.
 
+### Email del magic-link — Resend como SMTP custom (2026-08-13)
+El correo del magic-link (`ColeccionProvider.signInWithEmail`) salía por el SMTP compartido de
+Supabase: rate-limit bajo, mala reputación de IP (caía en spam) y sin branding. Se resuelve
+configurando **Resend como SMTP custom de Supabase Auth** — sin tocar el flujo de código
+(`signInWithOtp({ email, options: { emailRedirectTo } })` sigue igual, `?unlock_code=` en la URL
+sigue igual). Runbook completo, plantillas HTML con la paleta de Nunna y el payload de la
+Management API: `supabase/RESEND-SETUP.md` + `supabase/email-templates/`.
+- **Por qué SMTP custom y no un Send Email Hook** (Edge Function que reemplaza el envío entero):
+  el hook da más control (React Email, multi-proveedor, headers custom) a cambio de más piezas
+  (firma de webhook, secretos de Edge Function). El SMTP custom ya cubre lo que hacía falta —
+  branding completo vía las plantillas de Auth del dashboard. Migrar a un hook solo si aparece una
+  necesidad real que el SMTP no pueda dar (fallback entre proveedores, adjuntos, etc.).
+- **Plantillas**: `magic-link.html` (uso normal) + `confirm-signup.html` (algunas versiones de
+  Supabase la disparan en vez de "Magic Link" para el primer correo de una cuenta que nunca
+  existió — mismo flujo passwordless). Ambas usan `{{ .ConfirmationURL }}` — coincide con el flujo
+  actual del cliente; no migrar a la variante `{{ .TokenHash }}` sin also cambiar
+  `ColeccionProvider`/`DesbloquearForm`.
+- **Dominio**: el sender es `no-reply@nunna-ecu.com`, verificado en Resend (SPF/DKIM en el DNS de
+  `nunna-ecu.com`, gestionado donde vive el dominio — no en Railway).
+- ⚠ Requiere que el dominio esté verificado en Resend y las credenciales SMTP cargadas en el
+  dashboard de Supabase (`NunnaDB`, `dhhesajpexcyainibwvl`) — pasos manuales fuera del repo, ver el
+  runbook. Sin ese paso, el gating sigue funcionando igual (cae al SMTP default de Supabase).
+
 ### Experiencia inmersiva v2 — hero "Despertar" (2026-06-22)
 Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling inmersivo
 (plan de 12 fases del autor). **Fase 1 implementada**; el resto pendiente.
