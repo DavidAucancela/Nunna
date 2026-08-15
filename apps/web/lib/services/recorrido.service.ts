@@ -73,3 +73,24 @@ export async function getRecorridos(): Promise<Recorridos> {
     pases: recorridoRaw.pases.map(toRecorridoPase),
   };
 }
+
+/**
+ * Acota los recorridos a un conjunto de pases (los de una sola provincia).
+ *
+ * `RecorridosProvincia` dibuja TODOS los recorridos que recibe a la vez — si se
+ * le pasara el objeto completo (todas las provincias), mostraría rutas de otras
+ * provincias mezcladas con la que el usuario tiene enfocada. `defaultPaseSlug`
+ * queda como metadato sin uso activo hoy (no hay selector de "cuál abre"), se
+ * conserva por si algún consumidor futuro lo necesita.
+ */
+export function acotarRecorridos(
+  recorridos: Recorridos,
+  paseSlugs: string[],
+  defaultPaseSlug: string
+): Recorridos {
+  const permitidos = new Set(paseSlugs);
+  return {
+    defaultPaseSlug,
+    pases: recorridos.pases.filter((p) => permitidos.has(p.paseSlug)),
+  };
+}

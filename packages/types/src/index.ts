@@ -169,6 +169,9 @@ export interface PaseListItem
   /** Slug del personaje destacado — clave de cruce con personajes.json (el nombre es solo display). */
   personajeSlug?: string;
   color?: string;
+  /** Slug de la provincia — clave de cruce con provincias.json. */
+  provincia?: string;
+  ciudad?: string;
 }
 
 export interface PasePersonaje {

@@ -21,4 +21,15 @@ describe("getPases", () => {
       expect(p.horario).toBeTruthy();
     }
   });
+
+  it("pasa la geografía (provincia/ciudad) al PaseListItem cuando existe", async () => {
+    const pases = await getPases({});
+    const conProvincia = pases.filter((p) => p.provincia);
+    // La mayoría declara provincia; una festividad multi-región (Inti Raymi) no,
+    // y eso es válido — validate-data solo advierte, no bloquea.
+    expect(conProvincia.length).toBeGreaterThan(0);
+    for (const p of conProvincia) {
+      expect(typeof p.provincia).toBe("string");
+    }
+  });
 });

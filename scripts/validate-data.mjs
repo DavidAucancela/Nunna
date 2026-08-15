@@ -27,14 +27,28 @@ const warnings = [];
 const err = (msg) => errors.push(msg);
 const warn = (msg) => warnings.push(msg);
 
-const [personajes, pases, recorrido] = await Promise.all([
+async function loadJsonOptional(name) {
+  try {
+    return await loadJson(name);
+  } catch (e) {
+    if (e.code === "ENOENT") return null;
+    throw e;
+  }
+}
+
+const [personajes, pases, recorrido, provincias] = await Promise.all([
   loadJson("personajes.json"),
   loadJson("pases.json"),
   loadJson("recorrido.json"),
+  loadJson("provincias.json"),
 ]);
+
+// Generado por scripts/build-provincias-geojson.mjs — puede no existir aún.
+const provinciasGeo = await loadJsonOptional("provincias.geo.json");
 
 const personajeSlugs = new Set(personajes.map((p) => p.slug));
 const paseSlugs = new Set(pases.map((p) => p.slug));
+const provinciaSlugs = new Set(provincias.map((p) => p.slug));
 
 // ── personajes.json ─────────────────────────────────────────────────────────
 {
@@ -80,6 +94,50 @@ if (recorrido.defaultPaseSlug && !recorrido.pases?.some((rp) => rp.paseSlug === 
   err(`recorrido.json: defaultPaseSlug "${recorrido.defaultPaseSlug}" no está entre pases[]`);
 }
 
+// ── provincias.json (catálogo) ──────────────────────────────────────────────
+{
+  const REGIONES = new Set(["sierra", "costa", "amazonia", "insular"]);
+  const seen = new Set();
+  for (const p of provincias) {
+    if (!p.slug) err(`provincias.json: entrada sin slug (nombre=${p.nombre ?? "?"})`);
+    if (seen.has(p.slug)) err(`provincias.json: slug duplicado "${p.slug}"`);
+    seen.add(p.slug);
+    if (!REGIONES.has(p.region)) {
+      err(`provincias.json: "${p.slug}" tiene region "${p.region}" fuera del enum (${[...REGIONES].join("|")})`);
+    }
+  }
+  if (provincias.length !== 24) {
+    err(`provincias.json: se esperan las 24 provincias del Ecuador, hay ${provincias.length}`);
+  }
+}
+
+// ── pases.json → provincia debe existir en provincias.json ──────────────────
+for (const p of pases) {
+  if (!p.provincia) {
+    warn(`pases.json: "${p.slug}" no declara "provincia" — no aparecerá en el mapa nacional`);
+  } else if (!provinciaSlugs.has(p.provincia)) {
+    err(`pases.json: "${p.slug}" referencia provincia "${p.provincia}" que no existe en provincias.json`);
+  }
+}
+
+// ── provincias.geo.json → toda provincia marcable debe tener figura dibujable ─
+if (provinciasGeo) {
+  const geoSlugs = new Set((provinciasGeo.features ?? []).map((f) => f.properties?.slug));
+  for (const slug of geoSlugs) {
+    if (!provinciaSlugs.has(slug)) {
+      err(`provincias.geo.json: figura "${slug}" no existe en provincias.json`);
+    }
+  }
+  // Una provincia con pases pero sin figura es un bug visual silencioso (el
+  // mapa nacional no podría pintarla ni encuadrarla al hacer zoom).
+  const conPasesEnCalendario = new Set(pases.filter((p) => p.mes != null).map((p) => p.provincia));
+  for (const provinciaSlug of conPasesEnCalendario) {
+    if (provinciaSlug && !geoSlugs.has(provinciaSlug)) {
+      err(`provincias.geo.json: falta la figura de "${provinciaSlug}" (tiene pases en el calendario)`);
+    }
+  }
+}
+
 if (warnings.length > 0) {
   console.warn(`⚠ validate-data: ${warnings.length} advertencia(s)\n`);
   for (const w of warnings) console.warn(`  - ${w}`);
@@ -94,5 +152,6 @@ if (errors.length > 0) {
 
 console.log(
   `✓ validate-data: ${personajes.length} personajes, ${pases.length} pases, ` +
-    `${recorrido.pases?.length ?? 0} recorridos — sin errores`,
+    `${recorrido.pases?.length ?? 0} recorridos, ${provincias.length} provincias` +
+    `${provinciasGeo ? "" : " (sin provincias.geo.json)"} — sin errores`,
 );

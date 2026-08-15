@@ -128,7 +128,7 @@ function MagneticButton({
     <div ref={ref} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
       <motion.div style={{ x: sx, y: sy }}>
         {href ? (
-          <Link href={href as "/personajes" | "/calendario" | "/sobre"} className={`${base} ${cls}`}>{children}</Link>
+          <Link href={href as "/personajes" | "/pases" | "/sobre"} className={`${base} ${cls}`}>{children}</Link>
         ) : (
           <button type="button" onClick={onClick} className={`${base} ${cls}`}>{children}</button>
         )}
@@ -229,15 +229,6 @@ export function HeroSection() {
 
       {/* Contenido */}
       <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
-
-        <motion.p
-          initial={{ opacity: 0, letterSpacing: "0.5em" }}
-          animate={{ opacity: 1, letterSpacing: "0.3em" }}
-          transition={{ duration: 1.2, delay: 0.15 }}
-          className="font-sans text-sm uppercase tracking-[0.3em] text-stone-500 sm:text-base"
-        >
-          Fiestas populares del Ecuador
-        </motion.p>
 
         <NunnaTitle texto={t("hero.titulo")} mouseX={mouseXRaw} />
 

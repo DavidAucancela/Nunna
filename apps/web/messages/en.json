@@ -3,7 +3,6 @@
     "inicio": "Home",
     "personajes": "Characters",
     "pases": "Parades",
-    "calendario": "Calendar",
     "mis_personajes": "My characters",
     "sobre": "About",
     "idioma": "Language",
@@ -39,24 +38,6 @@
       "titulo": "Behind every magnet, a story",
       "texto": "Nunna documents the characters of Ecuador's traditional festivals. Learn why this project exists.",
       "cta": "Learn about the project"
-    },
-    "recorrido": {
-      "eyebrow": "The route",
-      "titulo": "One pase, one path",
-      "fecha": "December 20 · Inst. Tecnológico Riobamba",
-      "scroll_hint": "Scroll to follow the pase",
-      "ver_ficha": "View full profile",
-      "ver_calendario": "View pase calendar",
-      "ir_a": "Go to",
-      "ver_foto": "View photo {n}",
-      "pase_de_total": "{n} of {total} pases",
-      "elige_pase": "Switch pase",
-      "finale_titulo": "The pase reaches the church",
-      "finale_texto": "Each character played their part along the way. And this is just one of Ecuador's many festivals.",
-      "personaje": "Character",
-      "anterior": "Previous",
-      "siguiente": "Next",
-      "avanza_hint": "Tap next to walk the pase"
     }
   },
   "personajes": {
@@ -84,7 +65,32 @@
     "tipo_label": "Organized by",
     "personaje_label": "Featured character",
     "ver_ficha_personaje": "See {nombre}'s profile",
-    "contenido_pendiente": "The full story and photos for this pase are on their way."
+    "contenido_pendiente": "The full story and photos for this pase are on their way.",
+    "intro_nacional": "Every province of Ecuador keeps its own celebrations. Explore the map and follow each pase, street by street.",
+    "mapa": {
+      "eyebrow": "The map",
+      "titulo": "One country, many celebrations",
+      "intro": "Tap a province to walk through its pases.",
+      "elige_provincia": "Choose a province",
+      "provincias_con_pases": "{count, plural, =1 {# province with pases} other {# provinces with pases}}",
+      "pases_count": "{count, plural, =1 {# pase} other {# pases}}",
+      "pases_en": "Pases in {provincia}",
+      "ver_recorrido": "Follow the route",
+      "recorrido_proximamente": "This pase's route is still being traced street by street.",
+      "recorrido_titulo": "Route",
+      "leyenda_titulo": "Pases on this route",
+      "calendario_titulo": "Calendar",
+      "informacion_titulo": "About this celebration",
+      "ecuador": "Ecuador",
+      "mapa_alt": "Map of Ecuador showing the provinces with pases in the calendar",
+      "atribucion": "Provincial boundaries: geoBoundaries (CC BY 4.0)",
+      "region": {
+        "sierra": "Sierra",
+        "costa": "Coast",
+        "amazonia": "Amazon",
+        "insular": "Galápagos"
+      }
+    }
   },
   "error": {
     "404": "Page not found",

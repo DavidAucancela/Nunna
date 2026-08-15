@@ -175,7 +175,7 @@ const PASOS = [
   {
     num: "01",
     titulo: "Elige tu imán",
-    texto: "Cada imán está hecho y pintado a mano: un personaje de las fiestas del Ecuador para tu refrigeradora. No hay dos iguales.",
+    texto: "Cada imán está hecho y pintado a mano que representa un personaje de las fiestas del Ecuador.",
     Visual: ImanVisual,
   },
   {
