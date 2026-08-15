@@ -114,6 +114,11 @@ export function MapaEcuador({ provincias, provinciaActiva, onSelect }: Props) {
   const markersRef = useRef<Map<string, MapLibreMarker>>(new Map());
   const prevSeleccionadaRef = useRef<string | null>(null);
   const initialCameraAppliedRef = useRef(false);
+  // Los 4 efectos de abajo limpian en orden de declaración al desmontar — el
+  // cleanup del efecto de Hover corre DESPUÉS del de Init, que ya llamó
+  // `map.remove()`. Sin este guard, ese cleanup llama `setFeatureState` sobre
+  // un mapa ya destruido y MapLibre revienta internamente.
+  const mapRemovedRef = useRef(false);
   // Los efectos de abajo leen `mapRef.current`, pero el mapa se crea de forma
   // async (import dinámico de maplibre-gl) — sin este estado, los efectos que
   // dependen de `provincias`/`provinciaActiva` correrían en el mount inicial
@@ -229,6 +234,7 @@ export function MapaEcuador({ provincias, provinciaActiva, onSelect }: Props) {
       markersRef.current.clear();
       map?.remove();
       mapRef.current = null;
+      mapRemovedRef.current = true;
       initialCameraAppliedRef.current = false;
       setMapReady(false);
     };
@@ -316,7 +322,9 @@ export function MapaEcuador({ provincias, provinciaActiva, onSelect }: Props) {
     if (!map || zoomed || !mapReady) return;
     if (hover) map.setFeatureState({ source: "provincias", id: hover }, { seleccionada: true });
     return () => {
-      if (hover) map.setFeatureState({ source: "provincias", id: hover }, { seleccionada: false });
+      if (hover && !mapRemovedRef.current) {
+        map.setFeatureState({ source: "provincias", id: hover }, { seleccionada: false });
+      }
     };
   }, [hover, zoomed, mapReady]);
 
