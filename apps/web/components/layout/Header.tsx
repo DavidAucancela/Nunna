@@ -111,15 +111,9 @@ export function Header() {
             transition={{ duration: 0.5, ease: "easeOut" }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.96 }}
-            className="relative font-serif text-lg font-bold text-gradient-dorado md:text-xl"
+            className="text-shimmer inline-block font-serif text-lg font-bold md:text-xl"
           >
             Nunna
-            <motion.span
-              aria-hidden="true"
-              className="absolute -right-2.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-acento-dorado"
-              animate={{ opacity: [0.35, 1, 0.35], scale: [0.8, 1.2, 0.8] }}
-              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-            />
           </motion.span>
         </Link>
 
