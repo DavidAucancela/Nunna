@@ -82,7 +82,7 @@ export function PersonajeCard({ personaje, unlocked = true, priority = false, in
           {personaje.nombre}
         </h3>
         {unlocked && (
-          <p className="mt-2 hidden line-clamp-2 text-sm leading-relaxed text-stone-300 opacity-0 transition-all duration-400 group-hover:opacity-100 sm:block">
+          <p className="mt-2 hidden text-sm leading-relaxed text-stone-300 opacity-0 transition-all duration-400 group-hover:opacity-100 sm:line-clamp-2">
             {personaje.resumen}
           </p>
         )}

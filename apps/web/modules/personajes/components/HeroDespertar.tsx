@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
-  AnimatePresence,
   motion,
   useMotionValue,
   useReducedMotion,
@@ -57,7 +56,6 @@ export function HeroDespertar({
   const pathname = usePathname();
   const t = useTranslations("experiencia");
 
-  const [awakened, setAwakened] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
 
   const fuente = imagenBanner ?? imagen;
@@ -67,13 +65,12 @@ export function HeroDespertar({
     count: 12,
     color: accentColor,
     mode: "drift",
-    enabled: awakened,
+    enabled: true,
   });
 
-  // Cada cambio de personaje vuelve al inicio y reinicia la tensión.
+  // Cada cambio de personaje vuelve al inicio del scroll.
   useEffect(() => {
     window.scrollTo(0, 0);
-    setAwakened(false);
   }, [pathname]);
 
   // ── Parallax por scroll: la imagen sube más lento que el contenido ──
@@ -106,24 +103,6 @@ export function HeroDespertar({
     mx.set((e.clientX - rect.left) / rect.width - 0.5);
     my.set((e.clientY - rect.top) / rect.height - 0.5);
   }
-
-  // ── Despertar al primer gesto del usuario ──
-  const awaken = useCallback(() => {
-    setAwakened((prev) => (prev ? prev : true));
-  }, []);
-
-  useEffect(() => {
-    if (awakened) return;
-    const onScroll = () => awaken();
-    window.addEventListener("wheel", onScroll, { passive: true, once: true });
-    window.addEventListener("touchmove", onScroll, { passive: true, once: true });
-    window.addEventListener("scroll", onScroll, { passive: true, once: true });
-    return () => {
-      window.removeEventListener("wheel", onScroll);
-      window.removeEventListener("touchmove", onScroll);
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, [awakened, awaken]);
 
   // ── Audio ambiente: opt-in, con fade suave al activar ──
   function toggleSound() {
@@ -178,12 +157,8 @@ export function HeroDespertar({
         {/* Entrada cinematográfica: zoom-out desde recorte extremo + blur que se disuelve */}
         <motion.div
           className="absolute inset-0"
-          initial={false}
-          animate={
-            awakened || reduced
-              ? { scale: 1, filter: "blur(0px)" }
-              : { scale: 1.35, filter: "blur(18px)" }
-          }
+          initial={reduced ? false : { scale: 1.35, filter: "blur(18px)" }}
+          animate={{ scale: 1, filter: "blur(0px)" }}
           transition={{ duration: reduced ? 0 : 1.5, ease: [0.22, 1, 0.36, 1] }}
         >
           {fuente ? (
@@ -279,133 +254,102 @@ export function HeroDespertar({
         </div>
       )}
 
-      {/* Contenido del hero — aparece al despertar */}
+      {/* Contenido del hero */}
       <motion.div
         style={{ y: contentY, opacity: contentOp }}
         className="relative z-10 mx-auto w-full max-w-4xl px-5 pb-14 sm:px-6 sm:pb-20"
       >
-        <AnimatePresence>
-          {awakened && (
-            <motion.div
+        <motion.div
+          initial={reduced ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          <p
+            className="mb-1 text-xs uppercase tracking-[0.32em] text-stone-300"
+          >
+            {t("preludio")}
+          </p>
+
+          {nombreKichwa && nombreKichwa !== nombre && (
+            <p className="font-serif text-base italic sm:text-lg" style={{ color: accentColor }}>
+              {nombreKichwa}
+            </p>
+          )}
+
+          <h1
+            className="mt-1 font-serif font-bold leading-none text-white"
+            style={{
+              fontSize:
+                nombre.length <= 8
+                  ? "clamp(3.5rem, 10vw, 7rem)"
+                  : nombre.length <= 12
+                  ? "clamp(3rem, 8vw, 5.5rem)"
+                  : "clamp(2.5rem, 6vw, 4.5rem)",
+            }}
+          >
+            <StaggerLetters text={nombre} delay={0.15} />
+          </h1>
+
+          {nombresAlt.length > 0 && (
+            <motion.p
               initial={reduced ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.7, delay: 0.6 }}
+              className="mt-3 text-sm italic text-stone-400"
             >
-              <p
-                className="mb-1 text-xs uppercase tracking-[0.32em] text-stone-300"
-              >
-                {t("preludio")}
-              </p>
-
-              {nombreKichwa && nombreKichwa !== nombre && (
-                <p className="font-serif text-base italic sm:text-lg" style={{ color: accentColor }}>
-                  {nombreKichwa}
-                </p>
-              )}
-
-              <h1
-                className="mt-1 font-serif font-bold leading-none text-white"
-                style={{
-                  fontSize:
-                    nombre.length <= 8
-                      ? "clamp(3.5rem, 10vw, 7rem)"
-                      : nombre.length <= 12
-                      ? "clamp(3rem, 8vw, 5.5rem)"
-                      : "clamp(2.5rem, 6vw, 4.5rem)",
-                }}
-              >
-                <StaggerLetters text={nombre} delay={0.15} />
-              </h1>
-
-              {nombresAlt.length > 0 && (
-                <motion.p
-                  initial={reduced ? false : { opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.7, delay: 0.6 }}
-                  className="mt-3 text-sm italic text-stone-400"
-                >
-                  {nombresAlt.join(" · ")}
-                </motion.p>
-              )}
-
-              {origenLabel && (
-                <motion.span
-                  initial={reduced ? false : { opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4, delay: 0.75 }}
-                  className="mt-4 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs backdrop-blur-sm"
-                  style={{
-                    borderColor: `${accentColor}40`,
-                    backgroundColor: `${accentColor}15`,
-                    color: accentColor,
-                  }}
-                >
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accentColor }} />
-                  {origenLabel}
-                </motion.span>
-              )}
-            </motion.div>
+              {nombresAlt.join(" · ")}
+            </motion.p>
           )}
-        </AnimatePresence>
+
+          {origenLabel && (
+            <motion.span
+              initial={reduced ? false : { opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.75 }}
+              className="mt-4 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs backdrop-blur-sm"
+              style={{
+                borderColor: `${accentColor}40`,
+                backgroundColor: `${accentColor}15`,
+                color: accentColor,
+              }}
+            >
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accentColor }} />
+              {origenLabel}
+            </motion.span>
+          )}
+        </motion.div>
       </motion.div>
 
-      {/* Indicador de scroll — solo tras despertar */}
-      {awakened && (
-        <motion.div
-          style={{ opacity: chevronOp }}
-          className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 flex flex-col items-center gap-2"
-        >
-          <span className="text-[9px] uppercase tracking-[0.28em] text-stone-400">{t("descubrir")}</span>
-          {/* Línea que se dibuja hacia abajo — invitación al descenso */}
-          <svg width="2" height="36" viewBox="0 0 2 36" fill="none" aria-hidden="true">
-            <motion.line
-              x1="1"
-              y1="0"
-              x2="1"
-              y2="36"
-              stroke={accentColor}
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              initial={reduced ? false : { pathLength: 0, opacity: 1 }}
-              animate={
-                reduced
-                  ? { pathLength: 1, opacity: 0.7 }
-                  : { pathLength: [0, 1, 1], opacity: [0.9, 0.9, 0] }
-              }
-              transition={
-                reduced
-                  ? { duration: 0 }
-                  : { duration: 2.2, times: [0, 0.72, 1], repeat: Infinity, ease: "easeInOut" }
-              }
-            />
-          </svg>
-        </motion.div>
-      )}
-
-      {/* ── Overlay negro inicial: la tensión antes del despertar ── */}
-      <AnimatePresence>
-        {!awakened && (
-          <motion.button
-            type="button"
-            onClick={awaken}
-            initial={false}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reduced ? 0 : 1.1, ease: "easeInOut" }}
-            aria-label={t("despertar", { nombre })}
-            className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-6 bg-black focus-visible:outline-none"
-          >
-            <motion.span
-              animate={reduced ? { opacity: 1 } : { opacity: [0.35, 1, 0.35] }}
-              transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: accentColor }}
-            />
-            <span className="text-xs uppercase tracking-[0.4em] text-stone-400">
-              {t("toca_para_despertar")}
-            </span>
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {/* Indicador de scroll */}
+      <motion.div
+        style={{ opacity: chevronOp }}
+        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 flex flex-col items-center gap-2"
+      >
+        <span className="text-[9px] uppercase tracking-[0.28em] text-stone-400">{t("descubrir")}</span>
+        {/* Línea que se dibuja hacia abajo — invitación al descenso */}
+        <svg width="2" height="36" viewBox="0 0 2 36" fill="none" aria-hidden="true">
+          <motion.line
+            x1="1"
+            y1="0"
+            x2="1"
+            y2="36"
+            stroke={accentColor}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            initial={reduced ? false : { pathLength: 0, opacity: 1 }}
+            animate={
+              reduced
+                ? { pathLength: 1, opacity: 0.7 }
+                : { pathLength: [0, 1, 1], opacity: [0.9, 0.9, 0] }
+            }
+            transition={
+              reduced
+                ? { duration: 0 }
+                : { duration: 2.2, times: [0, 0.72, 1], repeat: Infinity, ease: "easeInOut" }
+            }
+          />
+        </svg>
+      </motion.div>
     </section>
   );
 }
