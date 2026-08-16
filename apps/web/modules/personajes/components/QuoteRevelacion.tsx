@@ -58,6 +58,13 @@ export function QuoteRevelacion({ hook, resto, accentColor, origen, children }: 
   });
 
   const palabras = useMemo(() => hook.split(/\s+/).filter(Boolean), [hook]);
+  // El resumen en personajes.json puede traer varios párrafos separados por
+  // línea en blanco — un solo <p> con el string crudo los funde en un muro de
+  // texto (el navegador colapsa \n\n a un espacio). Se separan en <p> propios.
+  const restoParrafos = useMemo(
+    () => resto?.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean) ?? [],
+    [resto],
+  );
 
   // La comilla emerge de casi invisible a presencia luminosa
   const comillaOpacity = useTransform(scrollYProgress, [0, 1], [0.05, 0.25]);
@@ -102,7 +109,13 @@ export function QuoteRevelacion({ hook, resto, accentColor, origen, children }: 
               transition={{ duration: 0.35, ease: "easeInOut" }}
               className="overflow-hidden"
             >
-              <p className="pb-1 pt-1 text-base leading-relaxed text-stone-400 sm:text-lg">{resto}</p>
+              <div className="space-y-3 pb-1 pt-1">
+                {restoParrafos.map((parrafo, i) => (
+                  <p key={i} className="text-base leading-relaxed text-stone-400 sm:text-lg">
+                    {parrafo}
+                  </p>
+                ))}
+              </div>
             </motion.div>
             <button
               type="button"

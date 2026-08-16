@@ -1,0 +1,76 @@
+<!--
+  Nunna — plantilla "Magic Link" para Supabase Auth (Authentication → Email Templates → Magic Link).
+  Variables: {{ .ConfirmationURL }}, {{ .Email }} (provistas por Supabase, no editar su sintaxis).
+  HTML de tabla + estilos inline a propósito: los clientes de correo (Gmail, Outlook, Apple Mail)
+  no soportan CSS externo ni la mayoría de propiedades modernas. No agregar <link>/<style> externos
+  ni depender de imágenes remotas (ver supabase/RESEND-SETUP.md — buenas prácticas de deliverability).
+-->
+<!DOCTYPE html>
+<html lang="es">
+  <body style="margin:0; padding:0; background-color:#0F0E0C; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0F0E0C;">
+      <tr>
+        <td align="center" style="padding:40px 16px;">
+          <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px; width:100%; background-color:#17140F; border:1px solid #2A2724; border-radius:16px;">
+            <tr>
+              <td style="padding:40px 32px 32px;">
+                <p style="margin:0 0 16px; font-size:12px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#C89B3C;">
+                  Nunna
+                </p>
+                <h1 style="margin:0 0 16px; font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif; font-size:26px; line-height:1.3; font-weight:700; color:#EFEAE0;">
+                  Tu enlace de acceso
+                </h1>
+                <p style="margin:0 0 8px; font-size:15px; line-height:1.6; color:#C9C2B4;">
+                  Alguien pidió un enlace para entrar a tu colección en Nunna con este correo
+                  (<span style="color:#EFEAE0;">{{ .Email }}</span>). Si fuiste tú, ábrelo en el
+                  mismo dispositivo donde lo pediste para continuar.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 32px 8px;">
+                <table role="presentation" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="border-radius:999px; background-color:#C89B3C;">
+                      <a href="{{ .ConfirmationURL }}"
+                         style="display:inline-block; padding:14px 36px; font-size:15px; font-weight:600; color:#0F0E0C; text-decoration:none; border-radius:999px;">
+                        Abrir mi enlace
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:24px 32px 0;">
+                <p style="margin:0 0 4px; font-size:12px; line-height:1.6; color:#7A7568;">
+                  Si el botón no funciona, copia y pega este enlace en tu navegador:
+                </p>
+                <p style="margin:0; font-size:12px; line-height:1.6; word-break:break-all; color:#8C8471;">
+                  <a href="{{ .ConfirmationURL }}" style="color:#8C8471;">{{ .ConfirmationURL }}</a>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:24px 32px 32px;">
+                <p style="margin:0; font-size:12px; line-height:1.6; color:#7A7568;">
+                  Este enlace expira pronto y solo funciona una vez. Si no lo pediste tú, puedes
+                  ignorar este correo con confianza — tu colección sigue segura.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 32px; border-top:1px solid #2A2724;">
+                <p style="margin:0; font-size:12px; line-height:1.6; color:#5A564B;">
+                  ¿Problemas con tu código o tu enlace? Escríbenos a
+                  <a href="mailto:soporte@nunna-ecu.com" style="color:#8C8471;">soporte@nunna-ecu.com</a>
+                  · Nunna, Ecuador
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

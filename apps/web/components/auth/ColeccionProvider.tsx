@@ -252,9 +252,10 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
       // enlace se arma con window.location.origin, la persona queda "atada" al
       // dominio que estaba usando al pedirlo — confuso si no es el canónico.
       // En producción, el enlace siempre apunta al dominio canónico (SITE_URL);
-      // en local se respeta window.location.origin para poder probar el flujo.
-      const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
-      const base = isLocal ? window.location.origin : SITE_URL;
+      // en desarrollo se respeta window.location.origin para poder probar el
+      // flujo completo (incl. accediendo por la IP de LAN que expone `next dev`,
+      // no solo por "localhost" — sniffear el hostname se quedaba corto ahí).
+      const base = process.env.NODE_ENV === "production" ? SITE_URL : window.location.origin;
       const url = new URL(base + window.location.pathname);
       if (code) url.searchParams.set("unlock_code", code);
       emailRedirectTo = url.toString();

@@ -64,6 +64,9 @@ Cada tarjeta trae un código de 6 caracteres → canje vía RPC `redeem_code` (S
 
 ## Gotchas técnicos
 
+- **Email del magic-link**: Resend como SMTP custom de Supabase Auth (arregla deliverability/branding
+  del correo de `signInWithOtp`). Config y plantillas fuera del repo de código: `supabase/RESEND-SETUP.md`
+  + `supabase/email-templates/`. No requiere cambios en `ColeccionProvider`/`DesbloquearForm`.
 - **MapLibre** (`MapaEcuador.tsx` mapa nacional siempre montado + `RecorridosProvincia.tsx` recorridos de provincia, ambos desde 2026-08-10 — `PaseMapSection.tsx` retirado): CARTO raster CDN `dark_all`, NO endpoint GL vector JSON (`lib/map/tile-style.ts`). Fijar altura en px desde el wrapper antes de `new maplibregl.Map()`; `ResizeObserver` en el wrapper. Atribución `{ compact: true }`, nunca `false`. `fitBounds` para encuadrar (país↔provincia en el nacional, unión de rutas en el de provincia). Init async con guard `cancelled`. MapLibre `^4.7.1`. Ver CLAUDE.md sección `/pases` para el detalle completo.
 - **Recorrido multi-pase** (`recorrido.json` = `{ defaultPaseSlug, pases[] }`) vía `getRecorridos()`, no hardcodear en el TSX. La geometría `ruta` la genera `node scripts/build-route.mjs` (OSRM) — no editarla a mano. Selector visible con ≥2 pases; fotos rotativas por waypoint (`[imagen, ...imagenesExtra]`).
 - **Assets**: imágenes de pases en `public/informacion_pases/`, video del hero en `public/pases-videos/`. NO carpetas con espacios en `public/`.

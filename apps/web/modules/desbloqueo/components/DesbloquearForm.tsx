@@ -62,6 +62,7 @@ export function DesbloquearForm({
   const [unlockedSlug, setUnlockedSlug] = useState<string | null>(null);
   const [showDespertar, setShowDespertar] = useState(false);
   const [loginOnlySend, setLoginOnlySend] = useState(false);
+  const [loginMode, setLoginMode] = useState(false);
   const despertarSlugRef = useRef<string | null>(null);
   const autoTriedRef = useRef(false);
   const mountedRef = useRef(true);
@@ -295,7 +296,7 @@ export function DesbloquearForm({
   const soporteLink = (
     <a
       href={`mailto:${SOPORTE_EMAIL}`}
-      className="mt-4 inline-block text-center text-xs text-stone-600 underline underline-offset-2 hover:text-stone-400"
+      className="inline-block text-center text-sm text-stone-500 underline underline-offset-2 transition-colors hover:text-acento-dorado"
     >
       {t("contactar_soporte")}
     </a>
@@ -419,70 +420,60 @@ export function DesbloquearForm({
   return (
     <>
       <form onSubmit={handleSubmit} className="mx-auto max-w-md">
-        <label htmlFor="codigo" className="block text-sm font-medium text-texto-claro">
-          {t("codigo_label")}
-        </label>
-        <div className="mt-2 flex gap-2">
-          <input
-            id="codigo"
-            name="codigo"
-            inputMode="text"
-            autoCapitalize="characters"
-            autoComplete="off"
-            maxLength={CODE_LEN}
-            value={code}
-            onChange={(e) => handleCodeChange(e.target.value)}
-            placeholder={t("codigo_placeholder")}
-            className="w-full rounded-xl border border-borde-sutil bg-stone-900/50 px-4 py-3 text-center font-mono text-2xl tracking-[0.4em] text-texto-claro placeholder:tracking-normal placeholder:text-stone-600 focus:border-acento-dorado focus:outline-none"
-            aria-describedby="codigo-estado"
-          />
-          <button
-            type="button"
-            onClick={handleVerifyClick}
-            disabled={code.length < CODE_LEN || codeCheck === "checking"}
-            className="shrink-0 rounded-xl border border-borde-sutil px-4 text-xs font-medium text-stone-300 transition-colors hover:border-acento-dorado hover:text-acento-dorado disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {codeCheck === "checking" ? t("verificando") : t("verificar")}
-          </button>
-        </div>
+        {!loginMode && (
+          <>
+            <label htmlFor="codigo" className="block text-sm font-medium text-texto-claro">
+              {t("codigo_label")}
+            </label>
+            <div className="mt-2 flex gap-2">
+              <input
+                id="codigo"
+                name="codigo"
+                inputMode="text"
+                autoCapitalize="characters"
+                autoComplete="off"
+                maxLength={CODE_LEN}
+                value={code}
+                onChange={(e) => handleCodeChange(e.target.value)}
+                placeholder={t("codigo_placeholder")}
+                className="w-full rounded-xl border border-borde-sutil bg-stone-900/50 px-4 py-3 text-center font-mono text-2xl tracking-[0.4em] text-texto-claro placeholder:tracking-normal placeholder:text-stone-600 focus:border-acento-dorado focus:outline-none"
+                aria-describedby="codigo-estado"
+              />
+              <button
+                type="button"
+                onClick={handleVerifyClick}
+                disabled={code.length < CODE_LEN || codeCheck === "checking"}
+                className="shrink-0 rounded-xl border border-borde-sutil px-4 text-xs font-medium text-stone-300 transition-colors hover:border-acento-dorado hover:text-acento-dorado disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {codeCheck === "checking" ? t("verificando") : t("verificar")}
+              </button>
+            </div>
 
-        {/* Indicador inline de la verificación en tiempo real — no bloquea el formulario */}
-        <AnimatePresence>
-          {codeCheck !== "idle" && codeCheck !== "checking" && (
-            <motion.p
-              id="codigo-estado"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              role="status"
-              className={`mt-2 text-xs ${codeCheck === "valid" ? "text-emerald-400" : "text-acento-rojo"}`}
-            >
-              {codeCheck === "valid" && `✓ ${t("codigo_valido")}`}
-              {codeCheck === "invalid" && t("error_invalido")}
-              {codeCheck === "wrong_character" && t("error_otro_personaje")}
-              {codeCheck === "already_redeemed" && t("error_ya_canjeado")}
-              {(codeCheck === "not_configured" || codeCheck === "error") && t("error_generico")}
-            </motion.p>
-          )}
-        </AnimatePresence>
+            {/* Indicador inline de la verificación en tiempo real — no bloquea el formulario */}
+            <AnimatePresence>
+              {codeCheck !== "idle" && codeCheck !== "checking" && (
+                <motion.p
+                  id="codigo-estado"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  role="status"
+                  className={`mt-2 text-xs ${codeCheck === "valid" ? "text-emerald-400" : "text-acento-rojo"}`}
+                >
+                  {codeCheck === "valid" && `✓ ${t("codigo_valido")}`}
+                  {codeCheck === "invalid" && t("error_invalido")}
+                  {codeCheck === "wrong_character" && t("error_otro_personaje")}
+                  {codeCheck === "already_redeemed" && t("error_ya_canjeado")}
+                  {(codeCheck === "not_configured" || codeCheck === "error") && t("error_generico")}
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </>
+        )}
 
         {!session && (
           <>
-            <p className="mt-6 text-xs text-stone-500">
-              {t("ya_tienes_cuenta")}{" "}
-              <button
-                type="button"
-                onClick={() => {
-                  handleCodeChange("");
-                  emailInputRef.current?.focus();
-                }}
-                className="text-stone-400 underline underline-offset-2 hover:text-texto-claro"
-              >
-                {tc("iniciar_sesion")}
-              </button>
-            </p>
-
-            <label htmlFor="email" className="mt-3 block text-sm font-medium text-texto-claro">
+            <label htmlFor="email" className="mt-6 block text-sm font-medium text-texto-claro">
               {t("email_label")}
             </label>
             <input
@@ -495,11 +486,38 @@ export function DesbloquearForm({
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t("email_placeholder")}
               className="mt-2 w-full rounded-xl border border-borde-sutil bg-stone-900/50 px-4 py-3 text-texto-claro placeholder:text-stone-600 focus:border-acento-dorado focus:outline-none"
-              aria-describedby="email-ayuda"
             />
-            <p id="email-ayuda" className="mt-2 text-xs text-stone-500">
-              {t("email_ayuda")}
-            </p>
+
+            <div className="mt-4 rounded-xl border border-borde-sutil bg-stone-900/30 px-4 py-3 text-center">
+              {!loginMode ? (
+                <>
+                  <p className="text-sm font-medium text-texto-claro">{t("ya_tienes_cuenta")}</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleCodeChange("");
+                      setLoginMode(true);
+                      setErrorKey(null);
+                      setTimeout(() => emailInputRef.current?.focus(), 0);
+                    }}
+                    className="mt-2 w-full rounded-full border border-borde-sutil px-6 py-2.5 text-sm font-medium text-stone-300 transition-colors hover:border-acento-dorado hover:text-acento-dorado"
+                  >
+                    {tc("iniciar_sesion")}
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginMode(false);
+                    setErrorKey(null);
+                  }}
+                  className="text-xs text-stone-500 underline underline-offset-2 hover:text-stone-400"
+                >
+                  {t("volver_codigo")}
+                </button>
+              )}
+            </div>
           </>
         )}
 
@@ -547,7 +565,7 @@ export function DesbloquearForm({
           </p>
         )}
 
-        <div className="text-center">{soporteLink}</div>
+        <div className="mt-6 border-t border-borde-sutil pt-4 text-center">{soporteLink}</div>
       </form>
       {showDespertar && despertarSlugRef.current && (
         <DespertarAnimation
