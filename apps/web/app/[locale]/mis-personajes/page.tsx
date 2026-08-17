@@ -26,6 +26,7 @@ export default async function ColeccionPage({ params }: ColeccionPageProps) {
   const lookup: PersonajeLite[] = personajes.map((p) => ({
     slug: p.slug,
     nombre: p.nombre,
+    nombreKichwa: p.nombreKichwa ?? null,
     origen: p.origen ?? null,
     imagenPortada: p.imagenPortada ?? null,
     imagenBanner: p.imagenBanner ?? null,

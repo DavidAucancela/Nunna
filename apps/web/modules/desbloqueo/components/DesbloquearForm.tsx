@@ -19,6 +19,7 @@ import {
 export interface PersonajeLite {
   slug: string;
   nombre: string;
+  nombreKichwa?: string | null;
   origen: string | null;
   imagenPortada: string | null;
   imagenBanner: string | null;

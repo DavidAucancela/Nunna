@@ -229,13 +229,23 @@
     "bienvenida_paso1": "Cada imán trae un código de 6 caracteres bajo la tarjeta.",
     "bienvenida_paso2": "Canjéalo en la ficha del personaje para desbloquear su experiencia completa.",
     "bienvenida_paso3": "Todo lo que desbloquees queda guardado aquí — entra con tu correo desde cualquier dispositivo para verlo.",
-    "bienvenida_boton": "Entendido"
+    "bienvenida_boton": "Entendido",
+    "progreso_origen_titulo": "Tu progreso por origen",
+    "progreso_completo": "Colección completa",
+    "ver_certificado": "Ver certificado",
+    "certificado_titulo": "Certificado de colección",
+    "certificado_descargar": "Descargar",
+    "certificado_compartir": "Compartir",
+    "certificado_generando": "Generando tu certificado…",
+    "certificado_error": "No se pudo generar el certificado. Intenta de nuevo.",
+    "certificado_cerrar": "Cerrar",
+    "certificado_pie": "nunna-ecu.com"
   },
   "logros": {
     "origen_completo": "Maestro {origen}",
     "origen_completo_desc": "Reuniste todos los seres de origen {origen}.",
     "coleccion_completa": "Guardián del pase",
-    "coleccion_completa_desc": "Despertaste a los 9 seres. La colección está completa.",
+    "coleccion_completa_desc": "Despertaste a los {total} seres. La colección está completa.",
     "progreso_origen": "{n}/{total} {origen}"
   }
 }

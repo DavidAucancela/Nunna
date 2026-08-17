@@ -229,13 +229,23 @@
     "bienvenida_paso1": "Every magnet comes with a 6-character code under the card.",
     "bienvenida_paso2": "Redeem it on the character's page to unlock its full experience.",
     "bienvenida_paso3": "Everything you unlock is saved here — sign in with your email on any device to see it.",
-    "bienvenida_boton": "Got it"
+    "bienvenida_boton": "Got it",
+    "progreso_origen_titulo": "Your progress by origin",
+    "progreso_completo": "Complete collection",
+    "ver_certificado": "View certificate",
+    "certificado_titulo": "Collection certificate",
+    "certificado_descargar": "Download",
+    "certificado_compartir": "Share",
+    "certificado_generando": "Generating your certificate…",
+    "certificado_error": "Couldn't generate the certificate. Try again.",
+    "certificado_cerrar": "Close",
+    "certificado_pie": "nunna-ecu.com"
   },
   "logros": {
     "origen_completo": "{origen} Master",
     "origen_completo_desc": "You gathered every being of {origen} origin.",
     "coleccion_completa": "Guardian of the pase",
-    "coleccion_completa_desc": "You awakened all 9 beings. The collection is complete.",
+    "coleccion_completa_desc": "You awakened all {total} beings. The collection is complete.",
     "progreso_origen": "{n}/{total} {origen}"
   }
 }
