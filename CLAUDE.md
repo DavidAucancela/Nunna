@@ -103,12 +103,15 @@ apps/web/
 │   │   │   ├── page.tsx            → ★ mapa nacional con zoom + calendario fusionado (/mapa y /calendario
 │   │   │   │                         se fusionaron aquí, ambos con redirect)
 │   │   │   └── [slug]/page.tsx     → Detalle de pase (scaffold mínimo — solo datos logísticos, sin historia editorial)
-│   │   ├── desbloquear/page.tsx    → ★ canje de código de 6 chars (desbloqueo de imán)
+│   │   ├── desbloquear/[slug]/page.tsx → ★ canje de código de 6 chars (desbloqueo de imán) —
+│   │   │                             hero con foto de escena (`imagenIngreso`) + partículas
+│   │   ├── login/page.tsx          → ★ módulo de ingreso dedicado (solo correo, sin código) — 2026-08-22
 │   │   ├── mis-personajes/page.tsx → ★ colección del usuario + progreso + logros
 │   │   └── sobre/page.tsx
 │   └── api/health/route.ts         → healthcheck Railway
 ├── components/                     → SOLO compartidos entre módulos
-│   ├── auth/                       → ColeccionProvider (sesión + colección Supabase, useColeccion/useDesbloqueo)
+│   ├── auth/                       → ColeccionProvider (sesión + colección Supabase, useColeccion/useDesbloqueo;
+│   │                                 signInWithEmail distingue rate_limited de error genérico)
 │   ├── layout/                     → Header, Footer, MainContent (wrapper pt-16 + footer)
 │   └── ui/                         → FadeUp, AnimatedCounter, ScrollProgress, ScrollToTop,
 │                                     WhatsAppShare, OrigenPlaceholder, LenisProvider
@@ -130,7 +133,9 @@ apps/web/
 │   │                                 PersonajeVisualSection (★ fusión Anatomía+Galería), NarrativaSection (sin uso),
 │   │                                 kichwaGlosario (helper compartido), PersonajesCarrusel,
 │   │                                 HotspotsViewer (superseded por AnatomiaSection), SimbolismoSection (sin uso)
-│   ├── desbloqueo/components/      → DesbloquearForm, ColeccionClient (★ desbloqueo de imanes)
+│   ├── auth/components/            → ★ LoginForm (login-only, /login) — 2026-08-22
+│   ├── desbloqueo/components/      → DesbloquearForm, DesbloqueoHero (★ foto de escena + partículas,
+│   │                                 2026-08-22), ColeccionClient (★ desbloqueo de imanes)
 │   └── festividades/components/    → CalendarioGrid
 ├── lib/
 │   ├── supabase/client.ts          → ★ cliente Supabase browser (auth + colección; null si faltan envs)
@@ -154,6 +159,8 @@ apps/web/
 │   └── seo.ts                      → localeAlternates() — canonical + hreflang por página
 ├── public/
 │   ├── personajes/                 → Imágenes planas [slug]-*.png (retrato, banner, en-pase, presentación)
+│   │   └── personaje_ingreso/      → ★ fotos de escena para el hero de /desbloquear/[slug]
+│   │                                 (`imagenIngreso` en personajes.json) — 2026-08-22
 │   ├── informacion_pases/          → Imágenes de los pases (antes public/pases/, movidas 2026-06-14)
 │   ├── pases-videos/               → Video de fondo del hero (main-header.mp4, 4.4 MB comprimido)
 │   └── audio/                      → Audio ambiente del hero v2 ([slug]-ambiente.mp3) — ver README
@@ -191,6 +198,7 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 |----------------|-----|---------|
 | `imagenPortada` en JSON → `public/personajes/[slug].png` | Tarjetas del grid (`PersonajeCard`) | Retrato portrait |
 | `imagenBanner` en JSON → `public/personajes/[slug]-banner.png` | Hero de la ficha (`ParallaxHero`) | Landscape 1376×768 |
+| `imagenIngreso` en JSON → `public/personajes/personaje_ingreso/[slug]-inicio.*` | Hero de `/desbloquear/[slug]` (`DesbloqueoHero`) | Landscape (foto de escena, no retrato) |
 | `multimedia[].url` con `titulo:"proceso"` → `public/personajes/[slug]-presentacion.png` | Galería unificada (foto del imán) | Libre |
 | `multimedia[].url` con `titulo:"en-pase"` → `public/personajes/[slug]-pase-N.webp` | Galería unificada (van primero) + waypoints del recorrido + beats de la presentación | Libre |
 | sin `titulo` / `titulo:"retrato"` | Galería unificada | Libre |
@@ -568,8 +576,26 @@ Modo oscuro por defecto.
     `lib/map/bounds.ts` (bbox desde GeoJSON, sin turf.js), `lib/map/paleta-rutas.ts`
   - Namespace i18n `home.recorrido` (17 claves, exclusivas del viejo scrollytelling) retirado por
     completo; `pases.mapa.atribucion` (vacío en es.json) corregido
+- **Login dedicado (`/login`) + fotos de escena en `/desbloquear/[slug]`** (`feat/mejoras-ui-ux`, 2026-08-22):
+  - El toggle "¿Ya tienes cuenta?" que ocultaba el código en `DesbloquearForm` se extrajo a una ruta
+    propia `/login` (`LoginForm.tsx`, solo correo); `DesbloquearForm` ahora siempre exige el código
+  - Nuevo link en el Hero del home ("¿Ya desbloqueaste un personaje? Inicia sesión") → `/login`
+  - Hero de `/desbloquear/[slug]` usa una foto de escena nueva por personaje (campo `imagenIngreso`,
+    `public/personajes/personaje_ingreso/`) en vez del banner de la ficha, con una capa de partículas
+    de luz (`DesbloqueoHero.tsx`, mismo hook `useParticleCanvas` que `HeroDespertar`) coloreada según
+    el acento del origen
+  - `ColeccionProvider.signInWithEmail` distingue rate-limit (`429 over_email_send_rate_limit`) de
+    error genérico → mensaje específico en vez del "revisa tu correo" confuso. Ver decisión técnica
+    completa más abajo, incluida la nota sobre el SMTP de Resend
 
 ### 🔄 Siguiente
+- **⚠ Verificar el toggle de SMTP custom de Resend en el dashboard de Supabase** (`NunnaDB`,
+  `dhhesajpexcyainibwvl` → Authentication → Emails → SMTP Settings). El 2026-08-22 se reprodujo un
+  `429 over_email_send_rate_limit` en producción a los pocos envíos de magic-link seguidos — comportamiento
+  típico del SMTP default de Supabase, no del de Resend. Si el toggle está apagado, prender lo activaría
+  y el límite debería subir considerablemente (ver `supabase/RESEND-SETUP.md`).
+- **Abrir PR de `feat/mejoras-ui-ux`** (rama en origin, sin abrir todavía): login dedicado en `/login`
+  + fotos de escena con partículas en `/desbloquear/[slug]` — ver "Estado actual → Completado" arriba.
 - **⚠ Abrir PR a `main` para `feat/selector-pases-recorrido`** (rama ya en origin, commit
   `eb7f322`): añade botones por pase en `RecorridosProvincia` (antes "Todos" era el único
   modo) + grilla "Personajes de este pase" al elegir uno. Se abrió como PR #67 contra
@@ -693,6 +719,7 @@ usuario y su ficha desbloquea la experiencia inmersiva. Branch: `feature/desbloq
     del cliente → sin mismatch de hidratación.
 - **Rutas nuevas** (`i18n/routing.ts`): `/desbloquear` y `/mis-personajes` (qu **tentativo**). La pestaña
   "Mis personajes" en el `Header` aparece **condicional** cuando `coleccion.size > 0` (mantiene 1 fila).
+  `/login` se agregó después (2026-08-22, ver sección propia más abajo) como módulo de ingreso dedicado.
 - **Logros derivados, no almacenados:** `/mis-personajes` calcula insignias cruzando la colección con el
   campo `origen` de `personajes.json` (completar un origen, juntar los 9). Progreso con barra.
 - **i18n:** namespaces nuevos `desbloquear` / `coleccion` / `logros` + `nav.mis_personajes` en es/qu/en
@@ -723,6 +750,39 @@ Management API: `supabase/RESEND-SETUP.md` + `supabase/email-templates/`.
 - ⚠ Requiere que el dominio esté verificado en Resend y las credenciales SMTP cargadas en el
   dashboard de Supabase (`NunnaDB`, `dhhesajpexcyainibwvl`) — pasos manuales fuera del repo, ver el
   runbook. Sin ese paso, el gating sigue funcionando igual (cae al SMTP default de Supabase).
+- ⚠ **Verificado en producción el 2026-08-22 que el rate-limit sigue siendo agresivo** (`429
+  over_email_send_rate_limit` a los pocos envíos seguidos, confirmado vía `query_logs` de Supabase
+  sobre `auth_logs`) — señal de que probablemente el toggle de SMTP custom de Resend **no está
+  activo** en el dashboard (el límite por defecto de Supabase es mucho más bajo que el de Resend).
+  Pendiente confirmar el toggle en Authentication → Emails → SMTP Settings. Ver "Login dedicado..."
+  abajo para el manejo en UI de este error mientras tanto.
+
+### Login dedicado (`/login`) + fotos de escena en `/desbloquear/[slug]` (2026-08-22)
+Dos mejoras de UI/UX sobre el flujo de desbloqueo, en `feat/mejoras-ui-ux`:
+- **Módulo de ingreso separado.** Antes, `DesbloquearForm` tenía un toggle "¿Ya tienes cuenta?" que
+  ocultaba el campo de código y dejaba solo el correo — un login-only embebido en el mismo formulario
+  (`loginMode` local, sin ruta propia). Se extrajo a una página dedicada `/login`
+  (`app/[locale]/login/page.tsx` + `modules/auth/components/LoginForm.tsx`, namespace i18n `login`):
+  solo correo + magic-link, sin código. `DesbloquearForm` ahora **siempre exige el código** — el bloque
+  "¿Ya tienes cuenta?" quedó como un link fijo a `/login` (ya no hay branch "login-only" en su
+  `handleSubmit`). El redirect tras el login lo resuelve `ColeccionProvider` igual que antes
+  (`setPendingLoginOnly()` → `/mis-personajes`), sin cambios ahí.
+- **Home:** debajo del CTA "Despierta a un personaje" del Hero se agregó un link secundario
+  (`home.hero.cta_login`) → `/login`, para quien ya tiene cuenta y no viene de un QR específico.
+- **Fotos de escena en el hero de `/desbloquear/[slug]`** (antes usaba `imagenBanner`/`imagenPortada`
+  de la ficha): campo nuevo `imagenIngreso` en `personajes.json` → `public/personajes/personaje_ingreso/`,
+  propagado por `packages/types` y `personajes.service.ts` hasta `PersonajeLite`. Prioridad:
+  `imagenIngreso` → `imagenBanner` → `imagenPortada`. El hero se extrajo del server component a un
+  componente cliente nuevo, `DesbloqueoHero.tsx`, porque necesita `useParticleCanvas` (el mismo hook de
+  `HeroDespertar`, modo `drift`) para una capa de partículas de luz coloreada con el acento del
+  `origen` del personaje — se adapta sola a cada foto sin lógica extra por personaje.
+- **`signInWithEmail` distingue rate-limit de error genérico**: `ColeccionProvider` ahora devuelve
+  `SignInErrorKind` (`"rate_limited" | "error" | "not_configured" | null`) en vez del `error.message`
+  crudo de Supabase — chequea `error.status === 429` / `error.code === "over_email_send_rate_limit"`.
+  `LoginForm` y `DesbloquearForm` muestran un mensaje distinto (`error_rate_limited`) cuando Supabase
+  frena el envío del magic-link, en vez del genérico "revisa tu correo" que confundía (parecía que el
+  correo estaba mal escrito). Motivado por un 429 real reproducido en producción durante pruebas — ver
+  nota arriba sobre el SMTP de Resend.
 
 ### Experiencia inmersiva v2 — hero "Despertar" (2026-06-22)
 Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling inmersivo
