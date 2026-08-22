@@ -38,6 +38,9 @@ export interface RedeemResult {
 /** Status detallado de check_code_status — distingue inválido de "otro personaje". */
 export type CodeStatus = "valid" | "invalid" | "wrong_character" | "already_redeemed" | "not_configured" | "error";
 
+/** Resultado de `signInWithEmail`: null si ok, o el tipo de fallo. */
+export type SignInErrorKind = "not_configured" | "rate_limited" | "error" | null;
+
 interface ColeccionContextValue {
   /** El provider terminó su primera carga (sesión + colección). */
   ready: boolean;
@@ -53,10 +56,11 @@ interface ColeccionContextValue {
    * Envía un magic-link al email. Si se pasa `code`, viaja en la URL del enlace
    * (query param `unlock_code`) para sobrevivir el regreso en OTRO navegador o
    * dispositivo — depender solo de localStorage falla si el correo se abre en
-   * un contexto distinto al que llenó el formulario. Devuelve un mensaje de
-   * error o null si ok.
+   * un contexto distinto al que llenó el formulario. Devuelve el tipo de error
+   * ("rate_limited" cuando Supabase frena el envío por exceso de intentos,
+   * "error" para cualquier otro fallo) o null si ok.
    */
-  signInWithEmail: (email: string, code?: string) => Promise<string | null>;
+  signInWithEmail: (email: string, code?: string) => Promise<SignInErrorKind>;
   signOut: () => Promise<void>;
   /**
    * Verifica si un código existe y está sin canjear (sin auth, paso previo al magic-link).
@@ -244,7 +248,7 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
     };
   }, [applyColeccion, loadColeccion, router]);
 
-  const signInWithEmail = useCallback(async (email: string, code?: string): Promise<string | null> => {
+  const signInWithEmail = useCallback(async (email: string, code?: string): Promise<SignInErrorKind> => {
     if (!supabase) return "not_configured";
     let emailRedirectTo: string | undefined;
     if (typeof window !== "undefined") {
@@ -263,7 +267,12 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
     const { error } = await supabase.auth.signInWithOtp(
       emailRedirectTo ? { email, options: { emailRedirectTo } } : { email },
     );
-    return error ? error.message : null;
+    if (!error) return null;
+    // Supabase frena el envío de OTP/magic-link (SMTP por defecto o cuota de
+    // Resend agotada): distinguirlo de un error genérico evita que la persona
+    // piense que su correo está mal escrito cuando en realidad debe esperar.
+    if (error.status === 429 || error.code === "over_email_send_rate_limit") return "rate_limited";
+    return "error";
   }, []);
 
   const signOut = useCallback(async () => {
