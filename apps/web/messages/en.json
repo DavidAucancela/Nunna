@@ -15,9 +15,9 @@
       "titulo": "Nunna",
       "subtitulo": "The sacred and festive characters of Ecuador's traditional celebrations",
       "cta_principal": "Awaken a character",
-      "cta_secundario": "View the calendar",
       "activar_sonido": "Turn on sound",
-      "silenciar": "Mute"
+      "silenciar": "Mute",
+      "cta_login": "Already unlocked a character? Sign in"
     },
     "intro": {
       "titulo": "A world of living symbols",
@@ -208,7 +208,8 @@
     "cambiar": "Change",
     "desbloquear_personaje": "Unlock {nombre}",
     "subtitulo_personaje": "Enter the code under your {nombre} card to unlock the full experience.",
-    "ya_tienes_cuenta": "Already have an account?"
+    "ya_tienes_cuenta": "Already have an account?",
+    "error_rate_limited": "We've sent too many links in a short time. Wait a few minutes and try again."
   },
   "coleccion": {
     "titulo": "My characters",
@@ -247,5 +248,23 @@
     "coleccion_completa": "Guardian of the pase",
     "coleccion_completa_desc": "You awakened all {total} beings. The collection is complete.",
     "progreso_origen": "{n}/{total} {origen}"
+  },
+  "login": {
+    "eyebrow": "Your collection",
+    "titulo": "Sign in",
+    "subtitulo": "Enter your email to see the characters you already unlocked, from any device.",
+    "email_label": "Your email",
+    "email_placeholder": "you@example.com",
+    "boton_enviar": "Send link",
+    "enviando": "Sending…",
+    "enlace_enviado_titulo": "Check your email",
+    "enlace_enviado_texto": "We sent a link to {email}. Open it on this device to sign in.",
+    "error_email": "We couldn't send the link. Check your email and try again.",
+    "email_requerido": "Enter your email to continue.",
+    "enlace_expirado": "The link has expired. Please try again.",
+    "volver": "Change email",
+    "no_configurado": "Sign in isn't available right now.",
+    "contactar_soporte": "Trouble signing in? Contact us",
+    "error_rate_limited": "We've sent too many links in a short time. Wait a few minutes and try again."
   }
 }

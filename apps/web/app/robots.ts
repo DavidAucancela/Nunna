@@ -7,8 +7,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // Colección personal del usuario — sin valor para buscadores.
-      disallow: ["/es/mis-personajes", "/en/my-characters"],
+      // Colección personal del usuario y login transaccional — sin valor para buscadores.
+      disallow: ["/es/mis-personajes", "/en/my-characters", "/es/login", "/en/login"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };

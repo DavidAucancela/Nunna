@@ -79,6 +79,8 @@ export interface Personaje {
   simbolismo?: string;
   origen?: TipoOrigen;
   imagenBanner?: string;
+  /** Foto de escena (landscape) para el hero de /desbloquear/[slug] — distinta del banner de la ficha. */
+  imagenIngreso?: string;
   /** Activa la experiencia inmersiva v2 (hero "Despertar", etc.). */
   experiencia?: boolean;
   /** Pista de audio ambiente para el hero inmersivo (opt-in, sin autoplay). */
@@ -106,6 +108,7 @@ export interface PersonajeListItem
   extends Pick<Personaje, "id" | "slug" | "nombre" | "nombreKichwa" | "resumen" | "origen"> {
   imagenPortada?: string;
   imagenBanner?: string;
+  imagenIngreso?: string;
   totalPases: number;
   /** Frase de la narrativa — texto de relación en el escenario de cross-sell. */
   leyenda?: string;
