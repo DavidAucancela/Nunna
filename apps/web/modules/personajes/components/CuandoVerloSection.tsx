@@ -1,5 +1,6 @@
 import type { PaseListItem } from "@seres-del-pase/types";
 import { FadeUp } from "@/components/ui/FadeUp";
+import { RevealText } from "@/components/ui/RevealText";
 
 const MESES_ES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"] as const;
 
@@ -15,17 +16,20 @@ export function CuandoVerloSection({ pases, accentColor, eyebrow, titulo }: Cuan
 
   return (
     <FadeUp>
-      <section className="mx-auto max-w-3xl px-5 pb-16 sm:px-6">
-        <div className="mb-8">
+      <section className="mx-auto max-w-4xl px-5 pb-20 sm:px-6">
+        <div className="mb-10">
           <p
-            className="mb-2 text-[10px] uppercase tracking-[0.3em]"
+            className="mb-3 text-[11px] uppercase tracking-[0.3em]"
             style={{ color: `${accentColor}80` }}
           >
             {eyebrow}
           </p>
-          <h2 className="font-serif text-2xl font-bold text-texto-claro sm:text-3xl">
-            {titulo}
-          </h2>
+          <RevealText
+            as="h2"
+            by="word"
+            text={titulo}
+            className="font-display text-[clamp(2rem,5.5vw,3.25rem)] leading-[1.05] text-texto-claro"
+          />
         </div>
 
         <div className="space-y-3">

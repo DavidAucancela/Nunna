@@ -13,10 +13,16 @@ import { ColeccionProvider } from "@/components/auth/ColeccionProvider";
 import "@/styles/globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
+// Fraunces variable: se pide explícitamente el eje `opsz` (optical size) y la
+// itálica real. Sin `opsz` los titulares grandes usan el corte de texto (bajo
+// contraste, sin gracia) y sin `italic` el navegador sintetiza una oblicua
+// falsa — que es lo que hoy se ve en toda la ficha (`font-serif italic`).
 const fraunces = Fraunces({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-fraunces",
+  style: ["normal", "italic"],
+  axes: ["opsz"],
 });
 
 interface LocaleLayoutProps {

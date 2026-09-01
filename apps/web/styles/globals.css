@@ -120,6 +120,38 @@
 }
 
 @layer utilities {
+  /* ── Titular display ──────────────────────────────────────────────────────
+     Fraunces a tamaño grande: activa el eje óptico (corte de alto contraste),
+     equilibra el salto de línea y aprieta un poco el interletrado. Pensado
+     para combinarse con los tokens de tamaño `text-display-*`. */
+  .font-display {
+    font-family: theme("fontFamily.serif");
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 108;
+    text-wrap: balance;
+    letter-spacing: -0.022em;
+    font-weight: 600;
+  }
+  /* Itálica real de Fraunces a tamaño display (una vez cargada en layout). */
+  .font-display-italic {
+    font-family: theme("fontFamily.serif");
+    font-style: italic;
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 96;
+    text-wrap: balance;
+    letter-spacing: -0.012em;
+  }
+
+  /* Máscara de revelado: el hijo entra desde abajo con overflow oculto.
+     Lo usa <RevealText>; disponible suelto para revelados puntuales. El
+     padding/margen compensado evita que la máscara recorte descendentes
+     (g, p, y) cuando el texto está en reposo. */
+  .reveal-mask {
+    overflow: hidden;
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+  }
+
   /* Gradiente de texto dorado para headings de impacto */
   .text-gradient-dorado {
     background: linear-gradient(135deg, #C89B3C 0%, #F0D98A 45%, #E8CB70 55%, #C89B3C 100%);

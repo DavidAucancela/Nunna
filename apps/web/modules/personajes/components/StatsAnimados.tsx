@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import {
+  motion,
+  useInView,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
 import { useTilt3D } from "@/modules/personajes/hooks/useTilt3D";
 
 interface StatsAnimadosProps {
@@ -13,11 +20,22 @@ interface StatsAnimadosProps {
   nombresAlt: string[];
 }
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const cardVariants = (reduced: boolean) =>
+  reduced
+    ? { hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }
+    : {
+        hidden: { opacity: 0, y: 40 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
+      };
+
 /**
  * "Los Números Sagrados": la ficha de datos deja de ser una grilla plana.
  * Cada dato es una tarjeta con ícono SVG propio que se dibuja al entrar al
  * viewport (chakana / máscara / los tres mundos convergentes), contador
- * animado donde hay número real, y tilt 3D suave siguiendo el mouse.
+ * animado donde hay número real, tilt 3D suave siguiendo el mouse y una
+ * entrada escalonada con leve parallax del ícono al hacer scroll.
  */
 export function StatsAnimados({
   origenLabel,
@@ -26,12 +44,32 @@ export function StatsAnimados({
   festividadTexto,
   nombresAlt,
 }: StatsAnimadosProps) {
+  const reduced = useReducedMotion();
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const iconY = useTransform(scrollYProgress, [0, 1], reduced ? [0, 0] : [14, -14]);
+
   return (
-    <section className="mx-auto max-w-3xl px-5 pb-16 sm:px-6">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-        <StatCard accentColor={accentColor} etiqueta="Origen" icono={<IconoChakana color={accentColor} />}>
+    <section ref={ref} className="mx-auto max-w-4xl px-5 pb-20 sm:px-6">
+      <motion.div
+        className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.4 }}
+        transition={{ staggerChildren: 0.12 }}
+      >
+        <StatCard
+          accentColor={accentColor}
+          etiqueta="Origen"
+          reduced={!!reduced}
+          icono={<IconoChakana color={accentColor} />}
+          iconY={iconY}
+        >
           <span
-            className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium"
+            className="inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium"
             style={{
               color: accentColor,
               borderColor: `${accentColor}40`,
@@ -43,29 +81,39 @@ export function StatsAnimados({
           </span>
         </StatCard>
 
-        <StatCard accentColor={accentColor} etiqueta="Festividad" icono={<IconoMascara color={accentColor} />}>
+        <StatCard
+          accentColor={accentColor}
+          etiqueta="Festividad"
+          reduced={!!reduced}
+          icono={<IconoMascara color={accentColor} />}
+          iconY={iconY}
+        >
           {festividadCount > 0 ? (
-            <p className="text-sm leading-snug text-stone-300">
+            <p className="text-base leading-snug text-stone-300">
               <ContadorSagrado value={festividadCount} accentColor={accentColor} />{" "}
               {festividadCount === 1 ? "fiesta popular" : "fiestas populares"} del Ecuador
             </p>
           ) : (
-            <p className="text-sm leading-snug text-stone-300">{festividadTexto}</p>
+            <p className="text-base leading-snug text-stone-300">{festividadTexto}</p>
           )}
         </StatCard>
 
         <StatCard
           accentColor={accentColor}
           etiqueta={nombresAlt.length > 1 ? "También conocido como" : "Nombre alternativo"}
+          reduced={!!reduced}
           icono={<IconoConvergencia color={accentColor} />}
+          iconY={iconY}
         >
           {nombresAlt.length > 0 ? (
-            <p className="text-sm italic leading-snug text-stone-400">{nombresAlt.join(", ")}</p>
+            <p className="font-serif text-lg italic leading-snug text-stone-300">
+              {nombresAlt.join(", ")}
+            </p>
           ) : (
-            <p className="text-sm text-stone-700">—</p>
+            <p className="text-base text-stone-700">—</p>
           )}
         </StatCard>
-      </div>
+      </motion.div>
     </section>
   );
 }
@@ -74,26 +122,33 @@ function StatCard({
   etiqueta,
   icono,
   accentColor,
+  reduced,
+  iconY,
   children,
 }: {
   etiqueta: string;
   icono: ReactNode;
   accentColor: string;
+  reduced: boolean;
+  iconY: MotionValue<number>;
   children: ReactNode;
 }) {
   const { rotateX, rotateY, onMouseMove, onMouseLeave } = useTilt3D(6);
 
   return (
     <motion.div
+      variants={cardVariants(reduced)}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
       style={{ rotateX, rotateY, transformPerspective: 800 }}
       whileHover={{ borderColor: `${accentColor}50` }}
-      className="rounded-2xl border border-borde-sutil bg-stone-900/40 px-6 py-5"
+      className="flex min-h-[8.5rem] flex-col justify-between rounded-2xl border border-borde-sutil bg-stone-900/40 px-6 py-6"
     >
-      <div className="mb-3 flex items-center justify-between">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-stone-600">{etiqueta}</p>
-        {icono}
+      <div className="mb-4 flex items-start justify-between">
+        <p className="text-[11px] uppercase tracking-[0.2em] text-stone-500">{etiqueta}</p>
+        <motion.span style={{ y: iconY }} className="flex-none">
+          {icono}
+        </motion.span>
       </div>
       {children}
     </motion.div>
@@ -124,7 +179,11 @@ function ContadorSagrado({ value, accentColor }: { value: number; accentColor: s
   }, [isInView, reduced, value]);
 
   return (
-    <span ref={ref} className="font-serif text-base font-bold tabular-nums" style={{ color: accentColor }}>
+    <span
+      ref={ref}
+      className="font-display align-baseline text-2xl tabular-nums"
+      style={{ color: accentColor }}
+    >
       {count}
     </span>
   );
@@ -146,7 +205,7 @@ function IconoChakana({ color }: { color: string }) {
   const reduced = useReducedMotion();
   const anim = trazoAnimado(reduced);
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <motion.path
         d="M9 3h6v3h3v3h3v6h-3v3h-3v3H9v-3H6v-3H3V9h3V6h3V3Z"
         stroke={color}
@@ -164,7 +223,7 @@ function IconoMascara({ color }: { color: string }) {
   const reduced = useReducedMotion();
   const anim = trazoAnimado(reduced);
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <motion.path
         d="M5 4c2.3 1 4.6 1.5 7 1.5S16.7 5 19 4v8.5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V4Z"
         stroke={color}
@@ -183,7 +242,7 @@ function IconoConvergencia({ color }: { color: string }) {
   const reduced = useReducedMotion();
   const anim = trazoAnimado(reduced);
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <motion.path d="M4 5c6 2 10 8 8 15M20 5c-6 2-10 8-8 15M12 4v16" stroke={color} strokeWidth="1.3" strokeLinecap="round" {...anim} />
       <motion.circle cx="12" cy="20" r="1.6" stroke={color} strokeWidth="1.3" {...anim} />
     </svg>
