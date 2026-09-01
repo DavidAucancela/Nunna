@@ -71,7 +71,9 @@ export function RevealText({
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
 
-  if (!ready || reduced) {
+  // Texto vacío / solo espacios: nada que revelar — se renderiza plano (evita
+  // una máscara vacía) pero se conservan los `children` (íconos, etc.).
+  if (!ready || reduced || !text.trim()) {
     return createElement(as, { className }, text, children);
   }
 
