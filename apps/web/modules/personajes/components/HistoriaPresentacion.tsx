@@ -1,7 +1,14 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  type Variants,
+} from "framer-motion";
 import { useTranslations } from "next-intl";
 import type { PresentacionBeat } from "@seres-del-pase/types";
 import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
@@ -20,13 +27,17 @@ interface HistoriaPresentacionProps {
   palabrasClave?: string[] | undefined;
 }
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 /**
  * "Modo presentación" de la ficha: reemplaza el muro de texto de la narrativa
  * por una secuencia de beats visuales (un elemento generado por el autor + una
- * frase breve). Cada beat entra con un efecto avanzado — la imagen se disuelve
- * desde un zoom desenfocado y el texto sube escalonado — mediante `whileInView`
- * (IntersectionObserver interno de framer, robusto en iOS; NO scroll-linked).
- * Respeta prefers-reduced-motion y ambos temas. Cierra con el ritual del secreto.
+ * frase breve). Cada beat entra con efectos avanzados — la imagen se disuelve
+ * desde un zoom desenfocado y hace parallax al scroll, un numeral display
+ * gigante flota detrás del texto, y cada línea sube desde una máscara — con
+ * `whileInView` (IntersectionObserver, robusto en iOS) para la entrada y
+ * `useScroll` por beat para el parallax. Respeta prefers-reduced-motion y ambos
+ * temas. Cierra con el ritual del secreto.
  */
 export function HistoriaPresentacion({
   leyenda,
@@ -44,27 +55,29 @@ export function HistoriaPresentacion({
   return (
     <section className="border-t border-borde-sutil">
       {/* ── Encabezado + leyenda como apertura ── */}
-      <div className="mx-auto max-w-3xl px-5 pt-20 pb-2 sm:px-6 sm:pt-28">
+      <div className="mx-auto max-w-4xl px-5 pt-24 pb-4 sm:px-6 sm:pt-32">
         <motion.span
           initial={reduced ? false : { opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.5 }}
-          className="block text-[10px] uppercase tracking-[0.32em]"
+          className="block text-[11px] uppercase tracking-[0.34em]"
           style={{ color: accentColor }}
         >
           {t("eyebrow")}
         </motion.span>
-        <motion.p
-          initial={reduced ? false : { opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-4 font-serif text-2xl font-light italic leading-snug sm:text-3xl"
-          style={{ color: accentColor }}
-        >
-          &ldquo;{leyenda}&rdquo;
-        </motion.p>
+        <span className="reveal-mask mt-5 block">
+          <motion.p
+            initial={reduced ? false : { y: "110%" }}
+            whileInView={{ y: "0%" }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.9, ease: EASE }}
+            className="font-display-italic text-[clamp(1.75rem,5vw,3rem)] leading-[1.12]"
+            style={{ color: accentColor }}
+          >
+            &ldquo;{leyenda}&rdquo;
+          </motion.p>
+        </span>
       </div>
 
       {/* ── Secuencia de beats ── */}
@@ -95,14 +108,14 @@ const textoVariants: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
 };
-// Con reduced-motion, hidden === visible (sin desplazamiento ni fade), así el
-// contenido queda visible sin animación en vez de esconderse.
+// Con reduced-motion, hidden === visible (sin desplazamiento), así el contenido
+// queda visible sin animación en vez de esconderse dentro de la máscara.
 const lineaVariants = (reduced: boolean): Variants =>
   reduced
-    ? { hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }
+    ? { hidden: { y: "0%" }, visible: { y: "0%" } }
     : {
-        hidden: { opacity: 0, y: 22 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+        hidden: { y: "115%" },
+        visible: { y: "0%", transition: { duration: 0.7, ease: EASE } },
       };
 
 function Beat({
@@ -130,16 +143,48 @@ function Beat({
   const flipped = index % 2 === 1;
   const linea = lineaVariants(reduced);
 
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  // Parallax: la imagen se mueve más lento que el scroll; el numeral fantasma
+  // deriva en sentido contrario.
+  const imgY = useTransform(scrollYProgress, [0, 1], reduced ? ["0%", "0%"] : ["-8%", "8%"]);
+  const ghostY = useTransform(scrollYProgress, [0, 1], reduced ? [0, 0] : [60, -60]);
+
   return (
-    <div className="flex min-h-[80vh] items-center py-14 sm:min-h-[88vh] sm:py-20">
+    <div
+      ref={ref}
+      className="relative flex min-h-[80vh] items-center overflow-hidden py-16 sm:min-h-[90vh] sm:py-24"
+    >
+      {/* Numeral display fantasma */}
+      <span
+        aria-hidden="true"
+        className={`pointer-events-none absolute top-1/2 z-0 -translate-y-1/2 select-none ${
+          flipped ? "right-[2vw]" : "left-[2vw]"
+        }`}
+      >
+        <motion.span
+          style={{ y: ghostY, color: accentColor }}
+          className="font-display block text-[26vw] leading-none opacity-[0.06] sm:text-[15rem]"
+        >
+          {String(index + 1).padStart(2, "0")}
+        </motion.span>
+      </span>
+
       <div className="mx-auto w-full max-w-6xl px-5 sm:px-6">
-        <div className={`grid items-center gap-8 lg:grid-cols-2 lg:gap-16 ${flipped ? "lg:[&>*:first-child]:order-2" : ""}`}>
+        <div
+          className={`grid items-center gap-8 lg:grid-cols-2 lg:gap-16 ${
+            flipped ? "lg:[&>*:first-child]:order-2" : ""
+          }`}
+        >
           {/* Visual */}
           <motion.div
-            initial={reduced ? false : { opacity: 0, scale: 1.1, filter: "blur(16px)" }}
+            initial={reduced ? false : { opacity: 0, scale: 1.12, filter: "blur(18px)" }}
             whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
             viewport={{ once: true, amount: 0.35 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 1, ease: EASE }}
             className="relative"
           >
             {/* Glow de acento detrás del visual */}
@@ -150,13 +195,15 @@ function Beat({
             />
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-borde-sutil bg-stone-950 sm:aspect-square">
               {beat.visual ? (
-                <Image
-                  src={beat.visual}
-                  alt={beat.altText}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 92vw, 560px"
-                />
+                <motion.div style={{ y: imgY }} className="absolute inset-0 scale-[1.16]">
+                  <Image
+                    src={beat.visual}
+                    alt={beat.altText}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 92vw, 560px"
+                  />
+                </motion.div>
               ) : (
                 <OrigenPlaceholder
                   origen={origen}
@@ -171,47 +218,57 @@ function Beat({
 
           {/* Texto */}
           <motion.div
+            className="relative z-10"
             variants={textoVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.4 }}
           >
-            <motion.span
-              variants={linea}
-              className="block font-sans text-xs font-medium tracking-wide"
-              style={{ color: accentColor }}
-            >
-              {beat.kicker ?? contador}
-            </motion.span>
+            <span className="reveal-mask block">
+              <motion.span
+                variants={linea}
+                className="block font-sans text-xs font-medium uppercase tracking-[0.28em]"
+                style={{ color: accentColor }}
+              >
+                {beat.kicker ?? contador}
+              </motion.span>
+            </span>
 
             {beat.titulo && (
-              <motion.h3
-                variants={linea}
-                className="mt-3 font-serif text-3xl font-bold leading-tight text-texto-claro sm:text-4xl"
-              >
-                {beat.titulo}
-              </motion.h3>
+              <span className="reveal-mask mt-4 block">
+                <motion.h3
+                  variants={linea}
+                  className="font-display block text-[clamp(2.25rem,5.5vw,3.75rem)] leading-[1.02] text-texto-claro"
+                >
+                  {beat.titulo}
+                </motion.h3>
+              </span>
             )}
 
             <motion.div
-              variants={linea}
-              className="mt-5 h-px w-10 origin-left"
-              style={{ backgroundColor: accentColor, scaleX: 1 }}
+              variants={{
+                hidden: { scaleX: reduced ? 1 : 0 },
+                visible: { scaleX: 1, transition: { duration: 0.6, ease: EASE } },
+              }}
+              className="mt-6 h-px w-12 origin-left"
+              style={{ backgroundColor: accentColor }}
             />
 
             {beat.texto && (
-              <motion.p
-                variants={linea}
-                className="mt-6 text-lg leading-relaxed text-stone-300 sm:text-xl"
-              >
-                {renderConTerminos(beat.texto, palabrasClave ?? [], accentColor)}
-              </motion.p>
+              <span className="reveal-mask mt-6 block">
+                <motion.p
+                  variants={linea}
+                  className="block text-lg leading-relaxed text-stone-300 sm:text-2xl sm:leading-relaxed"
+                >
+                  {renderConTerminos(beat.texto, palabrasClave ?? [], accentColor)}
+                </motion.p>
+              </span>
             )}
 
             {/* Progreso de la secuencia */}
             <motion.div
               variants={linea}
-              className="mt-8 flex items-center gap-1.5"
+              className="mt-10 flex items-center gap-1.5"
               aria-hidden="true"
             >
               {Array.from({ length: total }).map((_, d) => (
@@ -219,7 +276,7 @@ function Beat({
                   key={d}
                   className="h-1 rounded-full transition-all duration-300"
                   style={{
-                    width: d === index ? 20 : 6,
+                    width: d === index ? 24 : 6,
                     backgroundColor: d === index ? accentColor : "#2A2724",
                   }}
                 />

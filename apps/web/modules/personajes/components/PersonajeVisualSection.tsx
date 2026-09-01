@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import type { Hotspot, Media } from "@seres-del-pase/types";
+import { RevealText } from "@/components/ui/RevealText";
 import { AnatomiaGated } from "./AnatomiaGated";
 import { GaleriaSection } from "./GaleriaSection";
 
@@ -51,11 +52,16 @@ export function PersonajeVisualSection({
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-center"
         >
-          <p className="mb-3 text-[10px] uppercase tracking-[0.3em]" style={{ color: `${accentColor}80` }}>
+          <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: `${accentColor}80` }}>
             {eyebrow}
           </p>
-          <h2 className="font-serif text-4xl font-bold text-texto-claro sm:text-5xl">{titulo}</h2>
-          <p className="mt-2 font-serif text-lg italic" style={{ color: accentColor }}>
+          <RevealText
+            as="h2"
+            by="word"
+            text={titulo}
+            className="font-display block text-[clamp(2.5rem,7vw,5rem)] leading-[1.0] text-texto-claro"
+          />
+          <p className="mt-3 font-display-italic text-xl sm:text-2xl" style={{ color: accentColor }}>
             {nombre}
           </p>
         </motion.div>

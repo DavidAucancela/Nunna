@@ -61,14 +61,20 @@ export function GaleriaSection({ multimedia, accentColor, nombre, embedded = fal
 
         {/* Encabezado */}
         <div className="mb-10 text-center">
-          <p className="text-[10px] uppercase tracking-[0.3em] mb-3" style={{ color: `${accentColor}80` }}>
+          <p className="text-[11px] uppercase tracking-[0.3em] mb-3" style={{ color: `${accentColor}80` }}>
             {embedded ? "Movimiento II" : "Imágenes"}
           </p>
-          <h2 className={`font-serif font-bold text-texto-claro ${embedded ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl"}`}>
+          <h2
+            className={`font-display text-texto-claro ${
+              embedded
+                ? "text-[clamp(1.75rem,4vw,2.5rem)]"
+                : "text-[clamp(2.5rem,7vw,5rem)] leading-[1.0]"
+            }`}
+          >
             Galería
           </h2>
           {nombre && !embedded && (
-            <p className="mt-2 font-serif text-lg italic" style={{ color: accentColor }}>
+            <p className="mt-3 font-display-italic text-xl sm:text-2xl" style={{ color: accentColor }}>
               {nombre}
             </p>
           )}

@@ -57,6 +57,15 @@ export function QuoteRevelacion({ hook, resto, accentColor, origen, children }: 
     offset: ["start 0.85", "start 0.5"],
   });
 
+  // Progreso propio para la línea de los tres mundos: se dibuja mientras la
+  // sección cruza el viewport, en vez de un único `whileInView`.
+  const mundosRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: mundosProgress } = useScroll({
+    target: mundosRef,
+    offset: ["start 0.95", "start 0.55"],
+  });
+  const mundosLine = useTransform(mundosProgress, [0, 1], [0, 1]);
+
   const palabras = useMemo(() => hook.split(/\s+/).filter(Boolean), [hook]);
   // El resumen en personajes.json puede traer varios párrafos separados por
   // línea en blanco — un solo <p> con el string crudo los funde en un muro de
@@ -66,25 +75,32 @@ export function QuoteRevelacion({ hook, resto, accentColor, origen, children }: 
     [resto],
   );
 
-  // La comilla emerge de casi invisible a presencia luminosa
-  const comillaOpacity = useTransform(scrollYProgress, [0, 1], [0.05, 0.25]);
+  // La comilla emerge de casi invisible a presencia luminosa, con un leve
+  // parallax de escala + desplazamiento vertical mientras se pinta el gancho.
+  const comillaOpacity = useTransform(scrollYProgress, [0, 1], [0.04, 0.22]);
+  const comillaScale = useTransform(scrollYProgress, [0, 1], [0.82, 1]);
+  const comillaY = useTransform(scrollYProgress, [0, 1], [24, 0]);
+  // Barra de acento que se traza bajo el gancho conforme se completa la lectura.
+  const sweepScaleX = useTransform(scrollYProgress, [0.15, 1], [0, 1]);
 
   return (
-    <section ref={ref} className="relative mx-auto max-w-3xl px-5 pb-8 pt-14 sm:px-6 sm:pt-20">
+    <section ref={ref} className="relative mx-auto max-w-4xl px-5 pb-8 pt-16 sm:px-6 sm:pt-24">
       <div className="relative">
         <motion.span
-          className="absolute -top-4 -left-1 select-none font-serif text-8xl leading-none sm:-left-4"
+          className="pointer-events-none absolute -top-10 -left-2 select-none font-serif text-[7rem] leading-none sm:-left-6 sm:-top-16 sm:text-[11rem]"
           style={{
             color: accentColor,
-            opacity: reduced ? 0.15 : comillaOpacity,
-            textShadow: `0 0 60px ${accentColor}4D`,
+            opacity: reduced ? 0.14 : comillaOpacity,
+            scale: reduced ? 1 : comillaScale,
+            y: reduced ? 0 : comillaY,
+            textShadow: `0 0 70px ${accentColor}4D`,
           }}
           aria-hidden="true"
         >
           &ldquo;
         </motion.span>
 
-        <p className="relative font-serif text-2xl font-light leading-relaxed sm:text-3xl">
+        <p className="font-display relative text-[clamp(1.9rem,6vw,3.6rem)] leading-[1.08] text-texto-claro">
           {reduced ? (
             <span style={{ color: BRIGHT }}>{hook}</span>
           ) : (
@@ -100,6 +116,17 @@ export function QuoteRevelacion({ hook, resto, accentColor, origen, children }: 
           )}
         </p>
 
+        {/* Barra de acento trazada al scroll bajo el gancho */}
+        <motion.div
+          aria-hidden="true"
+          className="mt-5 h-[3px] w-24 origin-left rounded-full"
+          style={{
+            backgroundColor: accentColor,
+            scaleX: reduced ? 1 : sweepScaleX,
+            boxShadow: `0 0 24px ${accentColor}66`,
+          }}
+        />
+
         {/* ── Resto del resumen — siempre en el DOM (SEO), plegado hasta "Leer más" ── */}
         {resto && (
           <div className="mt-4">
@@ -111,7 +138,7 @@ export function QuoteRevelacion({ hook, resto, accentColor, origen, children }: 
             >
               <div className="space-y-3 pb-1 pt-1">
                 {restoParrafos.map((parrafo, i) => (
-                  <p key={i} className="text-base leading-relaxed text-stone-400 sm:text-lg">
+                  <p key={i} className="text-lg leading-relaxed text-stone-400 sm:text-xl">
                     {parrafo}
                   </p>
                 ))}
@@ -145,7 +172,7 @@ export function QuoteRevelacion({ hook, resto, accentColor, origen, children }: 
 
       {/* ── Línea de los tres mundos — solo cosmovisión prehispánica ── */}
       {origen === "prehispanico" && (
-        <div className="mt-10 sm:mt-12">
+        <div ref={mundosRef} className="mt-12 sm:mt-16">
           <div className="relative">
             <svg
               className="w-full"
@@ -161,10 +188,8 @@ export function QuoteRevelacion({ hook, resto, accentColor, origen, children }: 
                 y2="1"
                 stroke={`${accentColor}40`}
                 strokeWidth="1"
-                initial={reduced ? false : { pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
-                viewport={{ once: true, amount: 0.9 }}
-                transition={{ duration: reduced ? 0 : 1.4, ease: "easeInOut" }}
+                style={{ pathLength: reduced ? 1 : mundosLine }}
+                initial={false}
               />
             </svg>
 

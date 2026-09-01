@@ -184,13 +184,13 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
       <div className="mx-auto max-w-6xl px-5 sm:px-6">
         {/* Encabezado */}
         <div className="mb-10 sm:mb-14">
-          <span className="block text-[10px] uppercase tracking-[0.32em]" style={{ color: accentColor }}>
+          <span className="block text-[11px] uppercase tracking-[0.32em]" style={{ color: accentColor }}>
             {t("eyebrow")}
           </span>
-          <h2 className="mt-2 font-serif text-2xl font-bold text-texto-claro sm:text-3xl">
+          <h2 className="mt-3 font-display text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.05] text-texto-claro">
             {t("titulo")}
           </h2>
-          <p className="mt-2 text-sm text-stone-400">{t("hint")}</p>
+          <p className="mt-3 text-base text-stone-400">{t("hint")}</p>
           <div className="mt-3 flex items-center gap-2.5">
             <ProgressRing value={visited.size} total={hotspots.length} accentColor={accentColor} />
             <p className="text-sm text-stone-400">
@@ -402,7 +402,7 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
                       <span className="font-sans text-xs font-medium tracking-wide" style={{ color: accentColor }}>
                         {t("contador", { n: i + 1, total: hotspots.length })}
                       </span>
-                      <h3 className="mt-1 font-serif text-2xl font-bold leading-tight text-texto-claro sm:text-3xl">
+                      <h3 className="mt-1 font-display text-[clamp(1.6rem,4.5vw,2.5rem)] leading-[1.05] text-texto-claro">
                         {h.titulo}
                       </h3>
                     </div>

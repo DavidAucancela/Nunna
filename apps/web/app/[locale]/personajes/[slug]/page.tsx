@@ -16,6 +16,7 @@ import { ColeccionCounter } from "@/modules/personajes/components/ColeccionCount
 import { PersonajesEscenario } from "@/modules/personajes/components/PersonajesEscenario";
 import { QuoteRevelacion } from "@/modules/personajes/components/QuoteRevelacion";
 import { StatsAnimados } from "@/modules/personajes/components/StatsAnimados";
+import { RevealText } from "@/components/ui/RevealText";
 import { WhatsAppShare } from "@/components/ui/WhatsAppShare";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
 
@@ -205,18 +206,21 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
 
       {/* ── 7. Cross-sell ── */}
       {otrosPersonajes.length > 0 && (
-        <section className="border-t border-borde-sutil py-20 sm:py-28">
+        <section className="border-t border-borde-sutil py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-5 sm:px-6">
-            <div className="mb-10 text-center">
+            <div className="mb-12 text-center">
               <p
-                className="mb-3 text-[10px] uppercase tracking-[0.3em]"
+                className="mb-3 text-[11px] uppercase tracking-[0.3em]"
                 style={{ color: `${style.accentColor}80` }}
               >
                 {t("coleccion_eyebrow")}
               </p>
-              <h2 className="font-serif text-4xl font-bold text-texto-claro sm:text-5xl">
-                {t("coleccion_titulo")}
-              </h2>
+              <RevealText
+                as="h2"
+                by="word"
+                text={t("coleccion_titulo")}
+                className="font-display block text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98] text-texto-claro"
+              />
             </div>
             <PersonajesEscenario personajes={otrosPersonajes} />
           </div>
