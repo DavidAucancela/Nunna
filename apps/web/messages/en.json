@@ -86,12 +86,27 @@
       "ecuador": "Ecuador",
       "mapa_alt": "Map of Ecuador showing the provinces with pases in the calendar",
       "atribucion": "Provincial boundaries: geoBoundaries (CC BY 4.0)",
+      "ref_corto": "ref.",
       "region": {
         "sierra": "Sierra",
         "costa": "Coast",
         "amazonia": "Amazon",
         "insular": "Galápagos"
       }
+    },
+    "recorrido": {
+      "eyebrow": "The route",
+      "titulo": "One pase, one path",
+      "scroll_hint": "Scroll to follow the pase",
+      "ver_ficha": "View full profile",
+      "ver_calendario": "View pase calendar",
+      "ir_a": "Go to",
+      "ver_foto": "View photo {n}",
+      "elige_pase": "Switch pase",
+      "personaje": "Character",
+      "finale_titulo": "The pase reaches its destination",
+      "finale_texto": "Each character played their part along the way. And this is just one of Ecuador's many festivals.",
+      "ruta_referencia": "Reference route · pending field verification"
     }
   },
   "error": {

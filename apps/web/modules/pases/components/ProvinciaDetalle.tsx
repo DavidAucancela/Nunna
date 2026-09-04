@@ -6,7 +6,7 @@ import type { PaseListItem } from "@seres-del-pase/types";
 import type { Recorridos } from "@/lib/data";
 import type { ProvinciaConPases, Region } from "@/lib/services/provincias.service";
 import { CalendarioGrid } from "@/modules/festividades/components/CalendarioGrid";
-import { RecorridosProvincia } from "./RecorridosProvincia";
+import { RecorridoProvinciaSection } from "./RecorridoProvinciaSection";
 
 interface Props {
   provincia: ProvinciaConPases;
@@ -64,7 +64,7 @@ export function ProvinciaDetalle({ provincia, recorridos, pasesInfo }: Props) {
           </p>
         </div>
         {recorridos.pases.length > 0 ? (
-          <RecorridosProvincia recorridos={recorridos} pasesInfo={pasesInfo} />
+          <RecorridoProvinciaSection recorridos={recorridos} pasesInfo={pasesInfo} />
         ) : (
           <div className="mx-auto max-w-7xl px-6">
             <div className="rounded-2xl border border-dashed border-borde-sutil bg-stone-900/30 p-8 text-center">

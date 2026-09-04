@@ -10,6 +10,7 @@ import type { PaseListItem } from "@seres-del-pase/types";
 import { TILE_STYLE } from "@/lib/map/tile-style";
 import { boundsFromLineas } from "@/lib/map/bounds";
 import { colorParaRuta } from "@/lib/map/paleta-rutas";
+import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
 
 // `/personajes/[slug]` se localiza distinto por idioma (`i18n/routing.ts`) — un
 // <a> plano (el popup de MapLibre vive fuera del árbol de React, no puede usar
@@ -34,6 +35,8 @@ function escapeHtml(s: string): string {
 interface Props {
   recorridos: Recorridos;
   pasesInfo?: PaseListItem[];
+  /** Se llama al elegir un chip de pase — sincroniza el scrollytelling de abajo. */
+  onSelectPase?: (slug: string) => void;
 }
 
 /**
@@ -45,7 +48,7 @@ interface Props {
  * aparece una grilla con sus personajes (imagen + link a ficha) — antes solo
  * visible pasando el mouse por cada marcador uno por uno.
  */
-export function RecorridosProvincia({ recorridos, pasesInfo = [] }: Props) {
+export function RecorridosProvincia({ recorridos, pasesInfo = [], onSelectPase }: Props) {
   const t = useTranslations("pases.mapa");
   const tPases = useTranslations("pases");
   const locale = useLocale();
@@ -173,13 +176,19 @@ export function RecorridosProvincia({ recorridos, pasesInfo = [] }: Props) {
               el.textContent = String(wi + 1);
 
               const verFicha = tPases("ver_ficha_personaje", { nombre: wp.nombre });
+              const imgHtml = wp.imagen
+                ? `<img src="${wp.imagen}" alt="${escapeHtml(wp.alt)}" style="width:100%;height:110px;object-fit:cover;border-radius:8px;display:block" />`
+                : "";
+              const fichaHtml = wp.slug
+                ? `<a href="${personajeHref(locale, wp.slug)}" style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:${color};text-decoration:none;">${escapeHtml(verFicha)} →</a>`
+                : "";
               const popupHtml = `
                 <div style="width:200px;font-family:ui-sans-serif,system-ui,sans-serif;">
-                  <img src="${wp.imagen}" alt="${escapeHtml(wp.alt)}" style="width:100%;height:110px;object-fit:cover;border-radius:8px;display:block" />
+                  ${imgHtml}
                   <div style="padding:8px 2px 2px;">
                     <p style="margin:0;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:${color};">${escapeHtml(pase.paseNombre)}</p>
                     <h4 style="margin:2px 0 4px;font-size:14px;font-weight:700;color:#EFEAE0;">${escapeHtml(wp.nombre)}</h4>
-                    <a href="${personajeHref(locale, wp.slug)}" style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:${color};text-decoration:none;">${escapeHtml(verFicha)} →</a>
+                    ${fichaHtml}
                   </div>
                 </div>
               `;
@@ -307,6 +316,9 @@ export function RecorridosProvincia({ recorridos, pasesInfo = [] }: Props) {
                 />
                 <span>{pase.paseNombre}</span>
                 {paseInfo?.tipo && <span className="text-xs text-stone-500">· {paseInfo.tipo}</span>}
+                {pase.esDemo && (
+                  <span className="text-[10px] uppercase tracking-wider text-acento-dorado/70">· {t("ref_corto")}</span>
+                )}
               </>
             );
             if (!esBoton) {
@@ -320,7 +332,10 @@ export function RecorridosProvincia({ recorridos, pasesInfo = [] }: Props) {
               <li key={pase.paseSlug}>
                 <button
                   type="button"
-                  onClick={() => setActiveSlug(activo ? null : pase.paseSlug)}
+                  onClick={() => {
+                    setActiveSlug(activo ? null : pase.paseSlug);
+                    onSelectPase?.(pase.paseSlug);
+                  }}
                   aria-pressed={activo}
                   className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors ${
                     activo
@@ -345,24 +360,50 @@ export function RecorridosProvincia({ recorridos, pasesInfo = [] }: Props) {
           </p>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {(recorridos.pases.find((p) => p.paseSlug === activeSlug)?.waypoints ?? []).map(
-              (wp: RecorridoWaypoint) => (
-                <Link
-                  key={wp.slug}
-                  href={{ pathname: "/personajes/[slug]", params: { slug: wp.slug } }}
-                  className="group overflow-hidden rounded-xl border border-borde-sutil transition-colors hover:border-acento-dorado"
-                >
+              (wp: RecorridoWaypoint, wi: number) => {
+                const visual = (
                   <div className="relative aspect-square w-full overflow-hidden bg-stone-900">
-                    <Image
-                      src={wp.imagen}
-                      alt={wp.alt}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      sizes="(max-width: 640px) 46vw, (max-width: 1024px) 30vw, 22vw"
-                    />
+                    {wp.imagen ? (
+                      <Image
+                        src={wp.imagen}
+                        alt={wp.alt}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 640px) 46vw, (max-width: 1024px) 30vw, 22vw"
+                      />
+                    ) : (
+                      <OrigenPlaceholder
+                        origen={undefined}
+                        nombre={wp.label}
+                        variant="card"
+                        uid={`recgrid-${activeSlug}-${wi}`}
+                        className="h-full w-full"
+                      />
+                    )}
                   </div>
+                );
+                const nombre = (
                   <p className="px-2.5 py-2 text-sm font-medium text-texto-claro">{wp.nombre}</p>
-                </Link>
-              ),
+                );
+                return wp.slug ? (
+                  <Link
+                    key={wp.slug}
+                    href={{ pathname: "/personajes/[slug]", params: { slug: wp.slug } }}
+                    className="group overflow-hidden rounded-xl border border-borde-sutil transition-colors hover:border-acento-dorado"
+                  >
+                    {visual}
+                    {nombre}
+                  </Link>
+                ) : (
+                  <div
+                    key={`wp-${wi}`}
+                    className="group overflow-hidden rounded-xl border border-borde-sutil"
+                  >
+                    {visual}
+                    {nombre}
+                  </div>
+                );
+              },
             )}
           </div>
         </div>
