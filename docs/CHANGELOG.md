@@ -2,6 +2,65 @@
 
 ---
 
+## [0.6.0] — 2026-09-03 — Recorrido con scroll restaurado + rutas de prueba para todas las provincias
+
+Rama `feat/pases-recorrido-scroll`. La pestaña `/pases` mostraba "próximamente" en la sección
+Recorrido de casi todas las provincias (solo Chimborazo tenía rutas trazadas, y sin la experiencia
+narrativa que existía antes). Esta entrega la completa.
+
+### `RecorridoScrollytelling.tsx` (nuevo — restaura `PaseMapSection`, retirado el 2026-08-10)
+
+Recorrido de un solo pase que **avanza con el scroll**: `300vh` scroll-pinned, mapa 55% + panel
+narrador con la foto del personaje de cada parada, el punto rojo viaja calle por calle sincronizado
+al scroll, timeline de paradas y panel de cierre con botón al calendario de la provincia. Carrusel
+táctil en móvil, respeta `prefers-reduced-motion`, init de MapLibre perezoso por `IntersectionObserver`.
+
+- **Convive con `RecorridosProvincia`** (no lo reemplaza): la sección Recorrido es ahora el mapa
+  general de todas las rutas (con chips) **arriba** + el scrollytelling del pase elegido **abajo**.
+  El wrapper nuevo `RecorridoProvinciaSection.tsx` posee `paseSlug` y lo comparte con las dos vistas
+  — elegir un chip arriba cambia el pase que recorre el scrollytelling, y viceversa.
+- Correcciones respecto al `PaseMapSection` original: namespace i18n `pases.recorrido` (el viejo
+  `home.recorrido` se había borrado); `TILE_STYLE` compartido de `lib/map/tile-style.ts` con
+  `attributionControl: { compact: true }` (el original lo tenía en `false`, contra la nota de
+  CLAUDE.md); link "ver ficha completa" a `/personajes/[slug]` real vía `<Link>` de next-intl (el
+  original iba al catálogo genérico), oculto cuando el waypoint no tiene ficha.
+
+### Capa de datos — `personajeSlug` opcional en el waypoint
+
+`recorrido.service.ts`: un waypoint puede venir **sin `personajeSlug`** ("inline"), con `nombre` y
+`leyenda` en el propio JSON. En ese caso `slug` queda `undefined` (sin link a ficha) y el visual
+cae a `OrigenPlaceholder` en vez de una foto. Nuevo flag `esDemo` derivado de `pase.demo`. Permite
+sembrar recorridos en provincias cuyo catálogo de figuras todavía no existe en `personajes.json`,
+sin crear fichas de personaje a medias.
+
+### Contenido de prueba — `recorrido.json` de 3 a 9 recorridos
+
+- **+1 real de Chimborazo**: `nino-familia` (Parque Guayaquil → Oratorio de Santa Rosa) con los 4
+  personajes que ya tienen fotografía de pase.
+- **+5 demo** (`demo: true`), una por cada otra provincia con pases: Cotopaxi (Mama Negra),
+  Tungurahua (Diablada Pillareña), Azuay (Niño Viajero), Imbabura (Fiesta del Yamor), Pichincha
+  (Fiestas de Quito). Calles reales de cada ciudad (horneadas con `scripts/build-route.mjs` / OSRM),
+  waypoints inline con nombres de figuras reales de cada fiesta y una leyenda breve. La UI las marca
+  ("ruta de referencia · pendiente de verificación en campo" en el scrollytelling, "· ref." en los
+  chips). ⚠ **Las coords ancla de las 5 demo son aproximadas** — pendiente de verificación en campo
+  (ver `docs/AGREGAR-PROVINCIA.md` y CLAUDE.md § Siguiente).
+
+### i18n
+
+Namespace nuevo `pases.recorrido` (es/en) + `pases.mapa.ref_corto`. El `home.recorrido` retirado
+en 0.5.0 **no** se reintrodujo — las claves viven ahora bajo `pases`.
+
+### Otros
+
+- `RecorridosProvincia.tsx`: prop `onSelectPase`; popup y grilla de personajes toleran waypoints sin
+  `slug`/`imagen` (link omitido, `OrigenPlaceholder` de respaldo).
+- Tests: `recorrido.service.test.ts` cubre el waypoint inline y `esDemo`;
+  `provincias.service.test.ts` — el test que asumía "hay provincias marcadas sin ninguna ruta" se
+  reescribió para verificar el mecanismo (cobertura parcial por pase), ya que ahora toda provincia
+  con pases tiene ≥1 ruta.
+
+---
+
 ## [0.5.0] — 2026-08-15 — Mapa nacional MapLibre, fixes de producción y setup de Resend
 
 Cubre PR #63–#68. #63 (mapa nacional + fusión de `/calendario`) ya estaba documentado en

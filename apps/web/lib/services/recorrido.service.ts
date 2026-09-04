@@ -4,7 +4,12 @@ import personajesRaw from "../data/personajes.json";
 export interface RecorridoWaypoint {
   progress: number;
   coord: [number, number];
-  slug: string;
+  /**
+   * Slug del personaje con ficha en personajes.json. Ausente en waypoints
+   * "inline" — provincias cuyo catálogo de figuras todavía no existe (ver
+   * `nombre`/`leyenda` inline en recorrido.json). Sin `slug` no hay link a ficha.
+   */
+  slug?: string;
   nombre: string;
   label: string;
   calle: string;
@@ -21,6 +26,12 @@ export interface RecorridoPase {
   centro: [number, number];
   zoom: number;
   ruta: [number, number][];
+  /**
+   * `true` = ruta de referencia todavía sin verificar calle por calle (coords
+   * aproximadas del centro de la ciudad). La UI la marca como tal. Se siembra
+   * así para las provincias fuera de Chimborazo hasta tener trazado real.
+   */
+  esDemo: boolean;
   waypoints: RecorridoWaypoint[];
 }
 
@@ -29,31 +40,72 @@ export interface Recorridos {
   pases: RecorridoPase[];
 }
 
-function toRecorridoPase(pase: (typeof recorridoRaw.pases)[number]): RecorridoPase {
-  const waypoints = pase.waypoints.map((wp) => {
-    const personaje = personajesRaw.find((p) => p.slug === wp.personajeSlug);
-    if (!personaje) {
-      throw new Error(
-        `Recorrido (${pase.paseSlug}): personaje "${wp.personajeSlug}" no existe en personajes.json`
-      );
-    }
-    const nombre =
-      personaje.nombreKichwa && personaje.nombreKichwa !== personaje.nombre
-        ? `${personaje.nombre} · ${personaje.nombreKichwa}`
-        : personaje.nombre;
-    const waypoint: RecorridoWaypoint = {
+interface WaypointRaw {
+  progress: number;
+  coord: [number, number];
+  label: string;
+  calle: string;
+  imagen?: string;
+  imagenesExtra?: string[];
+  dato?: string;
+  personajeSlug?: string;
+  nombre?: string;
+  leyenda?: string;
+}
+
+interface PaseRaw {
+  paseSlug: string;
+  paseNombre: string;
+  centro: [number, number];
+  zoom: number;
+  ruta: [number, number][];
+  demo?: boolean;
+  waypoints: WaypointRaw[];
+}
+
+function toRecorridoPase(pase: PaseRaw): RecorridoPase {
+  const waypoints = pase.waypoints.map((wp): RecorridoWaypoint => {
+    const base = {
       progress: wp.progress,
       coord: wp.coord as [number, number],
-      slug: personaje.slug,
-      nombre,
       label: wp.label,
       calle: wp.calle,
-      leyenda: personaje.narrativa?.leyenda ?? "",
-      imagen: wp.imagen,
-      imagenesExtra: wp.imagenesExtra,
-      alt: `${personaje.nombre} en el pase`,
+      imagen: wp.imagen ?? "",
+      imagenesExtra: wp.imagenesExtra ?? [],
     };
-    if ("dato" in wp && wp.dato) waypoint.dato = wp.dato;
+
+    let waypoint: RecorridoWaypoint;
+    if (wp.personajeSlug) {
+      const personaje = personajesRaw.find((p) => p.slug === wp.personajeSlug);
+      if (!personaje) {
+        throw new Error(
+          `Recorrido (${pase.paseSlug}): personaje "${wp.personajeSlug}" no existe en personajes.json`
+        );
+      }
+      const nombre =
+        personaje.nombreKichwa && personaje.nombreKichwa !== personaje.nombre
+          ? `${personaje.nombre} · ${personaje.nombreKichwa}`
+          : personaje.nombre;
+      waypoint = {
+        ...base,
+        slug: personaje.slug,
+        nombre,
+        leyenda: personaje.narrativa?.leyenda ?? "",
+        alt: `${personaje.nombre} en el pase`,
+      };
+    } else {
+      // Waypoint inline: la figura no tiene ficha todavía (provincias sembradas
+      // sin catálogo de personajes). `nombre`/`leyenda` vienen del propio JSON.
+      const nombre = wp.nombre || wp.label;
+      waypoint = {
+        ...base,
+        nombre,
+        leyenda: wp.leyenda ?? "",
+        alt: `${nombre} en el pase`,
+      };
+    }
+
+    if (wp.dato) waypoint.dato = wp.dato;
     return waypoint;
   });
 
@@ -63,6 +115,7 @@ function toRecorridoPase(pase: (typeof recorridoRaw.pases)[number]): RecorridoPa
     centro: pase.centro as [number, number],
     zoom: pase.zoom,
     ruta: pase.ruta as [number, number][],
+    esDemo: pase.demo === true,
     waypoints,
   };
 }
@@ -70,7 +123,7 @@ function toRecorridoPase(pase: (typeof recorridoRaw.pases)[number]): RecorridoPa
 export async function getRecorridos(): Promise<Recorridos> {
   return {
     defaultPaseSlug: recorridoRaw.defaultPaseSlug,
-    pases: recorridoRaw.pases.map(toRecorridoPase),
+    pases: (recorridoRaw.pases as unknown as PaseRaw[]).map(toRecorridoPase),
   };
 }
 

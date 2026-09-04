@@ -18,10 +18,11 @@ completa esa sección, no lo que decide si la provincia aparece.
 > `docs/fiestas_y_manifestaciones_ecuatorianas.pdf` es el ejemplo de referencia: nueve
 > festividades con fuentes institucionales citadas (Instituto Nacional de Patrimonio Cultural,
 > Ministerio de Turismo, gobiernos locales, repositorios universitarios). Con ese documento se
-> sembraron 9 pases en `pases.json` (2026-08-10) — **ninguno tiene recorrido todavía**: el PDF
-> da contexto cultural, no coordenadas de calle. Ya son visibles en `/pases/[slug]`, en la sección
-> Calendario de su provincia, y marcan esa provincia en el mapa — solo les falta el paso 2/3 de
-> esta guía para que su sección Recorrido deje de decir "próximamente".
+> sembraron 9 pases en `pases.json` (2026-08-10). El PDF da contexto cultural, no coordenadas de
+> calle: 5 de ellos recibieron una **ruta de referencia** (`demo: true`, coords aproximadas del
+> centro de la ciudad, waypoints inline) el 2026-09-03 para completar la pestaña — siguen
+> **pendientes de verificación en campo** (ver abajo). Los demás muestran "próximamente" hasta
+> completar el paso 2/3 de esta guía.
 
 ---
 
@@ -96,6 +97,35 @@ Sin esto, su sección Recorrido queda en "próximamente".
 ```
 
 Deja `"ruta": []` — la geometría real la hornea el script del paso 3.
+
+### Waypoints sin ficha de personaje (provincias sin catálogo todavía)
+
+`personajeSlug` es **opcional** en el waypoint. Si la figura de esa fiesta aún no tiene ficha en
+`personajes.json`, omite `personajeSlug` y pon el nombre y la leyenda inline:
+
+```jsonc
+{
+  "progress": 0.12,
+  "coord": [-78.6140, -0.9365],
+  "nombre": "La Mama Negra",                       // en vez de personajeSlug
+  "leyenda": "Abre la fiesta a caballo, repartiendo aguardiente y salud.",
+  "calle": "Calle Quito",
+  "dato": "Frase opcional.",
+  "imagen": "",                                    // "" → se dibuja OrigenPlaceholder
+  "imagenesExtra": [],
+  "label": "Mama Negra"
+}
+```
+
+En la ficha no habrá link "ver ficha completa" (no hay slug) y el visual será un patrón
+`OrigenPlaceholder` en vez de foto. Cuando la figura tenga ficha + fotos, cambia `nombre`/`leyenda`
+inline por `personajeSlug` y rellena `imagen`.
+
+### Rutas de referencia (`demo: true`)
+
+Si las coordenadas son aproximadas (centro de la ciudad, sin trabajo de campo), marca el pase con
+`"demo": true`. La UI lo señala: badge "ruta de referencia · pendiente de verificación en campo" en
+el recorrido con scroll y "· ref." en los chips. Quítalo cuando la ruta esté verificada.
 
 ## Paso 3 — Trazar la ruta sobre calles reales
 

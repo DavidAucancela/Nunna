@@ -86,12 +86,27 @@
       "ecuador": "Ecuador",
       "mapa_alt": "Mapa del Ecuador con las provincias que tienen pases en el calendario",
       "atribucion": "Límites provinciales: geoBoundaries (CC BY 4.0)",
+      "ref_corto": "ref.",
       "region": {
         "sierra": "Sierra",
         "costa": "Costa",
         "amazonia": "Amazonía",
         "insular": "Insular"
       }
+    },
+    "recorrido": {
+      "eyebrow": "El recorrido",
+      "titulo": "Un pase, un camino",
+      "scroll_hint": "Desplázate para seguir el pase",
+      "ver_ficha": "Ver ficha completa",
+      "ver_calendario": "Ver calendario de pases",
+      "ir_a": "Ir a",
+      "ver_foto": "Ver foto {n}",
+      "elige_pase": "Cambia de pase",
+      "personaje": "Personaje",
+      "finale_titulo": "El pase llega a su destino",
+      "finale_texto": "Cada personaje cumplió su papel en el camino. Y esta es solo una de las tantas fiestas del Ecuador.",
+      "ruta_referencia": "Ruta de referencia · pendiente de verificación en campo"
     }
   },
   "error": {

@@ -118,10 +118,14 @@ apps/web/
 │   ├── pases/components/           → ★ PasesExplorador (orquestador: mapa siempre montado + detalle
 │   │                                 de provincia debajo), MapaEcuador (★★ MapLibre nacional — una
 │   │                                 sola instancia, zoom real por fitBounds, 2026-08-10 rediseño),
-│   │                                 ProvinciaDetalle (3 secciones: Recorrido/Calendario/
-│   │                                 Información — reutiliza CalendarioGrid), RecorridosProvincia
-│   │                                 (★★ mapa MapLibre estático con TODAS las rutas de la provincia
-│   │                                 a la vez + leyenda; reemplaza a PaseMapSection, retirado)
+│   │                                 Información — reutiliza CalendarioGrid),
+│   │                                 RecorridoProvinciaSection (★ envuelve las dos vistas de
+│   │                                 "Recorrido" y les comparte qué pase está elegido),
+│   │                                 RecorridosProvincia (★★ mapa MapLibre estático con TODAS las
+│   │                                 rutas de la provincia a la vez + chips),
+│   │                                 RecorridoScrollytelling (★★ recorrido de UN pase que avanza
+│   │                                 con el scroll — mapa + panel narrador con foto por parada;
+│   │                                 restaura PaseMapSection, ahora convive bajo RecorridosProvincia)
 │   ├── personajes/components/      → PersonajeCard, ParallaxHero, HeroDespertar (★ hero v2 inmersivo),
 │   │                                 HeroGated/AnatomiaGated (★ gating por desbloqueo),
 │   │                                 AnatomiaSection (★ Fase 4 — hotspots scroll-driven),
@@ -568,6 +572,25 @@ Modo oscuro por defecto.
     `lib/map/bounds.ts` (bbox desde GeoJSON, sin turf.js), `lib/map/paleta-rutas.ts`
   - Namespace i18n `home.recorrido` (17 claves, exclusivas del viejo scrollytelling) retirado por
     completo; `pases.mapa.atribucion` (vacío en es.json) corregido
+- **Recorrido con scroll restaurado + contenido de prueba para todas las provincias con pases**
+  (`feat/pases-recorrido-scroll`, 2026-09-03):
+  - Vuelve el scrollytelling del recorrido (`RecorridoScrollytelling.tsx`, adaptado del retirado
+    `PaseMapSection`): mapa 55% + panel narrador con la foto del personaje de cada parada, el
+    punto rojo viaja calle por calle sincronizado al scroll, timeline y panel de cierre. **Convive
+    bajo `RecorridosProvincia`** (el mapa general de todas las rutas) — no lo reemplaza; el chip que
+    se elige arriba y el selector propio del scrollytelling comparten qué pase se recorre, vía el
+    wrapper nuevo `RecorridoProvinciaSection.tsx`. Correcciones sobre el original: namespace
+    `pases.recorrido` (no el difunto `home.recorrido`), `TILE_STYLE` compartido + `attributionControl`
+    nunca `false`, link "ver ficha" a `/personajes/[slug]` real (oculto si el waypoint no tiene ficha).
+  - `recorrido.service.ts`: `personajeSlug` ahora **opcional** en el waypoint. Sin él, el waypoint es
+    "inline" — trae `nombre`/`leyenda` en el propio JSON y `slug` queda `undefined` (sin link a ficha,
+    visual = `OrigenPlaceholder` en vez de foto). Nuevo flag `esDemo` (de `pase.demo` en el JSON).
+  - `recorrido.json`: de 3 a 9 recorridos. +1 real de Chimborazo (`nino-familia`, 4 personajes con
+    foto) y 5 **demo** (`demo: true`) — uno por cada otra provincia con pases (Cotopaxi/Mama Negra,
+    Tungurahua/Diablada, Azuay/Niño Viajero, Imbabura/Yamor, Pichincha/Fiestas de Quito) con calles
+    reales de cada ciudad (horneadas por `build-route.mjs`) y waypoints inline con nombres de figuras
+    reales. La UI marca las demo ("ruta de referencia · pendiente de verificación en campo"). ⚠ Las
+    **coords ancla de las 5 demo son aproximadas** — pendiente de verificación en campo.
 
 ### 🔄 Siguiente
 - **⚠ Abrir PR a `main` para `feat/selector-pases-recorrido`** (rama ya en origin, commit
@@ -583,10 +606,13 @@ Modo oscuro por defecto.
 - **Revisar kichwa** de namespaces `desbloquear`/`coleccion`/`logros`/`experiencia`/`anatomia` con hablante nativo
 - **Recorrido — datos reales** de Mercado Santa Rosa y Niño Rey de la Paz: coords ancla exactas, personajes que
   desfilan, fotos propias. Tras editar coords en `recorrido.json`: `node scripts/build-route.mjs`
-- **Trazar recorrido real** (coords + waypoints) para las 9 festividades sembradas desde el PDF —
-  hoy solo 3 pases de Chimborazo tienen ruta; el resto (Cotopaxi, Tungurahua, Azuay, Bolívar,
-  Imbabura, Pichincha) muestra "próximamente" en su sección Recorrido. Ver `docs/AGREGAR-PROVINCIA.md`
-- Añadir los demás pases de Chimborazo al recorrido (hoy 3 de 15)
+- **Verificar en campo las 5 rutas demo** (`demo: true` en `recorrido.json`: Cotopaxi, Tungurahua,
+  Azuay, Imbabura, Pichincha) — coords ancla exactas, figuras que desfilan por punto, fotos reales.
+  Al quitar `demo` y poner `personajeSlug` reales, se les cae el badge "ruta de referencia". Tras
+  editar coords: `node scripts/build-route.mjs`. Ver `docs/AGREGAR-PROVINCIA.md`.
+- **Bolívar (Carnaval de Guaranda)** e **Inti Raymi** siguen sin `mes`/`provincia` en `pases.json` →
+  no aparecen en el mapa nacional ni tienen recorrido. Añadir esos campos para incluirlos.
+- Añadir los demás pases de Chimborazo al recorrido (hoy 4 de 15)
 - **Experiencia v2** — Fases 2, 3, 5-12 del plan de 12 fases (Fases 1 y 4 ya implementadas)
 
 ### ⏳ Fase 2
@@ -901,18 +927,22 @@ ves referencias a "SVG nacional" en commits/docs viejos, son de esa primera vers
   verifica que llegaron 24 features y falla si un nombre no está en `NOMBRE_A_SLUG` en vez de
   inventar un slug.
 
-### MapLibre GL en `/pases` (`MapaEcuador.tsx` + `RecorridosProvincia.tsx`)
-Dos instancias de MapLibre en la página, cada una con su propio rol — comparten `lib/map/tile-style.ts`
-(tiles CARTO) y `lib/map/bounds.ts` (cálculo de bbox), pero son mapas independientes:
+### MapLibre GL en `/pases` (`MapaEcuador` + `RecorridosProvincia` + `RecorridoScrollytelling`)
+Hasta **tres** instancias de MapLibre en la página, cada una con su rol — comparten
+`lib/map/tile-style.ts` (tiles CARTO) y `lib/map/bounds.ts` (bbox), pero son mapas independientes:
 
 - **`MapaEcuador.tsx`** (nacional, siempre montado): ver la sección de arriba.
 - **`RecorridosProvincia.tsx`** (Recorrido de una provincia, se monta/desmonta): dibuja **todos** los
-  pases con ruta trazada de la provincia **a la vez** — reemplaza al viejo `PaseMapSection.tsx`
-  (scrollytelling de una sola ruta con selector, retirado 2026-08-10). Sin scroll-jacking, sin `300vh`,
-  sin panel narrador con fotos rotativas: el mapa es estático (`fitBounds` una sola vez sobre la unión
-  de todas las rutas visibles) y cada ruta tiene su propio color (`lib/map/paleta-rutas.ts`,
-  **nunca** `#B8312F` — reservado para "provincia seleccionada" en `MapaEcuador`) + una leyenda simple
-  (color ↔ nombre del pase) debajo del mapa.
+  pases con ruta trazada de la provincia **a la vez**. Sin scroll-jacking, sin `300vh`: el mapa es
+  estático (`fitBounds` una sola vez sobre la unión de todas las rutas visibles) y cada ruta tiene su
+  propio color (`lib/map/paleta-rutas.ts`, **nunca** `#B8312F` — reservado para "provincia
+  seleccionada" en `MapaEcuador`) + chips (color ↔ nombre del pase) debajo del mapa.
+- **`RecorridoScrollytelling.tsx`** (recorrido de UN pase, se monta/desmonta): restaura el retirado
+  `PaseMapSection` — `300vh` scroll-pinned, mapa 55% + panel narrador con la foto del personaje de
+  cada parada, el punto rojo viaja calle por calle con el scroll, timeline y panel de cierre. Ya **no
+  reemplaza** a `RecorridosProvincia`: convive debajo de él (envueltos por `RecorridoProvinciaSection`,
+  que les comparte `paseSlug`). Init perezoso por `IntersectionObserver`; mapa `interactive:false`;
+  `attributionControl: { compact: true }` (nunca `false`). Waypoint sin foto → `OrigenPlaceholder`.
   - **Una sola capa de líneas para N rutas**: `addSource("rutas")` con un `LineString` por pase
     (`properties.paseSlug`) + una expresión `["match", ["get","paseSlug"], slug0, color0, ...]` en
     `line-color` — evita un `addLayer` por pase.
@@ -923,10 +953,12 @@ Dos instancias de MapLibre en la página, cada una con su propio rol — compart
     (`/personajes/[slug]` es `/characters/[slug]` en inglés, ver `i18n/routing.ts` — un helper local
     `personajeHref(locale, slug)` replica ese mapeo).
 - **Datos del recorrido en JSON (multi-pase)**: `lib/data/recorrido.json` tiene la forma
-  `{ defaultPaseSlug, pases: [{ paseSlug, paseNombre, centro, zoom, ruta, waypoints }] }`.
-  `getRecorridos()` (`lib/services/recorrido.service.ts`) une cada waypoint con `personajes.json`
-  (nombre kichwa-first, `narrativa.leyenda`, altText) y pasa el campo opcional `dato` (hoy sin
-  consumidor — el panel narrador que lo mostraba se retiró). `acotarRecorridos()` sigue acotando el
+  `{ defaultPaseSlug, pases: [{ paseSlug, paseNombre, centro, zoom, demo?, ruta, waypoints }] }`.
+  `getRecorridos()` (`lib/services/recorrido.service.ts`): si el waypoint trae `personajeSlug` lo
+  une con `personajes.json` (nombre kichwa-first, `narrativa.leyenda`, altText, `slug`); si **no**
+  (waypoint "inline", provincias sin catálogo de figuras), usa `nombre`/`leyenda` del propio JSON y
+  `slug` queda `undefined` (sin link a ficha). `pase.demo:true` → `esDemo` (la UI lo marca como
+  "ruta de referencia"). `dato` opcional hoy sin consumidor. `acotarRecorridos()` sigue acotando el
   objeto completo a los pases de una sola provincia (si no, `RecorridosProvincia` mezclaría rutas de
   provincias distintas) — `defaultPaseSlug` queda como metadato sin uso activo (no hay selector de
   "cuál abre" con el nuevo diseño multi-ruta).

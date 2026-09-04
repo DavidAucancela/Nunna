@@ -35,17 +35,20 @@ describe("getProvinciasConPases", () => {
     }
   });
 
-  it("incluye provincias sin recorrido trazado todavía (ej. la mayoría de las nuevas)", async () => {
+  it("no filtra por recorrido trazado: una provincia marcada puede tener pases sin ruta", async () => {
     const pases = await getPases({});
     const [provincias, recorridos] = await Promise.all([
       getProvinciasConPases(pases),
       getRecorridos(),
     ]);
     const conRecorrido = new Set(recorridos.pases.map((r) => r.paseSlug));
-    const sinRecorrido = provincias.filter(
-      (p) => !p.pases.some((pase) => conRecorrido.has(pase.slug))
-    );
-    expect(sinRecorrido.length).toBeGreaterThan(0);
+    // El criterio de inclusión es "tiene pase con mes", no "tiene ruta": debe
+    // seguir habiendo pases dentro de provincias marcadas que no tienen trazado
+    // (cobertura parcial → la sección Recorrido cae a "próximamente" por pase).
+    const pasesSinRuta = provincias
+      .flatMap((p) => p.pases)
+      .filter((pase) => !conRecorrido.has(pase.slug));
+    expect(pasesSinRuta.length).toBeGreaterThan(0);
   });
 
   it("toda provincia referenciada por un pase existe en el catálogo", async () => {
