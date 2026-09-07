@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 
 import { getPersonaje, getPersonajes } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import { FadeUp } from "@/components/ui/FadeUp";
+import { DesbloqueoHero } from "@/modules/desbloqueo/components/DesbloqueoHero";
 import {
   DesbloquearForm,
   type PersonajeLite,
@@ -49,6 +49,7 @@ export default async function DesbloquearSlugPage({ params }: Props) {
     origen: p.origen ?? null,
     imagenPortada: p.imagenPortada ?? null,
     imagenBanner: p.imagenBanner ?? null,
+    imagenIngreso: p.imagenIngreso ?? null,
   }));
 
   const personajeActivo: PersonajeLite = lookup.find((p) => p.slug === slug) ?? {
@@ -57,45 +58,28 @@ export default async function DesbloquearSlugPage({ params }: Props) {
     origen: personaje.origen ?? null,
     imagenPortada: null,
     imagenBanner: null,
+    imagenIngreso: personaje.imagenIngreso ?? null,
   };
 
   const origenStyle = getOrigenStyle(personajeActivo.origen ?? undefined);
-  // El banner (landscape) encaja de lleno en este hero ancho/bajo; el retrato
-  // (portrait, pensado para PersonajeCard) es solo fallback si aún no hay banner.
-  const heroImagen = personajeActivo.imagenBanner ?? personajeActivo.imagenPortada;
+  // La foto de escena ("imagenIngreso") es la pensada para este hero; el banner
+  // (landscape, de la ficha) y el retrato (portrait, de PersonajeCard) son
+  // fallback en ese orden si aún no hay foto de escena.
+  const heroImagen = personajeActivo.imagenIngreso ?? personajeActivo.imagenBanner ?? personajeActivo.imagenPortada;
+  // Escena/banner son landscape (cover centrado); el retrato necesita object-top
+  // para no recortar la cara.
+  const heroEsEscena = !!personajeActivo.imagenIngreso || !!personajeActivo.imagenBanner;
 
   return (
     <div className="min-h-[calc(100vh-4rem)]">
       {/* Hero del personaje */}
-      <div className="relative flex min-h-[55vw] max-h-[420px] w-full items-end overflow-hidden bg-fondo-oscuro sm:min-h-[320px]">
-        {heroImagen ? (
-          <>
-            <Image
-              src={heroImagen}
-              alt={personajeActivo.nombre}
-              fill
-              className={personajeActivo.imagenBanner ? "object-cover" : "object-cover object-top"}
-              priority
-              sizes="100vw"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-fondo-oscuro via-fondo-oscuro/40 to-transparent" />
-          </>
-        ) : (
-          <div className="absolute inset-0" style={{ backgroundColor: `${origenStyle.accentColor}18` }} />
-        )}
-
-        <div className="relative z-10 w-full px-5 pb-6 sm:px-8">
-          <span
-            className="mb-2 inline-block rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest"
-            style={{ backgroundColor: `${origenStyle.accentColor}22`, color: origenStyle.accentColor }}
-          >
-            {personajeActivo.origen}
-          </span>
-          <h1 className="font-serif text-4xl font-bold text-texto-claro sm:text-5xl">
-            {personajeActivo.nombre}
-          </h1>
-        </div>
-      </div>
+      <DesbloqueoHero
+        imagenUrl={heroImagen}
+        esEscena={heroEsEscena}
+        nombre={personajeActivo.nombre}
+        origen={personajeActivo.origen}
+        accentColor={origenStyle.accentColor}
+      />
 
       {/* Sección de desbloqueo */}
       <section className="mx-auto max-w-lg px-5 py-10 sm:px-6 sm:py-14">

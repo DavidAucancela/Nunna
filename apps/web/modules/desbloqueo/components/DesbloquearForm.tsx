@@ -10,7 +10,6 @@ import {
   useColeccion,
   setPendingCode,
   consumePendingCode,
-  setPendingLoginOnly,
   CODE_RE,
   type RedeemResult,
   type CodeStatus,
@@ -23,6 +22,7 @@ export interface PersonajeLite {
   origen: string | null;
   imagenPortada: string | null;
   imagenBanner: string | null;
+  imagenIngreso?: string | null;
 }
 
 /**
@@ -62,14 +62,11 @@ export function DesbloquearForm({
   const [codeCheck, setCodeCheck] = useState<CodeCheck>("idle");
   const [unlockedSlug, setUnlockedSlug] = useState<string | null>(null);
   const [showDespertar, setShowDespertar] = useState(false);
-  const [loginOnlySend, setLoginOnlySend] = useState(false);
-  const [loginMode, setLoginMode] = useState(false);
   const despertarSlugRef = useRef<string | null>(null);
   const autoTriedRef = useRef(false);
   const mountedRef = useRef(true);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const checkSeqRef = useRef(0);
-  const emailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -239,9 +236,8 @@ export function DesbloquearForm({
     e.preventDefault();
     setErrorKey(null);
     const normalized = code.trim().toUpperCase();
-    const loginOnly = !session && normalized === "";
 
-    if (!loginOnly && !CODE_RE.test(normalized)) {
+    if (!CODE_RE.test(normalized)) {
       setErrorKey("error_invalido");
       return;
     }
@@ -263,23 +259,12 @@ export function DesbloquearForm({
     }
 
     setPhase("sending");
-    setLoginOnlySend(loginOnly);
-    if (loginOnly) {
-      // Descarta cualquier código pendiente de un intento previo (p.ej. un
-      // not_authenticated viejo en otro personaje) para que el auto-canje al
-      // volver del enlace no dispare sobre un código que esta persona no escribió.
-      consumePendingCode();
-      // Marca este envío como "solo login": ColeccionProvider lo lee al volver
-      // del enlace para mandar a /mis-personajes (con tutorial la primera vez).
-      setPendingLoginOnly();
-    } else {
-      setPendingCode(normalized);
-    }
-    const err = await signInWithEmail(email.trim(), loginOnly ? undefined : normalized);
+    setPendingCode(normalized);
+    const err = await signInWithEmail(email.trim(), normalized);
     if (!mountedRef.current) return;
     if (err) {
-      if (!loginOnly) consumePendingCode();
-      setErrorKey("error_email");
+      consumePendingCode();
+      setErrorKey(err === "rate_limited" ? "error_rate_limited" : "error_email");
       setPhase("form");
       return;
     }
@@ -402,9 +387,7 @@ export function DesbloquearForm({
             </svg>
           </div>
           <h2 className="font-serif text-2xl font-bold text-texto-claro">{t("enlace_enviado_titulo")}</h2>
-          <p className="mt-3 text-stone-400">
-            {t(loginOnlySend ? "enlace_enviado_login_texto" : "enlace_enviado_texto", { email })}
-          </p>
+          <p className="mt-3 text-stone-400">{t("enlace_enviado_texto", { email })}</p>
           <button
             onClick={volver}
             className="mt-6 text-xs text-stone-500 underline underline-offset-2 hover:text-stone-400"
@@ -421,56 +404,52 @@ export function DesbloquearForm({
   return (
     <>
       <form onSubmit={handleSubmit} className="mx-auto max-w-md">
-        {!loginMode && (
-          <>
-            <label htmlFor="codigo" className="block text-sm font-medium text-texto-claro">
-              {t("codigo_label")}
-            </label>
-            <div className="mt-2 flex gap-2">
-              <input
-                id="codigo"
-                name="codigo"
-                inputMode="text"
-                autoCapitalize="characters"
-                autoComplete="off"
-                maxLength={CODE_LEN}
-                value={code}
-                onChange={(e) => handleCodeChange(e.target.value)}
-                placeholder={t("codigo_placeholder")}
-                className="w-full rounded-xl border border-borde-sutil bg-stone-900/50 px-4 py-3 text-center font-mono text-2xl tracking-[0.4em] text-texto-claro placeholder:tracking-normal placeholder:text-stone-600 focus:border-acento-dorado focus:outline-none"
-                aria-describedby="codigo-estado"
-              />
-              <button
-                type="button"
-                onClick={handleVerifyClick}
-                disabled={code.length < CODE_LEN || codeCheck === "checking"}
-                className="shrink-0 rounded-xl border border-borde-sutil px-4 text-xs font-medium text-stone-300 transition-colors hover:border-acento-dorado hover:text-acento-dorado disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                {codeCheck === "checking" ? t("verificando") : t("verificar")}
-              </button>
-            </div>
+        <label htmlFor="codigo" className="block text-sm font-medium text-texto-claro">
+          {t("codigo_label")}
+        </label>
+        <div className="mt-2 flex gap-2">
+          <input
+            id="codigo"
+            name="codigo"
+            inputMode="text"
+            autoCapitalize="characters"
+            autoComplete="off"
+            maxLength={CODE_LEN}
+            value={code}
+            onChange={(e) => handleCodeChange(e.target.value)}
+            placeholder={t("codigo_placeholder")}
+            className="w-full rounded-xl border border-borde-sutil bg-stone-900/50 px-4 py-3 text-center font-mono text-2xl tracking-[0.4em] text-texto-claro placeholder:tracking-normal placeholder:text-stone-600 focus:border-acento-dorado focus:outline-none"
+            aria-describedby="codigo-estado"
+          />
+          <button
+            type="button"
+            onClick={handleVerifyClick}
+            disabled={code.length < CODE_LEN || codeCheck === "checking"}
+            className="shrink-0 rounded-xl border border-borde-sutil px-4 text-xs font-medium text-stone-300 transition-colors hover:border-acento-dorado hover:text-acento-dorado disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {codeCheck === "checking" ? t("verificando") : t("verificar")}
+          </button>
+        </div>
 
-            {/* Indicador inline de la verificación en tiempo real — no bloquea el formulario */}
-            <AnimatePresence>
-              {codeCheck !== "idle" && codeCheck !== "checking" && (
-                <motion.p
-                  id="codigo-estado"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  role="status"
-                  className={`mt-2 text-xs ${codeCheck === "valid" ? "text-emerald-400" : "text-acento-rojo"}`}
-                >
-                  {codeCheck === "valid" && `✓ ${t("codigo_valido")}`}
-                  {codeCheck === "invalid" && t("error_invalido")}
-                  {codeCheck === "wrong_character" && t("error_otro_personaje")}
-                  {codeCheck === "already_redeemed" && t("error_ya_canjeado")}
-                  {(codeCheck === "not_configured" || codeCheck === "error") && t("error_generico")}
-                </motion.p>
-              )}
-            </AnimatePresence>
-          </>
-        )}
+        {/* Indicador inline de la verificación en tiempo real — no bloquea el formulario */}
+        <AnimatePresence>
+          {codeCheck !== "idle" && codeCheck !== "checking" && (
+            <motion.p
+              id="codigo-estado"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              role="status"
+              className={`mt-2 text-xs ${codeCheck === "valid" ? "text-emerald-400" : "text-acento-rojo"}`}
+            >
+              {codeCheck === "valid" && `✓ ${t("codigo_valido")}`}
+              {codeCheck === "invalid" && t("error_invalido")}
+              {codeCheck === "wrong_character" && t("error_otro_personaje")}
+              {codeCheck === "already_redeemed" && t("error_ya_canjeado")}
+              {(codeCheck === "not_configured" || codeCheck === "error") && t("error_generico")}
+            </motion.p>
+          )}
+        </AnimatePresence>
 
         {!session && (
           <>
@@ -481,7 +460,6 @@ export function DesbloquearForm({
               id="email"
               name="email"
               type="email"
-              ref={emailInputRef}
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -490,34 +468,13 @@ export function DesbloquearForm({
             />
 
             <div className="mt-4 rounded-xl border border-borde-sutil bg-stone-900/30 px-4 py-3 text-center">
-              {!loginMode ? (
-                <>
-                  <p className="text-sm font-medium text-texto-claro">{t("ya_tienes_cuenta")}</p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleCodeChange("");
-                      setLoginMode(true);
-                      setErrorKey(null);
-                      setTimeout(() => emailInputRef.current?.focus(), 0);
-                    }}
-                    className="mt-2 w-full rounded-full border border-borde-sutil px-6 py-2.5 text-sm font-medium text-stone-300 transition-colors hover:border-acento-dorado hover:text-acento-dorado"
-                  >
-                    {tc("iniciar_sesion")}
-                  </button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLoginMode(false);
-                    setErrorKey(null);
-                  }}
-                  className="text-xs text-stone-500 underline underline-offset-2 hover:text-stone-400"
-                >
-                  {t("volver_codigo")}
-                </button>
-              )}
+              <p className="text-sm font-medium text-texto-claro">{t("ya_tienes_cuenta")}</p>
+              <Link
+                href="/login"
+                className="mt-2 inline-flex w-full items-center justify-center rounded-full border border-borde-sutil px-6 py-2.5 text-sm font-medium text-stone-300 transition-colors hover:border-acento-dorado hover:text-acento-dorado"
+              >
+                {tc("iniciar_sesion")}
+              </Link>
             </div>
           </>
         )}
@@ -541,10 +498,9 @@ export function DesbloquearForm({
           disabled={
             busy ||
             !(
-              (!session && code.length === 0 && email.trim().length > 0) ||
-              (code.length === CODE_LEN &&
-                (session || email.trim().length > 0) &&
-                (!gatingActive || codeCheck === "valid"))
+              code.length === CODE_LEN &&
+              (session || email.trim().length > 0) &&
+              (!gatingActive || codeCheck === "valid")
             )
           }
           className="mt-6 w-full rounded-full bg-acento-dorado px-6 py-3.5 text-sm font-semibold text-fondo-oscuro transition-all hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-40"
@@ -555,9 +511,7 @@ export function DesbloquearForm({
               ? t("enviando")
               : session
                 ? t("boton_despertar")
-                : code.length === 0
-                  ? tc("iniciar_sesion")
-                  : t("boton_enviar_enlace")}
+                : t("boton_enviar_enlace")}
         </button>
 
         {session?.user?.email && (

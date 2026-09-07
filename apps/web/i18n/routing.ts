@@ -35,5 +35,9 @@ export const routing = defineRouting({
       es: "/mis-personajes",
       en: "/my-characters",
     },
+    "/login": {
+      es: "/login",
+      en: "/login",
+    },
   },
 });
