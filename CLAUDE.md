@@ -157,7 +157,9 @@ apps/web/
 │   ├── site-url.ts                 → SITE_URL (NEXT_PUBLIC_SITE_URL; base de OG/sitemap/robots)
 │   └── seo.ts                      → localeAlternates() — canonical + hreflang por página
 ├── public/
-│   ├── personajes/                 → Imágenes planas [slug]-*.png (retrato, banner, en-pase, presentación)
+│   ├── personajes/                 → ★ una carpeta por slug: [slug]/[slug]-[seccion]-[desc].[ext]
+│   │                                 (seccion = hero | iman | taller | escenario | pase);
+│   │                                 `otros/` = figuras sin ficha + material sin clasificar
 │   ├── informacion_pases/          → Imágenes de los pases (antes public/pases/, movidas 2026-06-14)
 │   ├── pases-videos/               → Video de fondo del hero (main-header.mp4, 4.4 MB comprimido)
 │   └── audio/                      → Audio ambiente del hero v2 ([slug]-ambiente.mp3) — ver README
@@ -189,15 +191,39 @@ Las páginas son **SSG puro** — `generateStaticParams` + sin `force-dynamic`.
 
 ## Imágenes — convenciones
 
-### Tipos de imagen por personaje
+### Carpeta por personaje + nombre autodescriptivo ★ (2026-09-04)
 
-| Campo / archivo | Uso | Formato |
-|----------------|-----|---------|
-| `imagenPortada` en JSON → `public/personajes/[slug].png` | Tarjetas del grid (`PersonajeCard`) | Retrato portrait |
-| `imagenBanner` en JSON → `public/personajes/[slug]-banner.png` | Hero de la ficha (`ParallaxHero`) | Landscape 1376×768 |
-| `multimedia[].url` con `titulo:"proceso"` → `public/personajes/[slug]-presentacion.png` | Galería unificada (foto del imán) | Libre |
-| `multimedia[].url` con `titulo:"en-pase"` → `public/personajes/[slug]-pase-N.webp` | Galería unificada (van primero) + waypoints del recorrido + beats de la presentación | Libre |
-| sin `titulo` / `titulo:"retrato"` | Galería unificada | Libre |
+Las imágenes de personaje viven en **una carpeta por slug**: `public/personajes/[slug]/`.
+El nombre de archivo declara a qué personaje pertenece, **en qué sección se usa** y qué se ve:
+
+```
+public/personajes/[slug]/[slug]-[seccion]-[descripcion].[ext]
+                          ↑        ↑          ↑
+                          contrato dónde se   qué se ve en la foto
+                          del QR   usa
+```
+
+| `[seccion]` | Dónde se usa | Campo del JSON |
+|-------------|--------------|----------------|
+| `hero` | `PersonajeCard` del grid, hero de la ficha, pines de `AnatomiaSection` | `imagenPortada` |
+| `iman` | Galería — el producto físico sobre fondo limpio | `multimedia[]`, `titulo:"proceso"` |
+| `taller` | Galería — la pieza en el taller, entre los filamentos | `multimedia[]`, `titulo:"proceso"` |
+| `escenario` | Galería — el imán compuesto en paisaje (Chimborazo, confeti) | `multimedia[]`, `titulo:"proceso"` |
+| `pase` | Galería (van **primero**) + waypoints del recorrido + beats de la presentación | `multimedia[]`, `titulo:"en-pase"` |
+
+El `id` de cada `Media` es el nombre del archivo sin extensión — así el JSON y el disco se leen igual.
+Ejemplo: `/personajes/aya-uma/aya-uma-pase-desfile-centro-riobamba.webp` → `id: "aya-uma-pase-desfile-centro-riobamba"`.
+
+> **`public/personajes/otros/`** guarda imágenes que **no** pertenecen a ningún personaje publicado:
+> figuras sin ficha (`cucurucho-*`) y material sin clasificar (`sin-clasificar-*`). Nada de esa carpeta
+> se referencia desde el JSON — es un buzón, no una sección.
+
+> ⚠ **Los banners siguen en `public/headers/[slug]-banner.webp`**, fuera de la carpeta del personaje
+> (`imagenBanner`). No se movieron.
+
+> ⚠ **Nunca renombres una carpeta de personaje**: su nombre es el `slug`, y el slug es el contrato
+> permanente del QR impreso (ver "QR — contrato de URL permanente"). Los **archivos** dentro sí se
+> pueden renombrar libremente — solo se referencian desde `personajes.json` y `recorrido.json`.
 
 > **Imágenes de pases** (mapa nacional, calendario y tarjetas de `/pases`): en
 > `public/informacion_pases/`, referenciadas por `pases.json` como `/informacion_pases/[archivo]`.
@@ -1012,7 +1038,9 @@ Hasta **tres** instancias de MapLibre en la página, cada una con su rol — com
 > retrato + banner. Audio del hero en `public/audio/`. Hotspots: aya-uma 4, payaso 3, perro 3, diablos 4.
 
 Para agregar un personaje: editar `apps/web/lib/data/personajes.json` con la estructura existente.
-Para agregar imágenes: copiar a `public/personajes/` y actualizar `imagenPortada` / `imagenBanner` / `multimedia` en el JSON.
+Para agregar imágenes: copiar a `public/personajes/[slug]/` con el nombre
+`[slug]-[seccion]-[descripcion].[ext]` (ver "Imágenes — convenciones") y actualizar
+`imagenPortada` / `imagenBanner` / `multimedia` en el JSON.
 
 ---
 

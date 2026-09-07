@@ -40,7 +40,7 @@ function ImanVisual() {
       <div className="relative aspect-square overflow-hidden rounded-[1.6rem] border border-acento-dorado/25 shadow-2xl shadow-black/40">
         {/* Fondo: diablo de lata en pase — borroso y atenuado */}
         <Image
-          src="/personajes/diablos-de-lata-en-pase-1.jpg"
+          src="/personajes/diablos-de-lata/diablos-de-lata-pase-mascara-roja-de-perfil.jpg"
           alt=""
           aria-hidden="true"
           fill
@@ -51,7 +51,7 @@ function ImanVisual() {
 
         {/* Imán — grande, centrado, con bordes difuminados sobre la foto */}
         <Image
-          src="/personajes/diablos-de-lata-iman-principal.webp"
+          src="/personajes/diablos-de-lata/diablos-de-lata-iman-pechera-dorada.webp"
           alt="Imán artesanal Diablos de lata"
           fill
           className="object-contain p-2 drop-shadow-[0_12px_30px_rgba(0,0,0,0.55)]"
@@ -148,7 +148,7 @@ function FichaVisual() {
   return (
     <PhoneMock>
       <Image
-        src="/personajes/diablos-de-lata.webp"
+        src="/personajes/diablos-de-lata/diablos-de-lata-hero-figura-mascara-roja.webp"
         alt="Ficha del personaje en el teléfono"
         fill
         className="object-cover object-top"
