@@ -177,7 +177,7 @@ export function RecorridosProvincia({ recorridos, pasesInfo = [], onSelectPase }
 
               const verFicha = tPases("ver_ficha_personaje", { nombre: wp.nombre });
               const imgHtml = wp.imagen
-                ? `<img src="${wp.imagen}" alt="${escapeHtml(wp.alt)}" style="width:100%;height:110px;object-fit:cover;border-radius:8px;display:block" />`
+                ? `<img src="${escapeHtml(wp.imagen)}" alt="${escapeHtml(wp.alt)}" style="width:100%;height:110px;object-fit:cover;border-radius:8px;display:block" />`
                 : "";
               const fichaHtml = wp.slug
                 ? `<a href="${personajeHref(locale, wp.slug)}" style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:${color};text-decoration:none;">${escapeHtml(verFicha)} →</a>`
