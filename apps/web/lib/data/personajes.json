@@ -15,7 +15,7 @@
     "descripcion": "<h2>El señor de los dos mundos</h2><p>El nombre Aya Uma proviene de dos palabras kichwa: <em>aya</em> (espíritu, alma, difunto) y <em>uma</em> (cabeza). Es literalmente «la cabeza del espíritu». Esta figura es el eje ritual de los pases riobambeños: su presencia garantiza que la comunicación entre el mundo de los vivos (Kay Pacha) y el mundo de los ancestros (Uku Pacha) esté abierta durante la celebración.</p><h2>La máscara de doble rostro</h2><p>La máscara del Aya Uma es la más elaborada de todos los personajes del pase. Tiene dos caras —una en la parte delantera y otra en la parte trasera de la cabeza— porque el Aya Uma ve en todas las direcciones simultáneamente: el pasado y el futuro, el mundo de arriba y el de abajo. Los doce cuernos que rodean la máscara representan los doce meses del año solar. Cada cuerno puede llevar cintas de colores con significados específicos: el rojo para la fuerza, el amarillo para la prosperidad, el verde para la naturaleza.</p><h2>El fuete y la danza sin fin</h2><p>El Aya Uma porta siempre un fuete (látigo) que golpea rítmicamente contra el suelo durante toda la danza. Este golpe no es violencia: es comunicación con la Pachamama, un llamado al que la tierra responde con fertilidad. La danza del Aya Uma no tiene coreografía fija —es improvisación constante alrededor de un eje de giro, con saltos, giros y movimientos que pueden durar horas sin pausa.</p><h2>El silencio como poder</h2><p>A diferencia del Payaso o el Sacha Runa, el Aya Uma nunca habla. Su poder ritual radica precisamente en ese silencio: lo que el espíritu comunica va más allá de las palabras humanas. Cuando el Aya Uma señala con el fuete hacia alguien en el público, ese momento tiene peso ritual —es una bendición o una advertencia.</p>",
     "simbolismo": "Representa la dualidad fundamental del cosmos andino: vida y muerte, pasado y futuro, Kay Pacha y Uku Pacha. Los doce cuernos symbolizan el ciclo anual completo. La doble máscara recuerda que el tiempo andino no es lineal sino circular: el futuro ya ocurrió en otro ciclo. El fuete que golpea la tierra es el pulso del pase, el corazón visible de la comunicación entre mundos.",
     "origen": "prehispanico",
-    "imagenPortada": "/personajes/aya-uma.webp",
+    "imagenPortada": "/personajes/aya-uma/aya-uma-hero-figura-frontal.webp",
     "imagenBanner": "/headers/aya-uma-banner.webp",
     "narrativa": {
       "leyenda": "Donde el espíritu camina, la tierra responde.",
@@ -81,49 +81,103 @@
     "apariciones": [],
     "multimedia": [
       {
-        "id": "aya-uma-iman",
+        "id": "aya-uma-pase-tocado-de-cuernos-colores",
         "tipo": "imagen",
-        "url": "/personajes/aya-uma-iman.webp",
-        "altText": "Imán artesanal de Aya Uma",
-        "titulo": "proceso",
-        "descripcion": "El imán del Aya Uma, con su máscara de doble rostro.",
-        "orden": 0
-      },
-      {
-        "id": "aya-uma-presentacion",
-        "tipo": "imagen",
-        "url": "/personajes/aya-uma-presentacion.webp",
-        "altText": "Imán Aya Uma — presentación individual",
-        "titulo": "proceso",
-        "descripcion": "El imán del Aya Uma, pieza artesanal única.",
+        "url": "/personajes/aya-uma/aya-uma-pase-tocado-de-cuernos-colores.webp",
+        "titulo": "en-pase",
+        "altText": "Primer plano del tocado de cuernos de colores del Aya Uma en el pase",
+        "descripcion": "El tocado de cuernos: el elemento que corona la máscara.",
         "orden": 1
       },
       {
-        "id": "aya-uma-grupo",
+        "id": "aya-uma-pase-traje-rojo-con-humo-verde",
         "tipo": "imagen",
-        "url": "/personajes/aya-uma-grupo.jpeg",
-        "altText": "Colección de imanes del Aya Uma",
-        "titulo": "proceso",
-        "descripcion": "Handcrafted, Spirit-Infused Collections.",
+        "url": "/personajes/aya-uma/aya-uma-pase-traje-rojo-con-humo-verde.webp",
+        "titulo": "en-pase",
+        "altText": "Danzante de traje rojo con flecos dorados agitando un fuete de pompones entre humo verde",
+        "descripcion": "El fuete de pompones en alto, entre el humo de la fiesta.",
         "orden": 2
       },
       {
-        "id": "aya-uma-en-pase-1",
+        "id": "aya-uma-pase-desfile-centro-riobamba",
         "tipo": "imagen",
-        "url": "/personajes/aya-uma-en-pase-1.webp",
-        "altText": "Aya Uma danzando en el Pase del Niño Riobambeño",
+        "url": "/personajes/aya-uma/aya-uma-pase-desfile-centro-riobamba.webp",
         "titulo": "en-pase",
+        "altText": "Aya Uma danzando en el Pase del Niño Riobambeño",
         "descripcion": "El Aya Uma en plena danza durante el pase por las calles de Riobamba.",
+        "orden": 3
+      },
+      {
+        "id": "aya-uma-pase-grupo-mascaras-de-lana",
+        "tipo": "imagen",
+        "url": "/personajes/aya-uma/aya-uma-pase-grupo-mascaras-de-lana.webp",
+        "titulo": "en-pase",
+        "altText": "Grupo de Aya Umas con máscaras tejidas en lana frente a una iglesia",
+        "descripcion": "Varios Aya Umas reunidos: cada máscara es distinta, ninguna se repite.",
+        "orden": 4
+      },
+      {
+        "id": "aya-uma-pase-mascara-lana-y-zamarro",
+        "tipo": "imagen",
+        "url": "/personajes/aya-uma/aya-uma-pase-mascara-lana-y-zamarro.avif",
+        "titulo": "en-pase",
+        "altText": "Aya Uma con máscara tejida y zamarro de piel danzando junto a mujeres de pollera",
+        "descripcion": "La máscara tejida y el zamarro de piel, en la calle y en movimiento.",
+        "orden": 5
+      },
+      {
+        "id": "aya-uma-pase-danza-con-banda",
+        "tipo": "imagen",
+        "url": "/personajes/aya-uma/aya-uma-pase-danza-con-banda.jpg",
+        "titulo": "en-pase",
+        "altText": "Aya Uma en el Pase del Niño acompañado por la banda de pueblo",
+        "descripcion": "El Aya Uma lidera la procesión durante el Pase del Niño.",
+        "orden": 6
+      },
+      {
+        "id": "aya-uma-escenario-cuatro-imanes-chimborazo",
+        "tipo": "imagen",
+        "url": "/personajes/aya-uma/aya-uma-escenario-cuatro-imanes-chimborazo.webp",
+        "titulo": "proceso",
+        "altText": "Cuatro imanes de Aya Uma frente al nevado Chimborazo",
+        "descripcion": "Los cuatro colores del Aya Uma, con el Chimborazo de fondo.",
         "orden": 10
       },
       {
-        "id": "aya-uma-en-pase-2",
+        "id": "aya-uma-taller-iman-en-pedestal",
         "tipo": "imagen",
-        "url": "/personajes/aya-uma-en-pase-2.jpg",
-        "altText": "Aya Uma en el Pase del Niño en plaza de Riobamba",
-        "titulo": "en-pase",
-        "descripcion": "El Aya Uma lidera la procesión durante el Pase del Niño.",
+        "url": "/personajes/aya-uma/aya-uma-taller-iman-en-pedestal.webp",
+        "titulo": "proceso",
+        "altText": "Imán del Aya Uma sobre pedestal en el taller, junto a bobinas de filamento",
+        "descripcion": "La pieza terminada en el taller, entre los filamentos con que se imprime.",
         "orden": 11
+      },
+      {
+        "id": "aya-uma-iman-mascara-doce-cuernos",
+        "tipo": "imagen",
+        "url": "/personajes/aya-uma/aya-uma-iman-mascara-doce-cuernos.webp",
+        "titulo": "proceso",
+        "altText": "Imán artesanal del Aya Uma pintado a mano, con sus doce cuernos",
+        "descripcion": "El imán del Aya Uma, con su máscara de doble rostro.",
+        "orden": 12
+      },
+      {
+        "id": "aya-uma-iman-cuatro-colores",
+        "tipo": "imagen",
+        "url": "/personajes/aya-uma/aya-uma-iman-cuatro-colores.webp",
+        "titulo": "proceso",
+        "altText": "Las cuatro variantes de color del imán de Aya Uma sobre fondo blanco",
+        "descripcion": "Cada imán se pinta a mano: no hay dos iguales.",
+        "orden": 13
+      },
+      {
+        "id": "aya-uma-iman-grupo-primer-plano",
+        "tipo": "imagen",
+        "url": "/personajes/aya-uma/aya-uma-iman-grupo-primer-plano.jpeg",
+        "titulo": "proceso",
+        "altText": "Varios imanes de Aya Uma en primer plano, alineados",
+        "descripcion": "Los detalles del pintado a mano, vistos de cerca.",
+        "orden": 14
       }
     ],
     "testimonios": [],
@@ -148,7 +202,7 @@
     "descripcion": "<h2>El crítico con máscara</h2><p>En los pases riobambeños, el Payaso no entretiene pasivamente: actúa, improvisa, interpela. Se acerca al público, lo imita, exagera sus gestos, parodia a las figuras de autoridad que aparecen en la celebración. Esta práctica tiene raíces profundas: en las culturas andinas prehispánicas existían figuras análogas (los llamados «indios gracioso» en documentos coloniales) que cumplían una función ritual de inversión del orden social.</p><h2>El traje</h2><p>El traje del Payaso es el más heterogéneo de todos: no existe un modelo único. Cada payaso construye su traje con retazos de tela de colores contrastantes —rojo, amarillo, verde, naranja— cosidos sin aparente orden estético. Los cascabeles en los bordes del traje y el sombrero de ala ancha son los elementos más constantes. La máscara tiene rasgos caricaturizados: nariz grande, mejillas rojizas, sonrisa fija.</p><h2>La improvisación como arte</h2><p>A diferencia de otros personajes cuya danza sigue coreografías tradicionales, el Payaso improvisa. Su actuación depende del contexto: qué está pasando en el pase ese día, quién es el público, qué noticias o conflictos sociales son relevantes en ese momento. Un buen payaso de pase es un cronista de su tiempo.</p>",
     "simbolismo": "Representa la función social de la crítica mediante la risa. En el espacio ritual del pase, el Payaso tiene licencia para decir lo que nadie más puede. Es el guardián de la verdad disfrazado de entretenimiento. Su máscara fija de sonrisa contrasta con la posibilidad de decir cosas dolorosas: la risa como estrategia de supervivencia cultural.",
     "origen": "mixto",
-    "imagenPortada": "/personajes/payaso.webp",
+    "imagenPortada": "/personajes/payaso/payaso-hero-figura-traje-rosa.webp",
     "imagenBanner": "/headers/payaso-banner.webp",
     "narrativa": {
       "leyenda": "La máscara sonríe fija. La verdad no necesita permiso para salir.",
@@ -205,67 +259,94 @@
     "apariciones": [],
     "multimedia": [
       {
-        "id": "payaso-iman",
+        "id": "payaso-pase-mascara-de-nariz-verde",
         "tipo": "imagen",
-        "url": "/personajes/payaso-iman.webp",
-        "altText": "Imán artesanal de Payaso",
-        "titulo": "proceso",
-        "descripcion": "El imán del Payaso, guardián festivo del pase.",
-        "orden": 0
-      },
-      {
-        "id": "payaso-en-pase-1",
-        "tipo": "imagen",
-        "url": "/personajes/payaso-en-pase-1.jpeg",
-        "altText": "Payaso en el Pase del Niño Riobambeño",
+        "url": "/personajes/payaso/payaso-pase-mascara-de-nariz-verde.jpg",
         "titulo": "en-pase",
-        "descripcion": "El Payaso en acción durante el pase, interactuando con el público.",
+        "altText": "Primer plano de la máscara del Payaso riobambeño, con nariz verde",
+        "descripcion": "Detalle de la máscara pintada a mano del Payaso, símbolo de la crítica social festiva.",
         "orden": 1
       },
       {
-        "id": "payaso-proceso-1",
+        "id": "payaso-pase-gorro-conico-rojo",
         "tipo": "imagen",
-        "url": "/personajes/payaso-iman-principal.webp",
-        "altText": "Imán Payaso — presentación individual",
+        "url": "/personajes/payaso/payaso-pase-gorro-conico-rojo.webp",
+        "titulo": "en-pase",
+        "altText": "Payaso con gorro cónico rojo y dorado, rostro pintado de blanco y traje morado con amarillo",
+        "descripcion": "El gorro cónico y el rostro pintado: el payaso más clásico del pase.",
+        "orden": 2
+      },
+      {
+        "id": "payaso-pase-gorro-dorado-y-peluche",
+        "tipo": "imagen",
+        "url": "/personajes/payaso/payaso-pase-gorro-dorado-y-peluche.jpeg",
+        "titulo": "en-pase",
+        "altText": "Payaso tradicional riobambeño con gorro dorado y un peluche en la mano",
+        "descripcion": "El Payaso Tradicional del Pase del Niño, con su traje característico.",
+        "orden": 3
+      },
+      {
+        "id": "payaso-pase-plaza-de-la-alcaldia",
+        "tipo": "imagen",
+        "url": "/personajes/payaso/payaso-pase-plaza-de-la-alcaldia.jpg",
+        "titulo": "en-pase",
+        "altText": "Payaso riobambeño posando frente al edificio de la alcaldía de Riobamba",
+        "descripcion": "El Payaso en el centro de Riobamba, corazón de la celebración.",
+        "orden": 4
+      },
+      {
+        "id": "payaso-pase-afiche-pases-del-nino",
+        "tipo": "imagen",
+        "url": "/personajes/payaso/payaso-pase-afiche-pases-del-nino.jpg",
+        "titulo": "en-pase",
+        "altText": "Afiche del Payaso Tradicional en los Pases del Niño de Riobamba",
+        "descripcion": "El Pukllakuk, crítico social disfrazado de entretenimiento.",
+        "orden": 5
+      },
+      {
+        "id": "payaso-pase-titeres-en-calle",
+        "tipo": "imagen",
+        "url": "/personajes/payaso/payaso-pase-titeres-en-calle.jpeg",
+        "titulo": "en-pase",
+        "altText": "Payaso con títeres en la mano durante el pase por la calle",
+        "descripcion": "El Payaso en acción durante el pase, interactuando con el público.",
+        "orden": 6
+      },
+      {
+        "id": "payaso-escenario-cuatro-imanes-confeti",
+        "tipo": "imagen",
+        "url": "/personajes/payaso/payaso-escenario-cuatro-imanes-confeti.webp",
         "titulo": "proceso",
-        "descripcion": "El imán del Payaso, pieza artesanal única con su característica máscara de colores.",
+        "altText": "Cuatro imanes de Payaso entre confeti, con un nevado de fondo",
+        "descripcion": "Los cuatro colores del Payaso, en plena fiesta.",
         "orden": 10
       },
       {
-        "id": "payaso-en-pase-2",
+        "id": "payaso-iman-traje-rosa-detalle",
         "tipo": "imagen",
-        "url": "/personajes/payaso-en-pase-2.jpeg",
-        "altText": "Payaso tradicional riobambeño en el pase",
-        "titulo": "en-pase",
-        "descripcion": "El Payaso Tradicional del Pase del Niño, con su traje característico.",
+        "url": "/personajes/payaso/payaso-iman-traje-rosa-detalle.webp",
+        "titulo": "proceso",
+        "altText": "Imán del Payaso con traje rosa y gorro amarillo, en detalle",
+        "descripcion": "El imán del Payaso, pieza artesanal única con su característica máscara de colores.",
         "orden": 11
       },
       {
-        "id": "payaso-en-pase-3",
+        "id": "payaso-iman-traje-verde",
         "tipo": "imagen",
-        "url": "/personajes/payaso-en-pase-3.jpg",
-        "altText": "Payaso Tradicional en los Pases del Niño",
-        "titulo": "en-pase",
-        "descripcion": "El Pukllakuk, crítico social disfrazado de entretenimiento.",
+        "url": "/personajes/payaso/payaso-iman-traje-verde.webp",
+        "titulo": "proceso",
+        "altText": "Imán artesanal del Payaso con traje verde limón",
+        "descripcion": "El imán del Payaso, guardián festivo del pase.",
         "orden": 12
       },
       {
-        "id": "payaso-en-pase-4",
+        "id": "payaso-iman-cuatro-colores",
         "tipo": "imagen",
-        "url": "/personajes/payaso-en-pase-4.jpg",
-        "altText": "Payaso riobambeño en la Plaza de Riobamba",
-        "titulo": "en-pase",
-        "descripcion": "El Payaso en la Plaza Roja de Riobamba, corazón de la celebración.",
+        "url": "/personajes/payaso/payaso-iman-cuatro-colores.webp",
+        "titulo": "proceso",
+        "altText": "Las cuatro variantes de color del imán de Payaso sobre fondo blanco",
+        "descripcion": "Cada imán se pinta a mano: no hay dos iguales.",
         "orden": 13
-      },
-      {
-        "id": "payaso-en-pase-5",
-        "tipo": "imagen",
-        "url": "/personajes/payaso-en-pase-5.jpg",
-        "altText": "Primer plano de la máscara del Payaso riobambeño en el pase",
-        "titulo": "en-pase",
-        "descripcion": "Detalle de la máscara pintada a mano del Payaso, símbolo de la crítica social festiva.",
-        "orden": 14
       }
     ],
     "testimonios": [],
@@ -289,7 +370,7 @@
     "descripcion": "<h2>El compañero del Aya Uma</h2><p>En los pases donde aparece, el Perro (Allku) siempre está cerca del Aya Uma. Esta proximidad no es casual: en la mitología kichwa, el perro es el guardián del umbral entre el mundo de los vivos y el mundo de los muertos, el mismo umbral que el Aya Uma transita ritualmente. El Allku del pase es el guardián de su guardián.</p><h2>El traje</h2><p>El traje del Perro es uno de los más artesanales del pase. Consiste en una mameluco (enterizo) de tela acolchada que cubre todo el cuerpo, pintado o bordado con manchas de colores que imitan el pelaje de un perro chusco (mestizo). La máscara representa el hocico del animal con orejas flácidas. La cola, cosida en la parte trasera del traje, es uno de los elementos más cómicos: el danzante la mueve con un mecanismo de hilo interno.</p><h2>La actuación del Allku</h2><p>El danzante que interpreta al Perro tiene libertad de improvisación similar al Payaso. Ladra, persigue al público (especialmente a los niños, que huyen y ríen a la vez), finge olisquear el suelo, levanta la «pata» en las esquinas. Su actuación es física y exigente: requiere moverse en cuatro patas durante periodos prolongados.</p>",
     "simbolismo": "Representa el mundo doméstico y la lealtad, en contraste con los personajes más solemnes o salvajes del pase. El Allku es el puente entre lo cotidiano y lo ritual: un animal familiar que en el contexto del pase adquiere dimensiones cósmicas. Su relación con el Aya Uma refleja el vínculo entre el guardián humano y su compañero animal.",
     "origen": "prehispanico",
-    "imagenPortada": "/personajes/perro.webp",
+    "imagenPortada": "/personajes/perro/perro-hero-figura-mameluco-morado.webp",
     "imagenBanner": "/headers/perro-banner.webp",
     "narrativa": {
       "leyenda": "El Allku guarda el umbral que ningún humano puede cruzar solo.",
@@ -345,58 +426,94 @@
     "apariciones": [],
     "multimedia": [
       {
-        "id": "perro-iman",
+        "id": "perro-pase-mascara-en-primer-plano",
         "tipo": "imagen",
-        "url": "/personajes/perro-iman.webp",
-        "altText": "Imán artesanal de Perro",
-        "titulo": "proceso",
-        "descripcion": "El imán del Perro · Allku, guardián del umbral.",
-        "orden": 0
-      },
-      {
-        "id": "perro-iman-2",
-        "tipo": "imagen",
-        "url": "/personajes/perro-iman-2.webp",
-        "altText": "Imán artesanal de Perro",
-        "titulo": "proceso",
-        "descripcion": "El imán del Perro · Allku, otra vista.",
-        "orden": 0
-      },
-      {
-        "id": "perro-presentacion",
-        "tipo": "imagen",
-        "url": "/personajes/perro-presentacion.webp",
-        "altText": "Imán Perro — presentación individual",
-        "titulo": "proceso",
-        "descripcion": "El imán del Allku en su presentación individual.",
+        "url": "/personajes/perro/perro-pase-mascara-en-primer-plano.webp",
+        "titulo": "en-pase",
+        "altText": "Primer plano de la máscara de cartón del Perro en el Pase del Niño",
+        "descripcion": "El Allku, guardián del umbral, en plena festividad.",
         "orden": 1
       },
       {
-        "id": "perro-presentacion-2",
+        "id": "perro-pase-grupo-afiche-pases-del-nino",
         "tipo": "imagen",
-        "url": "/personajes/perro-presentacion-2.webp",
-        "altText": "Imán Perro — retrato",
-        "titulo": "proceso",
-        "descripcion": "El Allku, guardián del umbral — imán artesanal.",
+        "url": "/personajes/perro/perro-pase-grupo-afiche-pases-del-nino.jpg",
+        "titulo": "en-pase",
+        "altText": "Grupo de Perros enmascarados en los Pases del Niño de Riobamba",
+        "descripcion": "Grupo de Allkus en el Pase del Niño Riobambeño.",
         "orden": 2
       },
       {
-        "id": "perro-en-pase-1",
+        "id": "perro-pase-mascara-negra-entre-flores-doradas",
         "tipo": "imagen",
-        "url": "/personajes/perro-en-pase-1.webp",
-        "altText": "Perro en el Pase del Niño Riobambeño",
+        "url": "/personajes/perro/perro-pase-mascara-negra-entre-flores-doradas.webp",
         "titulo": "en-pase",
-        "descripcion": "El Allku, guardián del umbral, en plena festividad.",
+        "altText": "Primer plano de máscara negra de Perro con ojos rasgados rodeada de flores doradas",
+        "descripcion": "La máscara negra, enmarcada en flores — un retrato del Allku.",
+        "orden": 3
+      },
+      {
+        "id": "perro-pase-traje-de-general-blanco-y-dorado",
+        "tipo": "imagen",
+        "url": "/personajes/perro/perro-pase-traje-de-general-blanco-y-dorado.webp",
+        "titulo": "en-pase",
+        "altText": "Perro con máscara de pelaje blanco y traje de general blanco con galones dorados",
+        "descripcion": "Una variante del Allku vestida de general, con charreteras doradas.",
+        "orden": 4
+      },
+      {
+        "id": "perro-pase-mascara-negra-manos-en-alto",
+        "tipo": "imagen",
+        "url": "/personajes/perro/perro-pase-mascara-negra-manos-en-alto.webp",
+        "titulo": "en-pase",
+        "altText": "Perro con máscara negra y capa de pelaje gris, brazos en alto entre el público",
+        "descripcion": "El Allku de capa gris, con los brazos en alto ante el público.",
+        "orden": 5
+      },
+      {
+        "id": "perro-pase-mascara-blanca-con-huevo-de-pan",
+        "tipo": "imagen",
+        "url": "/personajes/perro/perro-pase-mascara-blanca-con-huevo-de-pan.webp",
+        "titulo": "en-pase",
+        "altText": "Perro con máscara blanca y capa amarilla floreada, ofreciendo un huevo de pan al público",
+        "descripcion": "El Allku de capa floreada, compartiendo un huevo de pan con el público.",
+        "orden": 6
+      },
+      {
+        "id": "perro-taller-iman-en-pedestal",
+        "tipo": "imagen",
+        "url": "/personajes/perro/perro-taller-iman-en-pedestal.webp",
+        "titulo": "proceso",
+        "altText": "Imán del Perro sobre pedestal en el taller, junto a bobinas de filamento",
+        "descripcion": "La pieza terminada en el taller, entre los filamentos con que se imprime.",
         "orden": 10
       },
       {
-        "id": "perro-en-pase-2",
+        "id": "perro-taller-iman-vertical-filamentos",
         "tipo": "imagen",
-        "url": "/personajes/perro-en-pase-2.jpg",
-        "altText": "Los Perros en el Pase del Niño",
-        "titulo": "en-pase",
-        "descripcion": "Grupo de Allkus en el Pase del Niño Riobambeño.",
+        "url": "/personajes/perro/perro-taller-iman-vertical-filamentos.webp",
+        "titulo": "proceso",
+        "altText": "Imán del Perro en el taller, con el estante de filamentos al fondo",
+        "descripcion": "El Allku, guardián del umbral — imán artesanal.",
         "orden": 11
+      },
+      {
+        "id": "perro-iman-pelaje-negro",
+        "tipo": "imagen",
+        "url": "/personajes/perro/perro-iman-pelaje-negro.webp",
+        "titulo": "proceso",
+        "altText": "Imán artesanal del Perro con pelaje negro y mameluco celeste",
+        "descripcion": "El imán del Perro · Allku, guardián del umbral.",
+        "orden": 12
+      },
+      {
+        "id": "perro-iman-pelaje-cafe",
+        "tipo": "imagen",
+        "url": "/personajes/perro/perro-iman-pelaje-cafe.webp",
+        "titulo": "proceso",
+        "altText": "Imán artesanal del Perro con pelaje café y mameluco morado",
+        "descripcion": "El imán del Perro · Allku, otra vista.",
+        "orden": 13
       }
     ],
     "testimonios": [],
@@ -420,7 +537,7 @@
     "descripcion": "<h2>Los líderes de la comparsa</h2><p>En el pase riobambeño, los Diablos de lata no marchan al final —van al frente. Son quienes abren el espacio ritual: con sus sonajeros de metal anuncian que la comparsa llega y que el orden cotidiano va a ser interrumpido. Su liderazgo no es de autoridad formal sino de energía ritual: donde el Diablo de lata danza, la multitud se reorganiza.</p><h2>La máscara de hojalata</h2><p>La máscara roja de hojalata es el elemento más característico de este personaje y una obra maestra de la artesanía popular riobambeña. Confeccionada por artesanos especializados que trabajan el metal con martillo y punzón, cada máscara es única: lleva cuernos retorcidos, ojos de vidrio o botones y dientes tallados en el metal. El color rojo no es accidental —en la cosmovisión andina, el rojo es el color del fuego y de la sangre que da vida. El diablo rojo del pase no viene a llevarse almas sino a traer energía vital.</p><h2>Los sonajeros</h2><p>Los Diablos de lata llevan sonajeros en muñecas, tobillos y cintura —construidos con latas de metal, semillas secas o huesos. El sonido es inconfundible: metálico, rítmico, penetrante. Cumple una función ritual: el ruido ahuyenta espíritus negativos y limpia el espacio por donde pasa la comparsa.</p><h2>Ni diablo cristiano ni supay andino</h2><p>La figura del diablo en los pases riobambeños es una de las expresiones más fascinantes del sincretismo colonial andino. Los evangelizadores usaron la figura del diablo para representar todo lo que debía rechazarse. Pero las comunidades kichwa tomaron esa figura y la transformaron: el Diablo de lata heredó la máscara aterradora del diablo cristiano y la llenó con el poder del Supay andino, ser que en la cosmovisión original no era malo sino habitante del Uku Pacha, con poder sobre las fuerzas de la tierra.</p>",
     "simbolismo": "Representan la rebeldía y el sincretismo religioso. La máscara roja de hojalata combina el imaginario del diablo cristiano —introducido para intimidar a las comunidades— con el poder del Supay andino, habitante del Uku Pacha. Los Diablos de lata son la prueba de que la resistencia cultural no siempre toma la forma del rechazo: a veces consiste en tomar el símbolo del opresor y darle vuelta.",
     "origen": "mestizo",
-    "imagenPortada": "/personajes/diablos-de-lata.webp",
+    "imagenPortada": "/personajes/diablos-de-lata/diablos-de-lata-hero-figura-mascara-roja.webp",
     "imagenBanner": "/headers/diablos-de-lata-banner.webp",
     "narrativa": {
       "leyenda": "Tomaron el símbolo del miedo y lo convirtieron en el corazón de la fiesta.",
@@ -486,40 +603,121 @@
     "apariciones": [],
     "multimedia": [
       {
-        "id": "diablos-de-lata-iman",
+        "id": "diablos-de-lata-pase-mascara-roja-de-perfil",
         "tipo": "imagen",
-        "url": "/personajes/diablos-de-lata-iman.webp",
-        "altText": "Imán artesanal de Diablos de lata",
-        "titulo": "proceso",
-        "descripcion": "El imán del Diablo de lata, máscara roja de hojalata.",
-        "orden": 0
-      },
-      {
-        "id": "diablos-de-lata-presentacion",
-        "tipo": "imagen",
-        "url": "/personajes/diablos-de-lata-presentacion.webp",
-        "altText": "Imán Diablos de lata — presentación individual",
-        "titulo": "proceso",
-        "descripcion": "El imán del Diablo de lata, máscara roja de hojalata.",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-pase-mascara-roja-de-perfil.jpg",
+        "titulo": "en-pase",
+        "altText": "Diablo de lata de perfil, con máscara roja y trenzas rubias, en el pase",
+        "descripcion": "El Diablo de lata encabezando la comparsa en las calles de Riobamba.",
         "orden": 1
       },
       {
-        "id": "diablos-de-lata-proceso-2",
+        "id": "diablos-de-lata-pase-mascara-cuernos-dorados",
         "tipo": "imagen",
-        "url": "/personajes/diablos-de-lata-iman-principal.webp",
-        "altText": "Imán Diablos de lata — presentación detalle",
-        "titulo": "proceso",
-        "descripcion": "El imán del Diablo de lata, con su característica máscara de hojalata y sonajeros.",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-pase-mascara-cuernos-dorados.webp",
+        "titulo": "en-pase",
+        "altText": "Primer plano de máscara roja con cuernos dorados y dientes plateados, sobre traje rojo y azul con galón dorado",
+        "descripcion": "Los cuernos dorados y los dientes de lata, de cerca.",
         "orden": 2
       },
       {
-        "id": "diablos-de-lata-en-pase-1",
+        "id": "diablos-de-lata-pase-mascara-roja-y-melena",
         "tipo": "imagen",
-        "url": "/personajes/diablos-de-lata-en-pase-1.jpg",
-        "altText": "Diablo de lata en el Pase del Niño Riobambeño",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-pase-mascara-roja-y-melena.webp",
         "titulo": "en-pase",
-        "descripcion": "El Diablo de lata encabezando la comparsa en las calles de Riobamba.",
+        "altText": "Diablo de lata con máscara roja y melena de colores danzando entre el público",
+        "descripcion": "La máscara de hojalata, de cerca y en movimiento.",
+        "orden": 3
+      },
+      {
+        "id": "diablos-de-lata-pase-grupo-en-plaza",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-pase-grupo-en-plaza.webp",
+        "titulo": "en-pase",
+        "altText": "Grupo de Diablos de lata posando en una plaza de Riobamba",
+        "descripcion": "La comparsa completa: los diablos nunca salen solos.",
+        "orden": 4
+      },
+      {
+        "id": "diablos-de-lata-pase-comparsa-en-calle-empedrada",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-pase-comparsa-en-calle-empedrada.webp",
+        "titulo": "en-pase",
+        "altText": "Comparsa de Diablos de lata danzando sobre la calle empedrada del centro de Riobamba",
+        "descripcion": "La comparsa avanza en formación por el empedrado del centro.",
+        "orden": 5
+      },
+      {
+        "id": "diablos-de-lata-pase-grupo-mascaras-doradas",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-pase-grupo-mascaras-doradas.jpg",
+        "titulo": "en-pase",
+        "altText": "Grupo de Diablos de lata con máscaras doradas y capas de flecos en pleno desfile",
+        "descripcion": "Máscaras doradas y capas de flecos: otra variante del traje en el pase.",
+        "orden": 6
+      },
+      {
+        "id": "diablos-de-lata-pase-danzante-de-espaldas",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-pase-danzante-de-espaldas.webp",
+        "titulo": "en-pase",
+        "altText": "Danzante de espaldas con flecos de fibra, mandil negro bordado y brazos en alto ante el público",
+        "descripcion": "De espaldas al público: el mandil bordado se luce cuando el danzante gira.",
+        "orden": 7
+      },
+      {
+        "id": "diablos-de-lata-escenario-cuatro-imanes-chimborazo",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-escenario-cuatro-imanes-chimborazo.webp",
+        "titulo": "proceso",
+        "altText": "Cuatro imanes de Diablo de lata sobre tejidos andinos frente al Chimborazo",
+        "descripcion": "Los cuatro imanes del Diablo de lata, con el Chimborazo de fondo.",
         "orden": 10
+      },
+      {
+        "id": "diablos-de-lata-taller-iman-en-pedestal",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-taller-iman-en-pedestal.webp",
+        "titulo": "proceso",
+        "altText": "Imán del Diablo de lata sobre pedestal en el taller, junto a bobinas de filamento",
+        "descripcion": "La pieza terminada en el taller, entre los filamentos con que se imprime.",
+        "orden": 11
+      },
+      {
+        "id": "diablos-de-lata-iman-melena-cobre",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-iman-melena-cobre.webp",
+        "titulo": "proceso",
+        "altText": "Imán artesanal del Diablo de lata con melena color cobre",
+        "descripcion": "El imán del Diablo de lata, máscara roja de hojalata.",
+        "orden": 12
+      },
+      {
+        "id": "diablos-de-lata-iman-pechera-dorada",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-iman-pechera-dorada.webp",
+        "titulo": "proceso",
+        "altText": "Imán del Diablo de lata en detalle, con su pechera dorada",
+        "descripcion": "El imán del Diablo de lata, con su característica máscara de hojalata y sonajeros.",
+        "orden": 13
+      },
+      {
+        "id": "diablos-de-lata-iman-cuatro-sobre-mesa",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-iman-cuatro-sobre-mesa.jpeg",
+        "titulo": "proceso",
+        "altText": "Los cuatro imanes de Diablo de lata alineados sobre la mesa del taller",
+        "descripcion": "Cada imán se pinta a mano: no hay dos iguales.",
+        "orden": 14
+      },
+      {
+        "id": "diablos-de-lata-iman-cuatro-vista-cenital",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-iman-cuatro-vista-cenital.jpg",
+        "titulo": "proceso",
+        "altText": "Vista cenital de los cuatro imanes de Diablo de lata en la mesa del taller",
+        "descripcion": "Los cuatro diablos, vistos desde arriba.",
+        "orden": 15
       }
     ],
     "testimonios": [],
