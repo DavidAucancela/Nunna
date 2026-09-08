@@ -148,6 +148,19 @@
     "eyebrow": "Su historia",
     "contador": "{n} de {total}"
   },
+  "pase_inmersivo": {
+    "eyebrow": "El recorrido",
+    "titulo": "Recorre el pase con {nombre}",
+    "intro": "Sigue el pase calle por calle. En cada parada, un personaje cumple su papel en el camino.",
+    "scroll_hint": "Desplázate para seguir el pase",
+    "parada": "Parada {n} de {total}",
+    "aqui_va": "Aquí va {nombre}",
+    "ver_ficha": "Ver su ficha",
+    "ver_foto": "Ver foto {n}",
+    "ir_a": "Ir a",
+    "finale_titulo": "El pase llega a su destino",
+    "finale_texto": "{nombre} cumplió su parte en el camino. Este es solo uno de los pases donde desfila."
+  },
   "comun": {
     "cargando": "Cargando…",
     "origen": {

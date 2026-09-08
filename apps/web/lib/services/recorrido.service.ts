@@ -128,6 +128,23 @@ export async function getRecorridos(): Promise<Recorridos> {
 }
 
 /**
+ * Recorrido para la ficha de un personaje (`PaseInmersivo`): el primer recorrido
+ * real (no demo) cuyos waypoints incluyan a ese personaje. Si solo lo mencionan
+ * recorridos demo, devuelve el primero de esos. `null` si ninguno lo incluye —
+ * el personaje no tiene pase trazado todavía y la sección no se renderiza.
+ */
+export function recorridoDePersonaje(
+  recorridos: Recorridos,
+  slug: string
+): RecorridoPase | null {
+  const conPersonaje = recorridos.pases.filter((p) =>
+    p.waypoints.some((w) => w.slug === slug)
+  );
+  if (conPersonaje.length === 0) return null;
+  return conPersonaje.find((p) => !p.esDemo) ?? conPersonaje[0]!;
+}
+
+/**
  * Acota los recorridos a un conjunto de pases (los de una sola provincia).
  *
  * `RecorridosProvincia` dibuja TODOS los recorridos que recibe a la vez — si se

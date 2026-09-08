@@ -148,6 +148,19 @@
     "eyebrow": "Their story",
     "contador": "{n} of {total}"
   },
+  "pase_inmersivo": {
+    "eyebrow": "The route",
+    "titulo": "Walk the pase with {nombre}",
+    "intro": "Follow the pase street by street. At each stop, a character plays their part along the way.",
+    "scroll_hint": "Scroll to follow the pase",
+    "parada": "Stop {n} of {total}",
+    "aqui_va": "{nombre} is here",
+    "ver_ficha": "View profile",
+    "ver_foto": "View photo {n}",
+    "ir_a": "Go to",
+    "finale_titulo": "The pase reaches its destination",
+    "finale_texto": "{nombre} played their part along the way. This is just one of the pases where they march."
+  },
   "comun": {
     "cargando": "Loading…",
     "origen": {
