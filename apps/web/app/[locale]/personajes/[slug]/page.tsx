@@ -3,14 +3,14 @@ import type { PresentacionBeat } from "@seres-del-pase/types";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 
-import { getPersonaje, getPersonajes, getPases } from "@/lib/data";
+import { getPersonaje, getPersonajes, getPases, getRecorridos, recorridoDePersonaje } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import { localeAlternates } from "@/lib/seo";
 import { GatedPageRedirect } from "@/modules/personajes/components/GatedPageRedirect";
 import { HeroGated } from "@/modules/personajes/components/HeroGated";
 import { PersonajeVisualSection } from "@/modules/personajes/components/PersonajeVisualSection";
 import { HistoriaPresentacion } from "@/modules/personajes/components/HistoriaPresentacion";
-import { CuandoVerloSection } from "@/modules/personajes/components/CuandoVerloSection";
+import { PaseInmersivoGated } from "@/modules/personajes/components/PaseInmersivoGated";
 import { ArtesanoSection } from "@/modules/personajes/components/ArtesanoSection";
 import { ColeccionCounter } from "@/modules/personajes/components/ColeccionCounter";
 import { PersonajesEscenario } from "@/modules/personajes/components/PersonajesEscenario";
@@ -67,14 +67,17 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   const { slug, locale } = await params;
   setRequestLocale(locale);
 
-  const [personaje, todosPersonajes, pases, t] = await Promise.all([
+  const [personaje, todosPersonajes, pases, recorridos, t] = await Promise.all([
     getPersonaje(slug, locale),
     getPersonajes({}),
     getPases({}),
+    getRecorridos(),
     getTranslations({ locale, namespace: "historia" }),
   ]);
 
   if (!personaje) notFound();
+
+  const recorridoPersonaje = recorridoDePersonaje(recorridos, personaje.slug);
 
   const imagenPortada = personaje.multimedia.find((m) => m.tipo === "imagen");
   const imagenBanner = personaje.imagenBanner
@@ -159,12 +162,12 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         nombresAlt={personaje.nombresAlt}
       />
 
-      {/* ── 4. Cuándo y dónde verlo ── */}
-      <CuandoVerloSection
-        pases={pasesDelPersonaje}
+      {/* ── 4. Recorrido inmersivo — pase real en scrollytelling 3D (gated) ── */}
+      <PaseInmersivoGated
+        slug={personaje.slug}
+        recorrido={recorridoPersonaje}
+        nombre={personaje.nombre}
         accentColor={style.accentColor}
-        eyebrow={t("cuando_eyebrow")}
-        titulo={t("cuando_titulo")}
       />
 
       {/* ── 5. Modo presentación (visuales + frases breves; leyenda + secreto) ── */}

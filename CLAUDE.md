@@ -282,7 +282,13 @@ presentación + recorrido a la vez.
 1. Hero                    → HeroGated: HeroDespertar (experiencia+desbloqueado) | ParallaxHero (resto)
 2. QuoteRevelacion ★★      → gancho corto pintado por scroll + resto plegado bajo "Leer más"
 3. StatsAnimados           → ficha de datos (origen + festividad + nombresAlt)
-4. CuandoVerloSection      → pases donde desfila
+4. PaseInmersivoGated ★★★  → RECORRIDO 3D (gated): scrollytelling de un pase real — mapa estático +
+                             panel narrador en 3D (foto de cada parada entra girando sobre un eje de
+                             perspectiva, parallax con el puntero, tilt ligado al scroll). Reusa la
+                             mecánica de RecorridoScrollytelling (/pases) para un solo pase; la parada
+                             del personaje dueño de la ficha se resalta ("Aquí va {nombre}"). Reemplaza
+                             a CuandoVerloSection (que queda en el repo sin uso). Recorrido elegido por
+                             recorridoDePersonaje() en recorrido.service.ts.
 5. HistoriaPresentacion ★  → MODO PRESENTACIÓN: leyenda + beats visuales (1 visual + frase breve
                              c/u, efectos de entrada avanzados) + SecretoRitual. Reemplaza el texto
                              largo de NarrativaSection (los capítulos ya no se apilan como muro).
@@ -955,7 +961,8 @@ ves referencias a "SVG nacional" en commits/docs viejos, son de esa primera vers
 
 ### MapLibre GL en `/pases` (`MapaEcuador` + `RecorridosProvincia` + `RecorridoScrollytelling`)
 Hasta **tres** instancias de MapLibre en la página, cada una con su rol — comparten
-`lib/map/tile-style.ts` (tiles CARTO) y `lib/map/bounds.ts` (bbox), pero son mapas independientes:
+`lib/map/tile-style.ts` (estilo vector oscuro — OpenFreeMap) y `lib/map/bounds.ts` (bbox), pero son
+mapas independientes:
 
 - **`MapaEcuador.tsx`** (nacional, siempre montado): ver la sección de arriba.
 - **`RecorridosProvincia.tsx`** (Recorrido de una provincia, se monta/desmonta): dibuja **todos** los
@@ -997,12 +1004,17 @@ Hasta **tres** instancias de MapLibre en la página, cada una con su rol — com
   queda estática (cero llamadas en runtime, sigue SSG). ⚠ El demo OSRM público (`router.project-osrm.org`)
   solo corre perfil **car**; el `/foot/` de la URL se ignora → la ruta sigue sentidos de auto. Para
   ruta peatonal real, usar OpenRouteService/Valhalla.
-- **Tiles**: usar CARTO raster CDN `dark_all`, no el endpoint GL vector JSON que requiere auth
-  - URL: `https://{a,b,c,d}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png` (`lib/map/tile-style.ts`)
-  - El endpoint `/gl/dark-matter-gl-style/style.json` fue deprecado/requiere API key desde 2023
-  - Atribución CARTO/OSM obligatoria → `attributionControl: { compact: true }` en ambos mapas, nunca
+- **Tiles**: `lib/map/tile-style.ts` exporta `TILE_STYLE` = **URL** de un estilo vector oscuro.
+  Default: **OpenFreeMap** `https://tiles.openfreemap.org/styles/dark` — sin API key, sin límite de
+  uso, atribución OSM ya incluida en el style JSON. Override con `NEXT_PUBLIC_MAP_STYLE_URL`.
+  - ⚠ **CARTO ya no sirve**: su CDN raster keyless (`{a-d}.basemaps.cartocdn.com/dark_all/...`) devuelve
+    desde 2025 un PNG placeholder con marca de agua "API KEY REQUIRED" (HTTP 200, 256×256). El endpoint
+    GL vector JSON pide key desde 2023. No volver a CARTO sin `?api_key=` (2026-09-08).
+  - `TILE_STYLE` es un string (URL), no un objeto `StyleSpecification` — los consumidores hacen
+    `style: TILE_STYLE` igual (MapLibre acepta ambos).
+  - Atribución obligatoria → `attributionControl: { compact: true }` en todos los mapas, nunca
     `false` (la versión anterior de `PaseMapSection` lo tenía en `false` pese a esta misma nota — no
-    repetir ese descuido al tocar cualquiera de los dos mapas)
+    repetir ese descuido)
 - **Altura del contenedor de `RecorridosProvincia`**: fijar `container.style.height` en px (leída del
   wrapper) **antes** de `new maplibregl.Map()` — MapLibre lee `offsetHeight` al inicializar; `absolute
   inset-0` no resuelve la altura antes del primer paint → devuelve 300px (default MapLibre). Con

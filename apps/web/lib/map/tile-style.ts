@@ -1,30 +1,26 @@
-import type { StyleSpecification } from "maplibre-gl";
-
 /**
- * Raster CARTO Dark Matter — compartido por el mapa nacional (`MapaEcuador`) y
- * el de recorrido de provincia (`RecorridosProvincia`). El endpoint GL vector
- * JSON (`/gl/dark-matter-gl-style/style.json`) requiere API key desde 2023; el
- * CDN raster no.
+ * Estilo base de todos los mapas MapLibre de la app: el mapa nacional
+ * (`MapaEcuador`), el de recorridos de provincia (`RecorridosProvincia`) y los
+ * dos scrollytelling de recorrido (`RecorridoScrollytelling` en /pases,
+ * `PaseInmersivo` en la ficha del personaje).
  *
- * `attribution` va en el `source` a propósito: MapLibre la vuelca sola al
- * `AttributionControl` sin que cada componente tenga que reconstruirla.
+ * ⚠ Antes se usaba el CDN raster de CARTO Dark Matter sin API key. CARTO cerró
+ * ese acceso (2025): ahora cada tile keyless vuelve como un PNG placeholder con
+ * la marca de agua "API KEY REQUIRED". Se cambió a **OpenFreeMap** (estilo
+ * vector `dark`): sin API key, sin límite de uso, atribución OSM ya incluida en
+ * el propio style JSON. Proyecto comunitario de OpenStreetMap
+ * (https://openfreemap.org); si algún día hace falta independencia total de
+ * infraestructura, se auto-hostea con un `docker run` y se cambia solo esta URL.
+ *
+ * Override por entorno: `NEXT_PUBLIC_MAP_STYLE_URL` (p. ej. un estilo de CARTO
+ * con `?api_key=`, Stadia `alidade_smooth_dark`, o un pmtiles propio). Debe ser
+ * un estilo **oscuro** — el resto de la UI (líneas de ruta rojas/doradas,
+ * degradados a `fondo-oscuro`) asume fondo oscuro.
+ *
+ * MapLibre acepta `style` como URL string o como objeto `StyleSpecification`;
+ * aquí es siempre una URL, así que los consumidores hacen `style: TILE_STYLE`
+ * sin más.
  */
-export const TILE_STYLE: StyleSpecification = {
-  version: 8,
-  name: "CARTO Dark Matter",
-  sources: {
-    carto: {
-      type: "raster",
-      tiles: [
-        "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-        "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-        "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-        "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-      ],
-      tileSize: 256,
-      attribution:
-        "© <a href='https://carto.com/attributions'>CARTO</a> © <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
-    },
-  },
-  layers: [{ id: "carto", type: "raster", source: "carto" }],
-};
+export const TILE_STYLE: string =
+  process.env.NEXT_PUBLIC_MAP_STYLE_URL ||
+  "https://tiles.openfreemap.org/styles/dark";

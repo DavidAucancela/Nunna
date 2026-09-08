@@ -2,6 +2,64 @@
 
 ---
 
+## [0.7.0] — 2026-09-08 — Recorrido inmersivo 3D en la ficha del personaje
+
+Rama `feat/fotos-personajes-galeria`. La sección "Cuándo y dónde verlo" de la ficha
+`/personajes/[slug]` (lista plana de pases con fecha) se reemplaza por un **recorrido con scroll**
+del pase real, con el panel narrador en 3D.
+
+### `PaseInmersivo.tsx` (nuevo — `modules/personajes/components/`)
+
+Reusa la mecánica de `RecorridoScrollytelling` de `/pases` (`getRouteAtProgress`, `paintMap`, init
+de MapLibre perezoso por `IntersectionObserver`, `300vh` sticky `top-16`, punto rojo sincronizado al
+scroll, timeline), pero para **un solo pase** y con el panel narrador en 3D:
+
+- Contenedor con `perspective: 1400px`; al cambiar de parada la foto entra desde
+  `rotateY:-18° / translateZ:-160px / y:32` → reposo (`cubic-bezier(.22,1,.36,1)`, 0.85s).
+- Capa de profundidad: la misma foto, detrás, `translateZ(-90px)` + `blur-xl` + `opacity-40`.
+- Parallax vivo con el puntero (`rotateX/rotateY` spring, solo `pointerType === "mouse"`) +
+  inclinación `rotateX` ligada a `scrollYProgress`, en una capa interna para no chocar con el giro
+  de entrada del contenedor.
+- La parada del personaje dueño de la ficha se resalta: pin del mapa más grande, dot del timeline
+  con anillo del color de origen, badge "Aquí va {nombre}". Su enlace "ver su ficha" se oculta
+  (ya estás en ella); las otras paradas sí enlazan a `/personajes/[slug]`.
+- `prefers-reduced-motion` → sin transformaciones 3D, cae al crossfade + `y` como el original.
+
+### `PaseInmersivoGated.tsx` (nuevo) — mismo patrón que `AnatomiaGated`
+
+`useDesbloqueo(slug)`: bloqueado o sin resolver → no renderiza nada (el CTA vive en el hero y la
+ficha entera redirige a `/desbloquear/[slug]`); desbloqueado o backend apagado → `PaseInmersivo`.
+
+### Datos y selección de recorrido
+
+- `recorrido.service.ts`: nueva función `recorridoDePersonaje(recorridos, slug)` — el primer
+  recorrido **no demo** cuyos waypoints incluyan al personaje; si solo lo mencionan demos, el
+  primero de esos; `null` si ninguno lo incluye (la sección no se monta). Hoy los 4 personajes
+  publicados caen en `instituto-tecnologico-riobamba` (real, 4 paradas, 4 fotos).
+- No se agregó ningún archivo de datos nuevo — se reusa `recorrido.json` tal cual.
+- i18n: namespace nuevo `pase_inmersivo` en `es.json` / `en.json`.
+
+### Ficha `/personajes/[slug]`
+
+- `page.tsx`: `<CuandoVerloSection>` (sección 4) → `<PaseInmersivoGated>`. `CuandoVerloSection.tsx`
+  queda en el repo sin uso (como `NarrativaSection.tsx`). El conteo de festividades sigue
+  alimentando `StatsAnimados` desde `pasesDelPersonaje`.
+
+### Tiles del mapa — CARTO → OpenFreeMap
+
+Al montar el mapa nuevo se detectó que **CARTO cerró su CDN raster keyless** (2025): cada tile
+`{a-d}.basemaps.cartocdn.com/dark_all/...` vuelve como un PNG placeholder 256×256 con la marca de
+agua "API KEY REQUIRED" (HTTP 200). Afectaba **todos** los mapas de la app (`/pases` + la ficha).
+
+`lib/map/tile-style.ts` pasó de un objeto `StyleSpecification` raster hecho a mano a una **URL** de
+estilo vector: **OpenFreeMap** `https://tiles.openfreemap.org/styles/dark` — sin API key, sin límite
+de uso, atribución OSM incluida en el propio style JSON (proyecto comunitario de OpenStreetMap).
+Override con `NEXT_PUBLIC_MAP_STYLE_URL` (p. ej. CARTO con `?api_key=`, Stadia, o un pmtiles propio).
+`TILE_STYLE` es ahora un string; los 4 consumidores (`MapaEcuador`, `RecorridosProvincia`,
+`RecorridoScrollytelling`, `PaseInmersivo`) no cambian — MapLibre acepta URL u objeto en `style`.
+
+---
+
 ## [0.6.0] — 2026-09-03 — Recorrido con scroll restaurado + rutas de prueba para todas las provincias
 
 Rama `feat/pases-recorrido-scroll`. La pestaña `/pases` mostraba "próximamente" en la sección
