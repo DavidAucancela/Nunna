@@ -5,6 +5,8 @@ const ITEMS = [
   { es: "Diablos de lata", qu: "Supay" },
   { es: "Perro",           qu: "Allku" },
   { es: "Payaso",          qu: "Pukllakuk" },
+  { es: "Cucurucho",       qu: "Cucurucho" },
+  { es: "Danzante",        qu: "Danzante" },
   { es: "Curiquingue",     qu: "Kuriquingui" },
   { es: "Sacha Runa",      qu: "Sacha Runa" },
   { es: "Rey Moro",        qu: "Muru Inka" },
