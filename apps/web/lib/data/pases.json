@@ -285,7 +285,8 @@
     "tipo": "Fiesta religiosa",
     "personaje": "Niño Rey de Reyes",
     "provincia": "chimborazo",
-    "ciudad": "Riobamba"
+    "ciudad": "Riobamba",
+    "personajeSlug": "danzante-yaruquies"
   },
   {
     "id": "carnaval-guaranda",
@@ -353,5 +354,20 @@
     "personaje": "Niña María",
     "provincia": "imbabura",
     "ciudad": "Otavalo"
+  },
+  {
+    "id": "semana-santa-quito",
+    "slug": "semana-santa-quito",
+    "nombre": "Procesión de Jesús del Gran Poder",
+    "fechaTipo": "movil",
+    "fechaDescripcion": "Viernes Santo (fecha móvil, marzo o abril). Procesión penitencial que parte del templo de San Francisco y recorre el Centro Histórico de Quito; en su forma actual se realiza desde 1961. Es la manifestación de Semana Santa más multitudinaria del Ecuador.",
+    "mes": 4,
+    "imagenPortada": null,
+    "totalPersonajes": 1,
+    "tipo": "Procesión de Semana Santa",
+    "personaje": "Cucurucho",
+    "personajeSlug": "cucurucho",
+    "provincia": "pichincha",
+    "ciudad": "Quito"
   }
 ]

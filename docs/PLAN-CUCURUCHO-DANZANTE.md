@@ -50,27 +50,28 @@ canjear. Por eso sembrar códigos no es opcional — va en la misma entrega (§6
 
 ## 1. Identidad y slugs (contrato QR — irreversible tras imprimir)
 
-| | Cucurucho | Danzante |
+> **Resuelto (2026-09-10):** slugs `cucurucho` y `danzante-yaruquies` (el autor creó la carpeta de
+> imágenes con ese nombre → figura específica de la parroquia de Yaruquíes, Riobamba). El
+> desambiguador `-yaruquies` deja libre `danzante-pujili` para Cotopaxi más adelante.
+> ⚠ Aún **no impresos en QR** — si se cambia algún slug, hacerlo antes de la ola E.
+
+| | Cucurucho | Danzante de Yaruquíes |
 |---|---|---|
-| **slug** | `cucurucho` | `danzante` |
-| **Quién es** | Penitente encapuchado de la Semana Santa quiteña — procesión Jesús del Gran Poder, Viernes Santo | Figura danzante de los pases del Niño riobambeños |
+| **slug** | `cucurucho` | `danzante-yaruquies` |
+| **Quién es** | Penitente encapuchado de la Semana Santa quiteña — procesión Jesús del Gran Poder, Viernes Santo | Danzante del Pase del Niño Rey de Reyes de Yaruquíes (Riobamba), 6 de enero |
 | **Provincia** | Pichincha | Chimborazo |
-| **Festividad** | Semana Santa (marzo/abril, fecha movible) | Pases del Niño (diciembre–enero) |
-| **`origen` propuesto** | `colonial` ⚠ | `mixto` |
-| **`nombreKichwa`** | — (no tiene; figura de origen ibérico) | `Tushukuk` («el que danza») — ⚠ revisar con hablante nativo |
+| **Festividad** | Semana Santa (marzo/abril, fecha móvil) → pase nuevo `semana-santa-quito` | Pase del Niño Rey de Reyes → `personajeSlug` de `pase-nino-rey-de-reyes-riobamba` |
+| **`origen`** | `colonial` (primero del catálogo) | `mixto` |
+| **`nombreKichwa`** | — (figura de origen ibérico) | `Tushuk` — ⚠ tentativo, revisar con hablante nativo |
 
-⚠ **`origen: "colonial"` es el primero del catálogo.** Hoy no hay ningún personaje colonial, así que
-aparece un **grupo de logro nuevo** en `/mis-personajes` que se completa con un solo personaje.
-Alternativa: `mixto` (la procesión quiteña es sincrética en la práctica). Recomiendo **`colonial`** —
-es honesto con el origen de la figura y enriquece la colección; el logro de un solo miembro se
-equilibra cuando entren más figuras coloniales (Rey Moro, Capitán, Ángel están en la lista de
-próximos y son coloniales).
+⚠ **`origen: "colonial"` es el primero del catálogo.** Aparece un **grupo de logro nuevo** en
+`/mis-personajes` que hoy se completa con un solo personaje; se equilibra cuando entren Rey Moro /
+Capitán / Ángel (coloniales, en la lista de próximos).
 
-⚠ **Sobre el slug `danzante`:** es genérico. Si más adelante entra el **Danzante de Pujilí**
-(Cotopaxi), su slug será `danzante-pujili` — convención ya fijada en `PLAN-ESCALA-ECUADOR.md`.
-Si prefieres reservar el nombre limpio para Pujilí, este debería ser `danzante-riobamba`
-**y hay que decidirlo antes de generar los QR**. Un cambio posterior obliga a un alias permanente
-en `slug-aliases.ts`.
+⚠ **Contenido editorial:** `narrativa.secreto` de ambos lleva una nota "pendiente de verificación
+con fuente" — las afirmaciones históricas (año 1961 de la procesión, ascendencia solar del
+danzante) están al nivel de conocimiento cultural general, **sin fuente citada todavía**. Revisar
+antes de imprenta (regla de `docs/AGREGAR-PROVINCIA.md` / Ética de CLAUDE.md).
 
 ---
 
@@ -262,13 +263,12 @@ graphify update .                                    # refrescar el grafo
 
 ## 9. Orden de ejecución sugerido
 
-| Ola | Qué | Bloqueado por |
+| Ola | Qué | Estado |
 |---|---|---|
-| **A — ✅ hecho** | Fix `DespertarAnimation` (bug real con 5+ personajes) · `MarqueeStrip` · `docs/AGREGAR-PERSONAJE.md` | nada |
-| **B** | Entradas en `personajes.json` con el contenido editorial + `pases.json` (`semana-santa-quito`, `personajeSlug` del Danzante) + `StatsSection` (9→11, 11→24) | contenido escrito |
-| **C** | Assets: carpetas `personajes/cucurucho/` y `personajes/danzante/`, banners, ingreso, mover y recortar el imán de cucurucho desde `otros/` | **fotos** |
-| **D** | Hotspots calibrados sobre la portada + waypoints del Danzante en `recorrido.json` + `build-route.mjs` | ola C |
-| **E** | QR + siembra de códigos + verificación en producción | olas B–D en `main` |
+| **A** | Fix `DespertarAnimation` (bug real con 5+ personajes) · `MarqueeStrip` · `docs/AGREGAR-PERSONAJE.md` | ✅ commit `b5d6681` |
+| **B+C** | Entradas en `personajes.json` (contenido editorial + hotspots) · `pases.json` (`semana-santa-quito` nuevo + `personajeSlug` del Danzante en `pase-nino-rey-de-reyes-riobamba`) · `StatsSection` (11/24) · `MarqueeStrip` afinado · assets renombrados a la convención (17 webp + 2 banners + 1 ingreso) · CLAUDE.md / audio README | ✅ este commit — `validate-data`, `build`, 44 tests, curl 200 en ambas fichas |
+| **D** | Waypoints del Danzante en `recorrido.json` (4 recorridos reales de Chimborazo) + `node scripts/build-route.mjs` | ⏳ pendiente (necesita red) |
+| **E** | QR (`generate-qr.mjs`) + siembra de códigos (`seed-codes.mjs --slug cucurucho` / `--slug danzante-yaruquies`) + verificación en producción | ⏳ pendiente |
 
 ⚠ **Nota de rama:** hay un commit huérfano pendiente (`eb7f322`, `feat/selector-pases-recorrido`)
 que nunca llegó a `main` — ver `CLAUDE.md` §Siguiente. Este trabajo debería salir de `main`
