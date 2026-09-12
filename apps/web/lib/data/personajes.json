@@ -934,7 +934,7 @@
       {
         "id": "sombrero",
         "x": 50,
-        "y": 16,
+        "y": 24,
         "titulo": "El sombrero florido",
         "cuerpo": "Un sombrero adornado con flores de tela corona la figura. En sus versiones más completas, el tocado del danzante crece hasta ser una pieza en forma de capilla con espejos que atrapan la luz — la corona del sacerdote del Sol y la Luna.",
         "material": "Sombrero adornado con flores de tela"
@@ -942,7 +942,7 @@
       {
         "id": "mascara",
         "x": 50,
-        "y": 33,
+        "y": 37,
         "titulo": "La máscara del tushuc",
         "cuerpo": "Rostro pintado y bigote marcado sobre una base de malla —antes tallada en madera—. La tradición oral de Yaruquíes ve en esta máscara al tushuc, el sacerdote que media entre la comunidad y el Sol y la Luna.",
         "material": "Máscara de malla pintada"
@@ -950,7 +950,7 @@
       {
         "id": "panolon",
         "x": 50,
-        "y": 55,
+        "y": 54,
         "titulo": "El pañolón bordado",
         "cuerpo": "Mantón bordado a mano con la Virgen, un corazón o un sol en el centro y flecos dorados. El danzante lo abre en alto y lo hace girar: un altar portátil que se muestra a la calle.",
         "material": "Mantón de terciopelo bordado con hilo y flecos dorados"
@@ -958,7 +958,7 @@
       {
         "id": "botines",
         "x": 50,
-        "y": 88,
+        "y": 78,
         "titulo": "Los botines y cascabeles",
         "cuerpo": "Botines negros con adornos dorados y, en muchas comparsas, cascabeles en los tobillos que marcan el ritmo de cada vuelta.",
         "material": "Botines adornados y cascabeles"
