@@ -62,16 +62,31 @@ canjear. Por eso sembrar códigos no es opcional — va en la misma entrega (§6
 | **Provincia** | Pichincha | Chimborazo |
 | **Festividad** | Semana Santa (marzo/abril, fecha móvil) → pase nuevo `semana-santa-quito` | Pase del Niño Rey de Reyes → `personajeSlug` de `pase-nino-rey-de-reyes-riobamba` |
 | **`origen`** | `colonial` (primero del catálogo) | `mixto` |
-| **`nombreKichwa`** | — (figura de origen ibérico) | `Tushuk` — ⚠ tentativo, revisar con hablante nativo |
+| **`nombreKichwa`** | — (figura de origen ibérico) | `Tushuc` — ⚠ tentativo, revisar con hablante nativo |
 
 ⚠ **`origen: "colonial"` es el primero del catálogo.** Aparece un **grupo de logro nuevo** en
 `/mis-personajes` que hoy se completa con un solo personaje; se equilibra cuando entren Rey Moro /
 Capitán / Ángel (coloniales, en la lista de próximos).
 
-⚠ **Contenido editorial:** `narrativa.secreto` de ambos lleva una nota "pendiente de verificación
-con fuente" — las afirmaciones históricas (año 1961 de la procesión, ascendencia solar del
-danzante) están al nivel de conocimiento cultural general, **sin fuente citada todavía**. Revisar
-antes de imprenta (regla de `docs/AGREGAR-PROVINCIA.md` / Ética de CLAUDE.md).
+✅ **Contenido editorial verificado (2026-09-12)** con búsqueda web — reemplaza la nota "pendiente
+de verificación" de la primera versión:
+- **Cucurucho:** la procesión de Jesús del Gran Poder nació en **1961**, impulsada por el padre
+  franciscano **Francisco Fernández** sobre una talla de Jesús en balsa (s. XVII) hallada en la
+  sacristía de San Francisco. Confirmado por dos fuentes independientes:
+  [Ministerio de Educación — Cultura y Patrimonio](https://educacion.gob.ec/cultura/como-surgio-la-procesion-de-jesus-del-gran-poder/) y
+  [Quito Informa](https://www.quitoinforma.gob.ec/2024/03/28/la-procesion-jesus-del-gran-poder-63-anos-de-historia/).
+- **Danzante de Yaruquíes:** corrección importante — la versión inicial decía que la máscara
+  representaba una burla del "patrón colonial" (invención sin fuente, extrapolada de otras
+  tradiciones de danzante del país). Las fuentes reales sobre **este** personaje
+  ([Fiesta y Fe — sitio del Pase del Niño Rey de Reyes](https://fiestayfe.wixsite.com/fiestayfe/danzante),
+  [La Prensa](https://www.laprensa.com.ec/personajes-tradicionales-pase-del-nino/)) lo describen
+  como heredero del **"tushuc"**, sacerdote andino que marcaba con su danza los ciclos del Sol y
+  la Luna — sin relación con Corpus Christi ni con una lectura de burla al poder colonial. Se
+  reescribió `descripcion`, `simbolismo`, `narrativa` y 2 `hotspots` para reflejar esto; se quitó
+  la mención a "Corpus" del `nombresAlt`/`palabrasClave`.
+- Sigue siendo **conocimiento cultural general con fuentes periodísticas/institucionales**, no
+  trabajo de campo propio — razonable para lanzar, pero si se quiere el rigor de una publicación
+  académica, conviene contrastar con la comunidad de Yaruquíes antes de una tirada grande de imanes.
 
 ---
 
@@ -267,8 +282,17 @@ graphify update .                                    # refrescar el grafo
 |---|---|---|
 | **A** | Fix `DespertarAnimation` (bug real con 5+ personajes) · `MarqueeStrip` · `docs/AGREGAR-PERSONAJE.md` | ✅ commit `b5d6681` |
 | **B+C** | Entradas en `personajes.json` (contenido editorial + hotspots) · `pases.json` (`semana-santa-quito` nuevo + `personajeSlug` del Danzante en `pase-nino-rey-de-reyes-riobamba`) · `StatsSection` (11/24) · `MarqueeStrip` afinado · assets renombrados a la convención (17 webp + 2 banners + 1 ingreso) · CLAUDE.md / audio README | ✅ este commit — `validate-data`, `build`, 44 tests, curl 200 en ambas fichas |
-| **D** | Waypoints del Danzante en `recorrido.json` (4 recorridos reales de Chimborazo) + `node scripts/build-route.mjs` | ⏳ pendiente (necesita red) |
-| **E** | QR (`generate-qr.mjs`) + siembra de códigos (`seed-codes.mjs --slug cucurucho` / `--slug danzante-yaruquies`) + verificación en producción | ⏳ pendiente |
+| **D** | Waypoints del Danzante en `recorrido.json` (4 recorridos reales de Chimborazo) + `node scripts/build-route.mjs` | ⏳ **omitido a propósito** — ver nota abajo |
+| **E** | QR (`generate-qr.mjs`) | ✅ 2026-09-12 — 6 PNG en `public/qr/`, dominio `nunna-ecu.com` |
+| **E** | Siembra de códigos (`seed-codes.mjs --slug cucurucho` / `--slug danzante-yaruquies`) | ⏳ pendiente — el autor pidió dejarlo para cuando decida sembrar (la clave de servicio sí está en `.env.local`) |
+| — | Verificar y corregir contenido editorial con fuentes reales | ✅ 2026-09-12 — ver nota en §1 |
+| — | Limpiar 3 archivos huérfanos que rompían CI (`calendario/page.tsx`, `QrScanner.tsx`, `PaseMapSection.tsx`) | ✅ 2026-09-12 — borrados, cero imports reales, `type-check`/`lint`/`build` limpios |
+
+**Por qué se omitió la Ola D:** agregar al Danzante a los 4 recorridos reales de Chimborazo exige
+una coordenada GPS de dónde camina en cada desfile — un dato logístico que no puedo verificar ni
+inventar (la misma regla que ya aplica `docs/AGREGAR-PROVINCIA.md` a fechas/rutas). Se necesitan
+las anclas reales (trabajo de campo o una fuente que las dé) antes de tocar `recorrido.json`; con
+eso, `node scripts/build-route.mjs` hace el resto.
 
 ⚠ **Nota de rama:** hay un commit huérfano pendiente (`eb7f322`, `feat/selector-pases-recorrido`)
 que nunca llegó a `main` — ver `CLAUDE.md` §Siguiente. Este trabajo debería salir de `main`
