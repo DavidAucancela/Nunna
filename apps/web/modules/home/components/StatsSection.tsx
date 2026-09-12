@@ -5,10 +5,10 @@ import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 import { FadeUp } from "@/components/ui/FadeUp";
 
 const STATS = [
-  { value: 9,   label: "Seres documentados", suffix: "" },
+  { value: 11,  label: "Seres documentados", suffix: "" },
   { value: 500, label: "Años de tradición",  suffix: "+" },
   { value: 3,   label: "Idiomas",            suffix: "" },
-  { value: 11,  label: "Pases catalogados",  suffix: "" },
+  { value: 24,  label: "Pases catalogados",  suffix: "" },
 ];
 
 export function StatsSection() {

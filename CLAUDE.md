@@ -143,7 +143,7 @@ apps/web/
 │   │                                 pases.service.ts,
 │   │                                 recorrido.service.ts (getRecorridos — multi-pase del mapa)
 │   ├── data/
-│   │   ├── personajes.json         → 4 personajes publicados (con narrativa, hotspots, imagenBanner,
+│   │   ├── personajes.json         → 6 personajes publicados (con narrativa, hotspots, imagenBanner,
 │   │   │                             multimedia + flags v2: experiencia, audioAmbiente); los 5 sin
 │   │   │                             imágenes se retiraron (2026-06-29) hasta tener assets
 │   │   ├── pases.json              → pases con fechas y rutas (todo vive en /pases: mapa, calendario);
@@ -462,7 +462,7 @@ Modo oscuro por defecto.
 - Monorepo Turborepo + pnpm funcional
 - Frontend: todas las páginas con estilos completos (landing, personajes, detalle, pases, calendario, sobre, mapa)
 - i18n es/en con rutas localizadas (el idioma quichua `qu` se retiró — 2026-07-03)
-- Datos estáticos: 4 personajes publicados (con `narrativa`, `hotspots`, `imagenBanner`, `multimedia`), 23 pases en 6 provincias
+- Datos estáticos: 6 personajes publicados (con `narrativa`, `hotspots`, `imagenBanner`, `multimedia`), 24 pases en 7 provincias
 - Build de producción SSG sin errores
 - Eliminación completa de Directus
 - Favicons SVG
@@ -1039,6 +1039,17 @@ mapas independientes:
 | payaso | Payaso | mixto | ✅ | ✅ | ✅ | ✅ |
 | perro | Perro | prehispanico | ✅ | ✅ | ✅ | ✅ |
 | diablos-de-lata | Diablos de lata | mestizo | ✅ | ✅ | ✅ | ✅ |
+| cucurucho | Cucurucho | colonial | ✅ | ✅ | ✅ | ✅ |
+| danzante-yaruquies | Danzante de Yaruquíes | mixto | ✅ | ✅ | ✅ | ✅ |
+
+> **cucurucho / danzante-yaruquies** (2026-09-10): dos personajes nuevos — el penitente de la
+> Semana Santa de Quito (Pichincha) y el danzante del Pase del Niño Rey de Reyes de Yaruquíes
+> (Chimborazo). `cucurucho` = primer personaje con `origen: "colonial"` → nuevo grupo de logro en
+> `/mis-personajes`. Cruces: `cucurucho` → pase nuevo `semana-santa-quito` (Pichincha, mes 4);
+> `danzante-yaruquies` → `personajeSlug` de `pase-nino-rey-de-reyes-riobamba`. Sin audio de hero
+> todavía; contenido editorial de `narrativa.secreto` marcado como **pendiente de verificación con
+> fuente** antes de imprenta. Pendiente: waypoints en `recorrido.json`, QR y siembra de códigos.
+> Plan completo: `docs/PLAN-CUCURUCHO-DANZANTE.md`; runbook: `docs/AGREGAR-PERSONAJE.md`.
 
 > **Retirados hasta tener imágenes** (2026-06-29): Curiquingue, Sacha Runa, Rey Moro, Capitán y Ángel
 > se sacaron de `personajes.json` (su narrativa está en el historial de git). El grid muestra sus cards
@@ -1046,8 +1057,9 @@ mapas independientes:
 > reutilizar los **mismos slugs** (contrato QR) y devolverles su `personajeSlug` en `pases.json`.
 
 > **Experiencia v2** = flag `experiencia: true` en el JSON → usa `HeroDespertar` (Fase 1) + `AnatomiaSection`
-> (Fase 4, si tiene `hotspots[]`). Requiere imágenes completas; los 4 activos coinciden con los que tienen
-> retrato + banner. Audio del hero en `public/audio/`. Hotspots: aya-uma 4, payaso 3, perro 3, diablos 4.
+> (Fase 4, si tiene `hotspots[]`). Requiere imágenes completas; los 6 activos coinciden con los que tienen
+> retrato + banner. Audio del hero en `public/audio/` (cucurucho y danzante-yaruquies aún sin audio).
+> Hotspots: aya-uma 4, payaso 3, perro 3, diablos 4, cucurucho 4, danzante-yaruquies 4.
 
 Para agregar un personaje: editar `apps/web/lib/data/personajes.json` con la estructura existente.
 Para agregar imágenes: copiar a `public/personajes/[slug]/` con el nombre

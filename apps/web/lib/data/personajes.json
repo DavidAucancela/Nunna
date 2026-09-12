@@ -729,5 +729,304 @@
     "publicadoEn": "2026-05-25T12:00:00",
     "createdAt": "2026-05-25T12:00:00",
     "updatedAt": "2026-05-25T12:00:00"
+  },
+  {
+    "id": "cucurucho",
+    "slug": "cucurucho",
+    "experiencia": true,
+    "nombre": "Cucurucho",
+    "nombresAlt": [
+      "Nazareno",
+      "Penitente"
+    ],
+    "resumen": "El Cucurucho es el penitente de la Semana Santa de Quito. Un hábito morado y un capirote cónico que borra el rostro: así camina, cada Viernes Santo, detrás de la imagen de Jesús del Gran Poder, desde el templo de San Francisco por todo el Centro Histórico. Es la procesión más multitudinaria del Ecuador.\n\nMuchos cargan una cruz, arrastran cadenas, caminan descalzos o llevan pencas de cactus contra la piel. El capirote no es un disfraz para lucirse: oculta la identidad para que el acto de penitencia quede entre la persona y su fe, sin espacio para el reconocimiento.",
+    "resumenCorto": "Bajo el capirote morado no hay un nombre: sólo un acto entre la persona y su fe.",
+    "descripcion": "<h2>El penitente sin rostro</h2><p>El Cucurucho avanza en silencio, con el capirote puntiagudo cubriéndole la cabeza y dos pequeñas aberturas para los ojos. El anonimato es el punto: quien hace penitencia no busca que lo vean hacerla. Al terminar la procesión, muchos se quitan el capote sin que nadie sepa quién caminó ni qué cargaba por dentro.</p><h2>El morado de la Cuaresma</h2><p>El color no es casual. El morado es el tono litúrgico del tiempo de Cuaresma y del duelo: acompaña la espera de la Pasión. El hábito y el capirote descienden de la tradición nazarena sevillana, que llegó con la evangelización y fue resignificada en los Andes hasta volverse un símbolo propio de Quito.</p><h2>El cuerpo como ofrenda</h2><p>La penitencia se hace con el cuerpo. Hay cucuruchos que cargan cruces de madera durante horas, otros que se atan cadenas a los tobillos, otros que caminan descalzos sobre el empedrado o llevan haces de espinas. No hay coreografía ni música alegre: hay peso, cansancio y promesa.</p>",
+    "simbolismo": "El Cucurucho representa la penitencia hecha en anonimato. El capirote que borra el rostro dice que el mérito del sacrificio no está en que lo vean, sino en cumplirlo. El morado sostiene el duelo de la Cuaresma; el cuerpo cansado, descalzo o con la cruz al hombro, es la ofrenda misma.",
+    "origen": "colonial",
+    "imagenPortada": "/personajes/cucurucho/cucurucho-hero-figura-frontal.webp",
+    "imagenBanner": "/headers/cucurucho-banner.webp",
+    "imagenIngreso": "/personajes/personaje_ingreso/cucurucho-inicio.webp",
+    "narrativa": {
+      "leyenda": "Bajo el capirote no hay un nombre: sólo un acto entre la persona y su fe.",
+      "palabrasClave": [
+        "capirote",
+        "penitencia",
+        "morado",
+        "anonimato"
+      ],
+      "secreto": "En su forma actual, la procesión de Jesús del Gran Poder se organiza desde 1961 desde el templo de San Francisco. El hábito morado y el capirote vienen de la tradición nazarena sevillana, traída con la evangelización y resignificada como símbolo quiteño. (Dato pendiente de verificación con fuente institucional antes de imprenta.)",
+      "capitulos": [
+        {
+          "titulo": "De Sevilla a los Andes",
+          "texto": "El hábito del penitente cruzó el Atlántico con las cofradías españolas. En Quito no se quedó igual: se volvió multitudinario, mestizo, y se ató a la devoción por Jesús del Gran Poder. Lo que era una costumbre importada es hoy la Semana Santa quiteña."
+        },
+        {
+          "titulo": "El anonimato como humildad",
+          "texto": "El capirote no esconde para asustar: esconde para que nadie sepa quién hace la promesa. La penitencia que se presume deja de ser penitencia. Por eso el rostro desaparece y sólo queda el hábito morado avanzando."
+        },
+        {
+          "titulo": "El cuerpo que carga",
+          "texto": "Cruces de madera, cadenas, espinas, pies descalzos sobre el empedrado. El Cucurucho no representa el sufrimiento: lo hace pasar por su propio cuerpo, durante todo el recorrido, como forma de acompañar la Pasión."
+        }
+      ]
+    },
+    "hotspots": [
+      {
+        "id": "capirote",
+        "x": 50,
+        "y": 17,
+        "titulo": "El capirote",
+        "cuerpo": "El cono de tela que se alza sobre la cabeza y cae sobre los hombros. Borra la silueta del rostro y deja sólo dos aberturas para los ojos: el penitente camina sin ser reconocido.",
+        "material": "Tela morada rígida en forma de cono"
+      },
+      {
+        "id": "ojos",
+        "x": 50,
+        "y": 39,
+        "titulo": "Las aberturas de los ojos",
+        "cuerpo": "Dos ranuras mínimas. Es lo único que conecta al Cucurucho con la calle: lo justo para seguir la imagen y no tropezar. Todo lo demás queda cubierto.",
+        "material": "Aberturas recortadas en el capirote"
+      },
+      {
+        "id": "cruz",
+        "x": 50,
+        "y": 58,
+        "titulo": "El cordón y la cruz al pecho",
+        "cuerpo": "El hábito se ciñe con un cordón blanco anudado. Muchos penitentes llevan una cruz sobre el pecho o cargan una más grande al hombro durante todo el recorrido.",
+        "material": "Cordón blanco y cruz de madera"
+      },
+      {
+        "id": "tunica",
+        "x": 50,
+        "y": 82,
+        "titulo": "La túnica morada",
+        "cuerpo": "Cae hasta los pies, del color litúrgico de la Cuaresma. Bajo el borde asoman, muchas veces, los pies descalzos sobre el empedrado del Centro Histórico.",
+        "material": "Túnica de tela morada hasta los tobillos"
+      }
+    ],
+    "variantes": [],
+    "elementos": [],
+    "apariciones": [],
+    "multimedia": [
+      {
+        "id": "cucurucho-pase-manos-en-oracion",
+        "tipo": "imagen",
+        "url": "/personajes/cucurucho/cucurucho-pase-manos-en-oracion.webp",
+        "titulo": "en-pase",
+        "altText": "Dos cucuruchos con hábito morado y las manos juntas en oración durante la procesión",
+        "descripcion": "Las manos juntas: la procesión avanza en oración, no en desfile.",
+        "orden": 1
+      },
+      {
+        "id": "cucurucho-pase-tres-penitentes-con-cruz",
+        "tipo": "imagen",
+        "url": "/personajes/cucurucho/cucurucho-pase-tres-penitentes-con-cruz.webp",
+        "titulo": "en-pase",
+        "altText": "Tres cucuruchos en la calle; uno carga una cruz de madera, otro sostiene una lámina de Jesús del Gran Poder",
+        "descripcion": "Cada penitente lleva su promesa: una cruz al hombro, una imagen entre las manos.",
+        "orden": 2
+      },
+      {
+        "id": "cucurucho-pase-multitud-calle-panecillo",
+        "tipo": "imagen",
+        "url": "/personajes/cucurucho/cucurucho-pase-multitud-calle-panecillo.webp",
+        "titulo": "en-pase",
+        "altText": "Calle colonial de Quito colmada de cucuruchos morados, con El Panecillo al fondo",
+        "descripcion": "Miles de capirotes llenan la calle: la procesión más multitudinaria del Ecuador.",
+        "orden": 3
+      },
+      {
+        "id": "cucurucho-pase-trio-crucifijo-y-rosario",
+        "tipo": "imagen",
+        "url": "/personajes/cucurucho/cucurucho-pase-trio-crucifijo-y-rosario.webp",
+        "titulo": "en-pase",
+        "altText": "Primer plano de tres cucuruchos sosteniendo un crucifijo y un rosario",
+        "descripcion": "El crucifijo y el rosario, sostenidos con las dos manos a lo largo del recorrido.",
+        "orden": 4
+      },
+      {
+        "id": "cucurucho-pase-arrastre-de-cruz",
+        "tipo": "imagen",
+        "url": "/personajes/cucurucho/cucurucho-pase-arrastre-de-cruz.webp",
+        "titulo": "en-pase",
+        "altText": "Penitente descalzo arrastrando un madero pesado por el empedrado, con otros cucuruchos detrás",
+        "descripcion": "El madero al hombro: la penitencia se hace con el peso del propio cuerpo.",
+        "orden": 5
+      },
+      {
+        "id": "cucurucho-pase-cargando-nino-descalzo",
+        "tipo": "imagen",
+        "url": "/personajes/cucurucho/cucurucho-pase-cargando-nino-descalzo.webp",
+        "titulo": "en-pase",
+        "altText": "Un cucurucho descalzo carga en brazos a un niño, también vestido de penitente, durante la procesión",
+        "descripcion": "La promesa se hereda: un cucurucho carga a un niño penitente, los dos descalzos.",
+        "orden": 6
+      },
+      {
+        "id": "cucurucho-pase-multitud-capirotes-primer-plano",
+        "tipo": "imagen",
+        "url": "/personajes/cucurucho/cucurucho-pase-multitud-capirotes-primer-plano.webp",
+        "titulo": "en-pase",
+        "altText": "Primer plano de una multitud de capirotes morados apretados en la procesión",
+        "descripcion": "Un mar de capirotes: el rostro de nadie, la fe de todos.",
+        "orden": 7
+      },
+      {
+        "id": "cucurucho-iman-cuatro-figuras",
+        "tipo": "imagen",
+        "url": "/personajes/cucurucho/cucurucho-iman-cuatro-figuras.webp",
+        "titulo": "proceso",
+        "altText": "Cuatro imanes artesanales del Cucurucho en fila sobre fondo blanco",
+        "descripcion": "Cada imán del Cucurucho se pinta a mano: el capirote, la cruz dorada, el escapulario.",
+        "orden": 10
+      }
+    ],
+    "testimonios": [],
+    "tags": [],
+    "publicadoEn": "2026-09-10T12:00:00",
+    "createdAt": "2026-09-10T12:00:00",
+    "updatedAt": "2026-09-10T12:00:00"
+  },
+  {
+    "id": "danzante-yaruquies",
+    "slug": "danzante-yaruquies",
+    "experiencia": true,
+    "nombre": "Danzante de Yaruquíes",
+    "nombreKichwa": "Tushuk",
+    "nombresAlt": [
+      "Tushuk",
+      "Danzante del Sol",
+      "Danzante de Corpus"
+    ],
+    "resumen": "El Danzante de Yaruquíes baila en el Pase del Niño Rey de Reyes de esta parroquia de Riobamba, cada 6 de enero. Su raíz es prehispánica: el danzante del sol, tributario del Inti, que bailaba el ciclo agrícola. La evangelización trasladó esa danza al Corpus Christi y a los pases navideños, sin que dejara de girar.\n\nEl traje pesa sobre el cuerpo: un sombrero florido, una máscara de rostro rosado y bigote —retrato irónico del patrón colonial— una camisa blanca bordada y, sobre todo, el pañolón, un mantón bordado con la Virgen o el sol que el danzante abre en cruz mientras gira.",
+    "resumenCorto": "El danzante gira, y el sol que bailaban los abuelos sigue girando bajo la fiesta del Niño.",
+    "descripcion": "<h2>El danzante del sol</h2><p>Antes de la Colonia, el danzante era un tributario del Inti: bailaba el paso del año agrícola, la siembra y la cosecha, en las fiestas del sol. Cuando la evangelización prohibió esas celebraciones, la danza no desapareció: se metió dentro del Corpus Christi y de los pases del Niño, y siguió marcando el mismo compás.</p><h2>La máscara del patrón</h2><p>La máscara del danzante tiene el rostro rosado, ojos claros y un bigote marcado: es la cara del hacendado, del patrón, del español. Ponerse esa cara para bailar es una inversión antigua de los Andes —representar al poderoso, imitarlo, y con eso quitarle un poco de su peso.</p><h2>El pañolón que se abre como estandarte</h2><p>La pieza central del traje es el pañolón: un mantón bordado a mano con hilos de colores, con la imagen de la Virgen, un corazón o un sol en el centro y flecos dorados en el borde. El danzante lo sujeta por dos puntas y lo despliega en alto mientras gira, como un altar portátil que se muestra a la calle.</p>",
+    "simbolismo": "El Danzante encarna la continuidad: una danza solar prehispánica que sobrevivió escondida bajo la fiesta católica. La máscara del patrón es una burla ritual del poder; el pañolón bordado, un altar que se lleva puesto; el peso del traje y las horas de danza, la ofrenda que el cuerpo entrega al Niño y, por debajo, al sol.",
+    "origen": "mixto",
+    "imagenPortada": "/personajes/danzante-yaruquies/danzante-yaruquies-hero-figura-frontal.webp",
+    "imagenBanner": "/headers/danzante-yaruquies-banner.webp",
+    "narrativa": {
+      "leyenda": "El danzante gira, y el sol que bailaban los abuelos sigue girando bajo la fiesta del Niño.",
+      "palabrasClave": [
+        "Tushuk",
+        "Inti",
+        "pañolón",
+        "Corpus"
+      ],
+      "secreto": "La danza del danzante desciende de los tributarios del Inti que bailaban el ciclo agrícola; la evangelización la trasladó al Corpus Christi y a los pases navideños. En Yaruquíes acompaña al Niño Rey de Reyes cada 6 de enero. (Atribución cultural general — verificar detalles con la comunidad de Yaruquíes antes de imprenta.)",
+      "capitulos": [
+        {
+          "titulo": "El sol que no dejó de bailar",
+          "texto": "La danza solar fue prohibida, pero no olvidada. Los danzantes la guardaron dentro del calendario católico: donde antes había una fiesta del Inti, quedó un Corpus o un Pase del Niño, y el mismo paso siguió."
+        },
+        {
+          "titulo": "La máscara del patrón",
+          "texto": "El rostro rosado y el bigote de la máscara no son un adorno: son la cara del hacendado. El danzante se pone esa cara para bailarla, imitarla y reírse de ella, una forma vieja de resistencia sin palabras."
+        },
+        {
+          "titulo": "El peso como ofrenda",
+          "texto": "El sombrero, los bordados, el pañolón con flecos, los cascabeles: el traje pesa, y el danzante baila con él durante horas. Ese cansancio buscado es parte de la promesa que se cumple ante el Niño."
+        }
+      ]
+    },
+    "hotspots": [
+      {
+        "id": "sombrero",
+        "x": 50,
+        "y": 16,
+        "titulo": "El sombrero florido",
+        "cuerpo": "Un sombrero de ala corta cubierto de flores de tela y adornos. Corona la figura y anuncia, desde lejos, que el danzante viene bailando.",
+        "material": "Sombrero adornado con flores de tela"
+      },
+      {
+        "id": "mascara",
+        "x": 50,
+        "y": 33,
+        "titulo": "La máscara del patrón",
+        "cuerpo": "Rostro rosado, ojos claros y bigote marcado: la cara del hacendado colonial. El danzante se la pone para imitar y burlar al poder mientras danza.",
+        "material": "Máscara de malla pintada con bigote"
+      },
+      {
+        "id": "panolon",
+        "x": 50,
+        "y": 55,
+        "titulo": "El pañolón bordado",
+        "cuerpo": "Mantón bordado a mano con la Virgen, un corazón o un sol en el centro y flecos dorados. El danzante lo abre en alto y lo hace girar: un altar portátil que se muestra a la calle.",
+        "material": "Mantón de terciopelo bordado con hilo y flecos dorados"
+      },
+      {
+        "id": "botines",
+        "x": 50,
+        "y": 88,
+        "titulo": "Los botines y cascabeles",
+        "cuerpo": "Botines negros con adornos dorados y, en muchas comparsas, cascabeles en los tobillos que marcan el ritmo de cada vuelta.",
+        "material": "Botines adornados y cascabeles"
+      }
+    ],
+    "variantes": [],
+    "elementos": [],
+    "apariciones": [],
+    "multimedia": [
+      {
+        "id": "danzante-yaruquies-pase-danza-pierna-en-alto",
+        "tipo": "imagen",
+        "url": "/personajes/danzante-yaruquies/danzante-yaruquies-pase-danza-pierna-en-alto.webp",
+        "titulo": "en-pase",
+        "altText": "Danzante de Yaruquíes en plena danza, con una pierna en alto, sosteniendo una cruz dorada y el pañolón bordado",
+        "descripcion": "El paso del danzante: una pierna en alto, la cruz en una mano y el pañolón en la otra.",
+        "orden": 1
+      },
+      {
+        "id": "danzante-yaruquies-pase-cruz-y-panolon-virgen",
+        "tipo": "imagen",
+        "url": "/personajes/danzante-yaruquies/danzante-yaruquies-pase-cruz-y-panolon-virgen.webp",
+        "titulo": "en-pase",
+        "altText": "Danzante sosteniendo en alto una cruz dorada y un pañolón bordado con la imagen de la Virgen",
+        "descripcion": "El pañolón con la Virgen bordada, desplegado como un estandarte.",
+        "orden": 2
+      },
+      {
+        "id": "danzante-yaruquies-pase-trio-panolon-desplegado",
+        "tipo": "imagen",
+        "url": "/personajes/danzante-yaruquies/danzante-yaruquies-pase-trio-panolon-desplegado.webp",
+        "titulo": "en-pase",
+        "altText": "Tres danzantes de Yaruquíes; el del centro, arrodillado, despliega un gran pañolón bordado con un sol dorado",
+        "descripcion": "Tres danzantes en un patio: el del centro abre el pañolón del sol.",
+        "orden": 3
+      },
+      {
+        "id": "danzante-yaruquies-pase-frente-a-catedral-riobamba",
+        "tipo": "imagen",
+        "url": "/personajes/danzante-yaruquies/danzante-yaruquies-pase-frente-a-catedral-riobamba.webp",
+        "titulo": "en-pase",
+        "altText": "Danzantes de Yaruquíes, adultos y un niño, posando con sus pañolones frente a la fachada de piedra de la Catedral de Riobamba",
+        "descripcion": "Danzantes de Yaruquíes frente a la Catedral de Riobamba, con un pequeño danzante al centro.",
+        "orden": 4
+      },
+      {
+        "id": "danzante-yaruquies-taller-figura-artesanal",
+        "tipo": "imagen",
+        "url": "/personajes/danzante-yaruquies/danzante-yaruquies-taller-figura-artesanal.webp",
+        "titulo": "proceso",
+        "altText": "Figura artesanal detallada de un danzante con su cruz y sus pañolones, sobre una base de musgo y con luz cálida de estudio",
+        "descripcion": "Una figura artesanal del danzante: el traje entero, bordado a escala.",
+        "orden": 10
+      },
+      {
+        "id": "danzante-yaruquies-iman-cuatro-figuras",
+        "tipo": "imagen",
+        "url": "/personajes/danzante-yaruquies/danzante-yaruquies-iman-cuatro-figuras.webp",
+        "titulo": "proceso",
+        "altText": "Cuatro imanes artesanales del Danzante de Yaruquíes en fila sobre fondo blanco, con pañolones de distintos colores",
+        "descripcion": "Cuatro danzantes: el mismo traje, cada pañolón de un color distinto.",
+        "orden": 11
+      }
+    ],
+    "testimonios": [],
+    "tags": [],
+    "publicadoEn": "2026-09-10T12:00:00",
+    "createdAt": "2026-09-10T12:00:00",
+    "updatedAt": "2026-09-10T12:00:00"
   }
 ]
