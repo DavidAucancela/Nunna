@@ -215,8 +215,9 @@ El `id` de cada `Media` es el nombre del archivo sin extensión — así el JSON
 Ejemplo: `/personajes/aya-uma/aya-uma-pase-desfile-centro-riobamba.webp` → `id: "aya-uma-pase-desfile-centro-riobamba"`.
 
 > **`public/personajes/otros/`** guarda imágenes que **no** pertenecen a ningún personaje publicado:
-> figuras sin ficha (`cucurucho-*`) y material sin clasificar (`sin-clasificar-*`). Nada de esa carpeta
-> se referencia desde el JSON — es un buzón, no una sección.
+> figuras sin ficha (`cucurucho-*` fue el ejemplo hasta 2026-09-10 — Cucurucho ya tiene ficha propia
+> y su carpeta `cucurucho/`, así que su asset viejo en `otros/` se retiró) y material sin clasificar
+> (`sin-clasificar-*`). Nada de esa carpeta se referencia desde el JSON — es un buzón, no una sección.
 
 > ⚠ **Los banners siguen en `public/headers/[slug]-banner.webp`**, fuera de la carpeta del personaje
 > (`imagenBanner`). No se movieron.
@@ -623,6 +624,16 @@ Modo oscuro por defecto.
     reales de cada ciudad (horneadas por `build-route.mjs`) y waypoints inline con nombres de figuras
     reales. La UI marca las demo ("ruta de referencia · pendiente de verificación en campo"). ⚠ Las
     **coords ancla de las 5 demo son aproximadas** — pendiente de verificación en campo.
+- **Cucurucho + Danzante de Yaruquíes — 2 personajes nuevos** (`feat/personajes-cucurucho-danzante`,
+  2026-09-08/12): catálogo pasa de 4 a 6 personajes publicados. Fichas completas (narrativa
+  verificada con fuentes reales, 4 hotspots c/u, portadas + banners + galería), cruce con
+  `pases.json` (pase nuevo `semana-santa-quito` en Pichincha; Danzante dueño de
+  `pase-nino-rey-de-reyes-riobamba`), QR generados. De paso: se corrigió un bug real en
+  `DespertarAnimation` (grid fijo 2×2 rompía con 5+ personajes) y se limpiaron 3 archivos huérfanos
+  sin tracking que rompían `type-check`/`build`. Detalle completo de cada decisión y ajuste (incluye
+  una corrección de contenido — la primera versión del Danzante tenía una lectura simbólica sin
+  fuente que se reescribió) en `docs/PLAN-CUCURUCHO-DANZANTE.md`; runbook para el próximo personaje
+  en `docs/AGREGAR-PERSONAJE.md`. Pendientes propios en 🔄 Siguiente, abajo.
 
 ### 🔄 Siguiente
 - **⚠ Abrir PR a `main` para `feat/selector-pases-recorrido`** (rama ya en origin, commit
@@ -634,7 +645,7 @@ Modo oscuro por defecto.
   `docs/CHANGELOG.md` [0.5.0] para el detalle completo.
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
 - Fotografías reales "En el pase" (`titulo: "en-pase"`) y del imán físico (`titulo: "proceso"`) para la galería
-- **Audios reales** del hero v2 en `public/audio/` (4 archivos: `[slug]-ambiente.mp3` por personaje con `experiencia: true`)
+- **Audios reales** del hero v2 en `public/audio/` (6 archivos: `[slug]-ambiente.mp3` por personaje con `experiencia: true` — cucurucho y danzante-yaruquies también los necesitan)
 - **Revisar kichwa** de namespaces `desbloquear`/`coleccion`/`logros`/`experiencia`/`anatomia` con hablante nativo
 - **Recorrido — datos reales** de Mercado Santa Rosa y Niño Rey de la Paz: coords ancla exactas, personajes que
   desfilan, fotos propias. Tras editar coords en `recorrido.json`: `node scripts/build-route.mjs`
@@ -646,6 +657,11 @@ Modo oscuro por defecto.
   no aparecen en el mapa nacional ni tienen recorrido. Añadir esos campos para incluirlos.
 - Añadir los demás pases de Chimborazo al recorrido (hoy 4 de 15)
 - **Experiencia v2** — Fases 2, 3, 5-12 del plan de 12 fases (Fases 1 y 4 ya implementadas)
+- **Cucurucho / Danzante de Yaruquíes** — decidir si el QR va directo a la ficha o a
+  `/es/personajes` genérico (ver nota arriba); sembrar el lote real de códigos de imprenta (hoy
+  solo hay un lote de prueba, `batch: prueba-2026-09`, que conviene limpiar de Supabase antes de un
+  lanzamiento real); agregar al Danzante como waypoint en `recorrido.json` cuando haya coordenadas
+  de campo; recalibrar hotspots de Anatomía si al ver la ficha algún pin no coincide con la imagen.
 
 ### ⏳ Fase 2
 - Modo claro/oscuro — el toggle se implementó (commit `58c591e`) pero hoy **no está en el Header**;
@@ -1042,14 +1058,23 @@ mapas independientes:
 | cucurucho | Cucurucho | colonial | ✅ | ✅ | ✅ | ✅ |
 | danzante-yaruquies | Danzante de Yaruquíes | mixto | ✅ | ✅ | ✅ | ✅ |
 
-> **cucurucho / danzante-yaruquies** (2026-09-10): dos personajes nuevos — el penitente de la
-> Semana Santa de Quito (Pichincha) y el danzante del Pase del Niño Rey de Reyes de Yaruquíes
-> (Chimborazo). `cucurucho` = primer personaje con `origen: "colonial"` → nuevo grupo de logro en
-> `/mis-personajes`. Cruces: `cucurucho` → pase nuevo `semana-santa-quito` (Pichincha, mes 4);
-> `danzante-yaruquies` → `personajeSlug` de `pase-nino-rey-de-reyes-riobamba`. Sin audio de hero
-> todavía; contenido editorial de `narrativa.secreto` marcado como **pendiente de verificación con
-> fuente** antes de imprenta. Pendiente: waypoints en `recorrido.json`, QR y siembra de códigos.
-> Plan completo: `docs/PLAN-CUCURUCHO-DANZANTE.md`; runbook: `docs/AGREGAR-PERSONAJE.md`.
+> **cucurucho / danzante-yaruquies** (2026-09-10, verificado y pulido 2026-09-12): dos personajes
+> nuevos — el penitente de la Semana Santa de Quito (Pichincha) y el danzante del Pase del Niño Rey
+> de Reyes de Yaruquíes (Chimborazo). `cucurucho` = primer personaje con `origen: "colonial"` →
+> nuevo grupo de logro en `/mis-personajes`. Cruces: `cucurucho` → pase nuevo `semana-santa-quito`
+> (Pichincha, mes 4); `danzante-yaruquies` → `personajeSlug` de `pase-nino-rey-de-reyes-riobamba`.
+> `narrativa.secreto` de ambos **verificado con fuentes reales** (ministerio de cultura, prensa —
+> ver `docs/PLAN-CUCURUCHO-DANZANTE.md` §1 para las citas). Portadas: la de Cucurucho se recortó
+> para llenar el cuadro 3:4; la del Danzante usa el imán físico real (no una foto de persona). Sin
+> audio de hero todavía. QR de imprenta generados (`public/qr/qr-cucurucho.png`,
+> `qr-danzante-yaruquies.png`) pero **la decisión de si el QR va directo a la ficha o a
+> `/es/personajes` genérico sigue abierta** — no se tocó `generate-qr.mjs` para los 4 personajes
+> existentes. Hay códigos de **prueba** ya sembrados en Supabase (`batch: prueba-2026-09`, 3 por
+> personaje) — borrar a mano antes de un lanzamiento real si no se quieren mezclar con la siembra
+> de imprenta. Pendiente a propósito: waypoints en `recorrido.json` (exige coordenadas de campo que
+> nadie ha dado todavía). Plan completo con el detalle de cada ajuste:
+> `docs/PLAN-CUCURUCHO-DANZANTE.md` (§10 tiene los ajustes posteriores al lanzamiento); runbook
+> genérico para el próximo personaje: `docs/AGREGAR-PERSONAJE.md`.
 
 > **Retirados hasta tener imágenes** (2026-06-29): Curiquingue, Sacha Runa, Rey Moro, Capitán y Ángel
 > se sacaron de `personajes.json` (su narrativa está en el historial de git). El grid muestra sus cards

@@ -6,7 +6,7 @@ const ITEMS = [
   { es: "Perro",           qu: "Allku" },
   { es: "Payaso",          qu: "Pukllakuk" },
   { es: "Cucurucho",       qu: "Cucurucho" },
-  { es: "Danzante de Yaruquíes", qu: "Tushuk" },
+  { es: "Danzante de Yaruquíes", qu: "Tushuc" },
   { es: "Curiquingue",     qu: "Kuriquingui" },
   { es: "Sacha Runa",      qu: "Sacha Runa" },
   { es: "Rey Moro",        qu: "Muru Inka" },

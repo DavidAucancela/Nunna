@@ -4,6 +4,12 @@ import Image from "next/image";
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 import { FadeUp } from "@/components/ui/FadeUp";
 
+// Contadores fijos a mano (no derivados de lib/data en build time porque este
+// componente no está montado en la landing hoy — ver CLAUDE.md "Personajes en
+// producción"). Si se reintroduce en la página, hay que mantenerlos en sync:
+//   - "Seres documentados": personajes.json.length (6 publicados) + PROXIMOS
+//     de app/[locale]/personajes/page.tsx (5) = 11
+//   - "Pases catalogados": pases.json.length = 24
 const STATS = [
   { value: 11,  label: "Seres documentados", suffix: "" },
   { value: 500, label: "Años de tradición",  suffix: "+" },
