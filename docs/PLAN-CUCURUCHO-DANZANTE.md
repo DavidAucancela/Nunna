@@ -284,9 +284,12 @@ graphify update .                                    # refrescar el grafo
 | **B+C** | Entradas en `personajes.json` (contenido editorial + hotspots) · `pases.json` (`semana-santa-quito` nuevo + `personajeSlug` del Danzante en `pase-nino-rey-de-reyes-riobamba`) · `StatsSection` (11/24) · `MarqueeStrip` afinado · assets renombrados a la convención (17 webp + 2 banners + 1 ingreso) · CLAUDE.md / audio README | ✅ este commit — `validate-data`, `build`, 44 tests, curl 200 en ambas fichas |
 | **D** | Waypoints del Danzante en `recorrido.json` (4 recorridos reales de Chimborazo) + `node scripts/build-route.mjs` | ⏳ **omitido a propósito** — ver nota abajo |
 | **E** | QR (`generate-qr.mjs`) | ✅ 2026-09-12 — 6 PNG en `public/qr/`, dominio `nunna-ecu.com` |
-| **E** | Siembra de códigos (`seed-codes.mjs --slug cucurucho` / `--slug danzante-yaruquies`) | ⏳ pendiente — el autor pidió dejarlo para cuando decida sembrar (la clave de servicio sí está en `.env.local`) |
+| **E** | Siembra de códigos **de prueba** (`--batch prueba-2026-09`) | ✅ 2026-09-12 — ver §10 |
+| **E** | Siembra de códigos **de imprenta** (lote real) | ⏳ pendiente — el autor pidió dejarlo para cuando decida sembrar (la clave de servicio sí está en `.env.local`) |
+| **E** | Decidir si el QR va directo a la ficha o a `/es/personajes` genérico | ⏳ pendiente — el autor lo está pensando, no tocar `generate-qr.mjs`/`CLAUDE.md` hasta que decida |
 | — | Verificar y corregir contenido editorial con fuentes reales | ✅ 2026-09-12 — ver nota en §1 |
 | — | Limpiar 3 archivos huérfanos que rompían CI (`calendario/page.tsx`, `QrScanner.tsx`, `PaseMapSection.tsx`) | ✅ 2026-09-12 — borrados, cero imports reales, `type-check`/`lint`/`build` limpios |
+| — | Ajustes de imágenes (portadas, hotspots) | ✅ 2026-09-12 — ver §10 |
 
 **Por qué se omitió la Ola D:** agregar al Danzante a los 4 recorridos reales de Chimborazo exige
 una coordenada GPS de dónde camina en cada desfile — un dato logístico que no puedo verificar ni
@@ -296,4 +299,76 @@ eso, `node scripts/build-route.mjs` hace el resto.
 
 ⚠ **Nota de rama:** hay un commit huérfano pendiente (`eb7f322`, `feat/selector-pases-recorrido`)
 que nunca llegó a `main` — ver `CLAUDE.md` §Siguiente. Este trabajo debería salir de `main`
-actualizado, no encadenarse a esa rama.
+actualizado, no encadenarse a esa rama. (Confirmado 2026-09-12: sigue huérfano incluso después de
+que `main` avanzó con los PR #73–#77; esta rama sí se rebasó sobre ese `main` actualizado.)
+
+---
+
+## 10. Ajustes posteriores al lanzamiento (2026-09-12)
+
+Después de la entrega de la ola B+C, varias rondas de feedback del autor mejoraron la calidad de
+los assets. Commits: `755dc4c`, `828dcda`, `d557088`, `9ce303d`.
+
+### 10.1 Contenido verificado con fuentes (`755dc4c`)
+Ver el detalle completo en §1. Resumen: Cucurucho confirmado (1961, padre Francisco Fernández, San
+Francisco); Danzante corregido (se quitó la lectura de "máscara del patrón colonial" sin fuente, se
+reemplazó por "heredero del tushuc, sacerdote del Sol y la Luna" — sí documentado para esta figura).
+
+### 10.2 QR de imprenta generados, pero con freno (`755dc4c`)
+`generate-qr.mjs` genera un PNG por slug — al correrlo regeneró también los 4 QR de los personajes
+ya en producción, con una URL distinta a la que tenían commiteada (dominio distinto). **Esos 4 se
+revirtieron sin commitear**: no hay forma de confirmar desde el repo si esos QR ya están impresos
+en imanes vendidos, y tocar esa clase de asset sin luz verde explícita es la clase de acción que no
+se deshace. Solo se commitearon los 2 QR nuevos (`qr-cucurucho.png`, `qr-danzante-yaruquies.png`).
+
+### 10.3 Decisión de arquitectura del QR — abierta, sin tocar código
+El autor planteó que el QR podría apuntar a `/es/personajes` (catálogo genérico) en vez de a la
+ficha directa, dejando que el comprador elija su personaje y complete el desbloqueo con el código
+de 6 caracteres "al final". Esto **contradice el modelo de negocio actual documentado en
+`CLAUDE.md`** ("el comprador escanea el QR → aterriza directamente en la ficha del personaje") y
+el propósito de `generate-qr.mjs` (un PNG por slug). El autor todavía lo está pensando — **no se
+tocó `generate-qr.mjs`, `CLAUDE.md` ni `GatedPageRedirect`**. Si se confirma el cambio, es una
+migración real: un solo QR compartido para todos los imanes, actualizar el modelo de negocio y
+revisar cómo `/desbloquear` conserva (o deja de conservar) el contexto del personaje escaneado.
+
+### 10.4 Limpieza de huérfanos (`755dc4c`)
+`app/[locale]/calendario/page.tsx`, `components/ui/QrScanner.tsx`,
+`modules/home/components/PaseMapSection.tsx` — sin tracking en git, cero imports reales, rompían
+`type-check`/`build`. Confirmado con `grep` antes de borrar. Ver también §0.
+
+### 10.5 Foto sin marca de agua (`828dcda`)
+`danzante-yaruquies-pase-frente-a-catedral-riobamba.webp` traía un banner promocional "Riobamba
+primero" pegado en el 20% inferior. Se recortó (800×800 → 800×640), mismo nombre de archivo.
+
+### 10.6 Portadas recortadas + hotspots recalibrados (`d557088`, `9ce303d`)
+- **Danzante — primer ajuste:** la portada original (una foto de un danzante real en escena, no el
+  imán) era cuadrada (447×447); en el card de `/personajes` (`aspect-[3/4]`, `object-cover`) eso
+  recortaba ~12.5% de cada lado y cortaba la mano que sostiene la cruz. Se rellenó con margen
+  blanco arriba/abajo a 447×596 (3:4 exacto) — arreglo intermedio, ver el siguiente punto.
+- **Danzante — reemplazo definitivo:** el autor aportó `danzante_yaruquies_iman_prinicpal.png` — el
+  imán físico real — y pidió usarlo como la foto correcta. Reemplaza a la foto de persona real
+  (224×297 → 224×299 con relleno mínimo, ya casi 3:4). Es la imagen correcta según la convención
+  del proyecto ("figura del imán", no una foto de alguien vistiendo el traje).
+- **Cucurucho:** la portada tenía demasiado margen alrededor de la figura ("se ve flotando" — el
+  fondo es transparente, no blanco, así que en pantalla se nota aún más). Se recortó a 780×1040
+  (3:4 exacto), preservando el canal alfa.
+- **Hotspots:** los 4 de cada personaje se recalibraron (x/y) para las imágenes finales. Los de
+  Cucurucho se derivaron matemáticamente del recorte real (`(coord_original − offset_crop) /
+  tamaño_crop`); los del Danzante se estimaron visualmente sobre el nuevo imán — **coordenadas
+  aproximadas, revisar si al mirar la ficha algún pin queda desalineado**.
+- **Restaurado sin querer:** al organizar las fotos nuevas, `danzante-yaruquies-iman-cuatro-
+  figuras.webp` (foto de galería ya commiteada) quedó renombrada/duplicada por accidente en el
+  Finder (dos copias idénticas sin nombre final, `-iman-.webp` y `-iman- copy.webp`). Se restauró
+  el archivo original desde git y se borraron las copias — si no, la referencia en
+  `personajes.json` habría quedado rota (imagen 404 en la galería).
+- **Quedan sueltos, sin commitear a propósito:** `danzante-yaruquies-iman.png` (versión alterna de
+  fondo blanco que el autor generó) y `danzante_yaruquies_iman_prinicpal.png` (el PNG fuente ya
+  convertido a la portada final en `.webp`). Ninguno se referencia desde código — quedan como
+  archivos de trabajo del autor en su carpeta local.
+
+### 10.7 Códigos de prueba sembrados en Supabase
+Lote `prueba-2026-09`, 3 códigos por personaje nuevo, insertados de verdad en `unlock_codes` (no
+`--dry-run`). CSV en `codes-cucurucho-prueba.csv` / `codes-danzante-yaruquies-prueba.csv`
+(gitignorados, no se commitean — quedan solo en la máquina donde se generaron). Son códigos reales
+canjeables en `/desbloquear/[slug]`; **si se quiere limpiar antes de un lanzamiento real**, hay que
+borrarlos a mano en Supabase (no hay script de limpieza — `seed-codes.mjs` solo inserta).
