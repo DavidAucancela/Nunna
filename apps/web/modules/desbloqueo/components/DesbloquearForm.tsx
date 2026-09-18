@@ -23,6 +23,8 @@ export interface PersonajeLite {
   imagenPortada: string | null;
   imagenBanner: string | null;
   imagenIngreso?: string | null;
+  /** Frase corta (leyenda) — usada por PersonajesLibro en /mis-personajes. */
+  leyenda?: string | null;
 }
 
 /**

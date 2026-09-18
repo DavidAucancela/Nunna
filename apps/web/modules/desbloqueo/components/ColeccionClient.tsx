@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { getOrigenStyle } from "@/lib/origen-styles";
-import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
 import { useColeccion } from "@/components/auth/ColeccionProvider";
+import { PersonajesLibro } from "@/modules/personajes/components/PersonajesLibro";
 import { CertificadoColeccion, type CertificadoLogro } from "./CertificadoColeccion";
 import type { PersonajeLite } from "./DesbloquearForm";
 
@@ -236,87 +235,18 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
         </div>
       )}
 
-      {/* Grid de personajes */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {personajes.map((p) => {
-          const unlocked = has(p.slug);
-          const style = getOrigenStyle(p.origen ?? undefined);
-          if (unlocked) {
-            return (
-              <Link
-                key={p.slug}
-                href={{ pathname: "/personajes/[slug]", params: { slug: p.slug } }}
-                className="group relative block aspect-[3/4] overflow-hidden rounded-2xl border border-borde-sutil"
-              >
-                {p.imagenPortada ? (
-                  <Image
-                    src={p.imagenPortada}
-                    alt={p.nombre}
-                    fill
-                    sizes="(max-width: 640px) 50vw, 25vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="absolute inset-0" style={{ backgroundColor: style.bgVia }} />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <h3 className="font-serif text-base font-bold text-white">{p.nombre}</h3>
-                </div>
-                <span
-                  className="absolute bottom-0 left-0 right-0 h-[2px]"
-                  style={{ backgroundColor: style.accentColor }}
-                />
-              </Link>
-            );
-          }
-          return (
-            <div
-              key={p.slug}
-              className="group relative aspect-[3/4] overflow-hidden rounded-2xl"
-              style={{ boxShadow: "0 4px 24px -4px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)" }}
-            >
-              <OrigenPlaceholder
-                origen={p.origen ?? undefined}
-                nombre={p.nombre}
-                variant="card"
-                uid={p.slug}
-                className="absolute inset-0"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/10 to-transparent" />
-
-              <span
-                className="absolute left-3 top-3 z-10 rounded-full border border-white/10 bg-stone-950/70 px-2.5 py-0.5 text-[10px] font-medium backdrop-blur-sm"
-                style={{ color: style.accentColor }}
-              >
-                {style.label}
-              </span>
-
-              <span className="absolute right-3 top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-stone-950/70 backdrop-blur-sm">
-                <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" className="text-stone-400" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-              </span>
-
-              <div className="absolute bottom-0 left-0 right-0 z-10 p-3">
-                {p.nombreKichwa && (
-                  <p className="font-serif text-xs italic" style={{ color: `${style.accentColor}bb` }}>
-                    {p.nombreKichwa}
-                  </p>
-                )}
-                <h3 className="mt-0.5 font-serif text-base font-bold text-white">{p.nombre}</h3>
-                <p className="mt-0.5 text-[10px] uppercase tracking-wider text-stone-500">{t("bloqueado")}</p>
-                <Link
-                  href={{ pathname: "/desbloquear/[slug]", params: { slug: p.slug } }}
-                  className="mt-2 inline-block rounded-full border border-acento-dorado/60 bg-stone-950/80 px-3 py-1 text-[11px] font-medium text-acento-dorado backdrop-blur-sm transition-colors hover:bg-acento-dorado hover:text-fondo-oscuro"
-                >
-                  {t("desbloquear_cta")}
-                </Link>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      {/* Índice de personajes */}
+      <PersonajesLibro
+        personajes={personajes.map((p) => ({
+          id: p.slug,
+          slug: p.slug,
+          nombre: p.nombre,
+          nombreKichwa: p.nombreKichwa,
+          origen: p.origen,
+          imagenPortada: p.imagenPortada,
+          frase: p.leyenda,
+        }))}
+      />
 
       <AnimatePresence>
         {certificado && (
