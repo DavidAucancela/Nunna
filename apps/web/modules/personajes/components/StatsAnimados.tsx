@@ -22,14 +22,6 @@ interface StatsAnimadosProps {
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-const cardVariants = (reduced: boolean) =>
-  reduced
-    ? { hidden: { opacity: 1, y: 0 }, visible: { opacity: 1, y: 0 } }
-    : {
-        hidden: { opacity: 0, y: 40 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
-      };
-
 /**
  * "Los Números Sagrados": la ficha de datos deja de ser una grilla plana.
  * Cada dato es una tarjeta con ícono SVG propio que se dibuja al entrar al
@@ -54,14 +46,9 @@ export function StatsAnimados({
 
   return (
     <section ref={ref} className="mx-auto max-w-4xl px-5 pb-20 sm:px-6">
-      <motion.div
-        className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.4 }}
-        transition={{ staggerChildren: 0.12 }}
-      >
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
         <StatCard
+          index={0}
           accentColor={accentColor}
           etiqueta="Origen"
           reduced={!!reduced}
@@ -82,6 +69,7 @@ export function StatsAnimados({
         </StatCard>
 
         <StatCard
+          index={1}
           accentColor={accentColor}
           etiqueta="Festividad"
           reduced={!!reduced}
@@ -99,6 +87,7 @@ export function StatsAnimados({
         </StatCard>
 
         <StatCard
+          index={2}
           accentColor={accentColor}
           etiqueta={nombresAlt.length > 1 ? "También conocido como" : "Nombre alternativo"}
           reduced={!!reduced}
@@ -113,12 +102,13 @@ export function StatsAnimados({
             <p className="text-base text-stone-700">—</p>
           )}
         </StatCard>
-      </motion.div>
+      </div>
     </section>
   );
 }
 
 function StatCard({
+  index,
   etiqueta,
   icono,
   accentColor,
@@ -126,6 +116,7 @@ function StatCard({
   iconY,
   children,
 }: {
+  index: number;
   etiqueta: string;
   icono: ReactNode;
   accentColor: string;
@@ -134,13 +125,25 @@ function StatCard({
   children: ReactNode;
 }) {
   const { rotateX, rotateY, onMouseMove, onMouseLeave } = useTilt3D(6);
+  // Cada tarjeta observa su propio cruce del viewport (no el de la grilla completa) y
+  // `once:false` para que se retraiga al salir — así "Los Números Sagrados" se sienten
+  // como puntos que el scroll va revelando de a uno, no una grilla que aparece junta.
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(cardRef, { amount: 0.5, once: false, margin: "-10% 0px -10% 0px" });
 
   return (
     <motion.div
-      variants={cardVariants(reduced)}
+      ref={cardRef}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
       style={{ rotateX, rotateY, transformPerspective: 800 }}
+      initial={false}
+      animate={
+        reduced || isInView
+          ? { opacity: 1, y: 0, scale: 1 }
+          : { opacity: 0, y: 32, scale: 0.96 }
+      }
+      transition={{ duration: 0.55, delay: isInView ? index * 0.1 : 0, ease: EASE }}
       whileHover={{ borderColor: `${accentColor}50` }}
       className="flex min-h-[8.5rem] flex-col justify-between rounded-2xl border border-borde-sutil bg-stone-900/40 px-6 py-6"
     >
