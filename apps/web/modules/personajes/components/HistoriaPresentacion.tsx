@@ -114,7 +114,9 @@ const lineaVariants = (reduced: boolean): Variants =>
   reduced
     ? { hidden: { y: "0%" }, visible: { y: "0%" } }
     : {
-        hidden: { y: "115%" },
+        // Transición propia en ambos estados: al salir del viewport (once:false)
+        // se repliega con la misma curva pero más rápido que la entrada.
+        hidden: { y: "115%", transition: { duration: 0.4, ease: EASE } },
         visible: { y: "0%", transition: { duration: 0.7, ease: EASE } },
       };
 
@@ -183,7 +185,7 @@ function Beat({
           <motion.div
             initial={reduced ? false : { opacity: 0, scale: 1.12, filter: "blur(18px)" }}
             whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            viewport={{ once: true, amount: 0.35 }}
+            viewport={{ once: false, amount: 0.35 }}
             transition={{ duration: 1, ease: EASE }}
             className="relative"
           >
@@ -222,7 +224,7 @@ function Beat({
             variants={textoVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.4 }}
+            viewport={{ once: false, amount: 0.4 }}
           >
             <span className="reveal-mask block">
               <motion.span

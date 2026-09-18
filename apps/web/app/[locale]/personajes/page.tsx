@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { PersonajesGrid } from "@/modules/personajes/components/PersonajesGrid";
+import { PersonajesLibro } from "@/modules/personajes/components/PersonajesLibro";
 import { FadeUp } from "@/components/ui/FadeUp";
 import { getPersonajes } from "@/lib/data";
 import { localeAlternates } from "@/lib/seo";
@@ -45,7 +45,7 @@ export default async function PersonajesPage({ params }: PersonajesPageProps) {
         <p className="mt-2 max-w-2xl text-sm text-stone-400 sm:mt-4 sm:text-lg">{t("descripcion")}</p>
       </header>
 
-      <PersonajesGrid personajes={personajes} />
+      <PersonajesLibro personajes={personajes} />
 
       {/* Próximamente */}
       <FadeUp delay={0.2}>

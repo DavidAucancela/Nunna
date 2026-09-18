@@ -13,7 +13,7 @@ import { HistoriaPresentacion } from "@/modules/personajes/components/HistoriaPr
 import { PaseInmersivoGated } from "@/modules/personajes/components/PaseInmersivoGated";
 import { ArtesanoSection } from "@/modules/personajes/components/ArtesanoSection";
 import { ColeccionCounter } from "@/modules/personajes/components/ColeccionCounter";
-import { PersonajesEscenario } from "@/modules/personajes/components/PersonajesEscenario";
+import { PersonajesLibro } from "@/modules/personajes/components/PersonajesLibro";
 import { QuoteRevelacion } from "@/modules/personajes/components/QuoteRevelacion";
 import { StatsAnimados } from "@/modules/personajes/components/StatsAnimados";
 import { RevealText } from "@/components/ui/RevealText";
@@ -225,7 +225,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
                 className="font-display block text-[clamp(2.5rem,7vw,5.5rem)] leading-[0.98] text-texto-claro"
               />
             </div>
-            <PersonajesEscenario personajes={otrosPersonajes} />
+            <PersonajesLibro personajes={otrosPersonajes} />
           </div>
         </section>
       )}

@@ -80,8 +80,8 @@ export function GaleriaSection({ multimedia, accentColor, nombre, embedded = fal
           )}
         </div>
 
-        {/* Grid unificado */}
-        <ImageGrid
+        {/* Carrusel unificado */}
+        <ImageCarousel
           images={images}
           accentColor={accentColor}
           onOpen={(idx) => open(images, idx)}
@@ -228,7 +228,7 @@ export function GaleriaSection({ multimedia, accentColor, nombre, embedded = fal
   );
 }
 
-function ImageGrid({
+function ImageCarousel({
   images,
   accentColor,
   onOpen,
@@ -237,43 +237,74 @@ function ImageGrid({
   accentColor: string;
   onOpen: (idx: number) => void;
 }) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(images.length > 1);
+
+  // El punto/flecha activa sigue la tarjeta más visible dentro del propio
+  // scroller (root distinto del viewport de la página) — mismo patrón que el
+  // mini-nav de AnatomiaSection, pero horizontal.
+  useEffect(() => {
+    const root = scrollerRef.current;
+    if (!root) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        let best: { idx: number; ratio: number } | null = null;
+        for (const e of entries) {
+          const idx = Number((e.target as HTMLElement).dataset.idx);
+          if (Number.isNaN(idx) || e.intersectionRatio <= 0) continue;
+          if (!best || e.intersectionRatio > best.ratio) best = { idx, ratio: e.intersectionRatio };
+        }
+        if (best) setActiveIdx(best.idx);
+      },
+      { root, threshold: [0.5, 0.75, 1] },
+    );
+    itemRefs.current.forEach((el) => el && obs.observe(el));
+    return () => obs.disconnect();
+  }, [images.length]);
+
+  const updateEdges = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 8);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 8);
+  }, []);
+
+  useEffect(() => updateEdges(), [updateEdges, images.length]);
+
+  const scrollToIdx = useCallback((i: number) => {
+    itemRefs.current[i]?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }, []);
+
   if (images.length === 0) return null;
 
-  // Con pocas imágenes el bento (destacar la primera) deja huecos vacíos — solo
-  // se activa desde 3 imágenes, donde hay suficiente contenido para balancear el grid.
-  // Ligado a gridClass: los casos de 1-2 imágenes de abajo asumen canFeature=false.
-  const canFeature = images.length >= 3;
-  const gridClass =
-    images.length === 1
-      ? "grid grid-cols-1 max-w-xs mx-auto sm:mx-0"
-      : images.length === 2
-      ? "grid grid-cols-2 gap-3 sm:gap-4 max-w-2xl"
-      : "grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4";
-
   return (
-    <div className={gridClass}>
-      {images.map((img, idx) => {
-        // La primera imagen se destaca ocupando 2 columnas/filas en pantallas medianas+
-        const featured = idx === 0 && canFeature;
-
-        return (
+    <div className="relative">
+      <div
+        ref={scrollerRef}
+        onScroll={updateEdges}
+        className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 sm:mx-0 sm:gap-4 sm:px-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {images.map((img, idx) => (
           <motion.button
             key={img.id}
+            data-idx={idx}
+            ref={(el) => {
+              itemRefs.current[idx] = el;
+            }}
             initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.38, delay: idx * 0.07, ease: "easeOut" }}
+            transition={{ duration: 0.38, delay: idx * 0.05, ease: "easeOut" }}
             onClick={() => onOpen(idx)}
             whileHover={{
               y: -6,
               borderColor: `${accentColor}70`,
               boxShadow: `0 14px 34px -10px rgba(0,0,0,0.55), 0 0 26px -8px ${accentColor}50`,
             }}
-            className={`group relative w-full overflow-hidden rounded-2xl border border-borde-sutil focus:outline-none ${
-              featured
-                ? "col-span-2 aspect-[4/3] sm:col-span-2 sm:row-span-2 sm:aspect-square"
-                : "aspect-[3/4]"
-            }`}
+            className="group relative aspect-[3/4] w-[72vw] flex-none snap-center overflow-hidden rounded-2xl border border-borde-sutil focus:outline-none sm:w-[300px]"
             aria-label={`Ampliar: ${img.altText}`}
           >
             {img.tipo === "video" ? (
@@ -290,12 +321,8 @@ function ImageGrid({
                 alt={img.altText}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.06]"
-                sizes={
-                  featured
-                    ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 560px"
-                    : "(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 280px"
-                }
-                priority={featured}
+                sizes="(max-width: 640px) 72vw, 300px"
+                priority={idx === 0}
               />
             )}
 
@@ -327,8 +354,64 @@ function ImageGrid({
               </div>
             )}
           </motion.button>
-        );
-      })}
+        ))}
+      </div>
+
+      {/* Fades de borde — insinúan que hay más fotos a los lados */}
+      {canScrollLeft && (
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-stone-950 to-transparent sm:w-12" />
+      )}
+      {canScrollRight && (
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-stone-950 to-transparent sm:w-12" />
+      )}
+
+      {/* Flechas — solo escritorio, el swipe cubre táctil */}
+      {images.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={() => scrollToIdx(Math.max(activeIdx - 1, 0))}
+            disabled={!canScrollLeft}
+            className="absolute left-1 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-borde-sutil bg-stone-900/80 text-stone-400 backdrop-blur-sm transition-opacity hover:border-stone-500 hover:text-stone-200 disabled:pointer-events-none disabled:opacity-0 sm:flex"
+            aria-label="Fotos anteriores"
+          >
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToIdx(Math.min(activeIdx + 1, images.length - 1))}
+            disabled={!canScrollRight}
+            className="absolute right-1 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-borde-sutil bg-stone-900/80 text-stone-400 backdrop-blur-sm transition-opacity hover:border-stone-500 hover:text-stone-200 disabled:pointer-events-none disabled:opacity-0 sm:flex"
+            aria-label="Más fotos"
+          >
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+        </>
+      )}
+
+      {/* Puntos de progreso */}
+      {images.length > 1 && (
+        <div className="mt-4 flex items-center justify-center gap-1.5">
+          {images.map((img, i) => (
+            <button
+              key={img.id}
+              type="button"
+              onClick={() => scrollToIdx(i)}
+              aria-label={`Ir a la foto ${i + 1}`}
+              aria-current={i === activeIdx}
+              className="h-1.5 rounded-full transition-all duration-300"
+              style={{
+                width: i === activeIdx ? 20 : 6,
+                backgroundColor: i === activeIdx ? accentColor : "#2A2724",
+              }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
