@@ -2,6 +2,63 @@
 
 ---
 
+## [0.8.0] — 2026-09-21 — Estantería de personajes, foto de grupo y fix del toque en móvil
+
+PR #80 (`feat/ficha-mejoras-diseno`) y PR #81 (`fix/libro-imagen-grupo-toque-movil`). La lista de los 6
+personajes deja de ser un grid y pasa a una estantería horizontal de "lomos".
+
+> Nota: las entradas de Cucurucho + Danzante de Yaruquíes (2026-09-10/12) no están en este changelog; su
+> detalle vive en `docs/PLAN-CUCURUCHO-DANZANTE.md`.
+
+### Añadido
+
+- **`PersonajesLibro.tsx`** (nuevo — `modules/personajes/components/`): fila horizontal de lomos; los
+  colapsados muestran el nombre en vertical, el activo se ensancha con portada + leyenda + CTA. El ancho anima
+  con una sola transición CSS de `flex-grow`; autoplay cada 4200 ms que se pausa al interactuar y respeta
+  `prefers-reduced-motion`; el estado de bloqueo se resuelve dentro (`useColeccion()`).
+- **Campo `imagenGrupo`** (foto de los 4 imanes juntos, landscape) en `PersonajeListItem`
+  (`packages/types`), `personajes.service.ts`, `PersonajeLite` y `personajes.json` para Aya Uma, Payaso,
+  Diablos de lata, Cucurucho y Danzante. Desde `sm` el lomo activo la usa en vez del retrato.
+- `PersonajeLite.leyenda` (frase corta) para `/mis-personajes`.
+
+### Cambiado
+
+- `/personajes`, el cross-sell al pie de la ficha y `/mis-personajes` usan `PersonajesLibro` en vez de
+  `PersonajesGrid` / `PersonajesEscenario` / el grid inline de `ColeccionClient`.
+- CTA "Desbloquear / Ver ficha": grande desde `sm`; en móvil compacto (`px-2.5`, 11 px) con contenedor `p-3`.
+- Imán de 4 colores del Payaso: `.webp` → `.png` (`imagenGrupo` y entrada de galería).
+- Banners con texto en inglés recortados y animaciones de la ficha pulidas (`64543bf`).
+
+### Corregido
+
+- **Móvil: el primer toque en un lomo inactivo navegaba a `/desbloquear/[slug]`** en vez de expandirlo. El toque
+  dispara `mouseenter` emulado y `focus` antes del `click`, dejando el lomo ya activo. Ahora el hover solo cuenta
+  con mouse real (`onPointerEnter` + `pointerType`) y el foco solo por teclado (`:focus-visible`). Verificado con
+  emulación táctil: 1er toque expande, 2º navega.
+- **CTA recortado en móvil:** el botón medía 101 px dentro de un lomo de ~110 px con padding; ahora 91 px.
+- **Foto rota en la galería del Payaso:** al pasar el imán de 4 colores a `.png` se borró el `.webp` pero la entrada
+  de `multimedia` (`orden: 13`) seguía apuntándole.
+
+### Eliminado
+
+- `PersonajesGrid.tsx`, `PersonajeCard.tsx` y `PersonajesEscenario.tsx` (sin uso).
+
+### Entorno de desarrollo (documentado en `CLAUDE.md`)
+
+- Dos `next dev` a la vez comparten `apps/web/.next` y se pisan los chunks (`Cannot find module
+  './vendor-chunks/…'`).
+- `node_modules` evictado por iCloud (flag `dataless`) rompe el arranque de `next dev`; arreglo: borrar
+  `node_modules` y `pnpm install --frozen-lockfile --package-import-method=copy`.
+
+### Pendiente
+
+- Foto propia y de mayor resolución para el lomo (hoy ~1000 px estirados a ~950 px, con `object-top` se recorta
+  ~46 % de abajo) y pasar a WebP el PNG del Payaso, el JPEG de Diablos y el JPG cenital.
+- Archivos sin referenciar sin commitear: PNG sueltos del danzante y `public/personajes/otros/`.
+- Audios de hero (`/audio/*-ambiente.mp3`) siguen sin existir: 4 rutas rotas en `personajes.json`.
+
+---
+
 ## [0.7.0] — 2026-09-08 — Recorrido inmersivo 3D en la ficha del personaje
 
 Rama `feat/fotos-personajes-galeria`. La sección "Cuándo y dónde verlo" de la ficha
