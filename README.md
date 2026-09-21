@@ -1,67 +1,62 @@
 # Nunna
 
-Catálogo digital de personajes ecuatorianos con imanes artesanales como producto físico. El comprador escanea el QR de la tarjeta del imán y aterriza directo en la ficha completa del personaje.
+A digital catalog of Ecuadorian festival characters, sold as handmade fridge magnets. Each magnet comes with a card: the character on the front, a QR code on the back.
 
-**Autor:** Jonathan David Aucancela Maguana
-**Stack:** Next.js 15.5 (App Router) · TypeScript · Tailwind CSS v3 · next-intl · Supabase
-**En producción:** [nunna-ecu.com](https://nunna-ecu.com) (Railway)
+**Live:** [nunna-ecu.com](https://nunna-ecu.com) · **Author:** Jonathan David Aucancela Maguana
 
----
+## How it works
 
-## Repositorio
+1. The buyer scans the QR and lands on `/es/personajes/<slug>`.
+2. They enter the 6-character code printed under the card (magic-link login, no passwords) to **unlock** the character. Unlocked characters are saved to their account.
+3. The unlocked page is the digital product: story, an interactive anatomy of the costume, gallery, and links to the other characters.
 
-Monorepo con **Turborepo** + **pnpm workspaces**. Solo `apps/web` está activo — sin CMS, sin backend propio; los datos viven en JSON versionado en el repo.
+> The QR URL is a permanent contract: printed magnets can't be reprinted. Never rename a slug without adding an alias in `apps/web/lib/data/slug-aliases.ts`.
 
-```
-Nunna/
-├── apps/
-│   └── web/        → Next.js 15.5 (sitio público, único servicio en producción)
-├── packages/
-│   ├── types/       → tipos TypeScript compartidos
-│   ├── ui/          → componentes React base
-│   ├── utils/       → helpers (fechas, formatos) — sin consumidores activos hoy
-│   ├── database/    → stub reservado para búsqueda semántica (descartada, ver CLAUDE.md)
-│   └── config/      → ESLint, TSConfig
-└── supabase/        → schema.sql (auth + colección para el desbloqueo de imanes)
-```
+## What's inside
 
-## Inicio rápido
+- **6 characters:** Aya Uma, Payaso, Perro, Diablos de lata, Cucurucho, Danzante de Yaruquíes.
+- **`/pases`:** national map of Ecuador (MapLibre), festival calendar and per-province routes.
+- **`/mis-personajes`:** the user's collection, progress and achievements.
+- Spanish and English, mobile-first, rich OpenGraph previews for WhatsApp.
 
-### Prerrequisitos
+## Stack
 
-- Node.js ≥ 20
-- pnpm ≥ 9
+Next.js 15.5 (App Router) · TypeScript · Tailwind CSS v3 · next-intl · framer-motion · MapLibre GL · Supabase (auth and collection only) · Railway · Turborepo + pnpm.
 
-### Instalación
+Content is static JSON in `apps/web/lib/data/` (no CMS, no custom backend). Pages are statically generated.
+
+## Getting started
+
+Requires Node.js ≥ 20 and pnpm ≥ 9.
 
 ```bash
-git clone <repo>
-cd Nunna
 pnpm install
-
-pnpm --filter @seres-del-pase/web dev --port 3030
+pnpm --filter @seres-del-pase/web dev --port 3030   # http://localhost:3030/es
 ```
 
-Frontend en [http://localhost:3030/es](http://localhost:3030/es). No se necesitan variables de entorno para desarrollo — los datos vienen del JSON. Sin las variables de Supabase (`apps/web/.env.local`), el gating del desbloqueo de imanes queda apagado (todo visible), que es lo cómodo en dev.
-
-### Comandos frecuentes
+- Without the Supabase variables in `apps/web/.env.local`, unlock gating is off and everything is visible, which is handy in dev.
+- Run **one** dev server at a time: they share `apps/web/.next` and will corrupt each other's chunks.
 
 ```bash
-pnpm build                                          # build de producción (valida datos + SSG)
-pnpm --filter @seres-del-pase/web type-check        # tsc --noEmit
-pnpm --filter @seres-del-pase/web test              # vitest
-pnpm validate-data                                  # integridad de referencias entre los JSON
+pnpm build          # validates data, then builds
+pnpm type-check
+pnpm lint
+pnpm test           # vitest
+pnpm validate-data  # cross-references between the JSON files
 ```
 
-## Documentación
+## Repository
 
-- [`CLAUDE.md`](CLAUDE.md) — modelo de negocio, arquitectura, decisiones técnicas y estado actual (fuente principal para trabajar en el repo)
-- [`docs/PLAN-ESCALA-ECUADOR.md`](docs/PLAN-ESCALA-ECUADOR.md) — plan de escalado de Riobamba a personajes de todo Ecuador
-- [`docs/PLAN-V3.md`](docs/PLAN-V3.md) — auditoría y plan de mejoras (bugs, performance, SEO)
-- [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — historial de cambios
-- [`docs/decisiones/`](docs/decisiones) — ADRs (Tailwind v3, Prisma v5, Supabase vs Railway Postgres)
+```
+apps/web/     Next.js site (the only production service)
+packages/     shared types, UI, utils, config
+scripts/      route baking, QR generation, unlock-code seeding, data validation
+supabase/     schema.sql for auth + collection
+docs/         plans, changelog, runbooks (docs/AGREGAR-PERSONAJE.md to add a character)
+```
 
-## Licencia
+For architecture, decisions and current status, read [`CLAUDE.md`](CLAUDE.md). History is in [`docs/CHANGELOG.md`](docs/CHANGELOG.md).
 
-- Código: [MIT](LICENSE)
-- Contenido cultural: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+## License
+
+Code: [MIT](LICENSE) · Cultural content: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)

@@ -72,6 +72,22 @@ pnpm --filter @seres-del-pase/web dev --port 3030
 
 Frontend: **http://localhost:3030/es**
 
+### Entorno de desarrollo — gotchas (2026-09-21)
+
+- **Un solo `next dev` a la vez.** Todos escriben en `apps/web/.next`; con dos servidores (p. ej. `npm run dev`
+  de la raíz vía turbo + el comando con `--port 3030`) se pisan los chunks y aparece
+  `Cannot find module './vendor-chunks/@supabase+auth-js@….js'`. Arreglo: parar todos, `rm -rf apps/web/.next`,
+  levantar uno. Usa siempre el comando con `--port 3030`: `npm run dev` deja el puerto sin fijar y, si el 3000
+  está ocupado (Docker), Next cae al 3001, donde otros proyectos locales (p. ej. `vite`) también escuchan.
+- **⚠ iCloud + `node_modules`.** El repo vive en `~/Documents` y si "Escritorio y Documentos" está sincronizado
+  con iCloud, macOS puede **evictar** archivos de `node_modules` (flag `dataless`, visible con `ls -lO`). Node
+  los lee vacíos y `next dev` muere con errores que cambian entre intentos (`ERR_INVALID_PACKAGE_CONFIG` sobre
+  `next/dist/compiled/*/package.json`, `Unexpected end of JSON input`, `_interop_require_default._ is not a
+  function`) — no es un problema de la versión de Node ni del código. Leer los archivos con `cat` **no** los
+  restaura. Arreglo: borrar todos los `node_modules` (raíz, `apps/*`, `packages/*`) y
+  `pnpm install --frozen-lockfile --package-import-method=copy`. Puede repetirse; lo definitivo es mover el
+  repo fuera de una carpeta sincronizada (p. ej. `~/Developer`).
+
 ### Variables de entorno (`apps/web/.env.local`)
 ```
 # Auth + colección (desbloqueo de imanes)
@@ -97,7 +113,7 @@ apps/web/
 │   │   ├── layout.tsx              → usa MainContent
 │   │   ├── page.tsx                → Landing
 │   │   ├── personajes/
-│   │   │   ├── page.tsx            → Grid de personajes
+│   │   │   ├── page.tsx            → Estantería de personajes (PersonajesLibro)
 │   │   │   └── [slug]/page.tsx     → ★★ DESTINO QR — ficha completa con historia
 │   │   ├── pases/
 │   │   │   ├── page.tsx            → ★ mapa nacional con zoom + calendario fusionado (/mapa y /calendario
@@ -126,13 +142,16 @@ apps/web/
 │   │                                 RecorridoScrollytelling (★★ recorrido de UN pase que avanza
 │   │                                 con el scroll — mapa + panel narrador con foto por parada;
 │   │                                 restaura PaseMapSection, ahora convive bajo RecorridosProvincia)
-│   ├── personajes/components/      → PersonajeCard, ParallaxHero, HeroDespertar (★ hero v2 inmersivo),
+│   ├── personajes/components/      → PersonajesLibro (★★ estantería horizontal de "lomos" — lista a los 6
+│   │                                 en /personajes, cross-sell de la ficha y /mis-personajes; reemplazó
+│   │                                 a PersonajesGrid/PersonajeCard/PersonajesEscenario, borrados 2026-09-18),
+│   │                                 ParallaxHero, HeroDespertar (★ hero v2 inmersivo),
 │   │                                 HeroGated/AnatomiaGated (★ gating por desbloqueo),
 │   │                                 AnatomiaSection (★ Fase 4 — hotspots scroll-driven),
 │   │                                 GaleriaSection (grilla única — imán + en-pase combinados),
 │   │                                 HistoriaPresentacion (★ modo presentación — beats visuales),
 │   │                                 PersonajeVisualSection (★ fusión Anatomía+Galería), NarrativaSection (sin uso),
-│   │                                 kichwaGlosario (helper compartido), PersonajesCarrusel,
+│   │                                 kichwaGlosario (helper compartido), PersonajesCarrusel (sin uso),
 │   │                                 HotspotsViewer (superseded por AnatomiaSection), SimbolismoSection (sin uso)
 │   ├── desbloqueo/components/      → DesbloquearForm, ColeccionClient (★ desbloqueo de imanes)
 │   └── festividades/components/    → CalendarioGrid
@@ -205,7 +224,7 @@ public/personajes/[slug]/[slug]-[seccion]-[descripcion].[ext]
 
 | `[seccion]` | Dónde se usa | Campo del JSON |
 |-------------|--------------|----------------|
-| `hero` | `PersonajeCard` del grid, hero de la ficha, pines de `AnatomiaSection` | `imagenPortada` |
+| `hero` | `PersonajesLibro` (lomo activo en móvil), hero de la ficha, pines de `AnatomiaSection` | `imagenPortada` |
 | `iman` | Galería — el producto físico sobre fondo limpio | `multimedia[]`, `titulo:"proceso"` |
 | `taller` | Galería — la pieza en el taller, entre los filamentos | `multimedia[]`, `titulo:"proceso"` |
 | `escenario` | Galería — el imán compuesto en paisaje (Chimborazo, confeti) | `multimedia[]`, `titulo:"proceso"` |
@@ -296,7 +315,7 @@ presentación + recorrido a la vez.
 6. PersonajeVisualSection ★→ FUSIÓN Anatomía v2 ★★ (gated, pines + lupa close-up + spotlight +
                              descubrimiento + sello final) + Galería, en UNA sola sección (cabecera
                              paraguas "El personaje", dos movimientos, un solo fondo).
-7. Cross-sell              → PersonajesEscenario (otros personajes)
+7. Cross-sell              → PersonajesLibro (estantería con los otros personajes)
 ```
 
 ★ = rediseño 2026-07-13. ★★ = mejoras de enganche 2026-07-15. `NarrativaSection.tsx` queda en el
@@ -518,7 +537,8 @@ Modo oscuro por defecto.
   - Banderas de idioma: 🇪🇸 ES / 🇪🇨 QU / 🇺🇸 EN; mobile solo flag en botón compacto, popover con flag + label
   - Glosario eliminado del navbar (accesible por footer); Personajes siempre visible
   - Scroll to top instantáneo al navegar por cualquier link del navbar
-- **Grid `/personajes` con gating** (2026-06-29):
+- **Grid `/personajes` con gating** (2026-06-29) — ⚠ reemplazado el 2026-09-18 por `PersonajesLibro`
+  (misma regla de bloqueo, ahora resuelta dentro del propio componente):
   - `PersonajesGrid.tsx` componente cliente; cards muestran candado + botón a `/desbloquear` si no desbloqueado
   - Sin `FadeUp` en la grilla (causaba flash negro en mobile por hydration con `opacity:0`)
   - `unlocked = !gatingActive || !ready || coleccion.has(slug)` — sin Supabase todos accesibles
@@ -572,6 +592,7 @@ Modo oscuro por defecto.
     de progreso SVG y términos kichwa con tooltip; `SecretoRitual` (nuevo) reemplaza el bloque estático
     del secreto del artesano
   - `PersonajesEscenario` (nuevo) reemplaza `PersonajesCarrusel` en el cross-sell final
+    — ⚠ a su vez reemplazado y borrado el 2026-09-18 por `PersonajesLibro`
 - **Mapa nacional de Ecuador en `/pases` + fusión de `/calendario`** (2026-08-10):
   - `/pases` pasó de un recorrido con selector de chips a un explorador de una sola página: mapa de
     Ecuador siempre montado (`MapaEcuador.tsx`, SVG con zoom real vía `motion.g`) + detalle de
@@ -634,8 +655,26 @@ Modo oscuro por defecto.
   una corrección de contenido — la primera versión del Danzante tenía una lectura simbólica sin
   fuente que se reescribió) en `docs/PLAN-CUCURUCHO-DANZANTE.md`; runbook para el próximo personaje
   en `docs/AGREGAR-PERSONAJE.md`. Pendientes propios en 🔄 Siguiente, abajo.
+- **Estantería `PersonajesLibro` + foto de grupo + fix del toque en móvil** (PR #80, #81, 2026-09-18/21):
+  - `PersonajesLibro.tsx` reemplaza los grids/escenario 3D donde se listan los 6 personajes (`/personajes`,
+    cross-sell al pie de la ficha, `/mis-personajes`); se borraron `PersonajesGrid`, `PersonajeCard` y
+    `PersonajesEscenario`. Detalle y gotchas en "PersonajesLibro" (decisiones técnicas).
+  - Campo nuevo `imagenGrupo` (foto de los 4 imanes juntos) para los 5 personajes que la tienen; el
+    Payaso pasó su imán de 4 colores de `.webp` a `.png` (galería y `imagenGrupo` apuntan al `.png`).
+  - **Bug de móvil corregido:** el primer toque en un lomo inactivo navegaba directo a
+    `/desbloquear/[slug]` en vez de expandirlo (ver decisión técnica).
+  - **Entorno:** `node_modules` evictado por iCloud + dos `next dev` compartiendo `.next` rompían el
+    arranque — ver "Entorno de desarrollo" en "Cómo correr el proyecto".
 
 ### 🔄 Siguiente
+- **Fotos de los 4 imanes** (`imagenGrupo` + galería): las 5 fotos miden ~1000 px y se muestran a ~950 px en
+  un lomo panorámico 2.5:1 (`object-top` recorta ~46 % de abajo; en retina se estiran al doble). Idea
+  pendiente: foto propia del lomo (~2400×960) distinta de la de la galería. También pesan de más el PNG del
+  Payaso (454 KB), el JPEG de Diablos (260 KB) y `diablos-de-lata-iman-cuatro-vista-cenital.jpg` (522 KB) — pasar
+  a WebP. Requiere los originales en alta resolución.
+- Decidir qué hacer con archivos sueltos sin commitear: `danzante-yaruquies-iman.png`,
+  `danzante_yaruquies_iman_prinicpal.png` (errata en el nombre) y `public/personajes/otros/` (IMG_8134, IMG_8638,
+  `crt_frontal_*`) — ningún JSON los referencia.
 - **⚠ Abrir PR a `main` para `feat/selector-pases-recorrido`** (rama ya en origin, commit
   `eb7f322`): añade botones por pase en `RecorridosProvincia` (antes "Todos" era el único
   modo) + grilla "Personajes de este pase" al elegir uno. Se abrió como PR #67 contra
@@ -679,6 +718,35 @@ Modo oscuro por defecto.
 ---
 
 ## Decisiones técnicas clave
+
+### `PersonajesLibro` — estantería horizontal de "lomos" (2026-09-18, fix 2026-09-21)
+`modules/personajes/components/PersonajesLibro.tsx`. Una fila con los 6 personajes como lomos de libro:
+los colapsados muestran solo el nombre en vertical (`writing-mode: vertical-rl`, mín. 44 px); el **activo** se
+ensancha y revela retrato/foto + leyenda + CTA. Se monta en 3 sitios: `/personajes`, cross-sell al pie de la
+ficha (`otrosPersonajes`) y `/mis-personajes` (`ColeccionClient`). Sustituye a `PersonajesGrid`,
+`PersonajeCard` y `PersonajesEscenario`.
+- **El ancho anima con una sola transición CSS de `flex-grow`** (no `layout`/`height:auto` de framer-motion):
+  las 6 columnas se mueven sincronizadas y sin saltos; el contenido aparece con delay para que "se abra" antes.
+- **Autoplay** cada 4200 ms (`autoAdvanceMs`, 0 lo apaga); se pausa con cualquier interacción y con
+  `prefers-reduced-motion` queda apagado.
+- **Bloqueo resuelto dentro del componente** vía `useColeccion()` (`gatingActive && ready && !coleccion.has(slug)`)
+  — no lo calcula cada página. Bloqueado → CTA "Desbloquear" a `/desbloquear/[slug]`; si no, "Ver ficha".
+- **Modelo de interacción:** lomo inactivo → expande; lomo activo → navega (`router.push`). En escritorio, pasar el
+  mouse ya lo activa, así que hover + clic navega.
+- ⚠ **Hover y foco NO deben activar en táctil.** Un toque dispara `mouseenter` emulado y `focus` (el lomo es un
+  `div` con `tabIndex=0`) **antes** del `click`; si esos handlers hacen `setActiveIdx(i)`, el `click` ya ve el
+  lomo como activo y **navega en el primer toque** en vez de expandir (bug real, verificado con Playwright, los 5
+  lomos inactivos). Por eso: `onPointerEnter` solo con `e.pointerType === "mouse"` y `onFocus` solo si
+  `e.currentTarget.matches(":focus-visible")` (teclado). No volver a `onMouseEnter`. Para probarlo hay que
+  emular táctil de verdad (`isMobile: true, hasTouch: true` + `tap()`); `click()`/`hover()` en escritorio no lo
+  reproducen.
+- **Foto del lomo activo:** móvil (< `sm`) → `imagenPortada` con `object-top` (el lomo activo es casi cuadrado,
+  ~110 px de ancho a 390 px de viewport). Desde `sm` → `imagenGrupo` (landscape de los 4 imanes) con `object-top`;
+  si falta, retrato con `object-[50%_18%]`. Con un retrato en un lomo ancho y bajo solo se veía un borde.
+- **CTA responsive:** en móvil compacto (`px-2.5 py-1.5 text-[11px]`, contenedor `p-3`) porque el lomo activo mide
+  ~110 px y un botón más grande se recortaba (91 px medidos en 110); desde `sm` grande (`px-6 py-3 text-base`).
+- Prop `PersonajeLibroItem.imagenGrupo` viene de `PersonajeListItem` (`packages/types`) y de `PersonajeLite`
+  (`/mis-personajes`), que también gana `leyenda`.
 
 ### `output: "standalone"` — reintroducido con fix (2026-07-12, PR #47)
 **Activo en producción.** El intento original (PR #44, 2026-07-11) causó 502 + crash-loop en Railway y se
@@ -880,7 +948,9 @@ quichua como opción de UI** y la **feature de glosario** por completo.
 - Las páginas son SSG puro — `generateStaticParams` + sin `force-dynamic`
 
 ### Imágenes — `imagenBanner` vs `imagenPortada`
-- `imagenPortada` → retrato portrait, para tarjetas pequeñas (`PersonajeCard`)
+- `imagenPortada` → retrato portrait, para tarjetas pequeñas y el lomo activo en móvil (`PersonajesLibro`)
+- `imagenGrupo` → foto landscape de los 4 imanes juntos; el lomo activo de `PersonajesLibro` la usa
+  desde `sm` (ver "PersonajesLibro" en decisiones técnicas). Opcional: sin ella cae al retrato
 - `imagenBanner` → landscape 1376×768 con texto de marca, para hero grande
 - `ParallaxHero` usa `imagenBanner ?? imagen` (banner primero, retrato como fallback)
 - Personajes sin `imagenBanner` muestran `OrigenPlaceholder` artístico en el hero
