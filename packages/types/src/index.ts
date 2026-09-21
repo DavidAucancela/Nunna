@@ -109,6 +109,8 @@ export interface PersonajeListItem
   imagenPortada?: string;
   imagenBanner?: string;
   imagenIngreso?: string;
+  /** Foto de los 4 imanes juntos (landscape) — usada en la estantería horizontal donde el retrato se ve muy recortado. */
+  imagenGrupo?: string;
   totalPases: number;
   /** Frase de la narrativa — texto de relación en el escenario de cross-sell. */
   leyenda?: string;

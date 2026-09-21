@@ -244,6 +244,7 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
           nombreKichwa: p.nombreKichwa,
           origen: p.origen,
           imagenPortada: p.imagenPortada,
+          imagenGrupo: p.imagenGrupo,
           frase: p.leyenda,
         }))}
       />
