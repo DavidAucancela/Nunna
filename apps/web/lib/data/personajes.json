@@ -18,6 +18,7 @@
     "imagenPortada": "/personajes/aya-uma/aya-uma-hero-figura-frontal.webp",
     "imagenBanner": "/headers/aya-uma-banner.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/diablo-huma-inicio.png",
+    "imagenGrupo": "/personajes/aya-uma/aya-uma-iman-cuatro-colores.webp",
     "narrativa": {
       "leyenda": "Donde el espíritu camina, la tierra responde.",
       "palabrasClave": [
@@ -206,6 +207,7 @@
     "imagenPortada": "/personajes/payaso/payaso-hero-figura-traje-rosa.webp",
     "imagenBanner": "/headers/payaso-banner.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/payaso-inicio.jpg",
+    "imagenGrupo": "/personajes/payaso/payaso-iman-cuatro-colores.png",
     "narrativa": {
       "leyenda": "La máscara sonríe fija. La verdad no necesita permiso para salir.",
       "palabrasClave": [
@@ -543,6 +545,7 @@
     "imagenPortada": "/personajes/diablos-de-lata/diablos-de-lata-hero-figura-mascara-roja.webp",
     "imagenBanner": "/headers/diablos-de-lata-banner.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/diablos-lata-inicio.jpg",
+    "imagenGrupo": "/personajes/diablos-de-lata/diablos-de-lata-iman-cuatro-sobre-mesa.jpeg",
     "narrativa": {
       "leyenda": "Tomaron el símbolo del miedo y lo convirtieron en el corazón de la fiesta.",
       "palabrasClave": [
@@ -747,6 +750,7 @@
     "imagenPortada": "/personajes/cucurucho/cucurucho-hero-figura-frontal.webp",
     "imagenBanner": "/headers/cucurucho-banner.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/cucurucho-inicio.webp",
+    "imagenGrupo": "/personajes/cucurucho/cucurucho-iman-cuatro-figuras.webp",
     "narrativa": {
       "leyenda": "Bajo el capirote no hay un nombre: sólo un acto entre la persona y su fe.",
       "palabrasClave": [
@@ -906,6 +910,7 @@
     "origen": "mixto",
     "imagenPortada": "/personajes/danzante-yaruquies/danzante-yaruquies-hero-figura-frontal.webp",
     "imagenBanner": "/headers/danzante-yaruquies-banner.webp",
+    "imagenGrupo": "/personajes/danzante-yaruquies/danzante-yaruquies-iman-cuatro-figuras.webp",
     "narrativa": {
       "leyenda": "Bajo la máscara camina, despacio, un sacerdote del Sol y la Luna que nunca dejó de bailar.",
       "palabrasClave": [

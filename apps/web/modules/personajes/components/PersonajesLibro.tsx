@@ -14,6 +14,15 @@ export interface PersonajeLibroItem {
   nombreKichwa?: string | null | undefined;
   origen?: string | null;
   imagenPortada?: string | null;
+  /**
+   * Foto de los 4 imanes juntos (landscape) — se usa desde `sm` en vez de
+   * `imagenPortada`: el lomo activo es mucho más ancho que alto, y un retrato
+   * recortado con `object-top` en ese formato deja ver solo un borde superior
+   * del personaje. En mobile el lomo activo es casi cuadrado, así que el
+   * retrato sí se aprecia bien y se mantiene. Personajes sin esta foto (aún
+   * sin el asset) caen al retrato en todos los tamaños.
+   */
+  imagenGrupo?: string | null | undefined;
   /** Frase corta (leyenda) que aparece cuando el personaje está al frente. */
   frase?: string | null | undefined;
 }
@@ -99,11 +108,16 @@ export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }:
             aria-current={isActive}
             aria-label={p.nombre}
             onClick={() => handleActivate(i)}
-            onMouseEnter={() => {
+            // Hover solo con mouse real y foco solo por teclado: un toque dispara
+            // `mouseenter` emulado y `focus` ANTES del `click`, dejando el lomo ya
+            // activo y haciendo que el primer toque navegara en vez de expandir.
+            onPointerEnter={(e) => {
+              if (e.pointerType !== "mouse") return;
               setPaused(true);
               setActiveIdx(i);
             }}
-            onFocus={() => {
+            onFocus={(e) => {
+              if (!e.currentTarget.matches(":focus-visible")) return;
               setPaused(true);
               setActiveIdx(i);
             }}
@@ -137,8 +151,17 @@ export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }:
                   src={p.imagenPortada}
                   alt={p.nombre}
                   fill
-                  className={`object-cover object-top ${locked ? "opacity-50 grayscale" : ""}`}
-                  sizes="(max-width: 640px) 60vw, 420px"
+                  className={`object-cover object-top sm:hidden ${locked ? "opacity-50 grayscale" : ""}`}
+                  sizes="60vw"
+                />
+              )}
+              {(p.imagenGrupo ?? p.imagenPortada) && (
+                <Image
+                  src={(p.imagenGrupo ?? p.imagenPortada) as string}
+                  alt={p.nombre}
+                  fill
+                  className={`hidden object-cover sm:block ${p.imagenGrupo ? "object-top" : "object-[50%_18%]"} ${locked ? "opacity-50 grayscale" : ""}`}
+                  sizes="420px"
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/25 to-transparent" />
@@ -168,7 +191,7 @@ export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }:
 
             {/* Contenido expandido */}
             <div
-              className="absolute inset-x-0 bottom-0 p-4 sm:p-6"
+              className="absolute inset-x-0 bottom-0 p-3 sm:p-6"
               style={{
                 opacity: isActive ? 1 : 0,
                 transform: isActive ? "translateY(0)" : "translateY(10px)",
@@ -199,7 +222,7 @@ export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }:
                     : { pathname: "/personajes/[slug]", params: { slug: p.slug } }
                 }
                 onClick={(e) => e.stopPropagation()}
-                className={`mt-3 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium backdrop-blur-sm transition-colors sm:mt-4 ${
+                className={`mt-3 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1.5 text-[11px] font-semibold backdrop-blur-sm transition-colors sm:mt-4 sm:gap-2 sm:px-6 sm:py-3 sm:text-base ${
                   locked
                     ? "border-acento-dorado/60 bg-stone-950/70 text-acento-dorado hover:bg-acento-dorado hover:text-fondo-oscuro"
                     : "border-white/25 bg-stone-950/60 text-white hover:bg-white/15"
@@ -207,7 +230,7 @@ export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }:
               >
                 {locked ? "Desbloquear" : "Ver ficha"}
                 {!locked && (
-                  <svg width="9" height="9" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                   </svg>
                 )}
