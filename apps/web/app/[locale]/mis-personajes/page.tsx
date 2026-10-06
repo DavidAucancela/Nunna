@@ -30,6 +30,7 @@ export default async function ColeccionPage({ params }: ColeccionPageProps) {
     origen: p.origen ?? null,
     imagenPortada: p.imagenPortada ?? null,
     imagenBanner: p.imagenBanner ?? null,
+    imagenGrupo: p.imagenGrupo ?? null,
     leyenda: p.leyenda ?? null,
   }));
 
