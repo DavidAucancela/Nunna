@@ -15,28 +15,15 @@ import { SITE_URL } from "@/lib/site-url";
 import { useRouter } from "@/i18n/navigation";
 import { WelcomeModal } from "./WelcomeModal";
 
-/** Formato del código impreso: 6 caracteres alfanuméricos en mayúsculas. */
-export const CODE_RE = /^[A-Z0-9]{6}$/;
-
 // ── Tipos ────────────────────────────────────────────────────────────────────
 
-export type RedeemStatus =
+export type GuardarStatus =
   | "ok"
-  | "invalid"
-  | "wrong_character"
   | "already_yours"
-  | "already_redeemed_by_other"
+  | "invalid"
   | "not_authenticated"
   | "not_configured"
   | "error";
-
-export interface RedeemResult {
-  status: RedeemStatus;
-  slug?: string | undefined;
-}
-
-/** Status detallado de check_code_status — distingue inválido de "otro personaje". */
-export type CodeStatus = "valid" | "invalid" | "wrong_character" | "already_redeemed" | "not_configured" | "error";
 
 /** Resultado de `signInWithEmail`: null si ok, o el tipo de fallo. */
 export type SignInErrorKind = "not_configured" | "rate_limited" | "error" | null;
@@ -44,40 +31,25 @@ export type SignInErrorKind = "not_configured" | "rate_limited" | "error" | null
 interface ColeccionContextValue {
   /** El provider terminó su primera carga (sesión + colección). */
   ready: boolean;
-  /** Supabase está configurado; si es false, el gating se desactiva (todo visible). */
-  gatingActive: boolean;
+  /** Supabase está configurado (auth + colección). Si es false, no se ofrece guardar. */
+  authActiva: boolean;
   session: Session | null;
   user: User | null;
-  /** Slugs de personajes desbloqueados por el usuario. */
+  /** Slugs de personajes guardados por el usuario. */
   coleccion: Set<string>;
-  /** ¿El personaje está desbloqueado? */
+  /** ¿El personaje está en la colección? */
   has: (slug: string) => boolean;
   /**
-   * Envía un magic-link al email. Si se pasa `code`, viaja en la URL del enlace
-   * (query param `unlock_code`) para sobrevivir el regreso en OTRO navegador o
-   * dispositivo — depender solo de localStorage falla si el correo se abre en
-   * un contexto distinto al que llenó el formulario. Devuelve el tipo de error
-   * ("rate_limited" cuando Supabase frena el envío por exceso de intentos,
-   * "error" para cualquier otro fallo) o null si ok.
+   * Envía un magic-link al email. `redirectPath` (p. ej. la ficha con `?origen=qr`) es a
+   * dónde vuelve la persona al abrir el enlace — viaja en la URL, así funciona aunque el
+   * correo se abra en otro navegador o dispositivo. Devuelve el tipo de error o null.
    */
-  signInWithEmail: (email: string, code?: string) => Promise<SignInErrorKind>;
+  signInWithEmail: (email: string, redirectPath?: string) => Promise<SignInErrorKind>;
+  /** Login con Google (OAuth). Vuelve a `redirectPath` (por defecto, la página actual). */
+  signInWithGoogle: (redirectPath?: string) => Promise<SignInErrorKind>;
   signOut: () => Promise<void>;
-  /**
-   * Verifica si un código existe y está sin canjear (sin auth, paso previo al magic-link).
-   * Si se pasa `expectedSlug`, además exige que el código pertenezca a ese personaje.
-   */
-  checkCodeValid: (code: string, expectedSlug?: string) => Promise<boolean>;
-  /**
-   * Verifica en tiempo real (sin auth) si un código es válido PARA ESTE personaje,
-   * distinguiendo "no existe" de "es de otro personaje" de "ya fue canjeado".
-   * Usado por el botón "Verificar" del formulario de desbloqueo combinado.
-   */
-  checkCodeStatus: (code: string, expectedSlug: string) => Promise<CodeStatus>;
-  /**
-   * Canjea un código de 6 caracteres. Requiere sesión. Si se pasa `expectedSlug`, el
-   * código debe pertenecer a ese personaje o se devuelve status `wrong_character`.
-   */
-  redeemCode: (code: string, expectedSlug?: string) => Promise<RedeemResult>;
+  /** Guarda un personaje en la colección del usuario. Requiere sesión. */
+  guardarPersonaje: (slug: string) => Promise<GuardarStatus>;
   /** Recarga la colección desde Supabase. */
   refrescar: () => Promise<void>;
 }
@@ -87,7 +59,6 @@ const ColeccionContext = createContext<ColeccionContextValue | null>(null);
 // ── Cache local (evita parpadeo del nav antes de que responda Supabase) ────────
 
 const CACHE_KEY = "nunna:coleccion";
-const PENDING_CODE_KEY = "nunna:pending_code";
 const LOGIN_ONLY_KEY = "nunna:pending_login_only";
 const WELCOME_KEY = "nunna:bienvenida_vista";
 
@@ -107,6 +78,18 @@ function writeCache(slugs: string[]) {
   } catch {
     /* ignore */
   }
+}
+
+/**
+ * URL absoluta a la que vuelve la persona tras el login. El sitio responde en más de
+ * un dominio (Railway + dominio propio): en producción siempre apunta al canónico
+ * (SITE_URL); en desarrollo respeta window.location.origin (incl. la IP de LAN de
+ * `next dev`). Sin `path`, vuelve a la página actual.
+ */
+export function buildRedirectUrl(path?: string): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  const base = process.env.NODE_ENV === "production" ? SITE_URL : window.location.origin;
+  return new URL(path ?? window.location.pathname, base).toString();
 }
 
 // ── Provider ───────────────────────────────────────────────────────────────────
@@ -139,79 +122,34 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
     }
   }, [applyColeccion]);
 
-  const checkCodeValid = useCallback(async (code: string, expectedSlug?: string): Promise<boolean> => {
-    if (!supabase) return false;
-    const normalized = code.trim().toUpperCase();
-    if (!CODE_RE.test(normalized)) return false;
-    try {
-      const { data } = await supabase.rpc("check_code_valid", {
-        p_code: normalized,
-        p_expected_slug: expectedSlug ?? null,
-      });
-      return data === true;
-    } catch {
-      return false;
-    }
-  }, []);
-
-  const checkCodeStatus = useCallback(async (code: string, expectedSlug: string): Promise<CodeStatus> => {
+  const guardarPersonaje = useCallback(async (slug: string): Promise<GuardarStatus> => {
     if (!supabase) return "not_configured";
-    const normalized = code.trim().toUpperCase();
-    if (!CODE_RE.test(normalized)) return "invalid";
     try {
-      const { data, error } = await supabase.rpc("check_code_status", {
-        p_code: normalized,
-        p_expected_slug: expectedSlug,
-      });
-      if (error) return "error";
+      // getUser() verifica el JWT contra el servidor (no solo localStorage).
+      // getSession() puede devolver un token expirado sin saberlo → 400 en la RPC.
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) return "not_authenticated";
+
+      const { data, error } = await supabase.rpc("save_personaje", { p_slug: slug });
+      if (error) {
+        console.error("[guardarPersonaje] error:", error.message);
+        return "error";
+      }
       const row = (Array.isArray(data) ? data[0] : data) as { status?: string } | null | undefined;
-      return (row?.status as CodeStatus) ?? "error";
+      const status = (row?.status ?? "error") as GuardarStatus;
+      if (status === "ok" || status === "already_yours") {
+        setColeccion((prev) => {
+          const next = new Set(prev).add(slug);
+          writeCache([...next]);
+          return next;
+        });
+      }
+      return status;
     } catch {
+      // Fallo de red/timeout: nunca lanzamos, devolvemos un estado controlado.
       return "error";
     }
   }, []);
-
-  const redeemCode = useCallback(
-    async (code: string, expectedSlug?: string): Promise<RedeemResult> => {
-      if (!supabase) return { status: "not_configured" };
-      const normalized = code.trim().toUpperCase();
-      // Validación de formato antes de la red: evita llamadas inútiles a la RPC.
-      if (!CODE_RE.test(normalized)) return { status: "invalid" };
-      try {
-        // getUser() verifica el JWT contra el servidor (no solo localStorage).
-        // getSession() puede devolver un token expirado sin saberlo → 400 en la RPC.
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) return { status: "not_authenticated" };
-
-        const { data, error } = await supabase.rpc("redeem_code", {
-          p_code: normalized,
-          p_expected_slug: expectedSlug ?? null,
-        });
-        if (error) {
-          console.error("[redeemCode] error:", error.message);
-          return { status: "error" };
-        }
-        const row = (Array.isArray(data) ? data[0] : data) as
-          | { status?: string; slug?: string }
-          | null
-          | undefined;
-        const status = (row?.status ?? "error") as RedeemStatus;
-        const slug = row?.slug ?? undefined;
-        if ((status === "ok" || status === "already_yours") && slug) {
-          setColeccion((prev) => {
-            const next = new Set(prev).add(slug);
-            writeCache([...next]);
-            return next;
-          });
-        }
-        return { status, slug };
-      } catch {
-        // Fallo de red/timeout: nunca lanzamos, devolvemos un estado controlado.
-        return { status: "error" };
-      }
-    },
-    [],
-  );
 
   // Fuente única de verdad de la sesión: onAuthStateChange emite INITIAL_SESSION al
   // suscribirse (con la sesión actual o null), así evitamos un getSession en paralelo
@@ -226,7 +164,7 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
       setSession(newSession);
       if (newSession) {
         if (event === "INITIAL_SESSION" || event === "SIGNED_IN") loadColeccion();
-        // Volvió de un login sin código (magic-link "solo iniciar sesión"): siempre
+        // Volvió de un login sin personaje que guardar (magic-link "solo iniciar sesión"): siempre
         // aterriza en su colección, con un tutorial breve la primera vez que se logea.
         if (event === "SIGNED_IN" && consumePendingLoginOnly()) {
           router.replace("/mis-personajes");
@@ -248,31 +186,31 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
     };
   }, [applyColeccion, loadColeccion, router]);
 
-  const signInWithEmail = useCallback(async (email: string, code?: string): Promise<SignInErrorKind> => {
+  const signInWithEmail = useCallback(
+    async (email: string, redirectPath?: string): Promise<SignInErrorKind> => {
+      if (!supabase) return "not_configured";
+      const emailRedirectTo = buildRedirectUrl(redirectPath);
+      const { error } = await supabase.auth.signInWithOtp(
+        emailRedirectTo ? { email, options: { emailRedirectTo } } : { email },
+      );
+      if (!error) return null;
+      // Supabase frena el envío de OTP/magic-link (SMTP por defecto o cuota de
+      // Resend agotada): distinguirlo de un error genérico evita que la persona
+      // piense que su correo está mal escrito cuando en realidad debe esperar.
+      if (error.status === 429 || error.code === "over_email_send_rate_limit") return "rate_limited";
+      return "error";
+    },
+    [],
+  );
+
+  const signInWithGoogle = useCallback(async (redirectPath?: string): Promise<SignInErrorKind> => {
     if (!supabase) return "not_configured";
-    let emailRedirectTo: string | undefined;
-    if (typeof window !== "undefined") {
-      // El sitio responde en más de un dominio (Railway + dominio propio). Si el
-      // enlace se arma con window.location.origin, la persona queda "atada" al
-      // dominio que estaba usando al pedirlo — confuso si no es el canónico.
-      // En producción, el enlace siempre apunta al dominio canónico (SITE_URL);
-      // en desarrollo se respeta window.location.origin para poder probar el
-      // flujo completo (incl. accediendo por la IP de LAN que expone `next dev`,
-      // no solo por "localhost" — sniffear el hostname se quedaba corto ahí).
-      const base = process.env.NODE_ENV === "production" ? SITE_URL : window.location.origin;
-      const url = new URL(base + window.location.pathname);
-      if (code) url.searchParams.set("unlock_code", code);
-      emailRedirectTo = url.toString();
-    }
-    const { error } = await supabase.auth.signInWithOtp(
-      emailRedirectTo ? { email, options: { emailRedirectTo } } : { email },
-    );
-    if (!error) return null;
-    // Supabase frena el envío de OTP/magic-link (SMTP por defecto o cuota de
-    // Resend agotada): distinguirlo de un error genérico evita que la persona
-    // piense que su correo está mal escrito cuando en realidad debe esperar.
-    if (error.status === 429 || error.code === "over_email_send_rate_limit") return "rate_limited";
-    return "error";
+    const redirectTo = buildRedirectUrl(redirectPath);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      ...(redirectTo ? { options: { redirectTo } } : {}),
+    });
+    return error ? "error" : null;
   }, []);
 
   const signOut = useCallback(async () => {
@@ -285,16 +223,15 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<ColeccionContextValue>(
     () => ({
       ready,
-      gatingActive: supabaseEnabled,
+      authActiva: supabaseEnabled,
       session,
       user: session?.user ?? null,
       coleccion,
       has,
       signInWithEmail,
+      signInWithGoogle,
       signOut,
-      checkCodeValid,
-      checkCodeStatus,
-      redeemCode,
+      guardarPersonaje,
       refrescar: loadColeccion,
     }),
     [
@@ -303,10 +240,9 @@ export function ColeccionProvider({ children }: { children: React.ReactNode }) {
       coleccion,
       has,
       signInWithEmail,
+      signInWithGoogle,
       signOut,
-      checkCodeValid,
-      checkCodeStatus,
-      redeemCode,
+      guardarPersonaje,
       loadColeccion,
     ],
   );
@@ -337,46 +273,17 @@ export function useColeccion(): ColeccionContextValue {
 }
 
 /**
- * Estado de desbloqueo de un personaje, seguro para SSR/hidratación.
- *  - `resolved`: ya sabemos con certeza si está (o no) desbloqueado. Mientras sea
- *    false, el caller debe mostrar el teaser (igual en server y primer paint cliente).
- *  - `unlocked`: el personaje está desbloqueado (o el gating está desactivado).
- *  - `gatingActive`: hay backend; si es false, todo se muestra como antes.
- *
- * Si no hay backend (gatingActive=false) se resuelve de inmediato como desbloqueado,
- * preservando el comportamiento actual y evitando cualquier parpadeo.
+ * ¿El personaje está en la colección? SSR-safe: false hasta montar y resolver la
+ * sesión, igual en server y primer paint del cliente (sin mismatch de hidratación).
  */
-export function useDesbloqueo(slug: string) {
-  const { ready, gatingActive, has } = useColeccion();
+export function useEnColeccion(slug: string): boolean {
+  const { ready, has } = useColeccion();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-
-  const resolved = !gatingActive ? true : mounted && ready;
-  const unlocked = !gatingActive || has(slug);
-  return { gatingActive, resolved, unlocked };
+  return mounted && ready && has(slug);
 }
 
-/** Guarda un código para canjearlo automáticamente tras el magic-link. */
-export function setPendingCode(code: string) {
-  try {
-    window.localStorage.setItem(PENDING_CODE_KEY, code.trim().toUpperCase());
-  } catch {
-    /* ignore */
-  }
-}
-
-/** Lee y borra el código pendiente (tras volver del magic-link). */
-export function consumePendingCode(): string | null {
-  try {
-    const v = window.localStorage.getItem(PENDING_CODE_KEY);
-    if (v) window.localStorage.removeItem(PENDING_CODE_KEY);
-    return v;
-  } catch {
-    return null;
-  }
-}
-
-/** Marca que el próximo magic-link es un login sin código (sin personaje que canjear). */
+/** Marca que el próximo magic-link es un login sin personaje que guardar (sin personaje que canjear). */
 export function setPendingLoginOnly() {
   try {
     window.localStorage.setItem(LOGIN_ONLY_KEY, "1");
@@ -385,7 +292,7 @@ export function setPendingLoginOnly() {
   }
 }
 
-/** Lee y borra la marca de login sin código (tras volver del magic-link). */
+/** Lee y borra la marca de login sin personaje que guardar (tras volver del magic-link). */
 export function consumePendingLoginOnly(): boolean {
   try {
     const v = window.localStorage.getItem(LOGIN_ONLY_KEY);

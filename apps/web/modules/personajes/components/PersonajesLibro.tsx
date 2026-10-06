@@ -49,15 +49,15 @@ const SPINE_MIN = 44;
  * saltos; el contenido interno aparece con un pequeño delay para que el
  * "libro" termine de abrirse antes de mostrar el texto. Avanza solo cada
  * `autoAdvanceMs` — pausa con cualquier interacción y respeta
- * prefers-reduced-motion. El estado de bloqueo se resuelve aquí mismo vía
- * `useColeccion()`, igual en las 3 secciones.
+ * prefers-reduced-motion. Todas las fichas son abiertas; los personajes ya
+ * guardados en la colección llevan una marca, resuelta aquí vía `useColeccion()`.
  */
 export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }: PersonajesLibroProps) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduced = useReducedMotion();
   const router = useRouter();
-  const { coleccion, ready, gatingActive } = useColeccion();
+  const { coleccion, ready, authActiva } = useColeccion();
 
   useEffect(() => {
     if (reduced || paused || autoAdvanceMs <= 0 || personajes.length < 2) return;
@@ -69,19 +69,15 @@ export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }:
 
   if (personajes.length === 0) return null;
 
-  function isLocked(slug: string) {
-    return gatingActive && ready && !coleccion.has(slug);
+  function isGuardado(slug: string) {
+    return authActiva && ready && coleccion.has(slug);
   }
 
   function handleActivate(i: number) {
     const p = personajes[i];
     if (!p) return;
     if (i === activeIdx) {
-      router.push(
-        isLocked(p.slug)
-          ? { pathname: "/desbloquear/[slug]", params: { slug: p.slug } }
-          : { pathname: "/personajes/[slug]", params: { slug: p.slug } },
-      );
+      router.push({ pathname: "/personajes/[slug]", params: { slug: p.slug } });
     } else {
       setActiveIdx(i);
     }
@@ -97,7 +93,7 @@ export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }:
     >
       {personajes.map((p, i) => {
         const isActive = i === activeIdx;
-        const locked = isLocked(p.slug);
+        const guardado = isGuardado(p.slug);
         const style = getOrigenStyle(p.origen ?? undefined);
 
         return (
@@ -151,7 +147,7 @@ export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }:
                   src={p.imagenPortada}
                   alt={p.nombre}
                   fill
-                  className={`object-cover object-top sm:hidden ${locked ? "opacity-50 grayscale" : ""}`}
+                  className={`object-cover object-top sm:hidden`}
                   sizes="60vw"
                 />
               )}
@@ -160,7 +156,7 @@ export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }:
                   src={(p.imagenGrupo ?? p.imagenPortada) as string}
                   alt={p.nombre}
                   fill
-                  className={`hidden object-cover sm:block ${p.imagenGrupo ? "object-top" : "object-[50%_18%]"} ${locked ? "opacity-50 grayscale" : ""}`}
+                  className={`hidden object-cover sm:block ${p.imagenGrupo ? "object-top" : "object-[50%_18%]"}`}
                   sizes="420px"
                 />
               )}
@@ -181,11 +177,10 @@ export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }:
               >
                 {p.nombre}
               </span>
-              {locked && (
-                <span
-                  className="absolute bottom-3 h-1.5 w-1.5 rounded-full bg-acento-dorado"
-                  aria-hidden="true"
-                />
+              {guardado && (
+                <span className="absolute bottom-3 text-[10px] text-acento-dorado" aria-label="En tu colección">
+                  ✓
+                </span>
               )}
             </div>
 
@@ -206,34 +201,23 @@ export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }:
                 </p>
               )}
               <h3 className="font-display text-xl leading-tight text-texto-claro sm:text-3xl">{p.nombre}</h3>
-              {locked ? (
-                <p className="mt-1 text-[11px] uppercase tracking-wider text-stone-400 sm:text-xs">Bloqueado</p>
-              ) : (
-                p.frase && (
-                  <p className="mt-2 hidden max-w-[22rem] font-serif text-sm italic leading-snug text-stone-300 sm:block sm:text-base">
-                    &ldquo;{p.frase}&rdquo;
-                  </p>
-                )
+              {guardado && (
+                <p className="mt-1 text-[11px] uppercase tracking-wider text-acento-dorado sm:text-xs">✓ En tu colección</p>
+              )}
+              {p.frase && (
+                <p className="mt-2 hidden max-w-[22rem] font-serif text-sm italic leading-snug text-stone-300 sm:block sm:text-base">
+                  &ldquo;{p.frase}&rdquo;
+                </p>
               )}
               <Link
-                href={
-                  locked
-                    ? { pathname: "/desbloquear/[slug]", params: { slug: p.slug } }
-                    : { pathname: "/personajes/[slug]", params: { slug: p.slug } }
-                }
+                href={{ pathname: "/personajes/[slug]", params: { slug: p.slug } }}
                 onClick={(e) => e.stopPropagation()}
-                className={`mt-3 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1.5 text-[11px] font-semibold backdrop-blur-sm transition-colors sm:mt-4 sm:gap-2 sm:px-6 sm:py-3 sm:text-base ${
-                  locked
-                    ? "border-acento-dorado/60 bg-stone-950/70 text-acento-dorado hover:bg-acento-dorado hover:text-fondo-oscuro"
-                    : "border-white/25 bg-stone-950/60 text-white hover:bg-white/15"
-                }`}
+                className="mt-3 inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-white/25 bg-stone-950/60 px-2.5 py-1.5 text-[11px] font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/15 sm:mt-4 sm:gap-2 sm:px-6 sm:py-3 sm:text-base"
               >
-                {locked ? "Desbloquear" : "Ver ficha"}
-                {!locked && (
-                  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                )}
+                Ver ficha
+                <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
               </Link>
             </div>
 

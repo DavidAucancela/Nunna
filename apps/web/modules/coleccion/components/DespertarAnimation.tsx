@@ -4,12 +4,12 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "framer-motion";
-import type { PersonajeLite } from "./DesbloquearForm";
+import type { PersonajeLite } from "../types";
 
 /**
- * Overlay de pantalla completa tras un canje exitoso: mosaico con TODOS los
- * personajes del catálogo; los desbloqueados se "iluminan" (el velo oscuro se
- * desvanece), los bloqueados quedan en penumbra. Llama onDone() al terminar.
+ * Overlay de pantalla completa tras guardar un personaje: mosaico con TODOS los
+ * personajes del catálogo; los guardados se "iluminan" (el velo oscuro se
+ * desvanece), el resto queda en penumbra. Llama onDone() al terminar.
  *
  * El grid se dimensiona según cuántos personajes haya (no fijo a 2×2): así el
  * mosaico sigue siendo honesto sobre el estado de la colección cuando el
@@ -21,12 +21,12 @@ export function DespertarAnimation({
   nombreNuevo,
   onDone,
 }: {
-  personajes: PersonajeLite[];
+  personajes: Pick<PersonajeLite, "slug" | "nombre" | "imagenPortada">[];
   unlockedSlugs: string[];
   nombreNuevo: string;
   onDone: () => void;
 }) {
-  const t = useTranslations("desbloquear");
+  const t = useTranslations("guardar");
   const reduced = useReducedMotion();
 
   useEffect(() => {

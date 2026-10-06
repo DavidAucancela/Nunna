@@ -10,13 +10,15 @@ Autor: Jonathan David Aucancela Maguana.
 
 **Producto físico:** imanes (magnetos para refrigeradora) de personajes de los pases riobambeños (Aya Uma, Curiquingue, etc.)
 **Formato:** tarjeta temática — imagen del personaje en el frente, QR en el reverso
-**QR en la tarjeta** → dirige a `/es/personajes/[slug]` (ficha completa del personaje)
+**QR en la tarjeta** → dirige a `/es/personajes/[slug]?origen=qr` (ficha completa del personaje; un QR único por personaje, sin código)
 **La ficha del personaje es el producto digital** — justifica la compra.
 
 Flujo del comprador:
-1. Escanea QR de la tarjeta → `/es/personajes/[slug]`
+1. Escanea QR de la tarjeta → `/es/personajes/[slug]?origen=qr` (ficha **abierta**, cada vez que escanea)
 2. Ve la ficha completa: resumen → historia (leyenda + capítulos + dato del artesano) → galería
-3. Cross-sell al pie → más imanes de otros personajes
+3. Al terminar la ficha: modal opcional "Guarda a {nombre}" → cuenta (Google / enlace mágico) →
+   el personaje entra a `/mis-personajes` con certificado, logros y sello en la ficha
+4. Cross-sell al pie → más imanes de otros personajes
 
 Implicaciones técnicas:
 - **Mobile-first absoluto** — el QR se escanea con el teléfono
@@ -119,12 +121,12 @@ apps/web/
 │   │   │   ├── page.tsx            → ★ mapa nacional con zoom + calendario fusionado (/mapa y /calendario
 │   │   │   │                         se fusionaron aquí, ambos con redirect)
 │   │   │   └── [slug]/page.tsx     → Detalle de pase (scaffold mínimo — solo datos logísticos, sin historia editorial)
-│   │   ├── desbloquear/page.tsx    → ★ canje de código de 6 chars (desbloqueo de imán)
+│   │   ├── login/page.tsx          → ingreso (Google + enlace mágico) — LoginForm/AuthOpciones
 │   │   ├── mis-personajes/page.tsx → ★ colección del usuario + progreso + logros
 │   │   └── sobre/page.tsx
 │   └── api/health/route.ts         → healthcheck Railway
 ├── components/                     → SOLO compartidos entre módulos
-│   ├── auth/                       → ColeccionProvider (sesión + colección Supabase, useColeccion/useDesbloqueo)
+│   ├── auth/                       → ColeccionProvider (sesión + colección Supabase, useColeccion/useEnColeccion, guardarPersonaje)
 │   ├── layout/                     → Header, Footer, MainContent (wrapper pt-16 + footer)
 │   └── ui/                         → FadeUp, AnimatedCounter, ScrollProgress, ScrollToTop,
 │                                     WhatsAppShare, OrigenPlaceholder, LenisProvider
@@ -153,9 +155,12 @@ apps/web/
 │   │                                 PersonajeVisualSection (★ fusión Anatomía+Galería), NarrativaSection (sin uso),
 │   │                                 kichwaGlosario (helper compartido), PersonajesCarrusel (sin uso),
 │   │                                 HotspotsViewer (superseded por AnatomiaSection), SimbolismoSection (sin uso)
-│   ├── desbloqueo/components/      → DesbloquearForm, ColeccionClient (★ desbloqueo de imanes)
+│   ├── coleccion/components/       → ★ GuardarPersonaje (sello + modal "Guarda a {nombre}" + auto-guardado
+│   │                                 + CentinelaGuardar), ColeccionClient, CertificadoColeccion, DespertarAnimation
+│   ├── auth/components/            → LoginForm, AuthOpciones (Google + enlace mágico, compartido)
 │   └── festividades/components/    → CalendarioGrid
 ├── lib/
+│   ├── qr-origen.ts                → ★ llegada por QR (`?origen=qr` → marca 24 h en localStorage)
 │   ├── supabase/client.ts          → ★ cliente Supabase browser (auth + colección; null si faltan envs)
 │   ├── data.ts                     → ★ barrel — re-exporta lib/services/*
 │   ├── services/                   → personajes.service.ts (toPersonaje, merge multimedia),
@@ -771,7 +776,39 @@ Reduce el footprint de memoria: ~384MB en 3 procesos Node (`next start` vía 2 c
 solo proceso. **Si se toca el start command de Railway de nuevo, no quitar `HOSTNAME=0.0.0.0`** — sin él
 vuelve el crash-loop, aunque el build y el arranque local se vean perfectos.
 
-### Desbloqueo de imanes + colección sincronizada (desplegado 2026-06-28)
+### QR único por personaje + ficha abierta + guardado opcional ★ (2026-10-06)
+Reemplaza al desbloqueo por código (sección siguiente, que queda como historia). Plan completo:
+`docs/PLAN-QR-UNICO.md`.
+- **Un QR por personaje**: `https://nunna-ecu.com/es/personajes/<slug>?origen=qr` (`scripts/generate-qr.mjs`).
+  Sin código. Las tarjetas viejas (URL sin marcador) siguen abriendo la ficha, pero no ofrecen guardar.
+- **La ficha es abierta para todos**: Despertar, Recorrido 3D y Anatomía se renderizan siempre (también en
+  SSR). Se borraron `GatedPageRedirect`, `HeroGated`, `AnatomiaGated`, `PaseInmersivoGated`,
+  `/desbloquear/[slug]` (redirect 308 a la ficha en `next.config.ts`), `DesbloquearForm`, `seed-codes.mjs`.
+- **Llegada por QR** (`lib/qr-origen.ts`): `useLlegadaPorQr` lee `?origen=qr` con `window.location` (no
+  `useSearchParams` → la ficha sigue SSG), guarda `nunna:qr:<slug>` en localStorage (vigencia 24 h) y quita
+  **solo** el query param con `replaceState` — el `#hash` se conserva porque ahí llegan los tokens de
+  Supabase al volver del login. ⚠ Es una marca client-side: quien conozca `?origen=qr` puede guardar sin el
+  imán (limitación aceptada por el autor).
+- **Guardar** (`modules/coleccion/components/GuardarPersonaje.tsx`):
+  - `CentinelaGuardar` (antes del cross-sell) emite `nunna:fin-ficha` cada vez que entra en pantalla →
+    modal "Guarda a {nombre}" si: Supabase activo, sin sesión, llegada QR vigente, no guardado, no descartado.
+    "Ahora no" lo descarta hasta el próximo escaneo (queda un enlace discreto junto al sello para reabrir).
+  - **Auto-guardado**: sesión + llegada QR vigente + no guardado → `guardarPersonaje(slug)` (RPC
+    `save_personaje`). Cubre "escaneo con sesión" y "vuelta del login": el `redirectTo` de Google y del
+    enlace mágico es la ficha con `?origen=qr`, así funciona aunque el correo se abra en otro dispositivo.
+  - Tras guardar: `DespertarAnimation` → tarjeta de éxito → certificado del personaje
+    (`CertificadoColeccion` con `tipo: "personaje"`). Si ya está guardado: sello en la ficha.
+- **Cuenta**: `AuthOpciones` (Google + enlace mágico), compartido por el modal y `/login`. El botón de Google
+  solo aparece con `NEXT_PUBLIC_AUTH_GOOGLE=1` (requiere el proveedor Google activo en Supabase Auth).
+- **Supabase**: `user_unlocks` se conserva (la colección); RPC nueva `save_personaje(p_slug)` (SECURITY
+  DEFINER, solo `authenticated`, valida formato del slug). `count_collectors` sin cambios. `unlock_codes` y
+  sus RPC se retiran (la tabla queda renombrada `unlock_codes_archivo`). Ver `supabase/schema.sql`.
+- `ColeccionProvider`: `gatingActive` → `authActiva`; `useDesbloqueo` → `useEnColeccion`; fuera
+  `redeemCode`/`checkCode*`; nuevos `guardarPersonaje`, `signInWithGoogle`, `buildRedirectUrl`.
+- `PersonajesLibro`: todos los lomos llevan a la ficha; los guardados muestran "✓ En tu colección".
+
+### Desbloqueo de imanes + colección sincronizada (desplegado 2026-06-28) — ⚠ RETIRADO 2026-10-06
+> Reemplazado por "QR único por personaje" (arriba). Lo que sigue es registro histórico.
 Convierte la compra física en una experiencia que **sube de nivel**: cada tarjeta trae un **código de 6
 caracteres** impreso debajo; al canjearlo, el personaje entra a la **colección sincronizada por cuenta** del
 usuario y su ficha desbloquea la experiencia inmersiva. Branch: `feature/desbloqueo-coleccion-imanes`.
@@ -1187,9 +1224,8 @@ pnpm --filter @seres-del-pase/web lint               # next lint (eslint-config-
 # coords ancla de waypoints en recorrido.json. Necesita red; no toca runtime.
 node scripts/build-route.mjs
 
-# Desbloqueo de imanes — sembrar códigos de 6 caracteres en Supabase (genera CSV para imprenta).
-# Requiere SUPABASE_SERVICE_ROLE_KEY. --dry-run = solo CSV, sin tocar la DB.
-node --env-file=.env.local scripts/seed-codes.mjs --count 20 --batch lote-1 > codes.csv
+# QR de imprenta — uno por personaje, codifica https://nunna-ecu.com/es/personajes/<slug>?origen=qr
+node scripts/generate-qr.mjs
 
 # Integridad de datos — referencias huérfanas entre personajes.json/pases.json/recorrido.json.
 # Corre automáticamente antes de `pnpm build` y en CI; puede invocarse suelto:
@@ -1202,7 +1238,7 @@ pnpm --filter @seres-del-pase/web test
 pnpm --filter @seres-del-pase/web test -- pases.service
 ```
 
-Archivos de test hoy: `lib/services/{pases,personajes,provincias,recorrido}.service.test.ts` +
+Archivos de test hoy: `lib/services/{pases,personajes,provincias,recorrido}.service.test.ts` + `lib/qr-origen.test.ts` +
 `components/auth/ColeccionProvider.test.tsx`.
 
 ## graphify

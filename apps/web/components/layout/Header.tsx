@@ -59,7 +59,7 @@ export function Header() {
   const locale = (params?.locale as string) ?? "es";
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { gatingActive, session } = useColeccion();
+  const { authActiva, session } = useColeccion();
 
   const switchLocale = (code: string) => {
     const segments = rawPathname.split("/");
@@ -147,7 +147,7 @@ export function Header() {
         <div className="flex shrink-0 items-center gap-2">
           {/* Escritorio — sesión + pills de idioma siempre visibles */}
           <div className="hidden items-center gap-2 md:flex">
-            {gatingActive && session && (
+            {authActiva && session && (
               <Link
                 href="/mis-personajes"
                 onClick={goTop}
@@ -272,7 +272,7 @@ export function Header() {
                     })}
                   </motion.nav>
 
-                  {gatingActive && session && (
+                  {authActiva && session && (
                     <>
                       <div className="mx-3 border-t border-borde-sutil" />
                       <div className="p-2">

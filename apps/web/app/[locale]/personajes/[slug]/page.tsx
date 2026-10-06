@@ -6,16 +6,17 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getPersonaje, getPersonajes, getPases, getRecorridos, recorridoDePersonaje } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import { localeAlternates } from "@/lib/seo";
-import { GatedPageRedirect } from "@/modules/personajes/components/GatedPageRedirect";
-import { HeroGated } from "@/modules/personajes/components/HeroGated";
+import { HeroDespertar } from "@/modules/personajes/components/HeroDespertar";
+import { ParallaxHero } from "@/modules/personajes/components/ParallaxHero";
 import { PersonajeVisualSection } from "@/modules/personajes/components/PersonajeVisualSection";
 import { HistoriaPresentacion } from "@/modules/personajes/components/HistoriaPresentacion";
-import { PaseInmersivoGated } from "@/modules/personajes/components/PaseInmersivoGated";
+import { PaseInmersivo } from "@/modules/personajes/components/PaseInmersivo";
 import { ArtesanoSection } from "@/modules/personajes/components/ArtesanoSection";
 import { ColeccionCounter } from "@/modules/personajes/components/ColeccionCounter";
 import { PersonajesLibro } from "@/modules/personajes/components/PersonajesLibro";
 import { QuoteRevelacion } from "@/modules/personajes/components/QuoteRevelacion";
 import { StatsAnimados } from "@/modules/personajes/components/StatsAnimados";
+import { GuardarPersonaje, CentinelaGuardar } from "@/modules/coleccion/components/GuardarPersonaje";
 import { RevealText } from "@/components/ui/RevealText";
 import { WhatsAppShare } from "@/components/ui/WhatsAppShare";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
@@ -93,6 +94,24 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
 
   const otrosPersonajes = todosPersonajes.filter((p) => p.slug !== slug);
 
+  const heroProps = {
+    nombre: personaje.nombre,
+    nombreKichwa: personaje.nombreKichwa,
+    nombresAlt: personaje.nombresAlt,
+    origen: personaje.origen,
+    imagen: imagenPortada,
+    imagenBanner,
+    origenLabel: style.label,
+    accentColor: style.accentColor,
+  };
+
+  // Lookup mínimo para la animación de guardado (grid de la colección).
+  const coleccionLookup = todosPersonajes.map((p) => ({
+    slug: p.slug,
+    nombre: p.nombre,
+    imagenPortada: p.imagenPortada ?? null,
+  }));
+
   // Gancho corto de la primera pantalla: si el JSON trae `resumenCorto` se usa
   // tal cual (y todo el `resumen` queda como "resto" plegado); si no, se deriva
   // la primera frase del resumen y el resto queda plegado bajo "Leer más".
@@ -124,23 +143,14 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
 
   return (
     <article>
-      <GatedPageRedirect slug={personaje.slug} />
       <ScrollToTop />
 
-      {/* ── 1. Hero (gated: experiencia inmersiva = premio del desbloqueo) ── */}
-      <HeroGated
-        slug={personaje.slug}
-        experiencia={personaje.experiencia}
-        nombre={personaje.nombre}
-        nombreKichwa={personaje.nombreKichwa}
-        nombresAlt={personaje.nombresAlt}
-        origen={personaje.origen}
-        imagen={imagenPortada}
-        imagenBanner={imagenBanner}
-        origenLabel={style.label}
-        accentColor={style.accentColor}
-        audioAmbiente={personaje.audioAmbiente}
-      />
+      {/* ── 1. Hero — Despertar inmersivo si el personaje tiene experiencia v2 ── */}
+      {personaje.experiencia ? (
+        <HeroDespertar {...heroProps} audioAmbiente={personaje.audioAmbiente} />
+      ) : (
+        <ParallaxHero {...heroProps} />
+      )}
 
       {/* ── 2. La Voz del Espíritu — gancho pintado por scroll + resto plegado ── */}
       <QuoteRevelacion
@@ -151,6 +161,14 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
       >
         <WhatsAppShare nombre={personaje.nombre} />
         <ColeccionCounter slug={personaje.slug} nombre={personaje.nombre} />
+        <GuardarPersonaje
+          slug={personaje.slug}
+          nombre={personaje.nombre}
+          origen={personaje.origen ?? null}
+          imagenPortada={imagenPortada?.url ?? null}
+          accentColor={style.accentColor}
+          personajes={coleccionLookup}
+        />
       </QuoteRevelacion>
 
       {/* ── 3. Los Números Sagrados — ficha de datos ── */}
@@ -162,13 +180,15 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         nombresAlt={personaje.nombresAlt}
       />
 
-      {/* ── 4. Recorrido inmersivo — pase real en scrollytelling 3D (gated) ── */}
-      <PaseInmersivoGated
-        slug={personaje.slug}
-        recorrido={recorridoPersonaje}
-        nombre={personaje.nombre}
-        accentColor={style.accentColor}
-      />
+      {/* ── 4. Recorrido inmersivo — pase real en scrollytelling 3D ── */}
+      {recorridoPersonaje && (
+        <PaseInmersivo
+          recorrido={recorridoPersonaje}
+          personajeSlug={personaje.slug}
+          nombre={personaje.nombre}
+          accentColor={style.accentColor}
+        />
+      )}
 
       {/* ── 5. Modo presentación (visuales + frases breves; leyenda + secreto) ── */}
       {personaje.narrativa && presentacionBeats.length > 0 && (
@@ -194,7 +214,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         />
       )}
 
-      {/* ── 6. El personaje — Anatomía (gated) + Galería fusionadas ── */}
+      {/* ── 6. El personaje — Anatomía + Galería fusionadas ── */}
       <PersonajeVisualSection
         slug={personaje.slug}
         nombre={personaje.nombre}
@@ -206,6 +226,9 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         eyebrow={t("visual_eyebrow")}
         titulo={t("visual_titulo")}
       />
+
+      {/* Al llegar aquí (fin de la ficha) se invita a guardar al personaje si llegó por QR. */}
+      <CentinelaGuardar slug={personaje.slug} />
 
       {/* ── 7. Cross-sell ── */}
       {otrosPersonajes.length > 0 && (

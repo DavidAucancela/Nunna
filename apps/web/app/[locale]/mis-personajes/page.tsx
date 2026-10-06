@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 
 import { getPersonajes } from "@/lib/data";
-import { ColeccionClient } from "@/modules/desbloqueo/components/ColeccionClient";
-import type { PersonajeLite } from "@/modules/desbloqueo/components/DesbloquearForm";
+import { ColeccionClient } from "@/modules/coleccion/components/ColeccionClient";
+import type { PersonajeLite } from "@/modules/coleccion/types";
 
 interface ColeccionPageProps {
   params: Promise<{ locale: string }>;

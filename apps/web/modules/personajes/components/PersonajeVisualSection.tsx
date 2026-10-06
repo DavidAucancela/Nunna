@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { Hotspot, Media } from "@seres-del-pase/types";
 import { RevealText } from "@/components/ui/RevealText";
-import { AnatomiaGated } from "./AnatomiaGated";
+import { AnatomiaSection } from "./AnatomiaSection";
 import { GaleriaSection } from "./GaleriaSection";
 
 interface PersonajeVisualSectionProps {
@@ -24,8 +24,8 @@ interface PersonajeVisualSectionProps {
  * Fusión de "Anatomía" (las partes del personaje) + "Galería" en UNA sola
  * sección visual: un solo fondo/borde/acento y una cabecera paraguas, con dos
  * movimientos internos. Elimina los headers duplicados y evita que el retrato
- * compita en dos secciones. La anatomía sigue gated (AnatomiaGated); si el
- * personaje está bloqueado, no renderiza nada y solo queda la galería.
+ * compita en dos secciones. Sin experiencia v2 o sin hotspots, solo queda
+ * la galería.
  */
 export function PersonajeVisualSection({
   slug,
@@ -67,12 +67,11 @@ export function PersonajeVisualSection({
         </motion.div>
       </div>
 
-      {/* ── Movimiento I: sus partes (gated). El divisor vive dentro de la
-             anatomía embedded, así no queda huérfano si el personaje está
-             bloqueado (AnatomiaGated → null). ── */}
+      {/* ── Movimiento I: sus partes. El divisor vive dentro de la anatomía
+             embedded, así no queda huérfano si no se renderiza. ── */}
       {mostrarAnatomia && imagen && (
         <div className="mt-12 sm:mt-16">
-          <AnatomiaGated
+          <AnatomiaSection
             slug={slug}
             imagen={imagen}
             hotspots={hotspots!}
