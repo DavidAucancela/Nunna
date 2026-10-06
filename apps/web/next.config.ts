@@ -77,6 +77,8 @@ const nextConfig: NextConfig = {
     // El desbloqueo por código se retiró (2026-10, docs/PLAN-QR-UNICO.md): la ficha
     // ahora es abierta. Enlaces viejos a /desbloquear/<slug> caen en la ficha.
     const desbloquearRedirects = [
+      { source: "/es/desbloquear", destination: "/es/personajes", permanent: true },
+      { source: "/en/unlock", destination: "/en/characters", permanent: true },
       { source: "/es/desbloquear/:slug", destination: "/es/personajes/:slug", permanent: true },
       { source: "/en/unlock/:slug", destination: "/en/characters/:slug", permanent: true },
     ];
