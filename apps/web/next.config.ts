@@ -74,7 +74,20 @@ const nextConfig: NextConfig = {
       { source: "/qu/:path*", destination: "/es", permanent: true },
     ];
 
-    return [...slugRedirects, ...mapaRedirects, ...calendarioRedirects, ...quRedirects];
+    // El desbloqueo por código se retiró (2026-10, docs/PLAN-QR-UNICO.md): la ficha
+    // ahora es abierta. Enlaces viejos a /desbloquear/<slug> caen en la ficha.
+    const desbloquearRedirects = [
+      { source: "/es/desbloquear/:slug", destination: "/es/personajes/:slug", permanent: true },
+      { source: "/en/unlock/:slug", destination: "/en/characters/:slug", permanent: true },
+    ];
+
+    return [
+      ...slugRedirects,
+      ...mapaRedirects,
+      ...calendarioRedirects,
+      ...quRedirects,
+      ...desbloquearRedirects,
+    ];
   },
   async headers() {
     return [

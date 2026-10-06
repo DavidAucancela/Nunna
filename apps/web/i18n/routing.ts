@@ -26,11 +26,6 @@ export const routing = defineRouting({
       es: "/sobre",
       en: "/about",
     },
-    // Landing de desbloqueo por personaje — única ruta de desbloqueo (sin genérico).
-    "/desbloquear/[slug]": {
-      es: "/desbloquear/[slug]",
-      en: "/unlock/[slug]",
-    },
     "/mis-personajes": {
       es: "/mis-personajes",
       en: "/my-characters",

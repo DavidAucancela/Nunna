@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { getOrigenStyle, type Origen } from "@/lib/origen-styles";
 
 export interface CertificadoLogro {
-  tipo: "origen" | "coleccion";
+  tipo: "origen" | "coleccion" | "personaje";
   origen?: Origen;
   titulo: string;
   descripcion: string;

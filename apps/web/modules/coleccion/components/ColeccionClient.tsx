@@ -4,11 +4,11 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "@/i18n/navigation";
-import { getOrigenStyle } from "@/lib/origen-styles";
+import { getOrigenStyle, type Origen } from "@/lib/origen-styles";
 import { useColeccion } from "@/components/auth/ColeccionProvider";
 import { PersonajesLibro } from "@/modules/personajes/components/PersonajesLibro";
 import { CertificadoColeccion, type CertificadoLogro } from "./CertificadoColeccion";
-import type { PersonajeLite } from "./DesbloquearForm";
+import type { PersonajeLite } from "../types";
 
 const ORIGEN_ORDER = ["prehispanico", "colonial", "mestizo", "mixto"] as const;
 
@@ -16,6 +16,7 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
   const t = useTranslations("coleccion");
   const tl = useTranslations("logros");
   const tc = useTranslations("comun");
+  const tg = useTranslations("guardar");
   const { ready, coleccion, has, session, signOut } = useColeccion();
   const [certificado, setCertificado] = useState<CertificadoLogro | null>(null);
 
@@ -44,6 +45,16 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
       titulo: tl("origen_completo", { origen: style.label }),
       descripcion: tl("origen_completo_desc", { origen: style.label }),
       personajes: grupo.map((p) => ({ nombre: p.nombre, imagenPortada: p.imagenPortada })),
+    });
+  }
+
+  function abrirCertificadoPersonaje(p: PersonajeLite) {
+    setCertificado({
+      tipo: "personaje",
+      ...(p.origen ? { origen: p.origen as Origen } : {}),
+      titulo: p.nombre,
+      descripcion: tg("certificado_descripcion", { nombre: p.nombre }),
+      personajes: [{ nombre: p.nombre, imagenPortada: p.imagenPortada }],
     });
   }
 
@@ -122,7 +133,7 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
             href="/personajes"
             className="mt-6 inline-block rounded-full bg-acento-dorado px-6 py-3 text-sm font-semibold text-fondo-oscuro transition-transform hover:scale-[1.02]"
           >
-            {t("desbloquear_cta")}
+            {t("explorar_cta")}
           </Link>
         </div>
       )}
@@ -231,6 +242,29 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Certificado por personaje guardado */}
+      {!empty && (
+        <div className="mb-10">
+          <h2 className="mb-4 text-[11px] uppercase tracking-[0.3em] text-stone-500">
+            {t("certificados_titulo")}
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {personajes
+              .filter((p) => has(p.slug))
+              .map((p) => (
+                <button
+                  key={p.slug}
+                  type="button"
+                  onClick={() => abrirCertificadoPersonaje(p)}
+                  className="rounded-full border border-borde-sutil px-4 py-2 text-sm text-stone-300 transition-colors hover:border-acento-dorado hover:text-acento-dorado"
+                >
+                  ✦ {p.nombre}
+                </button>
+              ))}
           </div>
         </div>
       )}

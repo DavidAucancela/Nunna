@@ -6,8 +6,7 @@ import { absoluteUrl, type LocalizedHref } from "@/lib/seo";
 
 /**
  * Sitemap con las páginas públicas × locales (hreflang vía alternates).
- * Fuera: /mis-personajes (contenido personal) y /desbloquear/[slug] (landing
- * transaccional del canje, sin valor de búsqueda).
+ * Fuera: /mis-personajes (contenido personal) y /login.
  */
 function entry(href: LocalizedHref, priority: number): MetadataRoute.Sitemap[number] {
   return {

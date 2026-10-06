@@ -168,24 +168,18 @@ geometría OSRM y alinea los pines a la calle; producción queda estática).
 
 ---
 
-## Paso 5 — QR + códigos de desbloqueo
+## Paso 5 — QR
 
-El gating es **global** (`gatingActive = !!supabase`): con Supabase configurado, una ficha **sin
-códigos sembrados es inalcanzable** (redirige a `/desbloquear/[slug]` y no hay código válido). Si el
-imán se va a vender, siembra códigos en la misma entrega.
+La ficha es abierta (sin códigos desde 2026-10-06, ver `docs/PLAN-QR-UNICO.md`): basta con el QR.
 
 ```bash
-# QR de imprenta (uno por personaje, apuntando al dominio propio)
-NEXT_PUBLIC_SITE_URL=https://nunna-ecu.com node scripts/generate-qr.mjs
+# QR de imprenta (uno por personaje) → https://nunna-ecu.com/es/personajes/[slug]?origen=qr
+node scripts/generate-qr.mjs
 #   → apps/web/public/qr/qr-[slug].png
-
-# Sembrar códigos (requiere SUPABASE_SERVICE_ROLE_KEY; --dry-run = solo CSV)
-node --env-file=apps/web/.env.local scripts/seed-codes.mjs \
-  --slug [slug] --count 20 --batch lote-N > codes-[slug].csv
 ```
 
-`codes-*.csv` está en `.gitignore` — nunca se commitea. La RPC `redeem_code(p_code,
-p_expected_slug)` ya valida por personaje (`wrong_character`), sin cambios de schema.
+El marcador `?origen=qr` es lo que habilita "guardar en mi colección"; no lo quites del QR. Escanea el PNG
+con un teléfono real antes de mandarlo a imprenta.
 
 ---
 
@@ -201,12 +195,11 @@ graphify update .                                 # refrescar el grafo
 ```
 
 Checklist manual (dev en `:3030`, **y en un móvil real** — el QR se escanea con el teléfono):
-- [ ] `/es/personajes` → la card nueva aparece (con candado si el gating está activo)
-- [ ] `/es/personajes/[slug]` sin sesión → redirige a `/es/desbloquear/[slug]`
-- [ ] Canje con un código del CSV → `DespertarAnimation` muestra **todas** las figuras del catálogo
-- [ ] Ficha desbloqueada: hero Despertar · gancho + "Leer más" · StatsAnimados · Cuándo verlo /
+- [ ] `/es/personajes` → el lomo nuevo aparece
+- [ ] `/es/personajes/[slug]?origen=qr` sin sesión → ficha completa; al final, modal "Guarda a {nombre}"
+- [ ] Guardar (enlace mágico) → vuelve a la ficha, `DespertarAnimation` muestra **todas** las figuras + sello
+- [ ] Ficha: hero Despertar · gancho + "Leer más" · StatsAnimados · Cuándo verlo /
       Recorrido 3D · modo presentación · Anatomía con hotspots · Galería · cross-sell
-- [ ] Código de otro personaje en `/desbloquear/[slug]` → `wrong_character`, no canjea
 - [ ] `/es/pases` → provincia del pase marcada; sección Calendario lo lista
 - [ ] `/mis-personajes` → progreso y logros cuentan al personaje nuevo
 - [ ] Compartir la ficha en WhatsApp → la preview OG luce bien
@@ -218,7 +211,7 @@ Checklist manual (dev en `:3030`, **y en un móvil real** — el QR se escanea c
 
 `app/sitemap.ts`, `generateStaticParams` de la ficha y de `/desbloquear`, `PersonajesGrid`,
 `PersonajesEscenario` (cross-sell), `/mis-personajes` + logros, `scripts/generate-qr.mjs`,
-`scripts/seed-codes.mjs`, `scripts/validate-data.mjs`, los tests — todos iteran el JSON.
+`scripts/validate-data.mjs`, los tests — todos iteran el JSON.
 
 ## Qué SÍ tiene listas a mano
 

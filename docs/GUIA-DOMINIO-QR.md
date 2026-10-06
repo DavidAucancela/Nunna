@@ -78,15 +78,16 @@ No generes ni imprimas nada todavía. Verifica en `https://nunna-ecu.com` (no en
 
 - [ ] `/es/personajes/aya-uma` carga la ficha completa
 - [ ] Preview de WhatsApp/OG se ve bien (comparte el link o usa un validador de OG)
-- [ ] `/desbloquear` → pedir magic-link → el correo llega con `nunna-ecu.com` en el enlace
-- [ ] Canjear un código de prueba → redirige a `/personajes/[slug]` en el dominio nuevo, no en Railway
+- [ ] `/es/personajes/[slug]?origen=qr` → al final, modal "Guarda a…" → pedir enlace → el correo llega con
+      `nunna-ecu.com` en el enlace
+- [ ] Abrir el enlace → vuelve a la ficha en el dominio nuevo (no en Railway) y el personaje queda guardado
 - [ ] `/sitemap.xml` y `/robots.txt` muestran URLs con `nunna-ecu.com`
 
 ## 6. Generar los QR para las tarjetas
 
 El QR debe codificar, para cada personaje activo:
 ```
-https://nunna-ecu.com/es/personajes/<slug>
+https://nunna-ecu.com/es/personajes/<slug>?origen=qr
 ```
 Slugs activos hoy (`apps/web/lib/data/personajes.json`): `aya-uma`, `payaso`, `perro`,
 `diablos-de-lata`.
@@ -146,7 +147,8 @@ roza/dobla). Borra los dos PNG viejos que apuntan a Railway antes de mandar a im
 - [ ] Escanea cada QR generado con el celular y confirma que abre la ficha correcta en
       `nunna-ecu.com` (no en `localhost` ni en Railway)
 - [ ] Prueba el escaneo en baja luz / con el imán a distancia de tarjeta (no solo en pantalla)
-- [ ] Confirma que el código de 6 caracteres impreso bajo el QR corresponde al mismo personaje
+- [ ] Confirma que el QR de cada tarjeta abre la ficha de ESE personaje y que la URL lleva `?origen=qr`
+      (desde 2026-10-06 ya no hay código de 6 caracteres — ver docs/PLAN-QR-UNICO.md)
       (`scripts/seed-codes.mjs` genera el CSV `code,personaje_slug` — cruza contra el slug del QR)
 - [ ] Imprime una tarjeta de prueba física (no solo el PDF en pantalla) y escanéala
 

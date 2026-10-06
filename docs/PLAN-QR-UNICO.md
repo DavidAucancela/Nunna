@@ -33,8 +33,8 @@ Estado de producción (2026-10-05): 216 códigos (`lote-1`, `lote-2-def`, `prueb
    crear `refactor/qr-unico-ficha-abierta` desde `main` actualizado. Si no se mergea antes, ramificar desde
    ella.
 2. Primer commit de la rama: este plan como `docs/PLAN-QR-UNICO.md` (convención de `docs/PLAN-*.md`).
-3. Respaldo local, **fuera del repo**, de `unlock_codes` y `user_unlocks` (CSV vía `execute_sql`) antes de
-   tocar la base.
+3. Respaldo: en vez de un CSV local (los códigos no deben quedar en archivos), la tabla `unlock_codes`
+   **se renombra** a `unlock_codes_archivo` en la Fase 9 en lugar de borrarse.
 
 ## Fase 1 — Supabase, cambios solo aditivos (no rompen la producción actual)
 
@@ -193,8 +193,8 @@ imprenta.
 1. Aplicar la migración aditiva de la Fase 1 (`save_personaje`). La producción actual no se entera.
 2. Merge y deploy del front en Railway. Verificar en `https://nunna-ecu.com`.
 3. **Con confirmación explícita del autor**, migración destructiva: `drop function redeem_code`,
-   `check_code_valid` y `check_code_status`, y `drop table unlock_codes`. `user_unlocks` no se toca.
-   Respaldo de la Fase 0 hecho.
+   `check_code_valid` y `check_code_status`, y `alter table unlock_codes rename to unlock_codes_archivo`.
+   `user_unlocks` no se toca.
 4. Configurar Google (pasos manuales de la Fase 1) → `NEXT_PUBLIC_AUTH_GOOGLE=1` → redeploy.
 
 ---

@@ -2,6 +2,30 @@
 
 ---
 
+## [0.9.0] — 2026-10-06 — QR único por personaje, ficha abierta y guardado opcional
+
+Rama `refactor/qr-unico-ficha-abierta`. Plan: `docs/PLAN-QR-UNICO.md`.
+
+### Cambiado
+- La ficha `/personajes/[slug]` es **abierta**: sin redirect a `/desbloquear`; Despertar, Recorrido 3D y
+  Anatomía visibles para todos y en el HTML del servidor.
+- QR de imprenta regenerados: `https://nunna-ecu.com/es/personajes/<slug>?origen=qr`.
+- `PersonajesLibro`: sin candados; marca "✓ En tu colección". `ProductoSection`: paso 04 "Guárdalo en tu
+  colección (opcional)".
+- `/login` usa el nuevo `AuthOpciones` (Google + enlace mágico).
+
+### Añadido
+- `GuardarPersonaje` + `CentinelaGuardar`: modal "Guarda a {nombre}" al terminar la ficha (solo llegada por
+  QR), auto-guardado con sesión, sello en la ficha y certificado por personaje.
+- `lib/qr-origen.ts` (+ tests), RPC `save_personaje`, namespace i18n `guardar`.
+
+### Eliminado
+- Desbloqueo por código: `/desbloquear/[slug]` (308 a la ficha), `DesbloquearForm`, `DesbloqueoHero`,
+  `GatedPageRedirect`, `HeroGated`, `AnatomiaGated`, `PaseInmersivoGated`, `scripts/seed-codes.mjs`,
+  namespace i18n `desbloquear`, RPC `redeem_code`/`check_code_valid`/`check_code_status`.
+
+---
+
 ## [0.8.0] — 2026-09-21 — Estantería de personajes, foto de grupo y fix del toque en móvil
 
 PR #80 (`feat/ficha-mejoras-diseno`) y PR #81 (`fix/libro-imagen-grupo-toque-movil`). La lista de los 6
