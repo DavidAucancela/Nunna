@@ -45,9 +45,4 @@ describe("getRecorridos", () => {
     expect(real?.esDemo).toBe(false);
     expect(recorridos.pases.some((p) => p.esDemo)).toBe(true);
   });
-
-  it("defaultPaseSlug corresponde a uno de los pases del recorrido", async () => {
-    const recorridos = await getRecorridos();
-    expect(recorridos.pases.some((p) => p.paseSlug === recorridos.defaultPaseSlug)).toBe(true);
-  });
 });

@@ -1,6 +1,5 @@
 import type { PaseListItem } from "@seres-del-pase/types";
 import provinciasRaw from "../data/provincias.json";
-import pasesRaw from "../data/pases.json";
 
 export type Region = "sierra" | "costa" | "amazonia" | "insular";
 
@@ -43,13 +42,4 @@ export async function getProvinciasConPases(
       pases: pases.filter((p) => p.provincia === provincia.slug && p.mes != null),
     }))
     .filter((p) => p.pases.length > 0);
-}
-
-/**
- * Slug de la provincia a la que pertenece un pase con recorrido.
- * Se usa para agrupar recorridos por provincia sin recorrer todo el catálogo.
- */
-export function provinciaDePase(paseSlug: string): string | undefined {
-  const pase = pasesRaw.find((p) => p.slug === paseSlug) as { provincia?: string } | undefined;
-  return pase?.provincia;
 }

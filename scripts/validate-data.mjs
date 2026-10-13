@@ -90,9 +90,6 @@ for (const rp of recorrido.pases ?? []) {
     }
   }
 }
-if (recorrido.defaultPaseSlug && !recorrido.pases?.some((rp) => rp.paseSlug === recorrido.defaultPaseSlug)) {
-  err(`recorrido.json: defaultPaseSlug "${recorrido.defaultPaseSlug}" no está entre pases[]`);
-}
 
 // ── provincias.json (catálogo) ──────────────────────────────────────────────
 {

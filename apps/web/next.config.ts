@@ -66,6 +66,13 @@ const nextConfig: NextConfig = {
       { source: "/en/calendar", destination: "/en/celebrations", permanent: true },
     ];
 
+    // El detalle de pase (/pases/<slug>) se retiró: /pases es una sola ventana y
+    // cada pase se abre desde ahí. Enlaces viejos caen en /pases.
+    const paseDetalleRedirects = [
+      { source: "/es/pases/:slug", destination: "/es/pases", permanent: true },
+      { source: "/en/celebrations/:slug", destination: "/en/celebrations", permanent: true },
+    ];
+
     // El idioma quichua (qu) se retiró (2026-07-03). Redirigimos cualquier URL
     // /qu/* remanente a su equivalente en español para no romper enlaces viejos.
     // Los pases impresos codifican /es/, así que ningún imán queda afectado.
@@ -87,6 +94,7 @@ const nextConfig: NextConfig = {
       ...slugRedirects,
       ...mapaRedirects,
       ...calendarioRedirects,
+      ...paseDetalleRedirects,
       ...quRedirects,
       ...desbloquearRedirects,
     ];

@@ -36,7 +36,6 @@ export interface RecorridoPase {
 }
 
 export interface Recorridos {
-  defaultPaseSlug: string;
   pases: RecorridoPase[];
 }
 
@@ -122,26 +121,8 @@ function toRecorridoPase(pase: PaseRaw): RecorridoPase {
 
 export async function getRecorridos(): Promise<Recorridos> {
   return {
-    defaultPaseSlug: recorridoRaw.defaultPaseSlug,
     pases: (recorridoRaw.pases as unknown as PaseRaw[]).map(toRecorridoPase),
   };
-}
-
-/**
- * Recorrido para la ficha de un personaje (`PaseInmersivo`): el primer recorrido
- * real (no demo) cuyos waypoints incluyan a ese personaje. Si solo lo mencionan
- * recorridos demo, devuelve el primero de esos. `null` si ninguno lo incluye —
- * el personaje no tiene pase trazado todavía y la sección no se renderiza.
- */
-export function recorridoDePersonaje(
-  recorridos: Recorridos,
-  slug: string
-): RecorridoPase | null {
-  const conPersonaje = recorridos.pases.filter((p) =>
-    p.waypoints.some((w) => w.slug === slug)
-  );
-  if (conPersonaje.length === 0) return null;
-  return conPersonaje.find((p) => !p.esDemo) ?? conPersonaje[0]!;
 }
 
 /**
@@ -149,18 +130,9 @@ export function recorridoDePersonaje(
  *
  * `RecorridosProvincia` dibuja TODOS los recorridos que recibe a la vez — si se
  * le pasara el objeto completo (todas las provincias), mostraría rutas de otras
- * provincias mezcladas con la que el usuario tiene enfocada. `defaultPaseSlug`
- * queda como metadato sin uso activo hoy (no hay selector de "cuál abre"), se
- * conserva por si algún consumidor futuro lo necesita.
+ * provincias mezcladas con la que el usuario tiene enfocada.
  */
-export function acotarRecorridos(
-  recorridos: Recorridos,
-  paseSlugs: string[],
-  defaultPaseSlug: string
-): Recorridos {
+export function acotarRecorridos(recorridos: Recorridos, paseSlugs: string[]): Recorridos {
   const permitidos = new Set(paseSlugs);
-  return {
-    defaultPaseSlug,
-    pases: recorridos.pases.filter((p) => permitidos.has(p.paseSlug)),
-  };
+  return { pases: recorridos.pases.filter((p) => permitidos.has(p.paseSlug)) };
 }

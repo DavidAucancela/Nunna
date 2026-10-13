@@ -9,14 +9,14 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type {
   Map as MapLibreMap,
   Marker as MapLibreMarker,
   GeoJSONSource,
 } from "maplibre-gl";
 import { Link } from "@/i18n/navigation";
-import type { Recorridos } from "@/lib/data";
+import type { Recorridos, RecorridoWaypoint } from "@/lib/data";
 import type { PaseListItem } from "@seres-del-pase/types";
 import { TILE_STYLE } from "@/lib/map/tile-style";
 import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
@@ -43,6 +43,51 @@ function getRouteAtProgress(
   return result;
 }
 
+// Cada foto extra de una parada ocupa este tramo de scroll (en unidades de
+// "ruta completa" = 1): el punto se detiene ahí y el scroll pasa las fotos.
+const TRAMO_POR_FOTO = 0.16;
+
+function totalFotos(wp: RecorridoWaypoint): number {
+  return Math.max(1, [wp.imagen, ...wp.imagenesExtra].filter(Boolean).length);
+}
+
+/**
+ * Scroll que consume la pausa de una parada. La primera foto se ve al llegar y
+ * la última sigue visible durante el viaje a la parada siguiente; en la última
+ * parada no hay viaje después, así que su última foto recibe su propio tramo.
+ */
+function pausaDe(wp: RecorridoWaypoint, esUltima: boolean): number {
+  const n = totalFotos(wp);
+  if (n <= 1) return 0;
+  return (esUltima ? n : n - 1) * TRAMO_POR_FOTO;
+}
+
+/**
+ * Traduce una posición `v` de la línea de tiempo (ruta + pausas) al progreso
+ * real sobre la ruta y a la foto visible de la parada activa. Entre paradas el
+ * punto viaja; en cada parada con varias fotos se queda quieto mientras el
+ * scroll las recorre, y solo después sigue hacia la siguiente.
+ */
+function posicionEnLinea(
+  waypoints: RecorridoWaypoint[],
+  v: number
+): { p: number; foto: number } {
+  let pausado = 0;
+  let foto = 0;
+  for (const [i, wp] of waypoints.entries()) {
+    const inicio = wp.progress + pausado;
+    const pausa = pausaDe(wp, i === waypoints.length - 1);
+    if (v < inicio) return { p: v - pausado, foto };
+    if (v < inicio + pausa) {
+      const k = Math.floor((v - inicio) / TRAMO_POR_FOTO);
+      return { p: wp.progress, foto: Math.min(totalFotos(wp) - 1, k) };
+    }
+    pausado += pausa;
+    foto = totalFotos(wp) - 1;
+  }
+  return { p: Math.min(1, v - pausado), foto };
+}
+
 function stylePin(el: HTMLDivElement, active: boolean) {
   if (active) {
     el.style.background = "rgba(200,155,60,0.22)";
@@ -60,36 +105,70 @@ function stylePin(el: HTMLDivElement, active: boolean) {
 interface Props {
   recorridos: Recorridos;
   pasesInfo?: PaseListItem[];
-  /** Pase que se está recorriendo — lo gobierna el padre (`RecorridoProvinciaSection`). */
+  /** Pase que se está recorriendo — lo gobierna el padre (`PasesExplorador`). */
   paseSlug: string;
-  onSelectPase: (slug: string) => void;
+  /** Sale del recorrido y vuelve a la lista de pases de la provincia. */
+  onVolver: () => void;
+  volverLabel: string;
+  /** Hasta 2 pases que se ofrecen al terminar el recorrido. */
+  sugeridos: PaseSugerido[];
+  onSugerido: (slug: string) => void;
+  /** Avisa cuando el mapa del recorrido ya pintó (para fundirlo con la vista anterior). */
+  onMapaListo?: () => void;
+}
+
+export interface PaseSugerido {
+  slug: string;
+  nombre: string;
+  /** Línea secundaria ya formateada: fecha · ciudad. */
+  meta: string;
 }
 
 /**
  * Recorrido con scroll de un solo pase (el punto rojo viaja calle por calle
  * sincronizado al scroll; panel narrador con la foto del personaje de cada
- * parada). Convive bajo `RecorridosProvincia` (el mapa general de todas las
- * rutas): el chip que se elige allí, o el selector propio de esta cabecera,
- * definen `paseSlug`. Restaura el antiguo `PaseMapSection`, retirado el
- * 2026-08-10, ahora acotado a la provincia enfocada en `/pases`.
+ * parada). Es la tercera vista de `/pases` y la única que usa el scroll: se
+ * entra desde la lista de pases de una provincia y se sale con `onVolver`; al
+ * terminar ofrece otros pases (`sugeridos`).
  */
 export function RecorridoScrollytelling({
   recorridos,
   pasesInfo = [],
   paseSlug,
-  onSelectPase,
+  onVolver,
+  volverLabel,
+  sugeridos,
+  onSugerido,
+  onMapaListo,
 }: Props) {
-  const { pases, defaultPaseSlug } = recorridos;
+  const { pases } = recorridos;
   const t = useTranslations("pases.recorrido");
+  const locale = useLocale();
   const reducedMotion = useReducedMotion();
 
   const activePaseSlug = pases.some((p) => p.paseSlug === paseSlug)
     ? paseSlug
-    : (defaultPaseSlug || pases[0]?.paseSlug) ?? "";
+    : pases[0]?.paseSlug ?? "";
   const activeRoute = pases.find((p) => p.paseSlug === activePaseSlug) ?? pases[0]!;
   const { ruta, waypoints, centro, zoom } = activeRoute;
   const activePaseInfo = pasesInfo.find((p) => p.slug === activePaseSlug);
   const finaleIdx = waypoints.length; // índice centinela del panel de cierre
+  // "6 de enero" / "abril" (sin día) para el bloque de calendario del cierre.
+  const fechaPase =
+    activePaseInfo?.mes != null
+      ? new Intl.DateTimeFormat(locale, {
+          month: "long",
+          ...(activePaseInfo.dia != null ? { day: "numeric" } : {}),
+          timeZone: "UTC",
+        }).format(new Date(Date.UTC(2024, activePaseInfo.mes - 1, activePaseInfo.dia ?? 1)))
+      : null;
+  // Largo de la línea de tiempo: la ruta (1) + las pausas de fotos. La sección
+  // crece en la misma proporción para que el ritmo del scroll no cambie.
+  const largoLinea =
+    1 + waypoints.reduce((acc, wp, i) => acc + pausaDe(wp, i === waypoints.length - 1), 0);
+  const fotoScrollRef = useRef(0);
+  const onMapaListoRef = useRef(onMapaListo);
+  onMapaListoRef.current = onMapaListo;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -138,6 +217,8 @@ export function RecorridoScrollytelling({
 
   function goToIdx(idx: number) {
     prevActiveIdxRef.current = idx;
+    fotoScrollRef.current = 0;
+    setPhotoIdx(0);
     if (idx === -1) {
       startedRef.current = false;
       setActiveIdx(-1);
@@ -195,15 +276,13 @@ export function RecorridoScrollytelling({
   function scrollToWaypoint(i: number) {
     const wp = waypoints[i];
     if (!wp) return;
-    scrollToProgress(wp.progress * 0.92 + 0.04 + 0.006); // justo pasado el umbral
+    // Posición de la parada en la línea de tiempo = su progreso + las pausas previas.
+    const previas = waypoints.slice(0, i).reduce((acc, w) => acc + pausaDe(w, false), 0);
+    const lineal = (wp.progress + previas) / largoLinea;
+    scrollToProgress(lineal * 0.92 + 0.04 + 0.006); // justo pasado el umbral
   }
 
-  function selectPase(slug: string) {
-    if (slug === activePaseSlug) return;
-    onSelectPase(slug);
-  }
-
-  // El padre (o los chips de `RecorridosProvincia`) puede cambiar `paseSlug`.
+  // Si el padre cambia `paseSlug` sin remontar el componente.
   // Reinicia la narrativa; si el usuario ya estaba dentro del scroll fijado
   // (p. ej. en el panel de cierre) hay que volverlo al inicio de la sección
   // para que `scrollYProgress` no arranque el pase nuevo a mitad de camino.
@@ -232,7 +311,12 @@ export function RecorridoScrollytelling({
   });
 
   useMotionValueEvent(scrollYProgress, "change", (raw) => {
-    const p = Math.max(0, Math.min(1, (raw - 0.04) / 0.92));
+    const lineal = Math.max(0, Math.min(1, (raw - 0.04) / 0.92));
+    const { p, foto } = posicionEnLinea(waypoints, lineal * largoLinea);
+    if (foto !== fotoScrollRef.current) {
+      fotoScrollRef.current = foto;
+      setPhotoIdx(foto);
+    }
 
     // Estado inicial: sin scroll real todavía → mantener la ruta completa
     // ("pase ya recorrido"). En cuanto el scroll avanza, se borra y arranca.
@@ -265,18 +349,6 @@ export function RecorridoScrollytelling({
     // El mapa es estático (encuadra toda la ruta); el punto rojo viaja sobre él
     // sincronizado al scroll. No se mueve la cámara → sin lag ni "settling".
   });
-
-  // Rotación automática de las fotos del waypoint activo
-  useEffect(() => {
-    setPhotoIdx(0);
-    const wp =
-      activeIdx >= 0 && activeIdx < waypoints.length ? waypoints[activeIdx] : null;
-    if (!wp || reducedMotion) return;
-    const total = [wp.imagen, ...wp.imagenesExtra].filter(Boolean).length;
-    if (total <= 1) return;
-    const id = setInterval(() => setPhotoIdx((i) => (i + 1) % total), 3500);
-    return () => clearInterval(id);
-  }, [activeIdx, waypoints, reducedMotion]);
 
   // Inicializar MapLibre solo cuando la sección se acerca al viewport —
   // evita descargar la librería y los tiles si el usuario nunca llega aquí.
@@ -344,6 +416,10 @@ export function RecorridoScrollytelling({
 
       m.on("load", () => {
         m.resize();
+        m.once("idle", () => onMapaListoRef.current?.());
+        // Mapa no interactivo: la atribución compacta no se pliega sola (ver
+        // `MapaEcuador`). Plegada sigue a un toque en su botón ⓘ.
+        container.querySelector(".maplibregl-ctrl-attrib")?.classList.remove("maplibregl-compact-show");
 
         // Encuadrar toda la ruta — mapa estático, la cámara no persigue el scroll
         const lons = ruta.map((c) => c[0]);
@@ -498,7 +574,7 @@ export function RecorridoScrollytelling({
   const activeWp =
     activeIdx >= 0 && activeIdx < waypoints.length ? waypoints[activeIdx] : null;
   const isFinale = activeIdx === finaleIdx;
-  // El selector de pases solo se muestra al inicio y al final del recorrido.
+  // La cabecera completa solo se muestra al inicio y al final del recorrido.
   const showSelector = activeIdx === -1 || isFinale;
   const fotos = activeWp
     ? [activeWp.imagen, ...activeWp.imagenesExtra].filter(Boolean)
@@ -506,7 +582,7 @@ export function RecorridoScrollytelling({
   const fotoActual = fotos[photoIdx] ?? fotos[0] ?? "";
 
   const demoBadge = activeRoute.esDemo ? (
-    <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-acento-dorado/30 bg-acento-dorado/10 px-2.5 py-1 text-[9px] uppercase tracking-[0.14em] text-acento-dorado/90">
+    <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-acento-dorado/30 bg-acento-dorado/10 px-3 py-1 text-[11px] uppercase tracking-[0.14em] text-acento-dorado/90 md:text-xs">
       <span aria-hidden="true" className="h-1 w-1 rounded-full bg-acento-dorado" />
       {t("ruta_referencia")}
     </span>
@@ -514,7 +590,15 @@ export function RecorridoScrollytelling({
 
   // ── Cabecera sobre el mapa (eyebrow + título + selector de pases) ──────────
   const mapHeader = (
-    <div className="absolute left-0 right-0 top-0 z-20 px-5 pt-6 md:px-7 md:pt-8">
+    <div className="absolute left-0 right-0 top-0 z-20 px-5 pt-3 md:px-7 md:pt-5">
+      <button
+        type="button"
+        onClick={onVolver}
+        className="-ml-2 mb-2 inline-flex min-h-[44px] items-center gap-1.5 rounded-full px-3 text-base text-stone-300 transition-colors hover:text-acento-dorado focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70"
+      >
+        <span aria-hidden="true">‹</span>
+        {volverLabel}
+      </button>
       <AnimatePresence mode="wait">
         {showSelector ? (
           <motion.div
@@ -524,47 +608,15 @@ export function RecorridoScrollytelling({
             exit={{ opacity: 0 }}
             transition={{ duration: reducedMotion ? 0.15 : 0.35 }}
           >
-            <p className="pointer-events-none text-[10px] uppercase tracking-[0.3em] text-acento-dorado">
+            <p className="pointer-events-none text-xs uppercase tracking-[0.3em] text-acento-dorado md:text-sm">
               {t("eyebrow")}
             </p>
-            <h3 className="pointer-events-none mt-1 font-serif text-2xl font-bold text-texto-claro md:text-3xl">
+            <h3 className="pointer-events-none mt-1 font-serif text-3xl font-bold text-texto-claro md:text-4xl">
               {t("titulo")}
             </h3>
-            {pases.length > 1 ? (
-              <div className="mt-3.5">
-                <p className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-acento-dorado">
-                  <span
-                    aria-hidden="true"
-                    className="inline-block h-1.5 w-1.5 rounded-full bg-acento-dorado motion-safe:animate-pulse"
-                  />
-                  {t("elige_pase")}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {pases.map((pase) => {
-                    const active = pase.paseSlug === activePaseSlug;
-                    return (
-                      <button
-                        key={pase.paseSlug}
-                        type="button"
-                        onClick={() => selectPase(pase.paseSlug)}
-                        aria-pressed={active}
-                        className={`rounded-full border px-3.5 py-1.5 text-[11px] uppercase tracking-[0.12em] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70 ${
-                          active
-                            ? "border-acento-dorado bg-acento-dorado font-semibold text-fondo-oscuro shadow-[0_0_16px_rgba(200,155,60,0.35)]"
-                            : "border-stone-600 bg-fondo-oscuro/60 text-stone-200 hover:border-acento-dorado hover:bg-acento-dorado/10 hover:text-acento-dorado"
-                        }`}
-                      >
-                        {pase.paseNombre}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : (
-              <p className="pointer-events-none mt-1 text-xs text-stone-400">
-                {activeRoute.paseNombre}
-              </p>
-            )}
+            <p className="pointer-events-none mt-1 text-sm text-stone-300 md:text-base">
+              {activeRoute.paseNombre}
+            </p>
           </motion.div>
         ) : (
           <motion.div
@@ -579,7 +631,7 @@ export function RecorridoScrollytelling({
                 aria-hidden="true"
                 className="h-1.5 w-1.5 shrink-0 rounded-full bg-acento-dorado"
               />
-              <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-acento-dorado">
+              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-acento-dorado md:text-sm">
                 {activeRoute.paseNombre}
               </span>
             </div>
@@ -596,26 +648,44 @@ export function RecorridoScrollytelling({
         {activeIdx === -1 ? (
           <motion.div
             key="start"
-            className="absolute inset-0 flex flex-col justify-center gap-3 overflow-y-auto px-7 py-6"
+            className="absolute inset-0 flex flex-col justify-center gap-2.5 overflow-y-auto px-7 py-4 md:gap-5 md:px-12 md:py-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -28 }}
             transition={{ duration: reducedMotion ? 0.2 : 0.45 }}
           >
             {demoBadge}
-            <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-acento-dorado">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-acento-dorado md:text-sm">
               {activePaseInfo?.tipo ?? t("eyebrow")}
             </p>
-            <h3 className="font-serif text-2xl font-bold leading-tight text-texto-claro md:text-[1.8rem]">
+            <h3 className="font-serif text-2xl font-bold leading-[1.1] text-texto-claro md:text-5xl">
               {activePaseInfo?.nombre ?? activeRoute.paseNombre}
             </h3>
 
+            {/* Ficha rápida: cuándo, dónde y cuántas paradas tiene el camino. */}
+            <dl className="hidden grid-cols-3 divide-x divide-borde-sutil rounded-xl border border-borde-sutil md:grid">
+              {[
+                { k: t("dato_fecha"), v: fechaPase ?? "—" },
+                { k: t("dato_ciudad"), v: activePaseInfo?.ciudad ?? "—" },
+                { k: t("dato_paradas"), v: String(waypoints.length) },
+              ].map((d) => (
+                <div key={d.k} className="min-w-0 px-3 py-2.5 md:px-5 md:py-4">
+                  <dt className="text-[10px] uppercase tracking-[0.2em] text-stone-500 md:text-xs">
+                    {d.k}
+                  </dt>
+                  <dd className="mt-0.5 font-serif text-base font-bold leading-tight text-texto-claro md:text-xl">
+                    {d.v}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
             {activePaseInfo ? (
-              <div className="space-y-2 text-sm">
+              <div className="space-y-2 text-sm md:space-y-3 md:text-lg">
                 {activePaseInfo.horario && (
                   <p className="flex items-center gap-2 text-stone-300">
                     <svg
-                      className="h-4 w-4 shrink-0 text-acento-dorado"
+                      className="h-4 w-4 shrink-0 text-acento-dorado md:h-5 md:w-5"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth={1.5}
@@ -634,7 +704,7 @@ export function RecorridoScrollytelling({
                 {(activePaseInfo.inicio || activePaseInfo.ruta) && (
                   <p className="flex items-start gap-2 text-stone-400">
                     <svg
-                      className="mt-0.5 h-4 w-4 shrink-0 text-acento-dorado"
+                      className="mt-0.5 h-4 w-4 shrink-0 text-acento-dorado md:mt-1 md:h-5 md:w-5"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth={1.5}
@@ -674,19 +744,19 @@ export function RecorridoScrollytelling({
                 )}
               </div>
             ) : (
-              <p className="font-serif text-sm leading-relaxed text-stone-500">
+              <p className="font-serif text-sm leading-relaxed text-stone-500 md:text-lg">
                 {waypoints.map((wp) => wp.calle).join(" → ")}
               </p>
             )}
 
             {activePaseInfo?.fechaDescripcion && (
-              <p className="text-xs leading-relaxed text-stone-400">
+              <p className="line-clamp-3 text-xs leading-relaxed text-stone-400 md:line-clamp-none md:text-lg">
                 {activePaseInfo.fechaDescripcion}
               </p>
             )}
 
             <div className="mt-1 flex items-center gap-2 text-acento-dorado/80">
-              <span className="text-[10px] uppercase tracking-[0.28em]">
+              <span className="text-xs uppercase tracking-[0.28em] md:text-sm">
                 {t("scroll_hint")}
               </span>
               <span aria-hidden="true" className="motion-safe:animate-bounce">
@@ -697,36 +767,65 @@ export function RecorridoScrollytelling({
         ) : isFinale ? (
           <motion.div
             key="finale"
-            className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-8 text-center"
+            className="absolute inset-0 flex flex-col justify-center gap-2.5 overflow-hidden px-6 py-3 md:gap-5 md:px-12 md:py-6"
             initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 36 }}
             animate={{ opacity: 1, y: 0 }}
             exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -28 }}
             transition={{ duration: reducedMotion ? 0.2 : 0.5 }}
           >
-            <div className="h-10 w-px bg-gradient-to-b from-transparent to-acento-dorado/50" />
-            <h3 className="font-serif text-2xl font-bold leading-tight text-texto-claro md:text-[1.8rem]">
+            <h3 className="hidden font-serif text-4xl font-bold leading-tight text-texto-claro md:block">
               {t("finale_titulo")}
             </h3>
-            <p className="max-w-[300px] font-serif text-sm leading-relaxed text-stone-400">
-              {t("finale_texto")}
-            </p>
-            {/* El calendario es la siguiente sección de la misma provincia
-                (id="calendario-provincia" en ProvinciaDetalle). Un botón que
-                baja hasta ahí, no un Link. */}
+
+            {/* Lo que antes era la sección Calendario: cuándo y dónde es el pase. */}
+            {activePaseInfo && (
+              <div className="rounded-xl border border-borde-sutil bg-stone-900/30 p-3.5 md:p-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-acento-dorado md:text-sm">
+                  {t("calendario")}
+                </p>
+                <p className="mt-1 font-serif text-xl font-bold leading-tight text-texto-claro md:text-3xl">
+                  {[fechaPase, activePaseInfo.horario].filter(Boolean).join(" · ") ||
+                    activePaseInfo.nombre}
+                </p>
+                <p className="mt-0.5 truncate text-sm text-stone-500 md:mt-1 md:text-base">
+                  {[activePaseInfo.ciudad, activePaseInfo.tipo].filter(Boolean).join(" · ")}
+                </p>
+                <p className="mt-3 hidden text-base leading-relaxed text-stone-400 md:line-clamp-3">
+                  {activePaseInfo.fechaDescripcion}
+                </p>
+              </div>
+            )}
+
+            {sugeridos.length > 0 && (
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.25em] text-acento-dorado md:mb-3 md:text-sm">
+                  {t("sugeridos")}
+                </p>
+                <div className="grid grid-cols-2 gap-2 md:gap-3">
+                  {sugeridos.map((s) => (
+                    <button
+                      key={s.slug}
+                      type="button"
+                      onClick={() => onSugerido(s.slug)}
+                      className="flex min-h-[60px] flex-col justify-center rounded-xl border border-borde-sutil px-3 py-2 text-left md:min-h-[92px] md:px-5 md:py-4 transition-colors hover:border-acento-dorado hover:bg-acento-dorado/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70"
+                    >
+                      <span className="line-clamp-2 text-sm font-medium leading-snug text-texto-claro md:text-lg">
+                        {s.nombre}
+                      </span>
+                      <span className="mt-0.5 truncate text-xs text-stone-500 md:mt-1 md:text-sm">{s.meta}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <button
               type="button"
-              onClick={() =>
-                document
-                  .getElementById("calendario-provincia")
-                  ?.scrollIntoView({
-                    behavior: reducedMotion ? "auto" : "smooth",
-                    block: "start",
-                  })
-              }
-              className="mt-2 inline-flex min-h-[44px] items-center gap-2 rounded-full border border-acento-dorado/60 bg-acento-dorado/10 px-5 text-[11px] uppercase tracking-[0.25em] text-acento-dorado transition-colors duration-200 hover:bg-acento-dorado/20"
+              onClick={onVolver}
+              className="inline-flex min-h-[44px] w-fit items-center gap-2 text-xs uppercase tracking-[0.25em] text-acento-dorado/80 md:text-sm transition-colors hover:text-acento-dorado focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70"
             >
-              {t("ver_calendario")}
-              <span aria-hidden="true">→</span>
+              <span aria-hidden="true">‹</span>
+              {t("ver_mas_pases")}
             </button>
           </motion.div>
         ) : (
@@ -799,15 +898,15 @@ export function RecorridoScrollytelling({
                 </div>
 
                 {/* Texto */}
-                <div className="flex-shrink-0 px-6 pb-2.5 pt-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-acento-dorado">
+                <div className="flex-shrink-0 px-6 pb-2.5 pt-2 md:px-12 md:pb-6 md:pt-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.34em] text-acento-dorado md:text-sm">
                     {activeWp.calle}
                   </p>
-                  <h3 className="mt-0.5 font-serif text-xl font-bold leading-tight text-texto-claro md:text-2xl">
+                  <h3 className="mt-0.5 font-serif text-2xl font-bold leading-tight text-texto-claro md:mt-1 md:text-4xl">
                     {activeWp.nombre}
                   </h3>
                   {activeWp.leyenda && (
-                    <blockquote className="mt-1.5 line-clamp-2 border-l-2 border-acento-dorado/35 pl-3 font-serif text-xs italic leading-snug text-stone-400 md:text-sm">
+                    <blockquote className="mt-1.5 line-clamp-2 border-l-2 border-acento-dorado/35 pl-3 font-serif text-sm italic leading-snug text-stone-300 md:mt-3 md:pl-4 md:text-xl">
                       &ldquo;{activeWp.leyenda}&rdquo;
                     </blockquote>
                   )}
@@ -817,7 +916,7 @@ export function RecorridoScrollytelling({
                         pathname: "/personajes/[slug]",
                         params: { slug: activeWp.slug },
                       }}
-                      className="mt-2 inline-flex min-h-[40px] items-center gap-1.5 text-[11px] uppercase tracking-[0.3em] text-acento-dorado/80 transition-colors duration-200 hover:text-acento-dorado"
+                      className="mt-2 inline-flex min-h-[44px] items-center gap-1.5 text-xs uppercase tracking-[0.3em] text-acento-dorado/80 md:mt-3 md:text-sm transition-colors duration-200 hover:text-acento-dorado"
                     >
                       {t("ver_ficha")}
                       <span aria-hidden="true">→</span>
@@ -853,11 +952,11 @@ export function RecorridoScrollytelling({
     <section
       ref={containerRef}
       className="relative border-y border-borde-sutil"
-      style={{ height: "300vh" }}
+      style={{ height: `${Math.round(300 * largoLinea)}vh` }}
     >
       <div className="sticky top-16 flex h-[calc(100dvh-4rem)] flex-col overflow-hidden bg-fondo-oscuro md:flex-row">
-        {/* ── MAPA — arriba 45dvh (móvil) / izquierda 55% (escritorio) ── */}
-        <div className="relative h-[45dvh] flex-shrink-0 md:h-full md:w-[55%]">
+        {/* ── MAPA — arriba 40dvh (móvil) / izquierda 55% (escritorio) ── */}
+        <div className="relative h-[40dvh] flex-shrink-0 md:h-full md:w-[55%]">
           <div ref={mapContainerRef} className="absolute inset-0" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-fondo-oscuro/80 via-transparent to-fondo-oscuro/35 md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-fondo-oscuro/50" />
           {mapHeader}
@@ -919,10 +1018,10 @@ export function RecorridoScrollytelling({
                       />
                     </div>
                     <span
-                      className={`mt-0.5 text-center text-[9px] uppercase leading-tight tracking-wider transition-colors duration-500 group-hover:text-acento-dorado ${
+                      className={`mt-0.5 text-center text-[10px] uppercase leading-tight tracking-wider md:text-xs transition-colors duration-500 group-hover:text-acento-dorado ${
                         i <= activeIdx ? "text-acento-dorado/75" : "text-stone-500"
                       }`}
-                      style={{ maxWidth: 50 }}
+                      style={{ maxWidth: 84 }}
                     >
                       {wp.label}
                     </span>
