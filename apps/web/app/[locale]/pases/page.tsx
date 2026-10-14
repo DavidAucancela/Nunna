@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { getPases, getRecorridos, getProvinciasConPases } from "@/lib/data";
+import { getPases, getPersonaje, getRecorridos, getProvinciasConPases } from "@/lib/data";
 import { localeAlternates } from "@/lib/seo";
 import { PasesExplorador } from "@/modules/pases/components/PasesExplorador";
 
@@ -19,8 +19,8 @@ export async function generateMetadata({ params }: PasesPageProps): Promise<Meta
   };
 }
 
-// Sin <header> visible a propósito: el mapa (con su propio eyebrow/título) es lo
-// primero que se ve al entrar — fusiona lo que antes eran /pases y /calendario.
+// Ventana fija sin scroll de página: mapa del país → provincia → recorrido de
+// un pase, todo dentro de `PasesExplorador` (ver su comentario).
 export default async function PasesPage({ params }: PasesPageProps) {
   const { locale } = await params;
 
@@ -30,9 +30,31 @@ export default async function PasesPage({ params }: PasesPageProps) {
   ]);
   const provincias = await getProvinciasConPases(pases);
 
+  // Foto real de pase para la tarjeta de cada provincia (si la hay): la de una
+  // parada de sus recorridos o, si no, una foto "en-pase" de su personaje. Las
+  // `imagenPortada` de pases.json son afiches de ruta, no sirven de fondo.
+  const fotosProvincia: Record<string, string> = {};
+  for (const provincia of provincias) {
+    const slugs = new Set(provincia.pases.map((p) => p.slug));
+    const deRecorrido = recorridos.pases
+      .filter((r) => slugs.has(r.paseSlug))
+      .flatMap((r) => r.waypoints)
+      .find((w) => w.imagen)?.imagen;
+    let foto = deRecorrido;
+    for (const pase of provincia.pases) {
+      if (foto || !pase.personajeSlug) continue;
+      const personaje = await getPersonaje(pase.personajeSlug, locale);
+      foto = personaje?.multimedia.find((m) => m.tipo === "imagen" && m.titulo === "en-pase")?.url;
+    }
+    if (foto) fotosProvincia[provincia.slug] = foto;
+  }
+
   return (
-    <div className="pb-16 pt-10">
-      <PasesExplorador provincias={provincias} pasesInfo={pases} recorridos={recorridos} />
-    </div>
+    <PasesExplorador
+      provincias={provincias}
+      pasesInfo={pases}
+      recorridos={recorridos}
+      fotosProvincia={fotosProvincia}
+    />
   );
 }

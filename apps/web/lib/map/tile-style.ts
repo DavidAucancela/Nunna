@@ -1,8 +1,7 @@
 /**
  * Estilo base de todos los mapas MapLibre de la app: el mapa nacional
- * (`MapaEcuador`), el de recorridos de provincia (`RecorridosProvincia`) y los
- * dos scrollytelling de recorrido (`RecorridoScrollytelling` en /pases,
- * `PaseInmersivo` en la ficha del personaje).
+ * (`MapaEcuador`), el de recorridos de provincia (`RecorridosProvincia`) y el
+ * scrollytelling de un pase (`RecorridoScrollytelling`). Todos viven en /pases.
  *
  * ⚠ Antes se usaba el CDN raster de CARTO Dark Matter sin API key. CARTO cerró
  * ese acceso (2025): ahora cada tile keyless vuelve como un PNG placeholder con

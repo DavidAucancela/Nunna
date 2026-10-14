@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { FooterSegunRuta } from "./FooterSegunRuta";
 
 interface MainContentProps {
   children: ReactNode;
@@ -11,7 +12,7 @@ export function MainContent({ children, footer }: MainContentProps) {
       <main id="main-content" className="pt-16">
         {children}
       </main>
-      {footer}
+      <FooterSegunRuta>{footer}</FooterSegunRuta>
     </>
   );
 }

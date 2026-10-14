@@ -118,9 +118,8 @@ apps/web/
 │   │   │   ├── page.tsx            → Estantería de personajes (PersonajesLibro)
 │   │   │   └── [slug]/page.tsx     → ★★ DESTINO QR — ficha completa con historia
 │   │   ├── pases/
-│   │   │   ├── page.tsx            → ★ mapa nacional con zoom + calendario fusionado (/mapa y /calendario
-│   │   │   │                         se fusionaron aquí, ambos con redirect)
-│   │   │   └── [slug]/page.tsx     → Detalle de pase (scaffold mínimo — solo datos logísticos, sin historia editorial)
+│   │   │   └── page.tsx            → ★ ventana fija: mapa nacional → provincia → recorrido de un pase
+│   │   │                             (/mapa, /calendario y /pases/[slug] redirigen aquí)
 │   │   ├── login/page.tsx          → ingreso (Google + enlace mágico) — LoginForm/AuthOpciones
 │   │   ├── mis-personajes/page.tsx → ★ colección del usuario + progreso + logros
 │   │   └── sobre/page.tsx
@@ -133,17 +132,12 @@ apps/web/
 ├── modules/                        → ★ Componentes por feature
 │   ├── home/components/            → HeroSection, PersonajesShowcase,
 │   │                                 ProductoSection, OrigenesSection, StatsSection, MarqueeStrip, CtaFinal
-│   ├── pases/components/           → ★ PasesExplorador (orquestador: mapa siempre montado + detalle
-│   │                                 de provincia debajo), MapaEcuador (★★ MapLibre nacional — una
-│   │                                 sola instancia, zoom real por fitBounds, 2026-08-10 rediseño),
-│   │                                 Información — reutiliza CalendarioGrid),
-│   │                                 RecorridoProvinciaSection (★ envuelve las dos vistas de
-│   │                                 "Recorrido" y les comparte qué pase está elegido),
-│   │                                 RecorridosProvincia (★★ mapa MapLibre estático con TODAS las
-│   │                                 rutas de la provincia a la vez + chips),
-│   │                                 RecorridoScrollytelling (★★ recorrido de UN pase que avanza
-│   │                                 con el scroll — mapa + panel narrador con foto por parada;
-│   │                                 restaura PaseMapSection, ahora convive bajo RecorridosProvincia)
+│   ├── pases/components/           → ★ PasesExplorador (ventana fija de 3 vistas: país → provincia →
+│   │                                 pase), MapaEcuador (★★ única instancia MapLibre, no interactiva,
+│   │                                 zoom por fitBounds + rutas de la provincia), ListaPaginada (lista
+│   │                                 sin scroll, pasa de grupo con flechas), RecorridoScrollytelling
+│   │                                 (★★ "Un pase, un camino": recorrido de UN pase que avanza con el
+│   │                                 scroll — única vista de /pases que se desplaza)
 │   ├── personajes/components/      → PersonajesLibro (★★ estantería horizontal de "lomos" — lista a los 6
 │   │                                 en /personajes, cross-sell de la ficha y /mis-personajes; reemplazó
 │   │                                 a PersonajesGrid/PersonajeCard/PersonajesEscenario, borrados 2026-09-18),
@@ -158,7 +152,6 @@ apps/web/
 │   ├── coleccion/components/       → ★ GuardarPersonaje (sello + modal "Guarda a {nombre}" + auto-guardado
 │   │                                 + CentinelaGuardar), ColeccionClient, CertificadoColeccion, DespertarAnimation
 │   ├── auth/components/            → LoginForm, AuthOpciones (Google + enlace mágico, compartido)
-│   └── festividades/components/    → CalendarioGrid
 ├── lib/
 │   ├── qr-origen.ts                → ★ llegada por QR (`?origen=qr` → marca 24 h en localStorage)
 │   ├── supabase/client.ts          → ★ cliente Supabase browser (auth + colección; null si faltan envs)
@@ -173,7 +166,7 @@ apps/web/
 │   │   ├── pases.json              → pases con fechas y rutas (todo vive en /pases: mapa, calendario);
 │   │   │                             `personajeSlug` = clave de cruce con personajes.json;
 │   │   │                             `provincia` = clave de cruce con provincias.json
-│   │   ├── recorrido.json          → mapa "Un pase, un camino": { defaultPaseSlug, pases[] }
+│   │   ├── recorrido.json          → recorridos de /pases: { pases[] }
 │   │   ├── provincias.json         → ★ catálogo cerrado de las 24 provincias { slug, nombre, region }
 │   │   └── provincias-geo.json     → ★ GENERADO por scripts/build-provincias-svg.mjs — paths SVG
 │   │                                 proyectados + centroides + recuadro de Galápagos. No editar a mano.
@@ -307,21 +300,19 @@ presentación + recorrido a la vez.
 1. Hero                    → HeroGated: HeroDespertar (experiencia+desbloqueado) | ParallaxHero (resto)
 2. QuoteRevelacion ★★      → gancho corto pintado por scroll + resto plegado bajo "Leer más"
 3. StatsAnimados           → ficha de datos (origen + festividad + nombresAlt)
-4. PaseInmersivoGated ★★★  → RECORRIDO 3D (gated): scrollytelling de un pase real — mapa estático +
-                             panel narrador en 3D (foto de cada parada entra girando sobre un eje de
-                             perspectiva, parallax con el puntero, tilt ligado al scroll). Reusa la
-                             mecánica de RecorridoScrollytelling (/pases) para un solo pase; la parada
-                             del personaje dueño de la ficha se resalta ("Aquí va {nombre}"). Reemplaza
-                             a CuandoVerloSection (que queda en el repo sin uso). Recorrido elegido por
-                             recorridoDePersonaje() en recorrido.service.ts.
-5. HistoriaPresentacion ★  → MODO PRESENTACIÓN: leyenda + beats visuales (1 visual + frase breve
+4. HistoriaPresentacion ★  → MODO PRESENTACIÓN: leyenda + beats visuales (1 visual + frase breve
                              c/u, efectos de entrada avanzados) + SecretoRitual. Reemplaza el texto
                              largo de NarrativaSection (los capítulos ya no se apilan como muro).
-6. PersonajeVisualSection ★→ FUSIÓN Anatomía v2 ★★ (gated, pines + lupa close-up + spotlight +
+5. PersonajeVisualSection ★→ FUSIÓN Anatomía v2 ★★ (gated, pines + lupa close-up + spotlight +
                              descubrimiento + sello final) + Galería, en UNA sola sección (cabecera
                              paraguas "El personaje", dos movimientos, un solo fondo).
-7. Cross-sell              → PersonajesLibro (estantería con los otros personajes)
+6. Cross-sell              → PersonajesLibro (estantería con los otros personajes)
 ```
+
+> **El recorrido ya no está en la ficha (2026-10-13).** `PaseInmersivo` ("Recorrido 3D") se retiró y se
+> borró: el recorrido pertenece a `/pases` (`RecorridoScrollytelling`). Con él salieron
+> `recorridoDePersonaje()`, `CuandoVerloSection`, el namespace i18n `pase_inmersivo` y el campo
+> `defaultPaseSlug` de `recorrido.json`. La ficha ya no importa nada de MapLibre.
 
 ★ = rediseño 2026-07-13. ★★ = mejoras de enganche 2026-07-15. `NarrativaSection.tsx` queda en el
 repo pero **ya no se usa** en la ficha (su helper kichwa se extrajo a
@@ -724,6 +715,71 @@ Modo oscuro por defecto.
 
 ## Decisiones técnicas clave
 
+### `/pases` — ventana única de tres vistas ★ (2026-10-13)
+Reemplaza al explorador con scroll (mapa + secciones Recorrido/Calendario/Información apiladas). Las
+secciones de más abajo que describen `ProvinciaDetalle`, `RecorridosProvincia`,
+`RecorridoProvinciaSection`, `CalendarioGrid` y `/pases/[slug]` son **registro histórico**: todos esos
+archivos se borraron.
+- **Una ventana fija, sin scroll de página** (`PasesExplorador`): `h-[calc(100dvh-4rem)]`, con
+  `overflow:hidden` en `html`/`body` mientras no se recorre un pase y `data-lenis-prevent` en el
+  contenedor (si no, Lenis mueve el scroll por programa aunque `overflow` esté oculto). El footer queda
+  fuera de alcance en las vistas 1 y 2. Las vistas se relevan por transición (`AnimatePresence`):
+  1. **País** — mapa a la izquierda (arriba en móvil) + índice de provincias a la derecha (abajo).
+  2. **Provincia** — el mismo mapa hace zoom a la ciudad y dibuja las rutas trazadas, cada una de un
+     color (`colorParaRuta`); al lado, una tarjeta por pase con fecha · ciudad · tipo (ahí se fundieron
+     Calendario e Información). Pasar por una tarjeta resalta su ruta. Los pases **sin ruta trazada salen
+     apagados** con "Próximamente" y no se puede entrar. Orden: primero los recorribles, luego por fecha.
+  3. **Pase** — `RecorridoScrollytelling` ("Un pase, un camino"). **Es la única vista que usa el
+     scroll** (decisión del autor: el recorrido avanza con el scroll, como antes). Se sale con el botón
+     "‹ Pases en {provincia}" (`onVolver`), también en el panel de cierre.
+- **`MapaEcuador`**: `interactive: false` (no se puede mover; la cámara solo la mueve la app). Solo se
+  dibujan **y encuadran** las provincias con pases (`filter` por slug — `feature-state` no sirve en un
+  filtro). Estados: `resaltada` (hover, vista país) y `enfocada` (provincia abierta: relleno casi
+  transparente para dejar ver las calles). Cámara de provincia = bounds de sus rutas (`maxZoom 15`), o la
+  provincia entera si no tiene ninguna. Queda **montado y oculto** (`hidden`) durante la vista 3; un
+  `ResizeObserver` hace `resize()` + re-encuadre al volver.
+  - ⚠ Al re-mostrar un marcador de provincia hay que poner `display:"flex"`, no `""`: vaciarlo borra el
+    `display:flex` inline y el punto (un `span`) pierde su tamaño — bug que ya existía.
+  - ⚠ Con `interactive:false` la atribución compacta nunca se pliega sola (MapLibre la pliega al primer
+    arrastre): se le quita `maplibregl-compact-show` a mano en `load`. Sigue accesible en su botón ⓘ.
+- **`ListaPaginada`**: sin scroll interno. Mide el alto disponible (`ResizeObserver`), muestra los
+  elementos que caben y pasa de grupo con flechas ‹ › (decisión del autor). Alto de tarjeta fijo.
+- **Mismo diseño en las tres vistas** (2026-10-13, segunda pasada): mapa 55 % a la izquierda (40dvh arriba en
+  móvil) + panel a la derecha, las medidas de `RecorridoScrollytelling`. La ventana es `fixed` bajo el
+  header; el recorrido se monta encima (`relative z-10`) y la ventana queda `invisible`, no desmontada.
+- **Transición provincia → pase en dos tiempos**: (1) `entrando` — el mapa se cierra sobre la ruta elegida
+  (`rutaEnfocada`, mismo padding que usa el recorrido) y el panel anuncia el pase con la tipografía de la
+  tarjeta inicial del recorrido; (2) a los 800 ms se monta el recorrido en opacidad 0 y se funde solo
+  cuando su mapa avisa que pintó (`onMapaListo`, respaldo a los 2,5 s). Solo opacidad: un `transform` en
+  un ancestro rompería el `sticky`.
+- **Las fotos de cada parada las pasa el scroll**, no un temporizador (`posicionEnLinea`): la línea de
+  tiempo es la ruta (1) + una pausa de `TRAMO_POR_FOTO` por cada foto extra; en la pausa el punto se
+  queda quieto y el scroll recorre las fotos, luego sigue a la parada siguiente. La sección crece en
+  proporción (`300vh × largoLinea`). `scrollToWaypoint` usa la misma cuenta a la inversa.
+- **Cierre del pase**: bloque "Cuándo es" (fecha · horario, ciudad · tipo y, en escritorio, la
+  descripción del calendario) + **2 pases sugeridos** (primero de la misma provincia; si no alcanzan,
+  de otras — elegirlos cambia de provincia) + volver.
+- **Volver también es una transición**: de pase a provincia el recorrido se desvanece (`saliendo`) sobre la
+  ventana, y al desmontarse el mapa se abre de la ruta a todas las rutas; los paneles llevan `sentido`
+  (1 avanza y entra por la derecha, −1 vuelve y entra por la izquierda) vía `AnimatePresence custom`.
+- **La vista país ya no muestra el mapa** (2026-10-13, tercera pasada): es una capa a ventana completa
+  (`absolute inset-0 z-10`, opaca) con el índice de `ProvinciaCard` en 3×2 (2×3 en móvil; las filas se
+  estiran con `maxItemHeight`). El mapa sigue montado debajo, encuadrado en el país: al elegir provincia la
+  capa se disuelve y aparece el mapa ya volando hacia ella. Por eso `MapaEcuador` perdió los marcadores de
+  provincia y el estado de hover (`resaltada`) — nadie los veía.
+- **Saltar de un pase a otro** (sugeridos del cierre; el selector "Cambia de pase" de la cabecera se quitó) pasa por `cambiarDePase`:
+  sale el recorrido actual (`saliendo`), y `cerrarPase` encadena `entrarAPase` del nuevo — el mapa viaja
+  de una ruta a la otra, incluso entre provincias. El recorrido lleva `key={paseSlug}`.
+- **Índice del país = `ProvinciaCard`**: tarjeta con la **silueta SVG de la provincia** (sale de
+  `provincias.geo.json`, la tienen las 24) + región, nº de pases y próxima fecha; si hay una foto real de
+  pase va de fondo atenuada (`fotosProvincia`, calculado en `pases/page.tsx` — hoy solo Chimborazo y
+  Pichincha; las `imagenPortada` de `pases.json` son afiches de ruta y no sirven). Encima, un resumen
+  (provincias · pases · próxima fiesta). La "próxima" depende de la fecha del visitante: se calcula tras
+  montar (`hoy`), nunca en SSG. `ListaPaginada` hace entrar sus elementos escalonados.
+- **Sin footer en `/pases`**: `FooterSegunRuta` (`components/layout`) lo omite por pathname.
+- **`/pases/[slug]` se retiró** (redirect 308 a `/pases` en `next.config.ts`, es y en). No hay URL por
+  provincia ni por pase: el estado vive en `useState`.
+
 ### `PersonajesLibro` — estantería horizontal de "lomos" (2026-09-18, fix 2026-09-21)
 `modules/personajes/components/PersonajesLibro.tsx`. Una fila con los 6 personajes como lomos de libro:
 los colapsados muestran solo el nombre en vertical (`writing-mode: vertical-rl`, mín. 44 px); el **activo** se
@@ -1109,15 +1165,14 @@ mapas independientes:
     (`/personajes/[slug]` es `/characters/[slug]` en inglés, ver `i18n/routing.ts` — un helper local
     `personajeHref(locale, slug)` replica ese mapeo).
 - **Datos del recorrido en JSON (multi-pase)**: `lib/data/recorrido.json` tiene la forma
-  `{ defaultPaseSlug, pases: [{ paseSlug, paseNombre, centro, zoom, demo?, ruta, waypoints }] }`.
+  `{ pases: [{ paseSlug, paseNombre, centro, zoom, demo?, ruta, waypoints }] }`.
   `getRecorridos()` (`lib/services/recorrido.service.ts`): si el waypoint trae `personajeSlug` lo
   une con `personajes.json` (nombre kichwa-first, `narrativa.leyenda`, altText, `slug`); si **no**
   (waypoint "inline", provincias sin catálogo de figuras), usa `nombre`/`leyenda` del propio JSON y
   `slug` queda `undefined` (sin link a ficha). `pase.demo:true` → `esDemo` (la UI lo marca como
-  "ruta de referencia"). `dato` opcional hoy sin consumidor. `acotarRecorridos()` sigue acotando el
-  objeto completo a los pases de una sola provincia (si no, `RecorridosProvincia` mezclaría rutas de
-  provincias distintas) — `defaultPaseSlug` queda como metadato sin uso activo (no hay selector de
-  "cuál abre" con el nuevo diseño multi-ruta).
+  "ruta de referencia"). `dato` opcional hoy sin consumidor. `acotarRecorridos()` acota el objeto
+  completo a los pases de una sola provincia (si no, `RecorridosProvincia` mezclaría rutas de
+  provincias distintas).
 - **Agregar un pase al recorrido**: añadir un objeto a `pases[]` con `paseSlug` (debe existir en
   `pases.json`), `centro`/`zoom`, e waypoints con `coord` ancla por personaje. Luego correr el script
   de ruta (abajo) para generar la geometría.

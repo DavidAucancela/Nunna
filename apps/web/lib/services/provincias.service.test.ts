@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getProvincias, getProvinciasConPases, provinciaDePase } from "./provincias.service";
+import { getProvincias, getProvinciasConPases } from "./provincias.service";
 import { getPases } from "./pases.service";
 import { acotarRecorridos, getRecorridos } from "./recorrido.service";
 
@@ -62,28 +62,27 @@ describe("getProvinciasConPases", () => {
   });
 
   it("cada pase con recorrido resuelve su provincia", async () => {
-    const recorridos = await getRecorridos();
+    const [recorridos, pases] = await Promise.all([getRecorridos(), getPases({})]);
     for (const r of recorridos.pases) {
-      expect(provinciaDePase(r.paseSlug)).toBeTruthy();
+      expect(pases.find((p) => p.slug === r.paseSlug)?.provincia).toBeTruthy();
     }
   });
 });
 
 describe("acotarRecorridos", () => {
-  it("deja solo los recorridos pedidos y fija cuál abre", async () => {
+  it("deja solo los recorridos pedidos", async () => {
     const recorridos = await getRecorridos();
     const elegido = recorridos.pases[0]!.paseSlug;
 
-    const acotado = acotarRecorridos(recorridos, [elegido], elegido);
+    const acotado = acotarRecorridos(recorridos, [elegido]);
 
-    expect(acotado.defaultPaseSlug).toBe(elegido);
     expect(acotado.pases).toHaveLength(1);
     expect(acotado.pases[0]!.paseSlug).toBe(elegido);
   });
 
   it("descarta recorridos fuera del conjunto (no deja saltar a otra provincia)", async () => {
     const recorridos = await getRecorridos();
-    const acotado = acotarRecorridos(recorridos, ["slug-inexistente"], "slug-inexistente");
+    const acotado = acotarRecorridos(recorridos, ["slug-inexistente"]);
     expect(acotado.pases).toHaveLength(0);
   });
 });

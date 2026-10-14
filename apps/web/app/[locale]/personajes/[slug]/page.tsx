@@ -3,14 +3,13 @@ import type { PresentacionBeat } from "@seres-del-pase/types";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 
-import { getPersonaje, getPersonajes, getPases, getRecorridos, recorridoDePersonaje } from "@/lib/data";
+import { getPersonaje, getPersonajes, getPases } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import { localeAlternates } from "@/lib/seo";
 import { HeroDespertar } from "@/modules/personajes/components/HeroDespertar";
 import { ParallaxHero } from "@/modules/personajes/components/ParallaxHero";
 import { PersonajeVisualSection } from "@/modules/personajes/components/PersonajeVisualSection";
 import { HistoriaPresentacion } from "@/modules/personajes/components/HistoriaPresentacion";
-import { PaseInmersivo } from "@/modules/personajes/components/PaseInmersivo";
 import { ArtesanoSection } from "@/modules/personajes/components/ArtesanoSection";
 import { ColeccionCounter } from "@/modules/personajes/components/ColeccionCounter";
 import { PersonajesLibro } from "@/modules/personajes/components/PersonajesLibro";
@@ -68,17 +67,14 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   const { slug, locale } = await params;
   setRequestLocale(locale);
 
-  const [personaje, todosPersonajes, pases, recorridos, t] = await Promise.all([
+  const [personaje, todosPersonajes, pases, t] = await Promise.all([
     getPersonaje(slug, locale),
     getPersonajes({}),
     getPases({}),
-    getRecorridos(),
     getTranslations({ locale, namespace: "historia" }),
   ]);
 
   if (!personaje) notFound();
-
-  const recorridoPersonaje = recorridoDePersonaje(recorridos, personaje.slug);
 
   const imagenPortada = personaje.multimedia.find((m) => m.tipo === "imagen");
   const imagenBanner = personaje.imagenBanner
@@ -180,17 +176,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         nombresAlt={personaje.nombresAlt}
       />
 
-      {/* ── 4. Recorrido inmersivo — pase real en scrollytelling 3D ── */}
-      {recorridoPersonaje && (
-        <PaseInmersivo
-          recorrido={recorridoPersonaje}
-          personajeSlug={personaje.slug}
-          nombre={personaje.nombre}
-          accentColor={style.accentColor}
-        />
-      )}
-
-      {/* ── 5. Modo presentación (visuales + frases breves; leyenda + secreto) ── */}
+      {/* ── 4. Modo presentación (visuales + frases breves; leyenda + secreto) ── */}
       {personaje.narrativa && presentacionBeats.length > 0 && (
         <HistoriaPresentacion
           leyenda={personaje.narrativa.leyenda}
@@ -204,7 +190,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         />
       )}
 
-      {/* ── 5b. Artesano (si el campo existe en el JSON) ── */}
+      {/* ── 4b. Artesano (si el campo existe en el JSON) ── */}
       {personaje.artesano && (
         <ArtesanoSection
           artesano={personaje.artesano}
@@ -214,7 +200,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         />
       )}
 
-      {/* ── 6. El personaje — Anatomía + Galería fusionadas ── */}
+      {/* ── 5. El personaje — Anatomía + Galería fusionadas ── */}
       <PersonajeVisualSection
         slug={personaje.slug}
         nombre={personaje.nombre}
@@ -230,7 +216,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
       {/* Al llegar aquí (fin de la ficha) se invita a guardar al personaje si llegó por QR. */}
       <CentinelaGuardar slug={personaje.slug} />
 
-      {/* ── 7. Cross-sell ── */}
+      {/* ── 6. Cross-sell ── */}
       {otrosPersonajes.length > 0 && (
         <section className="border-t border-borde-sutil py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-5 sm:px-6">
