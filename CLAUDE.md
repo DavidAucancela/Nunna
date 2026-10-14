@@ -662,6 +662,13 @@ Modo oscuro por defecto.
   - **Entorno:** `node_modules` evictado por iCloud + dos `next dev` compartiendo `.next` rompían el
     arranque — ver "Entorno de desarrollo" en "Cómo correr el proyecto".
 
+- **`/pases` como ventana única de tres vistas + limpieza** (PR #83, 2026-10-13): país (tarjetas de
+  provincia) → provincia (mapa con zoom + pases paginados) → pase ("Un pase, un camino", única vista con
+  scroll), todo por transiciones y sin footer. Se retiró el recorrido de la ficha (`PaseInmersivo`) y se
+  borraron `RecorridosProvincia`, `ProvinciaDetalle`, `CalendarioGrid`, `/pases/[slug]` y código/i18n
+  sin uso. Detalle en "`/pases` — ventana única de tres vistas" (decisiones técnicas) y
+  `docs/CHANGELOG.md` [0.10.0].
+
 ### 🔄 Siguiente
 - **Fotos de los 4 imanes** (`imagenGrupo` + galería): las 5 fotos miden ~1000 px y se muestran a ~950 px en
   un lomo panorámico 2.5:1 (`object-top` recorta ~46 % de abajo; en retina se estiran al doble). Idea
@@ -671,17 +678,30 @@ Modo oscuro por defecto.
 - Decidir qué hacer con archivos sueltos sin commitear: `danzante-yaruquies-iman.png`,
   `danzante_yaruquies_iman_prinicpal.png` (errata en el nombre) y `public/personajes/otros/` (IMG_8134, IMG_8638,
   `crt_frontal_*`) — ningún JSON los referencia.
-- **⚠ Abrir PR a `main` para `feat/selector-pases-recorrido`** (rama ya en origin, commit
-  `eb7f322`): añade botones por pase en `RecorridosProvincia` (antes "Todos" era el único
-  modo) + grilla "Personajes de este pase" al elegir uno. Se abrió como PR #67 contra
-  `fix/mapa-ecuador-setfeaturestate-crash` (necesario para poder probarlo, porque sin esos
-  fixes el mapa no renderiza) pero esa rama base se mergeó a `main` de forma independiente
-  por otro PR (#64) — el commit del selector quedó huérfano, nunca llegó a `main`. Ver
-  `docs/CHANGELOG.md` [0.5.0] para el detalle completo.
+- **⚠ Cerrar el despliegue del QR único** (`docs/PLAN-QR-UNICO.md` Fase 9). Verificado en Supabase el
+  2026-10-14: `save_personaje` **ya está aplicada**; la migración destructiva **no** — siguen
+  `redeem_code`, `check_code_valid`, `check_code_status` y la tabla `unlock_codes` (renombrarla a
+  `unlock_codes_archivo`). Hacerlo solo con confirmación del autor. Falta también activar Google
+  (OAuth en Google Cloud + proveedor en Supabase Auth + `NEXT_PUBLIC_AUTH_GOOGLE=1` en Railway) y
+  reimprimir las tarjetas con el QR `?origen=qr` (las viejas abren la ficha pero no ofrecen guardar).
+- **`/pases` en un teléfono real**: el flujo se probó con Playwright emulando táctil, no en un dispositivo.
+  Revisar sobre todo el paso a la vista del recorrido (fundido + `position: sticky`) en iOS Safari.
+- **Fotos de pase por provincia**: la tarjeta de provincia solo tiene foto real en Chimborazo y Pichincha
+  (`fotosProvincia` en `pases/page.tsx`); las demás muestran solo la silueta. Las `imagenPortada` de
+  `pases.json` son afiches de ruta (solo Chimborazo) y no sirven de fondo. Los pases sin afiche muestran
+  un sello con la fecha en su tarjeta.
+- **Siluetas con un trazo suelto** (Chimborazo, Imbabura — también visible en el mapa): viene de la
+  geometría simplificada de geoBoundaries (`scripts/build-provincias-geojson.mjs`); revisar la
+  simplificación o limpiar esos anillos.
+- **Panel de provincia con un solo pase** deja espacio vacío bajo la tarjeta (el autor quitó la silueta de
+  fondo que lo llenaba). Opciones: subir `maxItemHeight` o centrar la lista.
+- **Higiene de ramas**: el remoto acumula ~18 ramas ya mergeadas (`feat/selector-pases-recorrido`,
+  `feat/pase-inmersivo-ficha`, `refactor/qr-unico-ficha-abierta`, …). Borrarlas cuando el autor lo
+  confirme. Hay además dos carpetas sin commitear que no son de este trabajo:
+  `app/[locale]/guia-tarjetas/` y `modules/tarjetas/`.
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
 - Fotografías reales "En el pase" (`titulo: "en-pase"`) y del imán físico (`titulo: "proceso"`) para la galería
 - **Audios reales** del hero v2 en `public/audio/` (6 archivos: `[slug]-ambiente.mp3` por personaje con `experiencia: true` — cucurucho y danzante-yaruquies también los necesitan)
-- **Revisar kichwa** de namespaces `desbloquear`/`coleccion`/`logros`/`experiencia`/`anatomia` con hablante nativo
 - **Recorrido — datos reales** de Mercado Santa Rosa y Niño Rey de la Paz: coords ancla exactas, personajes que
   desfilan, fotos propias. Tras editar coords en `recorrido.json`: `node scripts/build-route.mjs`
 - **Verificar en campo las 5 rutas demo** (`demo: true` en `recorrido.json`: Cotopaxi, Tungurahua,
@@ -692,20 +712,17 @@ Modo oscuro por defecto.
   no aparecen en el mapa nacional ni tienen recorrido. Añadir esos campos para incluirlos.
 - Añadir los demás pases de Chimborazo al recorrido (hoy 4 de 15)
 - **Experiencia v2** — Fases 2, 3, 5-12 del plan de 12 fases (Fases 1 y 4 ya implementadas)
-- **Cucurucho / Danzante de Yaruquíes** — decidir si el QR va directo a la ficha o a
-  `/es/personajes` genérico (ver nota arriba); sembrar el lote real de códigos de imprenta (hoy
-  solo hay un lote de prueba, `batch: prueba-2026-09`, que conviene limpiar de Supabase antes de un
-  lanzamiento real); agregar al Danzante como waypoint en `recorrido.json` cuando haya coordenadas
-  de campo; recalibrar hotspots de Anatomía si al ver la ficha algún pin no coincide con la imagen.
+- **Danzante de Yaruquíes**: agregarlo como waypoint en `recorrido.json` cuando haya coordenadas de campo;
+  recalibrar hotspots de Anatomía (Cucurucho y Danzante) si algún pin no coincide con la imagen.
 
 ### ⏳ Fase 2
 - Modo claro/oscuro — el toggle se implementó (commit `58c591e`) pero hoy **no está en el Header**;
   el sitio corre solo en oscuro (`html.dark` fijo en layout). Reintroducirlo es opcional.
-- Página de detalle de pase (`/pases/[slug]`)
+- ~~Página de detalle de pase (`/pases/[slug]`)~~ — retirada (2026-10-13): cada pase se abre dentro de `/pases`.
 
 ### ⏳ Fase 3
 - Hotspots interactivos en el traje ✅ (implementados como `AnatomiaSection.tsx` — Fase 4 v2, 2026-06-23)
-- Mapa interactivo (MapLibre — dependencia ya instalada)
+- Mapa con MapLibre ✅ (`/pases`) — no interactivo a propósito: la cámara la mueve la app.
 
 ### ❌ Descartado
 - **Búsqueda semántica** (pgvector + Supabase + NestJS) — funcionalidad cancelada (2026-06-21).
@@ -837,7 +854,8 @@ Reemplaza al desbloqueo por código (sección siguiente, que queda como historia
 `docs/PLAN-QR-UNICO.md`.
 - **Un QR por personaje**: `https://nunna-ecu.com/es/personajes/<slug>?origen=qr` (`scripts/generate-qr.mjs`).
   Sin código. Las tarjetas viejas (URL sin marcador) siguen abriendo la ficha, pero no ofrecen guardar.
-- **La ficha es abierta para todos**: Despertar, Recorrido 3D y Anatomía se renderizan siempre (también en
+- **La ficha es abierta para todos**: Despertar y Anatomía se renderizan siempre (el Recorrido 3D se retiró
+  el 2026-10-13; también en
   SSR). Se borraron `GatedPageRedirect`, `HeroGated`, `AnatomiaGated`, `PaseInmersivoGated`,
   `/desbloquear/[slug]` (redirect 308 a la ficha en `next.config.ts`), `DesbloquearForm`, `seed-codes.mjs`.
 - **Llegada por QR** (`lib/qr-origen.ts`): `useLlegadaPorQr` lee `?origen=qr` con `window.location` (no
@@ -979,6 +997,8 @@ Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling
 - ⚠ Cadenas kichwa del namespace `experiencia` son **tentativas** — revisar con hablante nativo.
 
 ### Calendario — solo meses con pases (2026-06-22)
+> ⚠ **Histórico** — reemplazado el 2026-10-13 por "`/pases` — ventana única de tres vistas" (arriba). Se conserva
+> como registro; los componentes que nombra ya no existen salvo `MapaEcuador` y `RecorridoScrollytelling`.
 > ⚠ `/calendario` se fusionó dentro de `/pases` el 2026-08-10 (redirect 308) — `CalendarioGrid` sigue
 > siendo el mismo componente, ahora consumido como una de las 3 secciones de `ProvinciaDetalle` en
 > vez de tener su propia página. El resto de esta nota describe su comportamiento, que no cambió.
@@ -1075,6 +1095,8 @@ El QR de cada imán físico codifica `/[locale]/personajes/<slug>`. Una vez impr
 - **Solución**: aplicar `text-shimmer` directamente en cada `motion.span`, no en el `h1` contenedor
 
 ### `/pases` — mapa nacional MapLibre + fusión de `/calendario` (2026-08-10, migrado a MapLibre el mismo día)
+> ⚠ **Histórico** — reemplazado el 2026-10-13 por "`/pases` — ventana única de tres vistas" (arriba). Se conserva
+> como registro; los componentes que nombra ya no existen salvo `MapaEcuador` y `RecorridoScrollytelling`.
 `/pases` absorbió a `/calendario` (redirect 308, mismo patrón que `/mapa` → `/pases`) y es una
 página continua de una sola vista (`PasesExplorador.tsx`): el mapa de Ecuador (`MapaEcuador.tsx`)
 queda **siempre montado** — nunca se reemplaza por otro componente — y al elegir una provincia hace
@@ -1139,6 +1161,8 @@ ves referencias a "SVG nacional" en commits/docs viejos, son de esa primera vers
   inventar un slug.
 
 ### MapLibre GL en `/pases` (`MapaEcuador` + `RecorridosProvincia` + `RecorridoScrollytelling`)
+> ⚠ **Histórico** — reemplazado el 2026-10-13 por "`/pases` — ventana única de tres vistas" (arriba). Se conserva
+> como registro; los componentes que nombra ya no existen salvo `MapaEcuador` y `RecorridoScrollytelling`.
 Hasta **tres** instancias de MapLibre en la página, cada una con su rol — comparten
 `lib/map/tile-style.ts` (estilo vector oscuro — OpenFreeMap) y `lib/map/bounds.ts` (bbox), pero son
 mapas independientes:

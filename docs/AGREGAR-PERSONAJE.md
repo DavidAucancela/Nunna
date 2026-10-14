@@ -147,7 +147,7 @@ en el mapa nacional:
   Es 1:1 — un pase, un personaje.
 - **Festividad nueva:** añade el objeto a `pases.json` (ver `docs/AGREGAR-PROVINCIA.md` para la
   forma completa) con `provincia` (debe existir en `provincias.json`), `mes` (para que aparezca en
-  el calendario y marque su provincia) y `personajeSlug`.
+  `/pases` y cuente para su provincia) y `personajeSlug`.
 
 ---
 
@@ -159,9 +159,10 @@ Añade un waypoint a `pases[].waypoints[]` del recorrido correspondiente:
 { "personajeSlug": "danzante", "coord": [lng, lat], "label": "Danzante", "orden": 5 }
 ```
 
-Esto lo muestra en el mapa multi-ruta de `/pases` (`RecorridosProvincia`) **y** le da su sección de
-recorrido 3D en la ficha (`PaseInmersivoGated`). Un waypoint sin `personajeSlug` es "inline" (trae
-`nombre`/`leyenda` propios, sin link a ficha).
+Esto lo hace aparecer como parada del recorrido "Un pase, un camino" en `/pases`
+(`RecorridoScrollytelling`), con foto, leyenda y enlace a su ficha. La ficha del personaje ya **no**
+muestra recorrido (se retiró `PaseInmersivo`, 2026-10-13). Un waypoint sin `personajeSlug` es "inline"
+(trae `nombre`/`leyenda` propios, sin link a ficha).
 
 **Tras editar cualquier `coord`:** `node scripts/build-route.mjs` (necesita red — hornea la
 geometría OSRM y alinea los pines a la calle; producción queda estática).
@@ -198,9 +199,10 @@ Checklist manual (dev en `:3030`, **y en un móvil real** — el QR se escanea c
 - [ ] `/es/personajes` → el lomo nuevo aparece
 - [ ] `/es/personajes/[slug]?origen=qr` sin sesión → ficha completa; al final, modal "Guarda a {nombre}"
 - [ ] Guardar (enlace mágico) → vuelve a la ficha, `DespertarAnimation` muestra **todas** las figuras + sello
-- [ ] Ficha: hero Despertar · gancho + "Leer más" · StatsAnimados · Cuándo verlo /
-      Recorrido 3D · modo presentación · Anatomía con hotspots · Galería · cross-sell
-- [ ] `/es/pases` → provincia del pase marcada; sección Calendario lo lista
+- [ ] Ficha: hero Despertar · gancho + "Leer más" · StatsAnimados · modo presentación ·
+      Anatomía con hotspots · Galería · cross-sell
+- [ ] `/es/pases` → la tarjeta de su provincia existe; al abrirla, su pase aparece en la lista
+      (y, si tiene waypoint, su parada sale en el recorrido)
 - [ ] `/mis-personajes` → progreso y logros cuentan al personaje nuevo
 - [ ] Compartir la ficha en WhatsApp → la preview OG luce bien
 - [ ] Escanear `qr-[slug].png` con la cámara → aterriza en la ficha

@@ -2,6 +2,37 @@
 
 ---
 
+## [0.10.0] — 2026-10-13 — `/pases` como ventana única y limpieza de la sección
+
+PR #83 (`refactor/pases-limpieza`). `/pases` deja de ser una página con scroll (mapa nacional + secciones
+Recorrido / Calendario / Información apiladas) y pasa a ser una ventana fija de tres vistas que se relevan
+por transición. El recorrido sale de la ficha del personaje.
+
+### Cambiado
+- **Vista país**: índice de tarjetas de provincia a ventana completa (`ProvinciaCard`: silueta SVG de la
+  provincia, nº de pases, próxima fecha, foto de fondo donde existe) + resumen (provincias · pases ·
+  próxima fiesta). Ya no se muestra el mapa general.
+- **Vista provincia**: el mapa (`interactive: false`) hace zoom a la ciudad y dibuja todas sus rutas; al
+  lado, los pases en tarjetas paginadas con flechas (`ListaPaginada`, sin scroll). Sin ruta trazada →
+  tarjeta apagada "Próximamente". Calendario e Información se fundieron en las tarjetas.
+- **Vista pase** ("Un pase, un camino", `RecorridoScrollytelling`): única con scroll. Transiciones de
+  entrada, salida y entre pases; el scroll pasa las fotos de cada parada antes de seguir (antes rotaban
+  con un temporizador); cierre con "Cuándo es" + 2 pases sugeridos; ficha rápida fecha · ciudad · paradas.
+- Tipografía más grande en las tres vistas.
+
+### Eliminado
+- Ficha del personaje: `PaseInmersivo` ("Recorrido 3D") y `CuandoVerloSection`.
+- `/pases/[slug]` (308 a `/pases`), `RecorridosProvincia`, `RecorridoProvinciaSection`, `ProvinciaDetalle`,
+  `CalendarioGrid` (módulo `festividades`), selector "Cambia de pase" de la cabecera del recorrido.
+- `recorridoDePersonaje()`, `provinciaDePase()`, campo `defaultPaseSlug` de `recorrido.json`, namespace
+  i18n `pase_inmersivo` y ~30 claves sin uso. Footer en `/pases` (`FooterSegunRuta`).
+
+### Corregido
+- Los marcadores de provincia del mapa perdían el tamaño de su punto al re-mostrarse (`display: ""`).
+- Con `interactive: false` la atribución compacta de MapLibre nunca se plegaba y tapaba el mapa en móvil.
+
+---
+
 ## [0.9.0] — 2026-10-06 — QR único por personaje, ficha abierta y guardado opcional
 
 Rama `refactor/qr-unico-ficha-abierta`. Plan: `docs/PLAN-QR-UNICO.md`.
