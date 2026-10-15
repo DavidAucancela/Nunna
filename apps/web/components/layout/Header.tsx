@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useColeccion } from "@/components/auth/ColeccionProvider";
+import { NunnaIsotipo } from "@/components/ui/NunnaLogo";
 
 const NAV_LINKS = [
   { key: "personajes", href: "/personajes" },
@@ -105,6 +106,7 @@ export function Header() {
           }}
           className="group flex shrink-0 items-center gap-2"
         >
+          <NunnaIsotipo className="h-7 w-7 shrink-0 md:h-8 md:w-8" />
           <motion.span
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}

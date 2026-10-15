@@ -1119,6 +1119,12 @@ quichua como opción de UI** y la **feature de glosario** por completo.
 - Mantener el header en **una sola fila** (~64px): muchos lugares dependen de `top-16`/`pt-16` (MainContent, sticky de `ProductoSection`/`AnatomiaSection`). No añadir una segunda fila.
 
 ### Marca: "Nunna"
+- **Isotipo (2026-10-15, concepto R1):** la N trazada como el recorrido de un pase en tres tramos
+  (rojo `#B8312F` · dorado `#C89B3C` · jade `#2F7A63`) dentro de una placa oscura con filete dorado.
+  Componente `components/ui/NunnaLogo.tsx` (`NunnaIsotipo`, en Header y Footer) = mismo dibujo que
+  `public/favicon.svg`. `apple-icon.svg` es la versión maskable (sin esquinas, N en zona segura) y de ella
+  salen `apple-icon.png` (180), `icon-512.png` y `icon-192.png` (este del favicon) — regenerarlos con sharp
+  si cambia el dibujo (iOS no acepta SVG como apple-touch-icon).
 - El nombre público del sistema es **Nunna**
 - Los paquetes internos del monorepo (`@seres-del-pase/web`, etc.) **no se cambian** — son identificadores técnicos
 

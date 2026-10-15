@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { NunnaIsotipo } from "@/components/ui/NunnaLogo";
 
 export function Footer() {
   const t = useTranslations("nav");
@@ -9,7 +10,10 @@ export function Footer() {
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 md:grid-cols-3">
           <div>
-            <p className="font-serif text-lg font-bold text-texto-claro">Nunna</p>
+            <p className="flex items-center gap-2 font-serif text-lg font-bold text-texto-claro">
+              <NunnaIsotipo className="h-6 w-6" />
+              Nunna
+            </p>
             <p className="mt-2 text-sm text-stone-500">
               Catálogo cultural sobre los personajes de las fiestas populares del Ecuador.
             </p>
