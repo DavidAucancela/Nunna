@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: PrivacidadPageProps): Promise
 }
 
 const ACTUALIZADA = "15 de octubre de 2026";
-const CONTACTO = "guiru.david@gmail.com";
+const CONTACTO = "hola@nunna-ecu.com";
 
 export default function PrivacidadPage() {
   return (
