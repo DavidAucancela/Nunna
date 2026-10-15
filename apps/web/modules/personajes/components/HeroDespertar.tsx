@@ -82,7 +82,6 @@ export function HeroDespertar({
   const yMascara = useTransform(scrollYProgress, [0, 1], ["0%", reduced ? "0%" : "22%"]);
   const contentY = useTransform(scrollYProgress, [0, 0.5], ["0%", reduced ? "0%" : "-12%"]);
   const contentOp = useTransform(scrollYProgress, [0, 0.4], [1, reduced ? 1 : 0]);
-  const chevronOp = useTransform(scrollYProgress, [0, 0.18], [1, 0]);
 
   // ── Parallax por mouse: cada capa reacciona a distinta intensidad ──
   const mx = useMotionValue(0);
@@ -318,37 +317,6 @@ export function HeroDespertar({
             </motion.span>
           )}
         </motion.div>
-      </motion.div>
-
-      {/* Indicador de scroll */}
-      <motion.div
-        style={{ opacity: chevronOp }}
-        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 flex flex-col items-center gap-2"
-      >
-        <span className="text-[9px] uppercase tracking-[0.28em] text-stone-400">{t("descubrir")}</span>
-        {/* Línea que se dibuja hacia abajo — invitación al descenso */}
-        <svg width="2" height="36" viewBox="0 0 2 36" fill="none" aria-hidden="true">
-          <motion.line
-            x1="1"
-            y1="0"
-            x2="1"
-            y2="36"
-            stroke={accentColor}
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            initial={reduced ? false : { pathLength: 0, opacity: 1 }}
-            animate={
-              reduced
-                ? { pathLength: 1, opacity: 0.7 }
-                : { pathLength: [0, 1, 1], opacity: [0.9, 0.9, 0] }
-            }
-            transition={
-              reduced
-                ? { duration: 0 }
-                : { duration: 2.2, times: [0, 0.72, 1], repeat: Infinity, ease: "easeInOut" }
-            }
-          />
-        </svg>
       </motion.div>
     </section>
   );

@@ -3,7 +3,7 @@ import type { PresentacionBeat } from "@seres-del-pase/types";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 
-import { getPersonaje, getPersonajes, getPases } from "@/lib/data";
+import { getPersonaje, getPersonajes } from "@/lib/data";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import { localeAlternates } from "@/lib/seo";
 import { HeroDespertar } from "@/modules/personajes/components/HeroDespertar";
@@ -14,7 +14,6 @@ import { ArtesanoSection } from "@/modules/personajes/components/ArtesanoSection
 import { ColeccionCounter } from "@/modules/personajes/components/ColeccionCounter";
 import { PersonajesLibro } from "@/modules/personajes/components/PersonajesLibro";
 import { QuoteRevelacion } from "@/modules/personajes/components/QuoteRevelacion";
-import { StatsAnimados } from "@/modules/personajes/components/StatsAnimados";
 import { GuardarPersonaje, CentinelaGuardar } from "@/modules/coleccion/components/GuardarPersonaje";
 import { RevealText } from "@/components/ui/RevealText";
 import { WhatsAppShare } from "@/components/ui/WhatsAppShare";
@@ -49,8 +48,6 @@ export async function generateMetadata({ params }: PersonajePageProps): Promise<
 
   if (!personaje) return { title: "No encontrado" };
 
-  const imagenPortada = personaje.multimedia.find((m) => m.tipo === "imagen");
-
   return {
     title: personaje.nombre,
     description: personaje.resumen,
@@ -58,7 +55,7 @@ export async function generateMetadata({ params }: PersonajePageProps): Promise<
     openGraph: {
       title: `${personaje.nombre} | Nunna`,
       description: personaje.resumen,
-      images: imagenPortada ? [{ url: imagenPortada.url, alt: imagenPortada.altText }] : [],
+      // La imagen sale de opengraph-image.tsx (frente de la tarjeta + nombre + leyenda).
     },
   };
 }
@@ -67,10 +64,9 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   const { slug, locale } = await params;
   setRequestLocale(locale);
 
-  const [personaje, todosPersonajes, pases, t] = await Promise.all([
+  const [personaje, todosPersonajes, t] = await Promise.all([
     getPersonaje(slug, locale),
     getPersonajes({}),
-    getPases({}),
     getTranslations({ locale, namespace: "historia" }),
   ]);
 
@@ -81,12 +77,6 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
     ? { url: personaje.imagenBanner, altText: `${personaje.nombre} — Nunna` }
     : undefined;
   const style = getOrigenStyle(personaje.origen);
-
-  const pasesDelPersonaje = pases.filter((p) => p.personajeSlug === personaje.slug);
-  const festividad =
-    pasesDelPersonaje.length > 0
-      ? `${pasesDelPersonaje.length} ${pasesDelPersonaje.length === 1 ? "fiesta" : "fiestas"} popular${pasesDelPersonaje.length === 1 ? "" : "es"} del Ecuador`
-      : "Fiestas populares del Ecuador";
 
   const otrosPersonajes = todosPersonajes.filter((p) => p.slug !== slug);
 
@@ -167,19 +157,9 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
         />
       </QuoteRevelacion>
 
-      {/* ── 3. Los Números Sagrados — ficha de datos ── */}
-      <StatsAnimados
-        origenLabel={style.label}
-        accentColor={style.accentColor}
-        festividadCount={pasesDelPersonaje.length}
-        festividadTexto={festividad}
-        nombresAlt={personaje.nombresAlt}
-      />
-
       {/* ── 4. Modo presentación (visuales + frases breves; leyenda + secreto) ── */}
       {personaje.narrativa && presentacionBeats.length > 0 && (
         <HistoriaPresentacion
-          leyenda={personaje.narrativa.leyenda}
           beats={presentacionBeats}
           secreto={personaje.narrativa.secreto}
           accentColor={style.accentColor}

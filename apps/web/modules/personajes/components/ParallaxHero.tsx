@@ -48,7 +48,6 @@ export function ParallaxHero({
   // El contenido del hero sube y desaparece antes de que la sección salga
   const contentY  = useTransform(scrollYProgress, [0, 0.5], ["0%", reduced ? "0%" : "-12%"]);
   const contentOp = useTransform(scrollYProgress, [0, 0.38], [1, reduced ? 1 : 0]);
-  const chevronOp = useTransform(scrollYProgress, [0, 0.18], [1, 0]);
 
   return (
     <section
@@ -154,30 +153,6 @@ export function ParallaxHero({
             {origenLabel}
           </motion.span>
         )}
-      </motion.div>
-
-      {/* Indicador de scroll — desaparece al bajar */}
-      <motion.div
-        style={{ opacity: chevronOp }}
-        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 flex flex-col items-center gap-2"
-      >
-        <span className="text-[9px] uppercase tracking-[0.28em] text-stone-600">Descubrir</span>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <svg
-            width="16"
-            height="16"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            viewBox="0 0 24 24"
-            className="text-stone-600"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </motion.div>
       </motion.div>
     </section>
   );
