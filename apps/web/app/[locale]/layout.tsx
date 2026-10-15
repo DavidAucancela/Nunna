@@ -50,9 +50,7 @@ export async function generateMetadata({ params }: LocaleLayoutProps): Promise<M
       icon: [
         { url: "/favicon.svg", type: "image/svg+xml" },
       ],
-      apple: [
-        { url: "/apple-icon.svg", type: "image/svg+xml" },
-      ],
+      apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
     },
     openGraph: {
       type: "website",
