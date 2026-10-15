@@ -39,6 +39,11 @@ export function Footer() {
                   {t("sobre")}
                 </Link>
               </li>
+              <li>
+                <Link href="/privacidad" className="text-sm text-stone-400 hover:text-texto-claro">
+                  {t("privacidad")}
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

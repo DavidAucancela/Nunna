@@ -714,7 +714,8 @@ Modo oscuro por defecto.
   `redeem_code`, `check_code_valid`, `check_code_status` y la tabla `unlock_codes` (renombrarla a
   `unlock_codes_archivo`). Hacerlo solo con confirmación del autor. Falta también activar Google
   (OAuth en Google Cloud + proveedor en Supabase Auth + `NEXT_PUBLIC_AUTH_GOOGLE=1` en Railway) y
-  reimprimir las tarjetas con el QR `?origen=qr` (las viejas abren la ficha pero no ofrecen guardar).
+  ~~reimprimir las tarjetas con `?origen=qr`~~ — **hecho**: las tarjetas V2 impresas ya llevan
+  `https://nunna-ecu.com/es/personajes/<slug>?origen=qr` (los 12 QR del pliego decodificados y verificados, 2026-10-15).
 - **`/pases` en un teléfono real**: el flujo se probó con Playwright emulando táctil, no en un dispositivo.
   Revisar sobre todo el paso a la vista del recorrido (fundido + `position: sticky`) en iOS Safari.
 - **Fotos de pase por provincia**: la tarjeta de provincia solo tiene foto real en Chimborazo y Pichincha
