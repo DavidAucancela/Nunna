@@ -1,15 +1,14 @@
 # Agregar una provincia al mapa nacional
 
-El mapa de `/pases` marca **las provincias que tienen al menos un pase con fecha en el
-calendario** (`mes` presente en `pases.json`) — el mismo criterio que ya agrupaba `CalendarioGrid`.
-Las provincias sin ningún pase fechado se dibujan como fondo mudo: sin etiqueta, sin estado, no
-clicables.
+`/pases` muestra una tarjeta por cada **provincia que tiene al menos un pase con fecha en el
+calendario** (`mes` y `provincia` presentes en `pases.json`, ver `getProvinciasConPases()`). Las
+provincias sin ningún pase fechado no aparecen.
 
-Marcada **no** significa "con recorrido trazado". Al hacer zoom en una provincia se ven sus 4
-secciones (Recorrido, Galería, Calendario, Información); si ninguno de sus pases tiene ruta en
-`recorrido.json`, la sección Recorrido muestra un estado "próximamente" — el resto de las
-secciones igual funcionan con solo `pases.json`. Trazar la ruta (paso 2 y 3 abajo) es lo que
-completa esa sección, no lo que decide si la provincia aparece.
+Tener tarjeta **no** significa "con recorrido trazado". Al abrir una provincia, el mapa hace zoom a sus
+rutas y al lado se listan todos sus pases; los que no tienen ruta en `recorrido.json` salen apagados
+con "Próximamente" y no se puede entrar a ellos. Trazar la ruta (paso 2 y 3 abajo) es lo que los
+habilita, no lo que decide si la provincia aparece. Si **ninguno** tiene ruta, el mapa encuadra la
+provincia entera en vez de la ciudad.
 
 > ⚠️ **Verifica el contenido antes de cargarlo.** Fechas, horarios, rutas y personajes de una
 > festividad son datos culturales: deben venir de una fuente real (la organización que la
@@ -162,7 +161,7 @@ mapeo de nombres viven en `scripts/lib/provincias-fuente.mjs`, compartidos por s
 falta otra proyección de los mismos datos). Notas:
 
 - No hay recuadro aparte para Galápagos (a diferencia de la vieja versión SVG): las coordenadas son
-  geográficas reales. El mapa nacional (`MapaEcuador.tsx`) excluye Galápagos del encuadre por
+  geográficas reales. El encuadre de respaldo del mapa (`MapaEcuador.tsx`) excluye Galápagos por
   defecto a propósito (ver CLAUDE.md, sección `/pases`) — no afecta a este script.
 - Si sube el peso del archivo, ajusta `TOLERANCIA_GRADOS` en el script (hoy 0.006° → ~225 KB).
 - Si geoBoundaries renombra una provincia, el script **falla a propósito** en vez de inventar un

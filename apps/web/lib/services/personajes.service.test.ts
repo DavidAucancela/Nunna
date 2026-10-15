@@ -42,3 +42,19 @@ describe("getPersonaje", () => {
     expect(personaje?.hotspots?.length).toBeGreaterThan(0);
   });
 });
+
+describe("tarjeta impresa", () => {
+  it("cada personaje trae el arte de su tarjeta, con archivos en public/ y orden único", async () => {
+    const { existsSync } = await import("node:fs");
+    const personajes = await getPersonajes({});
+    const ordenes = new Set<number>();
+    for (const p of personajes) {
+      expect(p.tarjeta, p.slug).toBeDefined();
+      expect(existsSync(`public${p.tarjeta!.ilustracion}`), p.tarjeta!.ilustracion).toBe(true);
+      expect(existsSync(`public${p.tarjeta!.icono}`), p.tarjeta!.icono).toBe(true);
+      ordenes.add(p.tarjeta!.orden);
+    }
+    // El reverso de la tarjeta ordena los círculos: dos personajes en el mismo lugar se pisarían.
+    expect(ordenes.size).toBe(personajes.length);
+  });
+});

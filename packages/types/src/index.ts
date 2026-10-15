@@ -62,6 +62,25 @@ export interface Artesano {
   bio?: string;
 }
 
+/** Arte de la tarjeta impresa que acompaña al imán (frente en collage + ícono de línea del reverso). */
+export interface TarjetaArte {
+  /** Nombre tal como está impreso (ej. "Diablo Huma" para aya-uma). */
+  nombre: string;
+  /** Posición en la colección del reverso (1–6, de izquierda a derecha y de arriba abajo). */
+  orden: number;
+  /** Ilustración del frente, PNG con fondo transparente. */
+  ilustracion: string;
+  /** Ícono de línea del reverso (negro sobre blanco, cuadrado) — la colección de la tarjeta. */
+  icono: string;
+  /** Color del nombre en la placa del frente. */
+  color: string;
+  /**
+   * La ilustración llena el recuadro del frente (se recorta), como las de fondo completo;
+   * si falta, flota recortada sobre el café de la tarjeta.
+   */
+  llena?: boolean;
+}
+
 export interface Personaje {
   id: string;
   slug: string;
@@ -79,6 +98,7 @@ export interface Personaje {
   simbolismo?: string;
   origen?: TipoOrigen;
   imagenBanner?: string;
+  tarjeta?: TarjetaArte;
   /** Foto de escena (landscape) para el hero de /desbloquear/[slug] — distinta del banner de la ficha. */
   imagenIngreso?: string;
   /** Activa la experiencia inmersiva v2 (hero "Despertar", etc.). */
@@ -111,6 +131,7 @@ export interface PersonajeListItem
   imagenIngreso?: string;
   /** Foto de los 4 imanes juntos (landscape) — usada en la estantería horizontal donde el retrato se ve muy recortado. */
   imagenGrupo?: string;
+  tarjeta?: TarjetaArte;
   totalPases: number;
   /** Frase de la narrativa — texto de relación en el escenario de cross-sell. */
   leyenda?: string;

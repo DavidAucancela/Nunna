@@ -32,6 +32,7 @@ export default async function ColeccionPage({ params }: ColeccionPageProps) {
     imagenBanner: p.imagenBanner ?? null,
     imagenGrupo: p.imagenGrupo ?? null,
     leyenda: p.leyenda ?? null,
+    tarjeta: p.tarjeta ?? null,
   }));
 
   return <ColeccionClient personajes={lookup} />;

@@ -38,6 +38,23 @@
       "titulo": "Detrás de cada personaje hay una historia",
       "texto": "Nunna documenta a los personajes de las fiestas populares del Ecuador. Conoce por qué nació este proyecto.",
       "cta": "Conoce el proyecto"
+    },
+    "producto": {
+      "eyebrow": "El producto",
+      "titulo": "Cómo funciona",
+      "intro_1": "<marca>Nunna</marca> es un catálogo vivo de los personajes que dan vida a las fiestas populares del Ecuador. Cada uno se vuelve un imán hecho y pintado a mano, que llega con su tarjeta ilustrada.",
+      "intro_2": "En el reverso de la tarjeta está su código QR: escanéalo y llegas directo a su ficha, para que cada imán sea también una puerta a la memoria del Ecuador.",
+      "paso_escanea_titulo": "Escanea",
+      "paso_escanea_texto": "El QR está en el reverso de la tarjeta de tu imán. Apunta la cámara de tu teléfono: no necesitas instalar nada.",
+      "paso_descubre_titulo": "Descubre",
+      "paso_descubre_texto": "Se abre la ficha completa: su leyenda, su significado y su origen, en español e inglés. Cada vez que lo escanees.",
+      "paso_colecciona_titulo": "Colecciona",
+      "paso_colecciona_texto": "Al terminar la ficha, guárdalo en tu colección con tu cuenta: queda con su certificado, tus logros y los personajes que te faltan.",
+      "visual_girar": "Toca la tarjeta para darle la vuelta",
+      "visual_ficha_alt": "Ficha del personaje en el teléfono",
+      "visual_ficha_origen": "Mestizo",
+      "visual_fin_ficha": "Al terminar la ficha",
+      "visual_guardalo": "Guárdalo en tu colección"
     }
   },
   "personajes": {
@@ -45,7 +62,8 @@
     "descripcion": "Cada personaje lleva siglos de historia, simbolismo y transformación cultural.",
     "filtro_origen": "Filtrar por origen",
     "ver_detalle": "Conocer este personaje",
-    "sin_resultados": "No se encontraron personajes con ese criterio."
+    "sin_resultados": "No se encontraron personajes con ese criterio.",
+    "proximamente": "Más personajes, próximamente"
   },
   "pases": {
     "titulo": "Pases y Festividades",
@@ -128,8 +146,9 @@
     "leer_menos": "Leer menos"
   },
   "presentacion": {
-    "eyebrow": "Su historia",
-    "contador": "{n} de {total}"
+    "contador": "{n} de {total}",
+    "titulo": "Descubre su historia",
+    "seguir": "Desliza para seguir"
   },
   "comun": {
     "cargando": "Cargando…",
@@ -149,8 +168,7 @@
     "despertar": "Despertar a {nombre}",
     "toca_para_despertar": "Toca para despertar",
     "activar_sonido": "Activar sonido",
-    "silenciar": "Silenciar",
-    "descubrir": "Descubrir"
+    "silenciar": "Silenciar"
   },
   "anatomia": {
     "eyebrow": "Anatomía del personaje",
@@ -159,11 +177,7 @@
     "contador": "Elemento {n} de {total}",
     "material": "Material",
     "artesano": "Quién lo hace",
-    "descubiertos": "{n} de {total} descubiertos",
-    "sello_titulo": "Anatomía completa",
-    "sello_texto": "Ya conoces cada pieza del {nombre}. Esta es la vista completa de tu imán.",
-    "faltan_uno": "Te falta 1 elemento por descubrir — toca un pin o sigue el scroll",
-    "faltan_varios": "Te faltan {n} elementos por descubrir — toca un pin o sigue el scroll"
+    "descubiertos": "{n} de {total} descubiertos"
   },
   "coleccion": {
     "titulo": "Mis personajes",
@@ -193,7 +207,10 @@
     "certificado_cerrar": "Cerrar",
     "certificado_pie": "nunna-ecu.com",
     "explorar_cta": "Conoce a los personajes",
-    "certificados_titulo": "Tus certificados"
+    "certificados_titulo": "Tus certificados",
+    "tarjeta_titulo": "Tu tarjeta de colección",
+    "tarjeta_guardado": "{nombre}: en tu colección",
+    "tarjeta_falta": "{nombre}: te falta"
   },
   "logros": {
     "origen_completo": "Maestro {origen}",
@@ -239,5 +256,14 @@
     "exito_texto": "Lo guardamos en tu colección. Puedes seguir leyendo su ficha.",
     "seguir_leyendo": "Seguir leyendo",
     "certificado_descripcion": "Forma parte de tu colección de seres de las fiestas populares del Ecuador."
+  },
+  "galeria": {
+    "titulo": "En el pase",
+    "abrir": "Ver foto: {titulo}",
+    "visor": "Fotos de {nombre} en el pase",
+    "contador": "{n} de {total}",
+    "cerrar": "Cerrar",
+    "anterior": "Foto anterior",
+    "siguiente": "Foto siguiente"
   }
 }

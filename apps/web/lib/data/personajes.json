@@ -7,7 +7,7 @@
     "nombre": "Aya Uma",
     "nombreKichwa": "Aya Uma",
     "nombresAlt": [
-      "Diablo Uma",
+      "Diablo Huma",
       "Cabeza del espíritu",
       "Señor de los vientos"
     ],
@@ -16,6 +16,13 @@
     "simbolismo": "Representa la dualidad fundamental del cosmos andino: vida y muerte, pasado y futuro, Kay Pacha y Uku Pacha. Los doce cuernos symbolizan el ciclo anual completo. La doble máscara recuerda que el tiempo andino no es lineal sino circular: el futuro ya ocurrió en otro ciclo. El fuete que golpea la tierra es el pulso del pase, el corazón visible de la comunicación entre mundos.",
     "origen": "prehispanico",
     "imagenPortada": "/personajes/aya-uma/aya-uma-hero-figura-frontal.webp",
+    "tarjeta": {
+      "nombre": "Diablo Huma",
+      "orden": 1,
+      "ilustracion": "/personajes/aya-uma/aya-uma-tarjeta-ilustracion.png",
+      "icono": "/personajes/aya-uma/aya-uma-tarjeta-icono.png",
+      "color": "#6184B6"
+    },
     "imagenBanner": "/headers/aya-uma-banner.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/diablo-huma-inicio.png",
     "imagenGrupo": "/personajes/aya-uma/aya-uma-iman-cuatro-colores.webp",
@@ -71,11 +78,12 @@
         "material": "Tela bordada en colores primarios"
       },
       {
-        "id": "fuete",
-        "x": 82,
-        "y": 60,
-        "titulo": "El fuete",
-        "cuerpo": "En el pase, esta mano sostiene el fuete: un látigo que golpea rítmicamente el suelo durante toda la danza. No es violencia, es comunicación con la Pachamama — cada golpe es un llamado al que la tierra responde."
+        "id": "zamarro",
+        "x": 50,
+        "y": 79,
+        "titulo": "El zamarro",
+        "cuerpo": "El pantalón ancho de piel con el pelo hacia afuera. Abriga en el frío del páramo y le da al Aya Uma su andar pesado, de ser que baja del monte.",
+        "material": "Piel de borrego con su lana"
       }
     ],
     "variantes": [],
@@ -205,6 +213,14 @@
     "simbolismo": "Representa la función social de la crítica mediante la risa. En el espacio ritual del pase, el Payaso tiene licencia para decir lo que nadie más puede. Es el guardián de la verdad disfrazado de entretenimiento. Su máscara fija de sonrisa contrasta con la posibilidad de decir cosas dolorosas: la risa como estrategia de supervivencia cultural.",
     "origen": "mixto",
     "imagenPortada": "/personajes/payaso/payaso-hero-figura-traje-rosa.webp",
+    "tarjeta": {
+      "nombre": "Payaso",
+      "orden": 6,
+      "ilustracion": "/personajes/payaso/payaso-tarjeta-ilustracion.png",
+      "icono": "/personajes/payaso/payaso-tarjeta-icono.png",
+      "color": "#B69334",
+      "llena": true
+    },
     "imagenBanner": "/headers/payaso-banner.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/payaso-inicio.jpg",
     "imagenGrupo": "/personajes/payaso/payaso-iman-cuatro-colores.png",
@@ -375,6 +391,14 @@
     "simbolismo": "Representa el mundo doméstico y la lealtad, en contraste con los personajes más solemnes o salvajes del pase. El Allku es el puente entre lo cotidiano y lo ritual: un animal familiar que en el contexto del pase adquiere dimensiones cósmicas. Su relación con el Aya Uma refleja el vínculo entre el guardián humano y su compañero animal.",
     "origen": "prehispanico",
     "imagenPortada": "/personajes/perro/perro-hero-figura-mameluco-morado.webp",
+    "tarjeta": {
+      "nombre": "Perro",
+      "orden": 4,
+      "ilustracion": "/personajes/perro/perro-tarjeta-ilustracion.png",
+      "icono": "/personajes/perro/perro-tarjeta-icono.png",
+      "color": "#8E3C2B",
+      "llena": true
+    },
     "imagenBanner": "/headers/perro-banner.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/perro-inicio.webp",
     "narrativa": {
@@ -532,7 +556,7 @@
     "slug": "diablos-de-lata",
     "experiencia": true,
     "audioAmbiente": "/audio/diablos-de-lata-ambiente.mp3",
-    "nombre": "Diablos de lata",
+    "nombre": "Diablo de lata",
     "nombreKichwa": "Supay",
     "nombresAlt": [
       "Diablo de hojalata",
@@ -543,6 +567,14 @@
     "simbolismo": "Representan la rebeldía y el sincretismo religioso. La máscara roja de hojalata combina el imaginario del diablo cristiano —introducido para intimidar a las comunidades— con el poder del Supay andino, habitante del Uku Pacha. Los Diablos de lata son la prueba de que la resistencia cultural no siempre toma la forma del rechazo: a veces consiste en tomar el símbolo del opresor y darle vuelta.",
     "origen": "mestizo",
     "imagenPortada": "/personajes/diablos-de-lata/diablos-de-lata-hero-figura-mascara-roja.webp",
+    "tarjeta": {
+      "nombre": "Diablo de lata",
+      "orden": 2,
+      "ilustracion": "/personajes/diablos-de-lata/diablos-de-lata-tarjeta-ilustracion.png",
+      "icono": "/personajes/diablos-de-lata/diablos-de-lata-tarjeta-icono.png",
+      "color": "#C60D0D",
+      "llena": true
+    },
     "imagenBanner": "/headers/diablos-de-lata-banner.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/diablos-lata-inicio.jpg",
     "imagenGrupo": "/personajes/diablos-de-lata/diablos-de-lata-iman-cuatro-sobre-mesa.jpeg",
@@ -748,6 +780,13 @@
     "simbolismo": "El Cucurucho representa la penitencia hecha en anonimato. El capirote que borra el rostro dice que el mérito del sacrificio no está en que lo vean, sino en cumplirlo. El morado sostiene el duelo de la Cuaresma; el cuerpo cansado, descalzo o con la cruz al hombro, es la ofrenda misma.",
     "origen": "colonial",
     "imagenPortada": "/personajes/cucurucho/cucurucho-hero-figura-frontal.webp",
+    "tarjeta": {
+      "nombre": "Cucurucho",
+      "orden": 3,
+      "ilustracion": "/personajes/cucurucho/cucurucho-tarjeta-ilustracion.png",
+      "icono": "/personajes/cucurucho/cucurucho-tarjeta-icono.png",
+      "color": "#8248F3"
+    },
     "imagenBanner": "/headers/cucurucho-banner.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/cucurucho-inicio.webp",
     "imagenGrupo": "/personajes/cucurucho/cucurucho-iman-cuatro-figuras.webp",
@@ -896,7 +935,7 @@
     "id": "danzante-yaruquies",
     "slug": "danzante-yaruquies",
     "experiencia": true,
-    "nombre": "Danzante de Yaruquíes",
+    "nombre": "Danzante",
     "nombreKichwa": "Tushuc",
     "nombresAlt": [
       "Tushuc",
@@ -909,6 +948,13 @@
     "simbolismo": "El Danzante encarna la continuidad: un culto al Sol y a la Luna que sobrevivió escondido bajo la fiesta católica del Niño. La tradición oral de Yaruquíes lo llama heredero del tushuc, el sacerdote andino que media entre la comunidad y esos astros. El pañolón bordado es un altar que se lleva puesto; el peso del traje y las horas de danza, sin apurar el paso, son la ofrenda que el cuerpo entrega a la tierra y al Niño.",
     "origen": "mixto",
     "imagenPortada": "/personajes/danzante-yaruquies/danzante-yaruquies-hero-figura-frontal.webp",
+    "tarjeta": {
+      "nombre": "Danzante",
+      "orden": 5,
+      "ilustracion": "/personajes/danzante-yaruquies/danzante-yaruquies-tarjeta-ilustracion.png",
+      "icono": "/personajes/danzante-yaruquies/danzante-yaruquies-tarjeta-icono.png",
+      "color": "#CC4E00"
+    },
     "imagenBanner": "/headers/danzante-yaruquies-banner.webp",
     "imagenGrupo": "/personajes/danzante-yaruquies/danzante-yaruquies-iman-cuatro-figuras.webp",
     "narrativa": {

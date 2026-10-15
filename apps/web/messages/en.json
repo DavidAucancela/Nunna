@@ -38,6 +38,23 @@
       "titulo": "Behind every magnet, a story",
       "texto": "Nunna documents the characters of Ecuador's traditional festivals. Learn why this project exists.",
       "cta": "Learn about the project"
+    },
+    "producto": {
+      "eyebrow": "The product",
+      "titulo": "How it works",
+      "intro_1": "<marca>Nunna</marca> is a living catalog of the characters who bring Ecuador's popular festivals to life. Each one becomes a handmade, hand-painted magnet that comes with its own illustrated card.",
+      "intro_2": "The back of the card holds its QR code: scan it and you land right on its page, so every magnet is also a doorway into Ecuador's memory.",
+      "paso_escanea_titulo": "Scan",
+      "paso_escanea_texto": "The QR code is on the back of your magnet's card. Point your phone's camera at it: no app needed.",
+      "paso_descubre_titulo": "Discover",
+      "paso_descubre_texto": "Its full page opens: its legend, its meaning and its origin, in Spanish and English. Every time you scan it.",
+      "paso_colecciona_titulo": "Collect",
+      "paso_colecciona_texto": "When you finish the page, save it to your collection with your account: it comes with its certificate, your achievements and the characters you're still missing.",
+      "visual_girar": "Tap the card to flip it",
+      "visual_ficha_alt": "Character page on a phone",
+      "visual_ficha_origen": "Mestizo",
+      "visual_fin_ficha": "At the end of the page",
+      "visual_guardalo": "Save it to your collection"
     }
   },
   "personajes": {
@@ -45,7 +62,8 @@
     "descripcion": "Each character carries centuries of history, symbolism, and cultural transformation.",
     "filtro_origen": "Filter by origin",
     "ver_detalle": "Learn about this character",
-    "sin_resultados": "No characters found with that criteria."
+    "sin_resultados": "No characters found with that criteria.",
+    "proximamente": "More characters coming soon"
   },
   "pases": {
     "titulo": "Celebrations & Festivities",
@@ -128,8 +146,9 @@
     "leer_menos": "Read less"
   },
   "presentacion": {
-    "eyebrow": "Their story",
-    "contador": "{n} of {total}"
+    "contador": "{n} of {total}",
+    "titulo": "Discover their story",
+    "seguir": "Scroll to continue"
   },
   "comun": {
     "cargando": "Loading…",
@@ -149,8 +168,7 @@
     "despertar": "Awaken {nombre}",
     "toca_para_despertar": "Tap to awaken",
     "activar_sonido": "Enable sound",
-    "silenciar": "Mute",
-    "descubrir": "Discover"
+    "silenciar": "Mute"
   },
   "anatomia": {
     "eyebrow": "Anatomy of the character",
@@ -159,11 +177,7 @@
     "contador": "Element {n} of {total}",
     "material": "Material",
     "artesano": "Who makes it",
-    "descubiertos": "{n} of {total} discovered",
-    "sello_titulo": "Anatomy complete",
-    "sello_texto": "You now know every piece of {nombre}. This is the full view of your magnet.",
-    "faltan_uno": "1 element left to discover — tap a pin or keep scrolling",
-    "faltan_varios": "{n} elements left to discover — tap a pin or keep scrolling"
+    "descubiertos": "{n} of {total} discovered"
   },
   "coleccion": {
     "titulo": "My characters",
@@ -193,7 +207,10 @@
     "certificado_cerrar": "Close",
     "certificado_pie": "nunna-ecu.com",
     "explorar_cta": "Meet the characters",
-    "certificados_titulo": "Your certificates"
+    "certificados_titulo": "Your certificates",
+    "tarjeta_titulo": "Your collection card",
+    "tarjeta_guardado": "{nombre}: in your collection",
+    "tarjeta_falta": "{nombre}: still missing"
   },
   "logros": {
     "origen_completo": "{origen} Master",
@@ -239,5 +256,14 @@
     "exito_texto": "We saved it to your collection. Keep reading its page.",
     "seguir_leyendo": "Keep reading",
     "certificado_descripcion": "Part of your collection of beings from Ecuador's popular festivals."
+  },
+  "galeria": {
+    "titulo": "At the festival",
+    "abrir": "View photo: {titulo}",
+    "visor": "Photos of {nombre} at the festival",
+    "contador": "{n} of {total}",
+    "cerrar": "Close",
+    "anterior": "Previous photo",
+    "siguiente": "Next photo"
   }
 }

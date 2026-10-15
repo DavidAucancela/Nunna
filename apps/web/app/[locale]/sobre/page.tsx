@@ -34,9 +34,9 @@ export default function SobrePage() {
         </p>
 
         <p>
-          Cada imán lleva grabado el QR de un personaje. Al escanearlo, el comprador accede
-          a la ficha completa del ser: su historia, simbolismo, traje y su lugar en la cosmovisión
-          kichwa andina.
+          Cada imán llega con una tarjeta ilustrada del personaje, y en su reverso está su QR.
+          Al escanearlo, el comprador accede a la ficha completa del ser: su historia, simbolismo,
+          traje y su lugar en la cosmovisión kichwa andina.
         </p>
 
         <p>
