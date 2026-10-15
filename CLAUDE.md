@@ -689,6 +689,18 @@ Modo oscuro por defecto.
   `docs/CHANGELOG.md` [0.10.0].
 
 ### 🔄 Siguiente
+- **PR de `feat/tarjeta-inicio-ficha`** (2026-10-15): abierto contra `main`; conflictos con el squash de
+  #83 ya resueltos. Falta revisar en un teléfono real y correr `pnpm build` antes de mergear. Detalle de
+  la tanda en `docs/CHANGELOG.md` [0.11.0].
+- **Pendientes de esa tanda:** ilustraciones de la tarjeta en alta (hoy 183–434 px); texto del zamarro
+  (Aya Uma) redactado por Claude — validar con el artesano; foto `payaso-pase-plaza-de-la-alcaldia.jpg`
+  lleva el logo "Corazón Riobambeño" (¿sacarla de la galería?); punto de "aberturas de los ojos" del
+  Cucurucho algo a la derecha; `StatsAnimados.tsx` sin uso (borrar); el nombre "Diablo Huma" va primero
+  en `/personajes` pero las fichas siguen con "Aya Uma" (decidir si se cambia en todo el sitio y la regla
+  de "nombre originario primero"); el video del hero sigue pixelado (960×540) — reexportar en 1080p si
+  aparece el original; Cucurucho no tiene `nombreKichwa` en el JSON ("Chuku runa" solo en `/personajes`).
+- **Archivos sueltos del autor sin commitear:** `public/personajes/imagenes tarjetas /` (origen del arte
+  de la tarjeta, con espacios — no usar en URLs), `otros/` y dos PNG del danzante.
 - **Fotos de los 4 imanes** (`imagenGrupo` + galería): las 5 fotos miden ~1000 px y se muestran a ~950 px en
   un lomo panorámico 2.5:1 (`object-top` recorta ~46 % de abajo; en retina se estiran al doble). Idea
   pendiente: foto propia del lomo (~2400×960) distinta de la de la galería. También pesan de más el PNG del
@@ -716,8 +728,7 @@ Modo oscuro por defecto.
   fondo que lo llenaba). Opciones: subir `maxItemHeight` o centrar la lista.
 - **Higiene de ramas**: el remoto acumula ~18 ramas ya mergeadas (`feat/selector-pases-recorrido`,
   `feat/pase-inmersivo-ficha`, `refactor/qr-unico-ficha-abierta`, …). Borrarlas cuando el autor lo
-  confirme. Hay además dos carpetas sin commitear que no son de este trabajo:
-  `app/[locale]/guia-tarjetas/` y `modules/tarjetas/`.
+  confirme.
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
 - Fotografías reales "En el pase" (`titulo: "en-pase"`) y del imán físico (`titulo: "proceso"`) para la galería
 - **Audios reales** del hero v2 en `public/audio/` (6 archivos: `[slug]-ambiente.mp3` por personaje con `experiencia: true` — cucurucho y danzante-yaruquies también los necesitan)
