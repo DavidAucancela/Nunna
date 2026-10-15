@@ -9,7 +9,10 @@ Autor: Jonathan David Aucancela Maguana.
 ## Modelo de negocio
 
 **Producto físico:** imanes (magnetos para refrigeradora) de personajes de los pases riobambeños (Aya Uma, Curiquingue, etc.)
-**Formato:** tarjeta temática — imagen del personaje en el frente, QR en el reverso
+**Formato:** tarjeta ilustrada (~52 × 90 mm) — frente: ilustración en collage de papel del personaje + nombre
+en una placa; reverso: la colección de los 6 (círculos de línea, el del personaje iluminado) + `NUNNA-ECU.COM` +
+QR + lema **"Escanea, descubre y colecciona"**. Los nombres impresos son "Diablo Huma" (Aya Uma), "Diablo de lata"
+y "Danzante" — la web los muestra igual (ver "Nombres alineados con la tarjeta" en decisiones técnicas).
 **QR en la tarjeta** → dirige a `/es/personajes/[slug]?origen=qr` (ficha completa del personaje; un QR único por personaje, sin código)
 **La ficha del personaje es el producto digital** — justifica la compra.
 
@@ -115,7 +118,8 @@ apps/web/
 │   │   ├── layout.tsx              → usa MainContent
 │   │   ├── page.tsx                → Landing
 │   │   ├── personajes/
-│   │   │   ├── page.tsx            → Estantería de personajes (PersonajesLibro)
+│   │   │   ├── page.tsx            → ★ Una sola pantalla: grilla 3×2 (2×3 móvil) con foto real de pase
+│   │   │   │                         de cada personaje (`FOTO_PASE`) + "Más personajes, próximamente" (2026-10-15)
 │   │   │   └── [slug]/page.tsx     → ★★ DESTINO QR — ficha completa con historia
 │   │   ├── pases/
 │   │   │   └── page.tsx            → ★ ventana fija: mapa nacional → provincia → recorrido de un pase
@@ -131,7 +135,7 @@ apps/web/
 │                                     WhatsAppShare, OrigenPlaceholder, LenisProvider
 ├── modules/                        → ★ Componentes por feature
 │   ├── home/components/            → HeroSection, PersonajesShowcase,
-│   │                                 ProductoSection, OrigenesSection, StatsSection, MarqueeStrip, CtaFinal
+│   │                                 ProductoSection, OrigenesSection, StatsSection, CtaFinal
 │   ├── pases/components/           → ★ PasesExplorador (ventana fija de 3 vistas: país → provincia →
 │   │                                 pase), MapaEcuador (★★ única instancia MapLibre, no interactiva,
 │   │                                 zoom por fitBounds + rutas de la provincia), ListaPaginada (lista
@@ -227,6 +231,7 @@ public/personajes/[slug]/[slug]-[seccion]-[descripcion].[ext]
 | `taller` | Galería — la pieza en el taller, entre los filamentos | `multimedia[]`, `titulo:"proceso"` |
 | `escenario` | Galería — el imán compuesto en paisaje (Chimborazo, confeti) | `multimedia[]`, `titulo:"proceso"` |
 | `pase` | Galería (van **primero**) + waypoints del recorrido + beats de la presentación | `multimedia[]`, `titulo:"en-pase"` |
+| `tarjeta` | Arte de la tarjeta impresa: `-tarjeta-ilustracion.png` (frente en collage, **PNG con fondo transparente**) y `-tarjeta-icono.png` (ícono de línea del reverso, cuadrado, negro sobre blanco) | `tarjeta.ilustracion` / `tarjeta.icono` |
 
 El `id` de cada `Media` es el nombre del archivo sin extensión — así el JSON y el disco se leen igual.
 Ejemplo: `/personajes/aya-uma/aya-uma-pase-desfile-centro-riobamba.webp` → `id: "aya-uma-pase-desfile-centro-riobamba"`.
@@ -256,6 +261,12 @@ Ejemplo: `/personajes/aya-uma/aya-uma-pase-desfile-centro-riobamba.webp` → `id
 > `personajes.json`). Opt-in, sin autoplay; si falta el archivo, el botón aparece pero no suena.
 > Ver `public/audio/README.md` para los nombres exactos esperados.
 > No usar carpetas con espacios en `public/` — rompen las URLs.
+
+### Galería "En el pase" — mosaico + visor (2026-10-15)
+`GaleriaSection.tsx` reemplazó el carrusel: dos filas — una foto grande y debajo las 2 siguientes — con flechas
+abajo (‹ n de total ›) que recorren todas las fotos, + visor a pantalla completa (flechas, teclado, swipe,
+descripción = `descripcion ?? altText`). Solo fotos `en-pase` por `orden`; se excluyen ids con `afiche`; si hay
+menos de 3 de pase completa con el resto (sin la portada). Textos en el namespace `galeria`.
 
 ### Galería unificada — convención del campo `titulo` (2026-07-14)
 
@@ -299,7 +310,7 @@ presentación + recorrido a la vez.
 ```
 1. Hero                    → HeroGated: HeroDespertar (experiencia+desbloqueado) | ParallaxHero (resto)
 2. QuoteRevelacion ★★      → gancho corto pintado por scroll + resto plegado bajo "Leer más"
-3. StatsAnimados           → ficha de datos (origen + festividad + nombresAlt)
+3. (StatsAnimados retirado 2026-10-15 — la ficha de datos ya no se muestra)
 4. HistoriaPresentacion ★  → MODO PRESENTACIÓN: leyenda + beats visuales (1 visual + frase breve
                              c/u, efectos de entrada avanzados) + SecretoRitual. Reemplaza el texto
                              largo de NarrativaSection (los capítulos ya no se apilan como muro).
@@ -328,6 +339,14 @@ ese efecto; el resto queda en un bloque plegado bajo "Leer más" (`historia.leer
 falta, `primeraFrase()` (`page.tsx`) deriva el gancho cortando en el primer `.`/`!`/`?`. Objetivo:
 que gancho + ficha de datos se lean como una sola escena en el primer scroll (antes el resumen solo
 ya llenaba el viewport completo en móvil).
+
+**Anatomía — cámara y pines (2026-10-15):** el escenario tiene la proporción exacta de la foto (se lee
+en `onLoad`), así los `x,y` % de los hotspots caen sobre la figura — antes `object-contain` en otra caja los
+descuadraba. Cada elemento activo mueve la "cámara" (zoom 1.7–1.8 hacia el punto, desplazamiento limitado para
+que la foto siempre llene el marco); los pines van fuera de la cámara (no crecen) y se recolocan con
+`50 + zoom·(p−50) + t`. Aya Uma: el hotspot "fuete" se cambió por "zamarro" (el pantalón). Al entrar y al terminar los
+puntos se ve el personaje completo (`activeIdx = -1`, activo por scroll, no IntersectionObserver); se
+retiró el sello "Anatomía completa" del final (y sus claves `sello_*`/`faltan_*`).
 
 **Anatomía v2 — "el corazón del premio" (`AnatomiaSection.tsx`, 2026-07-15):** sobre la base de la
 Fase 4 (pines + scroll-driven), se agregó:
@@ -1013,10 +1032,47 @@ Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling
   oscuro **solo en esa sección** (clase `dark` + `bg-fondo-oscuro` en el `<section>`) para conservar el
   contraste en ambos modos. No convertirlo en "claro".
 
-### "Cómo funciona" — stepper con foco + carrusel móvil (`ProductoSection.tsx`, 2026-06-22)
-- **Paso 01 (imán):** fondo = foto del diablo de lata en pase borrosa/atenuada; el imán va grande y centrado
-  con **máscara radial** que difumina su fondo blanco (la imagen del imán trae fondo blanco, no es recorte).
-- **Niveles con foco (`StepperList`, compartido):** las 3 categorías **siempre visibles**; la activa enfocada
+### Tarjeta impresa en la web — `TarjetaNunna` + campo `tarjeta` (2026-10-14)
+`modules/personajes/components/TarjetaNunna.tsx` redibuja la tarjeta del imán: `TarjetaFrente`,
+`TarjetaReverso`, `CirculoColeccion` y `ordenTarjeta()`. Solo la ilustración y los íconos son imágenes;
+marco, placa, textos y grilla van en CSS (`cqw`), nítidos a cualquier tamaño. Colores en `TARJETA`
+(tomados del arte final: fondo `#37220A`, dorado `#F4CB1B`, filete `#E0B919`, placa `#FFF9E6`). Los
+textos son los impresos, en español, también en `/en`.
+- **Datos:** `tarjeta: { nombre, orden, ilustracion, icono, color, llena? }` en `personajes.json`
+  (tipo `TarjetaArte`). `nombre` = el impreso ("Diablo Huma"), `orden` = lugar en el reverso (1–6),
+  `color` = color del nombre en la placa, `llena` = la ilustración llena el recuadro (Diablo de lata,
+  Perro, Payaso) en vez de flotar recortada. Un test verifica archivos y `orden` único.
+- **QR de muestra:** el reverso en la web usa `public/qr/qr-muestra.png` (lleva a la portada), **nunca**
+  el QR real de un personaje: escanearlo desde la pantalla marcaría `?origen=qr` y permitiría guardar sin
+  el imán.
+- ⚠ `Marco` tiene `relative`: para posicionar una tarjeta con `absolute`, envuélvela en un `div` (si no,
+  `relative` gana y las tarjetas se apilan).
+- **Dónde se usa:** "Cómo funciona" (pasos Escanea y Colecciona), `/mis-personajes` (panel "Tu tarjeta
+  de colección" — círculo iluminado por cada personaje guardado) y la imagen para compartir de la ficha
+  (`personajes/[slug]/opengraph-image.tsx`, `next/og`, generada en el build: ilustración + nombre +
+  nombre impreso/kichwa + leyenda; reemplaza a `imagenPortada` como `og:image`).
+- ⚠ Las ilustraciones originales son chicas (183–434 px): se ven bien al tamaño actual, pero si la
+  tarjeta se muestra más grande hacen falta exportaciones en alta.
+
+### Nombres alineados con la tarjeta impresa (2026-10-14)
+La web usa los nombres de la tarjeta, para que quien escanea lea en la ficha lo mismo que tiene en la mano.
+Solo cambió `nombre` (y `nombresAlt`) en `personajes.json` — **los slugs no se tocan** (contrato del QR):
+- `diablos-de-lata` → nombre **"Diablo de lata"** (singular; antes "Diablos de lata"). El cuerpo del texto
+  y los `altText` de fotos de grupo siguen en plural donde describen a varios.
+- `danzante-yaruquies` → nombre **"Danzante"** en título y subtítulo (antes "Danzante de Yaruquíes"). El
+  origen "de Yaruquíes" se conserva en el resumen/descripción; **no** volver a meterlo en `nombresAlt` (se
+  pinta como subtítulo bajo el `h1`).
+- `aya-uma` → "Diablo Huma" en `nombresAlt` (antes "Diablo Uma") — la tarjeta dice "Diablo Huma"; el
+  `nombre` sigue siendo "Aya Uma" (nombre originario primero).
+
+### "Cómo funciona" — stepper con foco + carrusel móvil (`ProductoSection.tsx`, 2026-06-22; pasos 2026-10-14)
+- **Tres pasos = el lema del reverso de la tarjeta:** Escanea (QR del reverso) · Descubre (la ficha) ·
+  Colecciona (guardar con cuenta). "El imán + su tarjeta" vive en la introducción, no es un paso. Textos en
+  `home.producto` (es/en) — antes estaban escritos en el componente y `/en` salía en español.
+- Visuales (2026-10-14): **Escanea** = frente + reverso de la tarjeta en abanico (`TarjetaNunna`) con la
+  línea de escaneo sobre el QR; **Colecciona** = los 6 círculos del reverso, la mitad iluminados. El
+  personaje protagonista es `DESTACADO` (diablos-de-lata, el mismo de la ficha del paso Descubre).
+- **Niveles con foco (`StepperList`, compartido):** los 3 pasos **siempre visibles**; el activo enfocado
   y las demás reducidas/desenfocadas (`blur`+`opacity`+`scale`).
 - **Desktop:** escena anclada (sticky), el scroll cambia el nivel. **Móvil:** **carrusel táctil**
   (swipe/botones/tap), **no depende del scroll** (robusto en iOS); el scroll del desktop se ignora en móvil
@@ -1240,9 +1296,9 @@ mapas independientes:
 | aya-uma | Aya Uma | prehispanico | ✅ | ✅ | ✅ | ✅ |
 | payaso | Payaso | mixto | ✅ | ✅ | ✅ | ✅ |
 | perro | Perro | prehispanico | ✅ | ✅ | ✅ | ✅ |
-| diablos-de-lata | Diablos de lata | mestizo | ✅ | ✅ | ✅ | ✅ |
+| diablos-de-lata | Diablo de lata | mestizo | ✅ | ✅ | ✅ | ✅ |
 | cucurucho | Cucurucho | colonial | ✅ | ✅ | ✅ | ✅ |
-| danzante-yaruquies | Danzante de Yaruquíes | mixto | ✅ | ✅ | ✅ | ✅ |
+| danzante-yaruquies | Danzante | mixto | ✅ | ✅ | ✅ | ✅ |
 
 > **cucurucho / danzante-yaruquies** (2026-09-10, verificado y pulido 2026-09-12): dos personajes
 > nuevos — el penitente de la Semana Santa de Quito (Pichincha) y el danzante del Pase del Niño Rey

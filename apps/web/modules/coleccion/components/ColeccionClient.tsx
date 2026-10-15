@@ -3,10 +3,16 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { getOrigenStyle, type Origen } from "@/lib/origen-styles";
 import { useColeccion } from "@/components/auth/ColeccionProvider";
 import { PersonajesLibro } from "@/modules/personajes/components/PersonajesLibro";
+import {
+  CirculoColeccion,
+  ordenTarjeta,
+  TARJETA,
+  type TarjetaPersonaje,
+} from "@/modules/personajes/components/TarjetaNunna";
 import { CertificadoColeccion, type CertificadoLogro } from "./CertificadoColeccion";
 import type { PersonajeLite } from "../types";
 
@@ -18,9 +24,13 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
   const tc = useTranslations("comun");
   const tg = useTranslations("guardar");
   const { ready, coleccion, has, session, signOut } = useColeccion();
+  const router = useRouter();
   const [certificado, setCertificado] = useState<CertificadoLogro | null>(null);
 
   const total = personajes.length;
+  const tarjetas: TarjetaPersonaje[] = personajes.flatMap((p) =>
+    p.tarjeta ? [{ slug: p.slug, tarjeta: p.tarjeta }] : [],
+  );
   const unlockedCount = personajes.filter((p) => has(p.slug)).length;
 
   // Logros derivados: completar cada origen presente + colección completa.
@@ -78,7 +88,10 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
           <div className="text-right">
             <p className="text-xs text-stone-600">{t("sesion_iniciada", { email: session.user.email })}</p>
             <button
-              onClick={() => signOut()}
+              onClick={async () => {
+                await signOut();
+                router.replace("/");
+              }}
               className="mt-1 text-xs font-medium text-stone-400 underline-offset-2 hover:text-texto-claro hover:underline"
             >
               {t("cerrar_sesion")}
@@ -123,6 +136,37 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
           </button>
         )}
       </div>
+
+      {/* La colección del reverso de la tarjeta: se ilumina cada personaje guardado */}
+      {tarjetas.length > 0 && (
+        <div
+          className="mx-auto mb-12 max-w-sm rounded-2xl border-[5px] p-2"
+          style={{ background: TARJETA.fondo, borderColor: TARJETA.dorado }}
+        >
+          <div
+            className="rounded-xl border px-5 pb-6 pt-5"
+            style={{ borderColor: TARJETA.filete, containerType: "inline-size" }}
+          >
+            <p
+              className="mb-5 text-center text-[11px] uppercase tracking-[0.25em]"
+              style={{ color: TARJETA.dorado }}
+            >
+              {t("tarjeta_titulo")}
+            </p>
+            <ul className="grid grid-cols-3 gap-x-4 gap-y-5">
+              {ordenTarjeta(tarjetas).map((p) => (
+                <li key={p.slug} aria-label={has(p.slug) ? t("tarjeta_guardado", { nombre: p.tarjeta.nombre }) : t("tarjeta_falta", { nombre: p.tarjeta.nombre })}>
+                  <CirculoColeccion
+                    personaje={p}
+                    activo={ready && has(p.slug)}
+                    etiquetaClassName="text-[length:4.2cqw]"
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* Estado vacío */}
       {empty && (

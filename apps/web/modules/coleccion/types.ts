@@ -1,3 +1,5 @@
+import type { TarjetaArte } from "@seres-del-pase/types";
+
 /** Datos mínimos de un personaje para la colección (/mis-personajes, animación de guardado). */
 export interface PersonajeLite {
   slug: string;
@@ -10,4 +12,6 @@ export interface PersonajeLite {
   imagenGrupo?: string | null;
   /** Frase corta (leyenda) — usada por PersonajesLibro en /mis-personajes. */
   leyenda?: string | null;
+  /** Arte de la tarjeta impresa — los círculos de la colección. */
+  tarjeta?: TarjetaArte | null;
 }

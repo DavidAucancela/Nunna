@@ -1,4 +1,4 @@
-import type { Personaje, PersonajeListItem, TipoOrigen, Narrativa, Hotspot, Media, Artesano, PresentacionBeat } from "@seres-del-pase/types";
+import type { Personaje, PersonajeListItem, TipoOrigen, Narrativa, Hotspot, Media, Artesano, PresentacionBeat, TarjetaArte } from "@seres-del-pase/types";
 import personajesRaw from "../data/personajes.json";
 
 type PersonajeRaw = typeof personajesRaw[number];
@@ -17,6 +17,7 @@ function toListItem(p: PersonajeRaw): PersonajeListItem {
   if (p.imagenBanner) item.imagenBanner = p.imagenBanner;
   if ("imagenIngreso" in p && p.imagenIngreso) item.imagenIngreso = p.imagenIngreso as string;
   if ("imagenGrupo" in p && p.imagenGrupo) item.imagenGrupo = p.imagenGrupo as string;
+  if (p.tarjeta) item.tarjeta = p.tarjeta as TarjetaArte;
   if (p.narrativa?.leyenda) item.leyenda = p.narrativa.leyenda;
   return item;
 }
@@ -50,6 +51,7 @@ function toPersonaje(p: PersonajeRaw): Personaje {
   if (p.publicadoEn) personaje.publicadoEn = p.publicadoEn;
   if (p.narrativa) personaje.narrativa = p.narrativa as Narrativa;
   if ("imagenBanner" in p && p.imagenBanner) personaje.imagenBanner = p.imagenBanner as string;
+  if (p.tarjeta) personaje.tarjeta = p.tarjeta as TarjetaArte;
   if ("imagenIngreso" in p && p.imagenIngreso) personaje.imagenIngreso = p.imagenIngreso as string;
   if ("experiencia" in p && p.experiencia) personaje.experiencia = p.experiencia as boolean;
   if ("audioAmbiente" in p && p.audioAmbiente) personaje.audioAmbiente = p.audioAmbiente as string;
