@@ -80,17 +80,18 @@ export function NunnaLogoAnimado({
 
         {/* el caminante: punto que va a la cabeza del trazo y se apaga al llegar */}
         {!quieto && (
-          <motion.circle
-            r="4.2"
-            fill="#F5F1EA"
-            style={{ offsetPath: `path("${RUTA}")`, offsetRotate: "0deg" }}
-            initial={{ offsetDistance: "0%", opacity: 1 }}
-            animate={{ offsetDistance: "100%", opacity: [1, 1, 0] }}
-            transition={{
-              offsetDistance: { duration: T_RUTA, ease: "linear" },
-              opacity: { duration: T_RUTA + 0.3, times: [0, 0.9, 1] },
-            }}
-          />
+          // animateMotion nativo (SMIL): framer-motion pasa offsetDistance como atributo del <circle>
+          // → warning de React + mismatch de hidratación. SMIL no toca React y corre al cargar el SVG.
+          <circle r="4.2" fill="#F5F1EA" cx="0" cy="0">
+            <animateMotion dur={`${T_RUTA}s`} path={RUTA} fill="freeze" calcMode="linear" />
+            <animate
+              attributeName="opacity"
+              values="1;1;0"
+              keyTimes="0;0.9;1"
+              dur={`${T_RUTA + 0.3}s`}
+              fill="freeze"
+            />
+          </circle>
         )}
       </svg>
 
