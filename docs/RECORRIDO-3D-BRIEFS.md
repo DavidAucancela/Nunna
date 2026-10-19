@@ -1,5 +1,11 @@
 # Briefs de encargo — modelos 3D del recorrido inmersivo (instituto-tecnologico-riobamba)
 
+> ⚠ **Actualización 2026-10-19:** ver `docs/PLAN-RECORRIDO-3D.md`. Cambios que afectan a estos briefs:
+> son **6 personajes** (se suman **Cucurucho** y **Danzante**, con brief en §3.3 del plan); las imágenes de
+> referencia ya no están en `public/personajes/{slug}.webp` sino en `public/personajes/<slug>/<slug>-hero-figura-*.webp`
+> (y los imanes en `<slug>-iman-cuatro-figuras.webp`); y el orden de encargo/fases está en el plan.
+
+
 Texto listo para copiar/pegar en Meshy, Tripo, Luma Genie, o en un encargo a un modelador
 freelance (Fiverr/Upwork/comunidad local). Cubre las 4 piezas de la Fase 3 (plan de referencia:
 `.claude/plans/retomemos-una-rama-del-hidden-clover.md`) y el resto del set completo de la Fase 4.
