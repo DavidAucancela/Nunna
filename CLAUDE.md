@@ -688,7 +688,32 @@ Modo oscuro por defecto.
   sin uso. Detalle en "`/pases` — ventana única de tres vistas" (decisiones técnicas) y
   `docs/CHANGELOG.md` [0.10.0].
 
+- **Tarjeta impresa en la web + inicio y ficha rediseñados** (PR #84, mergeado 2026-10-15) — detalle en
+  `docs/CHANGELOG.md` [0.11.0].
+- **Logo de Nunna + política de privacidad** (PR #85, `feat/privacidad-google-oauth`, 2026-10-19):
+  isotipo definitivo (concepto R1, ver "Marca" en decisiones técnicas) con entrada animada en el header;
+  favicon/apple-touch-icon/manifest nuevos; página `/privacidad` (requisito de Google OAuth). Ver
+  `docs/CHANGELOG.md` [0.12.0].
+
 ### 🔄 Siguiente
+- **Mergear PR #85** cuando el build del CI pase. Revisar en un iPhone real: la animación del logo en el
+  header (Safari) y el ícono al "Agregar a pantalla de inicio".
+- **Logo — pendientes:** la imagen para compartir de la ficha (`opengraph-image.tsx`) y la OG por defecto
+  del sitio aún no llevan el logo; decidir si la entrada animada también va como pantalla de bienvenida a
+  pantalla completa (hoy solo en el header, una vez por carga); versión monocroma del isotipo (sello,
+  grabado, empaque) y versión para la tarjeta impresa; el verde del logo (`#2F7A63`) es más claro que el
+  jade del sitio (`#1F4D3F`) a propósito — decidir si se suma a la paleta como token.
+- **Trabajo de colección sin commitear** (de otra sesión): `ColeccionVitrina.tsx` nuevo, cambios en
+  `ColeccionClient.tsx` y `messages/{es,en}.json` — terminar y commitear en su propia rama.
+- **Pendientes de esa tanda:** ilustraciones de la tarjeta en alta (hoy 183–434 px); texto del zamarro
+  (Aya Uma) redactado por Claude — validar con el artesano; foto `payaso-pase-plaza-de-la-alcaldia.jpg`
+  lleva el logo "Corazón Riobambeño" (¿sacarla de la galería?); punto de "aberturas de los ojos" del
+  Cucurucho algo a la derecha; `StatsAnimados.tsx` sin uso (borrar); el nombre "Diablo Huma" va primero
+  en `/personajes` pero las fichas siguen con "Aya Uma" (decidir si se cambia en todo el sitio y la regla
+  de "nombre originario primero"); el video del hero sigue pixelado (960×540) — reexportar en 1080p si
+  aparece el original; Cucurucho no tiene `nombreKichwa` en el JSON ("Chuku runa" solo en `/personajes`).
+- **Archivos sueltos del autor sin commitear:** `public/personajes/imagenes tarjetas /` (origen del arte
+  de la tarjeta, con espacios — no usar en URLs), `otros/` y dos PNG del danzante.
 - **Fotos de los 4 imanes** (`imagenGrupo` + galería): las 5 fotos miden ~1000 px y se muestran a ~950 px en
   un lomo panorámico 2.5:1 (`object-top` recorta ~46 % de abajo; en retina se estiran al doble). Idea
   pendiente: foto propia del lomo (~2400×960) distinta de la de la galería. También pesan de más el PNG del
@@ -702,7 +727,8 @@ Modo oscuro por defecto.
   `redeem_code`, `check_code_valid`, `check_code_status` y la tabla `unlock_codes` (renombrarla a
   `unlock_codes_archivo`). Hacerlo solo con confirmación del autor. Falta también activar Google
   (OAuth en Google Cloud + proveedor en Supabase Auth + `NEXT_PUBLIC_AUTH_GOOGLE=1` en Railway) y
-  reimprimir las tarjetas con el QR `?origen=qr` (las viejas abren la ficha pero no ofrecen guardar).
+  ~~reimprimir las tarjetas con `?origen=qr`~~ — **hecho**: las tarjetas V2 impresas ya llevan
+  `https://nunna-ecu.com/es/personajes/<slug>?origen=qr` (los 12 QR del pliego decodificados y verificados, 2026-10-15).
 - **`/pases` en un teléfono real**: el flujo se probó con Playwright emulando táctil, no en un dispositivo.
   Revisar sobre todo el paso a la vista del recorrido (fundido + `position: sticky`) en iOS Safari.
 - **Fotos de pase por provincia**: la tarjeta de provincia solo tiene foto real en Chimborazo y Pichincha
@@ -716,8 +742,7 @@ Modo oscuro por defecto.
   fondo que lo llenaba). Opciones: subir `maxItemHeight` o centrar la lista.
 - **Higiene de ramas**: el remoto acumula ~18 ramas ya mergeadas (`feat/selector-pases-recorrido`,
   `feat/pase-inmersivo-ficha`, `refactor/qr-unico-ficha-abierta`, …). Borrarlas cuando el autor lo
-  confirme. Hay además dos carpetas sin commitear que no son de este trabajo:
-  `app/[locale]/guia-tarjetas/` y `modules/tarjetas/`.
+  confirme.
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
 - Fotografías reales "En el pase" (`titulo: "en-pase"`) y del imán físico (`titulo: "proceso"`) para la galería
 - **Audios reales** del hero v2 en `public/audio/` (6 archivos: `[slug]-ambiente.mp3` por personaje con `experiencia: true` — cucurucho y danzante-yaruquies también los necesitan)
@@ -1107,6 +1132,20 @@ quichua como opción de UI** y la **feature de glosario** por completo.
 - Mantener el header en **una sola fila** (~64px): muchos lugares dependen de `top-16`/`pt-16` (MainContent, sticky de `ProductoSection`/`AnatomiaSection`). No añadir una segunda fila.
 
 ### Marca: "Nunna"
+- **Isotipo (2026-10-15, concepto R1):** la N trazada como el recorrido de un pase en tres tramos
+  (rojo `#B8312F` · dorado `#C89B3C` · jade `#2F7A63`) dentro de una placa oscura con filete dorado.
+  Componente `components/ui/NunnaLogo.tsx` (`NunnaIsotipo`, en Header y Footer) = mismo dibujo que
+  `public/favicon.svg`. `apple-icon.svg` es la versión maskable (sin esquinas, N en zona segura) y de ella
+  salen `apple-icon.png` (180), `icon-512.png` y `icon-192.png` (este del favicon) — regenerarlos con sharp
+  si cambia el dibujo (iOS no acepta SVG como apple-touch-icon).
+- **Entrada animada** (`components/ui/NunnaLogoAnimado.tsx`, header): un punto recorre la N tramo por tramo
+  (`pathLength` de framer-motion), aparece la placa, se traza el filete y el nombre se revela con
+  `clip-path` (no opacidad por letra — gotcha `text-shimmer`). ~2,5 s, una vez por carga (el header no se
+  remonta al navegar); quieto con `prefers-reduced-motion`. Tiempos derivados de `T_TRAMO`.
+  ⚠ El punto usa `<animateMotion>` nativo (SMIL), **no** `offsetDistance` de framer-motion: en un `<circle>`
+  framer lo pasa como atributo → warning de React + mismatch de hidratación (bug real, 2026-10-19).
+- Exploración de conceptos descartados (máscara, chakana, colección, recorte, ligadura, sello, inti, cinta…):
+  artifact "Nunna Logo Studio" — https://claude.ai/artifact/N5DpPzMQgwFh3WVNUZhrKK
 - El nombre público del sistema es **Nunna**
 - Los paquetes internos del monorepo (`@seres-del-pase/web`, etc.) **no se cambian** — son identificadores técnicos
 

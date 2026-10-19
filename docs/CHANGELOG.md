@@ -2,6 +2,76 @@
 
 ---
 
+## [0.12.0] — 2026-10-19 — Logo de Nunna y política de privacidad
+
+PR #85 (`feat/privacidad-google-oauth`).
+
+### Agregado
+- **Isotipo definitivo** (concepto R1, elegido entre ~15 propuestas): la N como el recorrido de un pase en
+  tres tramos — rojo, dorado, jade — dentro de una placa oscura con filete dorado (el marco de la tarjeta).
+  `components/ui/NunnaLogo.tsx` (`NunnaIsotipo`), usado en el footer.
+- **Entrada animada del logo** en el header (`NunnaLogoAnimado.tsx`): un punto recorre la N dejando el
+  camino, aparece la placa y se revela "Nunna". Respeta `prefers-reduced-motion`.
+- Íconos: `favicon.svg` nuevo (reemplaza el destello genérico), `apple-icon.svg` maskable,
+  `apple-icon.png` 180, `icon-192.png`, `icon-512.png`; manifest y metadata apuntan a los PNG.
+- Página `/privacidad` (requisito de Google OAuth), en sitemap y footer; contacto soporte@nunna-ecu.com.
+
+### Corregido
+- El punto de la animación usaba `offsetDistance` de framer-motion → React lo pintaba como atributo del
+  `<circle>` (warning + mismatch de hidratación). Ahora `<animateMotion>` nativo.
+
+### Pendiente
+- Logo en las imágenes OpenGraph; versión monocroma y para la tarjeta impresa; probar en iPhone real.
+
+---
+
+## [0.11.0] — 2026-10-15 — Tarjeta impresa en la web, inicio y ficha rediseñados
+
+Rama `feat/tarjeta-inicio-ficha`. Sesión larga de pulido guiada por el autor; las decisiones que se
+probaron y se descartaron están anotadas abajo para no repetirlas.
+
+### Agregado
+- **Tarjeta impresa en la web** (`TarjetaNunna.tsx`, campo `tarjeta` en `personajes.json`): frente con
+  la ilustración en collage + placa, reverso con los 6 círculos y un **QR de muestra** (`public/qr/qr-muestra.png`,
+  lleva a la portada — nunca el QR real, permitiría guardar sin imán). Arte en
+  `public/personajes/[slug]/[slug]-tarjeta-{ilustracion,icono}.png` (recortados del arte del autor con
+  Pillow: fondo blanco → transparente). Test: archivos existen y `orden` único.
+- `/mis-personajes`: panel "Tu tarjeta de colección" (círculo iluminado por personaje guardado).
+- Imagen para compartir por personaje (`personajes/[slug]/opengraph-image.tsx`, `next/og`).
+
+### Cambiado
+- **Nombres = los de la tarjeta**: "Diablo de lata" (singular), "Danzante" (sin "de Yaruquíes" en
+  títulos), `nombresAlt` de Aya Uma "Diablo Huma". Slugs intactos.
+- **Inicio**: "Cómo funciona" = escenas fijas con fundido (intro → Escanea → Descubre → Colecciona, puntos
+  de progreso); paso 1 = tarjeta 3D que se inclina con el mouse, se gira al clic y se mece sola en táctil;
+  visuales de los pasos 2-3 al 60 % (`zoom`) en móvil. Fuera "— opcional, con tu cuenta —" y
+  "—su historia y su cosmovisión kichwa—".
+- **`/personajes`**: una sola pantalla — grilla 3×2 (2×3 móvil) con foto real de pase (`FOTO_PASE`),
+  título = nombre impreso de la tarjeta, subtítulo kichwa con excepciones (`SUBTITULO`: Aya Uma →
+  "Aya Huma", Cucurucho → "Chuku runa"), velo oscuro para leer los títulos, "Más personajes, próximamente".
+  El acordeón `PersonajesLibro` sigue en el cross-sell de la ficha y en `/mis-personajes`.
+- **Ficha — "Descubre su historia"** (`HistoriaPresentacion`): escenas fijas con fundido, título fijo
+  arriba en cada punto, pista animada "Desliza para seguir", puntos de progreso. Sin la leyenda repetida.
+- **Ficha — "Míralo de cerca"** (`AnatomiaSection`): escenario con la proporción exacta de la foto (los
+  pines antes caían mal por `object-contain`), cámara que acerca y centra cada pieza (límite para no
+  mostrar bordes vacíos), pines más visibles fuera de la cámara; personaje completo al entrar y al
+  terminar. Aya Uma: hotspot "fuete" → "zamarro" (texto redactado por Claude, revisar con el artesano).
+- **Ficha — galería "En el pase"** (`GaleriaSection`): foto grande + 2 debajo, flechas que pasan de 3 en
+  3 (‹ grupo de total ›), visor a pantalla completa con descripción y flechas abajo. Solo fotos `en-pase`,
+  sin afiches. Sin textos en la grilla.
+- Cerrar sesión en `/mis-personajes` → vuelve al inicio.
+
+### Eliminado
+- `MarqueeStrip` (barra de nombres del inicio) y los indicadores "Descubrir ↓" (hero del inicio y de la ficha).
+- Ficha: `StatsAnimados` (Origen/Festividad/También conocido como; el archivo queda sin uso), sello
+  "Anatomía completa" y claves `anatomia.sello_*`/`faltan_*`, `presentacion.eyebrow`, `galeria.hint`.
+
+### Probado y descartado (no repetir sin pedirlo)
+- Franja de íconos de la tarjeta bajo el hero → "peor"; se quitó la sección entera.
+- Reemplazar el video del hero por una presentación de fotos (pase + imán) → no le gustó; volvió el video.
+- Intro de 3 s con solo el video (header y textos ocultos) → se quitó.
+- La galería en escenas con fundido o tira horizontal (se maquetaron; eligió el mosaico).
+
 ## [0.10.0] — 2026-10-13 — `/pases` como ventana única y limpieza de la sección
 
 PR #83 (`refactor/pases-limpieza`). `/pases` deja de ser una página con scroll (mapa nacional + secciones
