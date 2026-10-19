@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useColeccion } from "@/components/auth/ColeccionProvider";
-import { NunnaIsotipo } from "@/components/ui/NunnaLogo";
+import { NunnaLogoAnimado } from "@/components/ui/NunnaLogoAnimado";
 
 const NAV_LINKS = [
   { key: "personajes", href: "/personajes" },
@@ -106,17 +106,10 @@ export function Header() {
           }}
           className="group flex shrink-0 items-center gap-2"
         >
-          <NunnaIsotipo className="h-7 w-7 shrink-0 md:h-8 md:w-8" />
-          <motion.span
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.96 }}
-            className="text-shimmer inline-block font-serif text-lg font-bold md:text-xl"
-          >
-            Nunna
-          </motion.span>
+          <NunnaLogoAnimado
+            className="h-7 w-7 shrink-0 overflow-visible md:h-8 md:w-8"
+            nombreClassName="text-shimmer inline-block font-serif text-lg font-bold md:text-xl"
+          />
         </Link>
 
         {/* Nav — escritorio */}
