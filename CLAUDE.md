@@ -688,10 +688,23 @@ Modo oscuro por defecto.
   sin uso. Detalle en "`/pases` — ventana única de tres vistas" (decisiones técnicas) y
   `docs/CHANGELOG.md` [0.10.0].
 
+- **Tarjeta impresa en la web + inicio y ficha rediseñados** (PR #84, mergeado 2026-10-15) — detalle en
+  `docs/CHANGELOG.md` [0.11.0].
+- **Logo de Nunna + política de privacidad** (PR #85, `feat/privacidad-google-oauth`, 2026-10-19):
+  isotipo definitivo (concepto R1, ver "Marca" en decisiones técnicas) con entrada animada en el header;
+  favicon/apple-touch-icon/manifest nuevos; página `/privacidad` (requisito de Google OAuth). Ver
+  `docs/CHANGELOG.md` [0.12.0].
+
 ### 🔄 Siguiente
-- **PR de `feat/tarjeta-inicio-ficha`** (2026-10-15): abierto contra `main`; conflictos con el squash de
-  #83 ya resueltos. Falta revisar en un teléfono real y correr `pnpm build` antes de mergear. Detalle de
-  la tanda en `docs/CHANGELOG.md` [0.11.0].
+- **Mergear PR #85** cuando el build del CI pase. Revisar en un iPhone real: la animación del logo en el
+  header (Safari) y el ícono al "Agregar a pantalla de inicio".
+- **Logo — pendientes:** la imagen para compartir de la ficha (`opengraph-image.tsx`) y la OG por defecto
+  del sitio aún no llevan el logo; decidir si la entrada animada también va como pantalla de bienvenida a
+  pantalla completa (hoy solo en el header, una vez por carga); versión monocroma del isotipo (sello,
+  grabado, empaque) y versión para la tarjeta impresa; el verde del logo (`#2F7A63`) es más claro que el
+  jade del sitio (`#1F4D3F`) a propósito — decidir si se suma a la paleta como token.
+- **Trabajo de colección sin commitear** (de otra sesión): `ColeccionVitrina.tsx` nuevo, cambios en
+  `ColeccionClient.tsx` y `messages/{es,en}.json` — terminar y commitear en su propia rama.
 - **Pendientes de esa tanda:** ilustraciones de la tarjeta en alta (hoy 183–434 px); texto del zamarro
   (Aya Uma) redactado por Claude — validar con el artesano; foto `payaso-pase-plaza-de-la-alcaldia.jpg`
   lleva el logo "Corazón Riobambeño" (¿sacarla de la galería?); punto de "aberturas de los ojos" del
@@ -1125,6 +1138,14 @@ quichua como opción de UI** y la **feature de glosario** por completo.
   `public/favicon.svg`. `apple-icon.svg` es la versión maskable (sin esquinas, N en zona segura) y de ella
   salen `apple-icon.png` (180), `icon-512.png` y `icon-192.png` (este del favicon) — regenerarlos con sharp
   si cambia el dibujo (iOS no acepta SVG como apple-touch-icon).
+- **Entrada animada** (`components/ui/NunnaLogoAnimado.tsx`, header): un punto recorre la N tramo por tramo
+  (`pathLength` de framer-motion), aparece la placa, se traza el filete y el nombre se revela con
+  `clip-path` (no opacidad por letra — gotcha `text-shimmer`). ~2,5 s, una vez por carga (el header no se
+  remonta al navegar); quieto con `prefers-reduced-motion`. Tiempos derivados de `T_TRAMO`.
+  ⚠ El punto usa `<animateMotion>` nativo (SMIL), **no** `offsetDistance` de framer-motion: en un `<circle>`
+  framer lo pasa como atributo → warning de React + mismatch de hidratación (bug real, 2026-10-19).
+- Exploración de conceptos descartados (máscara, chakana, colección, recorte, ligadura, sello, inti, cinta…):
+  artifact "Nunna Logo Studio" — https://claude.ai/artifact/N5DpPzMQgwFh3WVNUZhrKK
 - El nombre público del sistema es **Nunna**
 - Los paquetes internos del monorepo (`@seres-del-pase/web`, etc.) **no se cambian** — son identificadores técnicos
 

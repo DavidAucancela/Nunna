@@ -2,6 +2,29 @@
 
 ---
 
+## [0.12.0] — 2026-10-19 — Logo de Nunna y política de privacidad
+
+PR #85 (`feat/privacidad-google-oauth`).
+
+### Agregado
+- **Isotipo definitivo** (concepto R1, elegido entre ~15 propuestas): la N como el recorrido de un pase en
+  tres tramos — rojo, dorado, jade — dentro de una placa oscura con filete dorado (el marco de la tarjeta).
+  `components/ui/NunnaLogo.tsx` (`NunnaIsotipo`), usado en el footer.
+- **Entrada animada del logo** en el header (`NunnaLogoAnimado.tsx`): un punto recorre la N dejando el
+  camino, aparece la placa y se revela "Nunna". Respeta `prefers-reduced-motion`.
+- Íconos: `favicon.svg` nuevo (reemplaza el destello genérico), `apple-icon.svg` maskable,
+  `apple-icon.png` 180, `icon-192.png`, `icon-512.png`; manifest y metadata apuntan a los PNG.
+- Página `/privacidad` (requisito de Google OAuth), en sitemap y footer; contacto soporte@nunna-ecu.com.
+
+### Corregido
+- El punto de la animación usaba `offsetDistance` de framer-motion → React lo pintaba como atributo del
+  `<circle>` (warning + mismatch de hidratación). Ahora `<animateMotion>` nativo.
+
+### Pendiente
+- Logo en las imágenes OpenGraph; versión monocroma y para la tarjeta impresa; probar en iPhone real.
+
+---
+
 ## [0.11.0] — 2026-10-15 — Tarjeta impresa en la web, inicio y ficha rediseñados
 
 Rama `feat/tarjeta-inicio-ficha`. Sesión larga de pulido guiada por el autor; las decisiones que se
