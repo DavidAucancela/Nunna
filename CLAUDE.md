@@ -102,6 +102,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<JWT>
 # URL canónica (OG/sitemap/robots — lib/site-url.ts). Opcional: si falta, cae
 # al dominio de Railway. Cuando haya dominio propio, cambiarla aquí y en Railway.
 NEXT_PUBLIC_SITE_URL=https://nunnaec-production.up.railway.app
+
+# Botón "Continuar con Google" en el login (el proveedor ya está activo en Supabase Auth).
+# ⚠ Va TAMBIÉN en Railway: NEXT_PUBLIC_* se incrusta al compilar y .env.local no se sube a git.
+NEXT_PUBLIC_AUTH_GOOGLE=1
 ```
 
 No se necesitan variables de entorno para correr el frontend en desarrollo — los datos vienen del JSON.
@@ -581,6 +585,8 @@ Modo oscuro por defecto.
   - **Fase 1 (performance móvil):** optimización de imágenes de Next **activada** (se quitó
     `images.unoptimized` — WebP + srcset; sharp viene integrado en `next start` desde Next 15);
     video del hero comprimido 11.9 MB → 4.4 MB (960×540, CRF 32, sin audio)
+    — ⚠ **hoy `next.config.ts` vuelve a tener `images.unoptimized: true`** (verificado 2026-10-19):
+    las URLs `/_next/image?...` dan 404; usar siempre la ruta original del archivo.
   - **Fase 2 (SEO):** `app/sitemap.ts` (páginas públicas × 3 locales con hreflang), `app/robots.ts`
     (disallow /mis-personajes), `app/manifest.ts` (PWA básica); canonical + hreflang por página vía
     `localeAlternates()` (`lib/seo.ts`) en todas las páginas públicas incluida la ficha
@@ -694,10 +700,22 @@ Modo oscuro por defecto.
   isotipo definitivo (concepto R1, ver "Marca" en decisiones técnicas) con entrada animada en el header;
   favicon/apple-touch-icon/manifest nuevos; página `/privacidad` (requisito de Google OAuth). Ver
   `docs/CHANGELOG.md` [0.12.0].
+- **`/pases` con fotos en el mapa + login móvil y navbar con íconos** (PR #88,
+  `feat/pases-fotos-login-movil`, 2026-10-19): máximo 5 pases por provincia; paradas del recorrido como
+  fotos que se encienden/apagan, cada foto avanza el recorrido; login como hoja inferior en móvil con
+  varias salidas; ingresar/idioma solo con íconos en escritorio. Ver `docs/CHANGELOG.md` [0.13.0].
 
 ### 🔄 Siguiente
-- **Mergear PR #85** cuando el build del CI pase. Revisar en un iPhone real: la animación del logo en el
-  header (Safari) y el ícono al "Agregar a pantalla de inicio".
+- **Mergear PR #88** — antes: `NEXT_PUBLIC_AUTH_GOOGLE=1` en Railway y `https://nunna-ecu.com/**` en
+  Supabase → Authentication → URL Configuration → Redirect URLs (y `http://localhost:3000/**` para
+  local). En Google Cloud, el ID de cliente OAuth debe tener como URI de redirección
+  `https://dhhesajpexcyainibwvl.supabase.co/auth/v1/callback`. Probar en un teléfono real: deslizar la
+  hoja del login y el scroll del recorrido de `/pases` en iOS Safari.
+- **Recorrido — dudas abiertas con el autor:** se quitó también el nombre del personaje del pie de cada
+  foto (pidió no mostrar nombres; si lo quiere solo ahí, es una línea). "Al iniciar, imágenes más
+  grandes" se interpretó como fotos grandes en el mapa + mosaico en el panel.
+- Revisar en un iPhone real: la animación del logo en el header (Safari) y el ícono al "Agregar a
+  pantalla de inicio" (PR #85, ya mergeado).
 - **Logo — pendientes:** la imagen para compartir de la ficha (`opengraph-image.tsx`) y la OG por defecto
   del sitio aún no llevan el logo; decidir si la entrada animada también va como pantalla de bienvenida a
   pantalla completa (hoy solo en el header, una vez por carga); versión monocroma del isotipo (sello,
@@ -725,8 +743,9 @@ Modo oscuro por defecto.
 - **⚠ Cerrar el despliegue del QR único** (`docs/PLAN-QR-UNICO.md` Fase 9). Verificado en Supabase el
   2026-10-14: `save_personaje` **ya está aplicada**; la migración destructiva **no** — siguen
   `redeem_code`, `check_code_valid`, `check_code_status` y la tabla `unlock_codes` (renombrarla a
-  `unlock_codes_archivo`). Hacerlo solo con confirmación del autor. Falta también activar Google
-  (OAuth en Google Cloud + proveedor en Supabase Auth + `NEXT_PUBLIC_AUTH_GOOGLE=1` en Railway) y
+  `unlock_codes_archivo`). Hacerlo solo con confirmación del autor. Google: el proveedor **ya
+  está activo en Supabase Auth** (verificado 2026-10-19 con `GET /auth/v1/settings`); falta
+  `NEXT_PUBLIC_AUTH_GOOGLE=1` en Railway (ver PR #88 arriba) y
   ~~reimprimir las tarjetas con `?origen=qr`~~ — **hecho**: las tarjetas V2 impresas ya llevan
   `https://nunna-ecu.com/es/personajes/<slug>?origen=qr` (los 12 QR del pliego decodificados y verificados, 2026-10-15).
 - **`/pases` en un teléfono real**: el flujo se probó con Playwright emulando táctil, no en un dispositivo.
@@ -1141,6 +1160,22 @@ quichua como opción de UI** y la **feature de glosario** por completo.
 - Se eliminó: la página `app/[locale]/buscar/page.tsx`, la ruta `/buscar` (+ `/maskanakuy` qu / `/search` en) en `i18n/routing.ts`, el botón de búsqueda del `Header`, y las claves `nav.buscar` (es/qu/en).
 - **No reintroducir** un botón ni ruta de búsqueda. Si en el futuro se quiere buscar, replantear desde cero.
 - Supabase/pgvector quedan sin uso real; si no aparece otro caso de Fase 3 que los necesite, considerar retirarlos.
+
+### Login y navbar — hoja inferior en móvil + íconos en escritorio (2026-10-19, PR #88)
+- **`LoginModal`** (portal a `<body>`): bajo `sm` es una **hoja que sube desde abajo** con franja de fondo
+  visible arriba (`pt-16`). Salidas: tocar fuera (solo si el toque **empieza y termina** en el fondo —
+  seleccionar texto y soltar fuera no cierra), botón "Cancelar" (`nav.cancelar`, solo móvil), ✕ más grande,
+  Escape y **deslizar el asa** hacia abajo (`useDragControls` con `dragListener={false}`: solo el asa
+  arrastra, el formulario no). Desde `sm` sigue centrada.
+- ⚠ **No enfocar el correo en táctil**: el `autoFocus` abría el teclado al instante, tapaba la hoja y no
+  quedaba por dónde salir. `LoginCard`/`LoginForm` aceptan `autoFocus`; el modal lo pasa solo con
+  `(pointer: fine)`. `/login` lo mantiene.
+- **Header de escritorio**: "Ingresar" = candado; la palabra se despliega con hover/foco (`max-w` +
+  `group-hover`). Idioma = globo; al pasar el mouse abre la lista "ES Español / EN English" (`SelectorIdioma`,
+  con espera de 140 ms y un puente `pt-2` para cruzar del botón a la lista; también por clic y teclado).
+  El nav central va `absolute left-1/2` para que no se mueva cuando "Ingresar" crece. El menú móvil no cambió.
+- **Botón de Google**: solo con `NEXT_PUBLIC_AUTH_GOOGLE=1`. Se incrusta al compilar → en Railway hay que
+  ponerla **antes** del build (o redeploy después). `.env.local` está en `.gitignore`: mergear no la lleva.
 
 ### Navbar — 3 secciones visibles en móvil (2026-06-21)
 - El navbar móvil muestra **las 3 secciones inline** (Pases, Calendario, Glosario) — ya no hay menú hamburguesa.

@@ -2,6 +2,42 @@
 
 ---
 
+## [0.13.0] — 2026-10-19 — Recorrido con fotos en el mapa, login móvil y navbar con íconos
+
+PR #88 (`feat/pases-fotos-login-movil`).
+
+### Agregado
+- `/pases`: **máximo 5 pases por provincia** (`limitarPasesPorProvincia`, con test): ganan los que tienen
+  más registros — ruta verificada > ruta de referencia > personaje > afiche; a igual peso, por fecha.
+- Recorrido: **las paradas son fotos en el mapa, sin números** (`.wp-punto` en `styles/globals.css`).
+  Al inicio grandes y flotando; la activa crece con ondas y un destello al cambiar de foto; las pasadas
+  se apagan; las que faltan titilan. Las rutas sin fotos muestran un círculo de color.
+- **Cada foto es un paso**: cambiar de foto avanza el punto rojo, también dentro de la misma parada.
+  El scroll da el mismo tramo a cada foto.
+- Panel del recorrido con la foto como protagonista: mosaico grande al inicio, foto a pantalla completa
+  (Ken Burns) con calle + leyenda + "Ver ficha", barra de progreso por foto (tocable, swipe).
+- Login en móvil como **hoja inferior**: se cierra tocando fuera, con "Cancelar", con la ✕ o deslizando
+  el asa. Clave i18n `nav.cancelar`.
+- Navbar de escritorio: "Ingresar" e idioma **solo con íconos**; hover despliega la palabra y el menú
+  de idiomas (Español / English).
+
+### Cambiado
+- El progreso de cada parada se calcula proyectando su `coord` sobre la ruta (antes se usaba el
+  `progress` aproximado del JSON y la parada se encendía antes de que llegara el punto).
+- Se quitaron la línea de tiempo con los nombres de los personajes, el título grande sobre el mapa y
+  las claves i18n `pases.recorrido.{ir_a,personaje,dato_fecha,dato_ciudad,dato_paradas}`; nueva
+  `pases.recorrido.paradas` (plural).
+
+### Corregido
+- En táctil, el login ya no enfoca el correo al abrirse: el teclado tapaba la ventana y no había salida.
+
+### Pendiente
+- `NEXT_PUBLIC_AUTH_GOOGLE=1` en Railway y redirect `https://nunna-ecu.com/**` en Supabase antes del
+  merge (el proveedor Google ya está activo en Supabase Auth).
+- Probar en teléfono real (hoja del login, scroll del recorrido en iOS Safari).
+
+---
+
 ## [0.12.0] — 2026-10-19 — Logo de Nunna y política de privacidad
 
 PR #85 (`feat/privacidad-google-oauth`).
