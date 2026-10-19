@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { getProvincias, getProvinciasConPases } from "./provincias.service";
+import {
+  getProvincias,
+  getProvinciasConPases,
+  limitarPasesPorProvincia,
+  MAX_PASES_POR_PROVINCIA,
+} from "./provincias.service";
 import { getPases } from "./pases.service";
 import { acotarRecorridos, getRecorridos } from "./recorrido.service";
 
@@ -84,5 +89,27 @@ describe("acotarRecorridos", () => {
     const recorridos = await getRecorridos();
     const acotado = acotarRecorridos(recorridos, ["slug-inexistente"]);
     expect(acotado.pases).toHaveLength(0);
+  });
+});
+
+describe("limitarPasesPorProvincia", () => {
+  it("deja como máximo 5 pases por provincia y prioriza los que tienen recorrido", async () => {
+    const [pases, recorridos] = await Promise.all([getPases({}), getRecorridos()]);
+    const rutas = new Map(recorridos.pases.map((r) => [r.paseSlug, r.esDemo]));
+    const completas = await getProvinciasConPases(pases);
+    const limitadas = limitarPasesPorProvincia(completas, rutas);
+
+    for (const provincia of limitadas) {
+      expect(provincia.pases.length).toBeLessThanOrEqual(MAX_PASES_POR_PROVINCIA);
+      const original = completas.find((p) => p.slug === provincia.slug)!;
+      const conRutaTotal = original.pases.filter((p) => rutas.has(p.slug)).length;
+      const conRutaQuedan = provincia.pases.filter((p) => rutas.has(p.slug)).length;
+      // Ningún pase recorrible se queda fuera mientras quepa.
+      expect(conRutaQuedan).toBe(Math.min(conRutaTotal, MAX_PASES_POR_PROVINCIA));
+    }
+    // Chimborazo tiene más de 5 en el calendario: el recorte sí aplica ahí.
+    expect(completas.find((p) => p.slug === "chimborazo")!.pases.length).toBeGreaterThan(
+      MAX_PASES_POR_PROVINCIA,
+    );
   });
 });

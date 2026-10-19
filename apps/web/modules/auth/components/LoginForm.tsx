@@ -10,7 +10,7 @@ import { AuthOpciones } from "./AuthOpciones";
  * existente (Google o enlace mágico). El redirect tras el login lo resuelve
  * ColeccionProvider (`setPendingLoginOnly` → `/mis-personajes`).
  */
-export function LoginForm() {
+export function LoginForm({ autoFocus = true }: { autoFocus?: boolean } = {}) {
   const router = useRouter();
   const { ready, session } = useColeccion();
   const [errorInicial, setErrorInicial] = useState<string | null>(null);
@@ -36,7 +36,7 @@ export function LoginForm() {
       key={errorInicial ?? "ok"}
       initialErrorKey={errorInicial}
       onBeforeAuth={setPendingLoginOnly}
-      autoFocus
+      autoFocus={autoFocus}
       idPrefix="login"
     />
   );

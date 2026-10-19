@@ -11,7 +11,8 @@
     "abrir_menu": "Open menu",
     "cerrar_menu": "Close menu",
     "ingresar": "Sign in",
-    "cerrar": "Close"
+    "cerrar": "Close",
+    "cancelar": "Cancel"
   },
   "home": {
     "hero": {
@@ -102,17 +103,13 @@
       "titulo": "One pase, one path",
       "scroll_hint": "Scroll to follow the pase",
       "ver_ficha": "View full profile",
-      "ir_a": "Go to",
       "ver_foto": "View photo {n}",
-      "personaje": "Character",
       "finale_titulo": "The pase reaches its destination",
       "ruta_referencia": "Reference route · pending field verification",
       "ver_mas_pases": "See more celebrations",
       "calendario": "When it happens",
       "sugeridos": "Keep going with another one",
-      "dato_fecha": "Date",
-      "dato_ciudad": "City",
-      "dato_paradas": "Stops"
+      "paradas": "{n, plural, one {# stop} other {# stops}}"
     },
     "recorrido_visual_titulo": "Walk the parade",
     "recorrido_visual_intro": "Scroll to follow the parade, stop by stop.",
