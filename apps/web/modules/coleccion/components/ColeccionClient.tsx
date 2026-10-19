@@ -12,7 +12,14 @@ import type { PersonajeLite } from "../types";
 
 const ORIGEN_ORDER = ["prehispanico", "colonial", "mestizo", "mixto"] as const;
 
-export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] }) {
+export function ColeccionClient({
+  personajes,
+  recorrido,
+}: {
+  personajes: PersonajeLite[];
+  /** Recorrido en primera persona (server component): se muestra al completar la colección. */
+  recorrido?: React.ReactNode;
+}) {
   const t = useTranslations("coleccion");
   const tl = useTranslations("logros");
     const tg = useTranslations("guardar");
@@ -69,6 +76,7 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
   }
 
   return (
+    <>
     <section className="mx-auto max-w-5xl px-5 py-20 sm:px-6 sm:py-24">
       <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -154,5 +162,21 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
         )}
       </AnimatePresence>
     </section>
+
+    {/* Premio de la colección completa: el pase en primera persona. */}
+    {fullCollection ? (
+      recorrido
+    ) : (
+      !empty &&
+      ready && (
+        <p className="mx-auto max-w-md px-5 pb-20 text-center text-sm text-stone-500">
+          <span className="mr-1.5 text-acento-dorado" aria-hidden="true">
+            ✦
+          </span>
+          {t("recorrido_bloqueado", { n: total - unlockedCount })}
+        </p>
+      )
+    )}
+    </>
   );
 }

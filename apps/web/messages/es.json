@@ -222,7 +222,8 @@
     "tarjeta_guardado": "{nombre}: en tu colección",
     "tarjeta_falta": "{nombre}: te falta",
     "sin_guardar": "Sin guardar",
-    "en_coleccion": "En tu colección"
+    "en_coleccion": "En tu colección",
+    "recorrido_bloqueado": "Te faltan {n} para desbloquear el recorrido del pase en primera persona."
   },
   "logros": {
     "origen_completo": "Maestro {origen}",

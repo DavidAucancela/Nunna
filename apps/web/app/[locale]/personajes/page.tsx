@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
-import { getPersonajes, getRecorridos } from "@/lib/data";
+import { getPersonajes } from "@/lib/data";
 import { localeAlternates } from "@/lib/seo";
-import { PaseCameraSection } from "@/modules/pases/components/PaseCameraSection";
 
 interface PersonajesPageProps {
   params: Promise<{ locale: string }>;
@@ -44,18 +43,9 @@ export default async function PersonajesPage({ params }: PersonajesPageProps) {
     (a, b) => (a.tarjeta?.orden ?? 99) - (b.tarjeta?.orden ?? 99),
   );
 
-  // Recorrido en primera persona con TODOS los personajes: el pase real (no demo)
-  // con más paradas de personaje. Crece solo al sumar personajes a recorrido.json.
-  const { pases } = await getRecorridos();
-  const personajesEnPase = (p: (typeof pases)[number]) => p.waypoints.filter((w) => w.slug).length;
-  const recorridoCompleto = pases
-    .filter((p) => !p.esDemo)
-    .sort((a, b) => personajesEnPase(b) - personajesEnPase(a))[0];
-
-  // Primera pantalla: encabezado + los 6 personajes + aviso de próximos; debajo,
-  // el recorrido completo. Al seguir con el scroll se llega al footer.
+  // Una sola pantalla: encabezado + los 6 personajes + aviso de próximos.
+  // Al seguir con el scroll se llega al footer.
   return (
-    <>
     <div className="mx-auto flex h-[calc(100dvh-4rem)] min-h-[560px] max-w-7xl flex-col px-4 pb-4 pt-5 sm:px-6 sm:pb-6 sm:pt-8">
       <header className="mb-4 sm:mb-6">
         <p className="text-xs uppercase tracking-[0.2em] text-acento-dorado">Ecuador</p>
@@ -112,8 +102,5 @@ export default async function PersonajesPage({ params }: PersonajesPageProps) {
         <span className="ml-2 text-acento-dorado" aria-hidden="true">✦</span>
       </p>
     </div>
-
-    {recorridoCompleto && <PaseCameraSection recorridoPase={recorridoCompleto} />}
-    </>
   );
 }

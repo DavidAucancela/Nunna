@@ -222,7 +222,8 @@
     "tarjeta_guardado": "{nombre}: in your collection",
     "tarjeta_falta": "{nombre}: still missing",
     "sin_guardar": "Not saved",
-    "en_coleccion": "In your collection"
+    "en_coleccion": "In your collection",
+    "recorrido_bloqueado": "{n} to go to unlock the first-person walk through the parade."
   },
   "logros": {
     "origen_completo": "{origen} Master",
