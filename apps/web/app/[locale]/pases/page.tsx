@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { getPases, getPersonaje, getRecorridos, getProvinciasConPases } from "@/lib/data";
+import {
+  getPases,
+  getPersonaje,
+  getRecorridos,
+  getProvinciasConPases,
+  limitarPasesPorProvincia,
+} from "@/lib/data";
 import { localeAlternates } from "@/lib/seo";
 import { PasesExplorador } from "@/modules/pases/components/PasesExplorador";
 
@@ -28,7 +34,11 @@ export default async function PasesPage({ params }: PasesPageProps) {
     getPases({ locale }),
     getRecorridos(),
   ]);
-  const provincias = await getProvinciasConPases(pases);
+  // Cada provincia muestra hasta 5 pases, primero los que ya tienen recorrido.
+  const provincias = limitarPasesPorProvincia(
+    await getProvinciasConPases(pases),
+    new Map(recorridos.pases.map((r) => [r.paseSlug, r.esDemo])),
+  );
 
   // Foto real de pase para la tarjeta de cada provincia (si la hay): la de una
   // parada de sus recorridos o, si no, una foto "en-pase" de su personaje. Las

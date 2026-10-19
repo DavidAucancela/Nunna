@@ -119,6 +119,124 @@
   100% { transform: scale(1.9); opacity: 0; }
 }
 
+/* ── Puntos del recorrido (/pases → RecorridoScrollytelling) ────────────────
+   Cada parada es una foto circular; el JS pone el estado en `data-estado`:
+   inicio   → grandes y flotando (vista previa del pase antes de recorrerlo)
+   pendiente→ punto apagado que titila
+   activa   → grande, encendida, con ondas; destello al cambiar de foto
+   visitada → pequeña y apagada
+   final    → todas encendidas a medio tamaño
+   El tamaño va en `scale` (propiedad individual) para que las animaciones
+   puedan usar `translate` sin pisarlo. */
+.wp-punto {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  pointer-events: none;
+}
+.wp-punto__foto {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background-color: #1a1714;
+  background-size: cover;
+  background-position: center 22%;
+  border: 2px solid rgba(200, 155, 60, 0.45);
+  pointer-events: auto;
+  cursor: pointer;
+  scale: var(--wp-escala, 0.24);
+  transition:
+    scale 0.65s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.5s ease,
+    filter 0.5s ease,
+    box-shadow 0.5s ease,
+    border-color 0.5s ease;
+}
+.wp-punto[data-sin-foto] .wp-punto__foto {
+  background-image: radial-gradient(circle at 35% 30%, #e8c46a, #b8312f 68%, #5a1614);
+}
+@media (min-width: 768px) {
+  .wp-punto { width: 80px; height: 80px; }
+}
+.wp-punto[data-estado="inicio"] { --wp-escala: 0.72; }
+.wp-punto[data-estado="inicio"] .wp-punto__foto {
+  border-color: #c89b3c;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55), 0 0 18px rgba(200, 155, 60, 0.4);
+  animation: wp-flotar 3.2s ease-in-out var(--wp-retardo, 0s) infinite;
+}
+@media (min-width: 768px) {
+  .wp-punto[data-estado="inicio"] { --wp-escala: 0.85; }
+}
+.wp-punto[data-estado="pendiente"] { --wp-escala: 0.24; }
+.wp-punto[data-estado="pendiente"] .wp-punto__foto {
+  filter: grayscale(1) brightness(0.55);
+  animation: wp-titilar 2.4s ease-in-out var(--wp-retardo, 0s) infinite;
+}
+.wp-punto[data-estado="activa"] { --wp-escala: 1; }
+.wp-punto[data-estado="activa"] .wp-punto__foto {
+  border-color: #e8c46a;
+  box-shadow: 0 0 0 3px rgba(15, 14, 12, 0.85), 0 0 30px rgba(200, 155, 60, 0.8);
+}
+.wp-punto[data-estado="activa"]::before,
+.wp-punto[data-estado="activa"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid rgba(232, 196, 106, 0.75);
+  pointer-events: none;
+  animation: wp-onda 2s ease-out infinite;
+}
+.wp-punto[data-estado="activa"]::after { animation-delay: 1s; }
+.wp-punto[data-estado="visitada"] { --wp-escala: 0.3; }
+.wp-punto[data-estado="visitada"] .wp-punto__foto {
+  opacity: 0.8;
+  filter: saturate(0.45) brightness(0.7);
+  border-color: rgba(200, 155, 60, 0.7);
+  box-shadow: 0 0 8px rgba(200, 155, 60, 0.35);
+}
+.wp-punto[data-estado="final"] { --wp-escala: 0.62; }
+.wp-punto[data-estado="final"] .wp-punto__foto {
+  border-color: #c89b3c;
+  box-shadow: 0 0 16px rgba(200, 155, 60, 0.55);
+  animation: wp-flotar 3.2s ease-in-out var(--wp-retardo, 0s) infinite;
+}
+/* Sin foto (rutas de referencia): el círculo de color no necesita tanto tamaño. */
+.wp-punto[data-sin-foto][data-estado="inicio"] { --wp-escala: 0.5; }
+.wp-punto[data-sin-foto][data-estado="activa"] { --wp-escala: 0.62; }
+.wp-punto__foto.wp-destello { animation: wp-destello 0.85s ease-out; }
+
+@keyframes wp-flotar {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -5px; }
+}
+@keyframes wp-titilar {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.85; }
+}
+@keyframes wp-onda {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+@keyframes wp-destello {
+  0% {
+    filter: brightness(2.4) saturate(1.5);
+    box-shadow: 0 0 0 0 rgba(232, 196, 106, 0.95), 0 0 46px rgba(232, 196, 106, 0.95);
+  }
+  100% {
+    filter: brightness(1) saturate(1);
+    box-shadow: 0 0 0 22px rgba(232, 196, 106, 0), 0 0 30px rgba(200, 155, 60, 0.8);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wp-punto__foto,
+  .wp-punto::before,
+  .wp-punto::after {
+    animation: none !important;
+    transition-duration: 0s !important;
+  }
+}
+
 @layer utilities {
   /* ── Titular display ──────────────────────────────────────────────────────
      Fraunces a tamaño grande: activa el eje óptico (corte de alto contraste),

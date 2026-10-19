@@ -790,6 +790,9 @@ archivos se borraron.
      color (`colorParaRuta`); al lado, una tarjeta por pase con fecha · ciudad · tipo (ahí se fundieron
      Calendario e Información). Pasar por una tarjeta resalta su ruta. Los pases **sin ruta trazada salen
      apagados** con "Próximamente" y no se puede entrar. Orden: primero los recorribles, luego por fecha.
+     **Máximo 5 pases por provincia** (2026-10-19, `limitarPasesPorProvincia` en `provincias.service.ts`,
+     aplicado en `pases/page.tsx`): ganan los que tienen más registros — ruta verificada > ruta de
+     referencia > personaje > afiche; a igual peso, por fecha. El conteo de la tarjeta ya sale recortado.
   3. **Pase** — `RecorridoScrollytelling` ("Un pase, un camino"). **Es la única vista que usa el
      scroll** (decisión del autor: el recorrido avanza con el scroll, como antes). Se sale con el botón
      "‹ Pases en {provincia}" (`onVolver`), también en el panel de cierre.
@@ -813,10 +816,23 @@ archivos se borraron.
   tarjeta inicial del recorrido; (2) a los 800 ms se monta el recorrido en opacidad 0 y se funde solo
   cuando su mapa avisa que pintó (`onMapaListo`, respaldo a los 2,5 s). Solo opacidad: un `transform` en
   un ancestro rompería el `sticky`.
-- **Las fotos de cada parada las pasa el scroll**, no un temporizador (`posicionEnLinea`): la línea de
-  tiempo es la ruta (1) + una pausa de `TRAMO_POR_FOTO` por cada foto extra; en la pausa el punto se
-  queda quieto y el scroll recorre las fotos, luego sigue a la parada siguiente. La sección crece en
-  proporción (`300vh × largoLinea`). `scrollToWaypoint` usa la misma cuenta a la inversa.
+- **Cada foto es un paso del recorrido** (2026-10-19): ya no hay pausas con el punto quieto. Las fotos de
+  una parada se reparten entre ella y la siguiente (`construirPasos`), así cada cambio de foto —también
+  dentro de la misma parada— hace avanzar el punto rojo. El scroll se reparte por igual entre "nudos"
+  (inicio · cada foto · fin de ruta · cierre, `nudosDe`/`enLinea`): cada foto dura lo mismo aunque las
+  calles midan distinto. Altura = `100 + 50vh × tramos`. El `progress` de cada parada se **recalcula**
+  proyectando su `coord` sobre la ruta (`alinearARuta`): el del JSON era aproximado y la parada se encendía
+  antes de que llegara el punto. El JSON no se tocó (el recorrido 3D de `/mis-personajes` lo sigue usando).
+- **Paradas = fotos en el mapa, sin números**: marcadores DOM `.wp-punto` (estilos en `styles/globals.css`)
+  con `data-estado`: `inicio` (fotos grandes flotando antes de empezar) · `pendiente` (punto gris que
+  titila) · `activa` (grande, ondas + destello al cambiar de foto) · `visitada` (pequeña, apagada) ·
+  `final`. El tamaño va en la propiedad `scale` para que las animaciones usen `translate` sin pisarlo.
+  ⚠ `images.unoptimized: true` en `next.config.ts`: no usar URLs `/_next/image` (dan 404); el punto usa el
+  mismo archivo que el panel.
+- **Panel con la foto a pantalla completa**: inicio = mosaico grande de las fotos del pase + ficha breve;
+  parada = foto (Ken Burns) + calle + leyenda + "Ver ficha"; barra de progreso por foto arriba (agrupada
+  por parada). Se retiró la línea de tiempo con los nombres de los personajes y el título grande sobre el
+  mapa (tapaba las fotos).
 - **Cierre del pase**: bloque "Cuándo es" (fecha · horario, ciudad · tipo y, en escritorio, la
   descripción del calendario) + **2 pases sugeridos** (primero de la misma provincia; si no alcanzan,
   de otras — elegirlos cambia de provincia) + volver.
