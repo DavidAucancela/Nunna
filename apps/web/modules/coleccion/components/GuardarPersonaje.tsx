@@ -69,11 +69,14 @@ export function GuardarPersonaje({
   const t = useTranslations("guardar");
   const { authActiva, ready, session, coleccion, guardarPersonaje } = useColeccion();
   const enColeccion = useEnColeccion(slug);
-  const { porQr, descartada, descartar } = useLlegadaPorQr(slug);
+  const { porQr, descartada, descartar, recien } = useLlegadaPorQr(slug);
 
   const [modalAbierto, setModalAbierto] = useState(false);
   const [celebrando, setCelebrando] = useState(false);
-  const [exito, setExito] = useState(false);
+  // Animación de apertura al escanear sin sesión: el personaje "despierta" y enseguida
+  // se ofrece guardarlo (sin esperar a que recorra toda la ficha).
+  const [abriendo, setAbriendo] = useState(false);
+  const aperturaRef = useRef(false);
   const [certificado, setCertificado] = useState<CertificadoLogro | null>(null);
   const autoGuardadoRef = useRef(false);
 
@@ -91,6 +94,13 @@ export function GuardarPersonaje({
       }
     });
   }, [ready, session, porQr, coleccion, slug, guardarPersonaje]);
+
+  // Escaneo recién llegado, sin sesión: animación de apertura → invitación a guardar.
+  useEffect(() => {
+    if (aperturaRef.current || !recien || !puedeGuardar || !ready || session || descartada) return;
+    aperturaRef.current = true;
+    setAbriendo(true);
+  }, [recien, puedeGuardar, ready, session, descartada]);
 
   // Al llegar al final de la ficha: ofrecer el modal (solo sin sesión; con sesión se auto-guarda).
   useEffect(() => {
@@ -176,31 +186,26 @@ export function GuardarPersonaje({
         )}
       </AnimatePresence>
 
+      {abriendo && (
+        <DespertarAnimation
+          personajes={personajes}
+          unlockedSlugs={[...coleccion, slug]}
+          nombreNuevo={nombre}
+          onDone={() => {
+            setAbriendo(false);
+            setModalAbierto(true);
+          }}
+        />
+      )}
+
       {celebrando && (
         <DespertarAnimation
           personajes={personajes}
           unlockedSlugs={[...coleccion]}
           nombreNuevo={nombre}
-          onDone={() => {
-            setCelebrando(false);
-            setExito(true);
-          }}
+          onDone={() => setCelebrando(false)}
         />
       )}
-
-      <AnimatePresence>
-        {exito && (
-          <ExitoGuardado
-            nombre={nombre}
-            accentColor={accentColor}
-            onCertificado={() => {
-              setExito(false);
-              abrirCertificado();
-            }}
-            onClose={() => setExito(false)}
-          />
-        )}
-      </AnimatePresence>
 
       {certificado && <CertificadoColeccion logro={certificado} onClose={() => setCertificado(null)} />}
     </>
@@ -326,68 +331,6 @@ function InvitacionGuardarModal({
           {t("ahora_no")}
         </button>
       </motion.div>
-    </motion.div>
-  );
-}
-
-// ── Tarjeta de éxito tras guardar ─────────────────────────────────────────────
-
-function ExitoGuardado({
-  nombre,
-  accentColor,
-  onCertificado,
-  onClose,
-}: {
-  nombre: string;
-  accentColor: string;
-  onCertificado: () => void;
-  onClose: () => void;
-}) {
-  const t = useTranslations("guardar");
-  const ref = useModalA11y(onClose);
-
-  return (
-    <motion.div
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-fondo-oscuro/85 px-5 backdrop-blur-sm"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div
-        ref={ref}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="guardado-titulo"
-        tabIndex={-1}
-        className="w-full max-w-sm rounded-2xl border border-borde-sutil bg-stone-950 p-6 text-center shadow-2xl outline-none"
-      >
-        <h2 id="guardado-titulo" className="font-serif text-2xl font-bold text-texto-claro">
-          {t("exito_titulo", { nombre })}
-        </h2>
-        <p className="mt-2 text-sm text-stone-400">{t("exito_texto")}</p>
-        <div className="mt-6 flex flex-col gap-3">
-          <button
-            type="button"
-            onClick={onCertificado}
-            className="w-full rounded-full px-6 py-3 text-sm font-semibold text-fondo-oscuro transition-transform hover:scale-[1.01]"
-            style={{ backgroundColor: accentColor }}
-          >
-            {t("ver_certificado")}
-          </button>
-          <Link
-            href="/mis-personajes"
-            className="w-full rounded-full border border-borde-sutil px-6 py-3 text-sm font-medium text-stone-300 transition-colors hover:border-acento-dorado hover:text-acento-dorado"
-          >
-            {t("ver_coleccion")}
-          </Link>
-          <button type="button" onClick={onClose} className="py-1 text-sm text-stone-500 hover:text-stone-300">
-            {t("seguir_leyendo")}
-          </button>
-        </div>
-      </div>
     </motion.div>
   );
 }

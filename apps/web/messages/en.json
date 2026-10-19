@@ -9,7 +9,9 @@
     "idioma": "Language",
     "tema": "Toggle theme",
     "abrir_menu": "Open menu",
-    "cerrar_menu": "Close menu"
+    "cerrar_menu": "Close menu",
+    "ingresar": "Sign in",
+    "cerrar": "Close"
   },
   "home": {
     "hero": {
@@ -111,7 +113,14 @@
       "dato_fecha": "Date",
       "dato_ciudad": "City",
       "dato_paradas": "Stops"
-    }
+    },
+    "recorrido_visual_titulo": "Walk the parade",
+    "recorrido_visual_intro": "Scroll to follow the parade, stop by stop.",
+    "recorrido_visual_elemento_label": "Parade element",
+    "recorrido_visual_personaje_label": "Character",
+    "recorrido_visual_fallback_nota": "Simplified version — enable motion for the full experience.",
+    "recorrido_visual_scroll_hint": "Scroll to move forward",
+    "ver_ficha_personaje": "See {nombre}'s profile"
   },
   "error": {
     "404": "Page not found",
@@ -211,7 +220,9 @@
     "certificados_titulo": "Your certificates",
     "tarjeta_titulo": "Your collection card",
     "tarjeta_guardado": "{nombre}: in your collection",
-    "tarjeta_falta": "{nombre}: still missing"
+    "tarjeta_falta": "{nombre}: still missing",
+    "sin_guardar": "Not saved",
+    "en_coleccion": "In your collection"
   },
   "logros": {
     "origen_completo": "{origen} Master",

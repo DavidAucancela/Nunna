@@ -1,0 +1,32 @@
+[
+  {
+    "id": "chamiza",
+    "progress": 0.0,
+    "nombre": "Chamiza",
+    "texto": "Fogata de ramas que abre las vísperas — marca el arranque simbólico del recorrido."
+  },
+  {
+    "id": "banda-de-pueblo",
+    "progress": 0.2,
+    "nombre": "Banda de pueblo",
+    "texto": "Músicos que acompañan el pase y marcan el ritmo entre personajes."
+  },
+  {
+    "id": "castillo-de-fuegos",
+    "progress": 0.48,
+    "nombre": "Castillo de fuegos",
+    "texto": "Torre pirotécnica, hito visual central de la fiesta."
+  },
+  {
+    "id": "prioste-con-canasta",
+    "progress": 0.75,
+    "nombre": "Prioste con canasta",
+    "texto": "Quien organiza y patrocina el pase; reparte comida y chicha — rol clave en la tradición."
+  },
+  {
+    "id": "vaca-loca",
+    "progress": 0.95,
+    "nombre": "Vaca loca",
+    "texto": "Figura corriendo con fuegos que suele cerrar el festejo."
+  }
+]

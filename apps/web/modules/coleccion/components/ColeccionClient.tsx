@@ -6,13 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link, useRouter } from "@/i18n/navigation";
 import { getOrigenStyle, type Origen } from "@/lib/origen-styles";
 import { useColeccion } from "@/components/auth/ColeccionProvider";
-import { PersonajesLibro } from "@/modules/personajes/components/PersonajesLibro";
-import {
-  CirculoColeccion,
-  ordenTarjeta,
-  TARJETA,
-  type TarjetaPersonaje,
-} from "@/modules/personajes/components/TarjetaNunna";
+import { ColeccionVitrina } from "./ColeccionVitrina";
 import { CertificadoColeccion, type CertificadoLogro } from "./CertificadoColeccion";
 import type { PersonajeLite } from "../types";
 
@@ -21,16 +15,13 @@ const ORIGEN_ORDER = ["prehispanico", "colonial", "mestizo", "mixto"] as const;
 export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] }) {
   const t = useTranslations("coleccion");
   const tl = useTranslations("logros");
-  const tc = useTranslations("comun");
-  const tg = useTranslations("guardar");
+    const tg = useTranslations("guardar");
   const { ready, coleccion, has, session, signOut } = useColeccion();
   const router = useRouter();
   const [certificado, setCertificado] = useState<CertificadoLogro | null>(null);
 
   const total = personajes.length;
-  const tarjetas: TarjetaPersonaje[] = personajes.flatMap((p) =>
-    p.tarjeta ? [{ slug: p.slug, tarjeta: p.tarjeta }] : [],
-  );
+  const guardados = new Set(personajes.filter((p) => has(p.slug)).map((p) => p.slug));
   const unlockedCount = personajes.filter((p) => has(p.slug)).length;
 
   // Logros derivados: completar cada origen presente + colección completa.
@@ -46,12 +37,12 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
   // Evita parpadeo: hasta resolver, no afirmamos "vacío".
   const empty = ready && unlockedCount === 0;
 
-  function abrirCertificadoOrigen(origen: (typeof origenes)[number]) {
-    const style = getOrigenStyle(origen.origen);
-    const grupo = personajes.filter((p) => p.origen === origen.origen && has(p.slug));
+  function abrirCertificadoOrigen(slug: string) {
+    const style = getOrigenStyle(slug);
+    const grupo = personajes.filter((p) => p.origen === slug && has(p.slug));
     setCertificado({
       tipo: "origen",
-      origen: origen.origen,
+      origen: slug as Origen,
       titulo: tl("origen_completo", { origen: style.label }),
       descripcion: tl("origen_completo_desc", { origen: style.label }),
       personajes: grupo.map((p) => ({ nombre: p.nombre, imagenPortada: p.imagenPortada })),
@@ -126,47 +117,7 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
             transition={{ duration: 0.8, ease: "easeOut" }}
           />
         </div>
-        {fullCollection && (
-          <button
-            type="button"
-            onClick={abrirCertificadoColeccion}
-            className="mt-4 inline-flex items-center gap-2 rounded-full border border-acento-dorado/50 bg-acento-dorado/10 px-4 py-2 text-xs font-semibold text-acento-dorado transition-colors hover:bg-acento-dorado/20"
-          >
-            {t("ver_certificado")}
-          </button>
-        )}
       </div>
-
-      {/* La colección del reverso de la tarjeta: se ilumina cada personaje guardado */}
-      {tarjetas.length > 0 && (
-        <div
-          className="mx-auto mb-12 max-w-sm rounded-2xl border-[5px] p-2"
-          style={{ background: TARJETA.fondo, borderColor: TARJETA.dorado }}
-        >
-          <div
-            className="rounded-xl border px-5 pb-6 pt-5"
-            style={{ borderColor: TARJETA.filete, containerType: "inline-size" }}
-          >
-            <p
-              className="mb-5 text-center text-[11px] uppercase tracking-[0.25em]"
-              style={{ color: TARJETA.dorado }}
-            >
-              {t("tarjeta_titulo")}
-            </p>
-            <ul className="grid grid-cols-3 gap-x-4 gap-y-5">
-              {ordenTarjeta(tarjetas).map((p) => (
-                <li key={p.slug} aria-label={has(p.slug) ? t("tarjeta_guardado", { nombre: p.tarjeta.nombre }) : t("tarjeta_falta", { nombre: p.tarjeta.nombre })}>
-                  <CirculoColeccion
-                    personaje={p}
-                    activo={ready && has(p.slug)}
-                    etiquetaClassName="text-[length:4.2cqw]"
-                  />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
 
       {/* Estado vacío */}
       {empty && (
@@ -182,150 +133,20 @@ export function ColeccionClient({ personajes }: { personajes: PersonajeLite[] })
         </div>
       )}
 
-      {/* Progreso por origen — siempre visible, muestra todas las metas disponibles */}
-      {!empty && origenes.length > 0 && (
-        <div className="mb-10">
-          <h2 className="mb-4 text-[11px] uppercase tracking-[0.3em] text-stone-500">
-            {t("progreso_origen_titulo")}
-          </h2>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {origenes.map(({ origen, total: ot, got, earned }) => {
-              const style = getOrigenStyle(origen);
-              const originPct = ot > 0 ? Math.round((got / ot) * 100) : 0;
-              return (
-                <div
-                  key={origen}
-                  className="rounded-xl border px-4 py-3"
-                  style={{
-                    borderColor: earned ? `${style.accentColor}66` : "var(--borde-sutil, #2A2724)",
-                    backgroundColor: earned ? `${style.accentColor}14` : "transparent",
-                  }}
-                >
-                  <div className="mb-2 flex items-center justify-between">
-                    <span
-                      className="text-sm font-semibold"
-                      style={{ color: earned ? style.accentColor : undefined }}
-                    >
-                      {tc(`origen.${origen}`)}
-                    </span>
-                    {earned ? (
-                      <span className="text-xs font-medium" style={{ color: style.accentColor }}>
-                        ✓
-                      </span>
-                    ) : (
-                      <span className="text-xs text-stone-500">
-                        {got}/{ot}
-                      </span>
-                    )}
-                  </div>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-stone-800">
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ backgroundColor: style.accentColor }}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${originPct}%` }}
-                      transition={{ duration: 0.6, ease: "easeOut" }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+      {/* Única presentación: vitrina 3D (progreso por origen, logros y certificados dentro) */}
+      {personajes.length > 0 && (
+        <ColeccionVitrina
+          key={ready ? "listo" : "cargando"}
+          personajes={personajes}
+          guardados={guardados}
+          origenes={origenes}
+          fullCollection={fullCollection}
+          inicial={Math.max(0, personajes.findIndex((p) => guardados.has(p.slug)))}
+          onCertificadoPersonaje={abrirCertificadoPersonaje}
+          onCertificadoOrigen={abrirCertificadoOrigen}
+          onCertificadoColeccion={abrirCertificadoColeccion}
+        />
       )}
-
-      {/* Logros — vitrina de lo ya ganado, con acceso al certificado */}
-      {!empty && (origenes.some((o) => o.earned) || fullCollection) && (
-        <div className="mb-12">
-          <h2 className="mb-4 text-[11px] uppercase tracking-[0.3em] text-stone-500">{t("logros_titulo")}</h2>
-          <div className="flex flex-wrap gap-3">
-            {origenes
-              .filter((o) => o.earned)
-              .map((o) => {
-                const style = getOrigenStyle(o.origen);
-                return (
-                  <div
-                    key={o.origen}
-                    className="rounded-xl border px-4 py-3"
-                    style={{
-                      borderColor: `${style.accentColor}66`,
-                      backgroundColor: `${style.accentColor}14`,
-                      boxShadow: `0 0 24px -8px ${style.accentColor}55`,
-                    }}
-                  >
-                    <p className="text-sm font-semibold" style={{ color: style.accentColor }}>
-                      {tl("origen_completo", { origen: tc(`origen.${o.origen}`) })}
-                    </p>
-                    <p className="mt-0.5 text-xs text-stone-400">
-                      {tl("origen_completo_desc", { origen: tc(`origen.${o.origen}`) })}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => abrirCertificadoOrigen(o)}
-                      className="mt-2 text-xs font-medium underline underline-offset-2"
-                      style={{ color: style.accentColor }}
-                    >
-                      {t("ver_certificado")}
-                    </button>
-                  </div>
-                );
-              })}
-            {fullCollection && (
-              <div
-                className="rounded-xl border border-acento-dorado/60 bg-acento-dorado/10 px-4 py-3"
-                style={{ boxShadow: "0 0 24px -8px #C89B3C55" }}
-              >
-                <p className="text-sm font-semibold text-acento-dorado">{tl("coleccion_completa")}</p>
-                <p className="mt-0.5 text-xs text-stone-400">{tl("coleccion_completa_desc", { total })}</p>
-                <button
-                  type="button"
-                  onClick={abrirCertificadoColeccion}
-                  className="mt-2 text-xs font-medium text-acento-dorado underline underline-offset-2"
-                >
-                  {t("ver_certificado")}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Certificado por personaje guardado */}
-      {!empty && (
-        <div className="mb-10">
-          <h2 className="mb-4 text-[11px] uppercase tracking-[0.3em] text-stone-500">
-            {t("certificados_titulo")}
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {personajes
-              .filter((p) => has(p.slug))
-              .map((p) => (
-                <button
-                  key={p.slug}
-                  type="button"
-                  onClick={() => abrirCertificadoPersonaje(p)}
-                  className="rounded-full border border-borde-sutil px-4 py-2 text-sm text-stone-300 transition-colors hover:border-acento-dorado hover:text-acento-dorado"
-                >
-                  ✦ {p.nombre}
-                </button>
-              ))}
-          </div>
-        </div>
-      )}
-
-      {/* Índice de personajes */}
-      <PersonajesLibro
-        personajes={personajes.map((p) => ({
-          id: p.slug,
-          slug: p.slug,
-          nombre: p.nombre,
-          nombreKichwa: p.nombreKichwa,
-          origen: p.origen,
-          imagenPortada: p.imagenPortada,
-          imagenGrupo: p.imagenGrupo,
-          frase: p.leyenda,
-        }))}
-      />
 
       <AnimatePresence>
         {certificado && (
