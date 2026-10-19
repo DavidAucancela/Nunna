@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { LoginForm } from "./LoginForm";
 
@@ -7,11 +8,24 @@ import { LoginForm } from "./LoginForm";
  * Tarjeta de ingreso: encabezado + Google / enlace mágico. La comparten la página
  * `/login` y el modal del navbar, para que se vean y funcionen igual.
  */
-export function LoginCard({ titleId }: { titleId?: string }) {
+export function LoginCard({
+  titleId,
+  autoFocus = true,
+  className = "rounded-3xl pb-8",
+  pie,
+}: {
+  titleId?: string;
+  /** El modal lo apaga en táctil: abrir el teclado al instante tapa la pantalla. */
+  autoFocus?: boolean;
+  /** Forma de la tarjeta (el modal móvil la pega al borde inferior). */
+  className?: string;
+  /** Contenido extra bajo el formulario (p. ej. "Cancelar" en el modal). */
+  pie?: ReactNode;
+}) {
   const t = useTranslations("login");
 
   return (
-    <div className="w-full max-w-md rounded-3xl border border-borde-sutil bg-stone-950 px-6 pb-8 pt-8 shadow-2xl shadow-black/50 sm:px-8">
+    <div className={`w-full max-w-md border border-borde-sutil bg-stone-950 px-6 pt-8 shadow-2xl shadow-black/50 sm:px-8 ${className}`}>
       <div className="mb-7 text-center">
         <span
           className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-acento-dorado/40 bg-acento-dorado/10 text-acento-dorado"
@@ -32,7 +46,8 @@ export function LoginCard({ titleId }: { titleId?: string }) {
         <p className="mx-auto mt-2 max-w-xs text-sm text-stone-400">{t("subtitulo")}</p>
       </div>
 
-      <LoginForm />
+      <LoginForm autoFocus={autoFocus} />
+      {pie}
     </div>
   );
 }

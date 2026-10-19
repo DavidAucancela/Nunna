@@ -20,8 +20,8 @@ const MOBILE_NAV_LINKS = [
 ] as const;
 
 const LOCALES = [
-  { code: "es", label: "ES" },
-  { code: "en", label: "EN" },
+  { code: "es", label: "ES", nombre: "Español" },
+  { code: "en", label: "EN", nombre: "English" },
 ] as const;
 
 type NavKey = (typeof MOBILE_NAV_LINKS)[number]["key"];
@@ -61,6 +61,137 @@ function LockIcon({ size = 16 }: { size?: number }) {
         d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
       />
     </svg>
+  );
+}
+
+function GlobeIcon({ size = 16, className }: { size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size} fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true" className={className}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 21a9 9 0 100-18 9 9 0 000 18zM3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 000 18M12.5 3a17 17 0 010 18"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Idioma en escritorio: solo el globo. Al pasar el mouse (o con clic / teclado)
+ * se despliega la lista de idiomas debajo.
+ */
+function SelectorIdioma({
+  locale,
+  label,
+  onSelect,
+}: {
+  locale: string;
+  label: string;
+  onSelect: (code: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const cierre = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const abrir = () => {
+    clearTimeout(cierre.current);
+    setOpen(true);
+  };
+  // Pequeña espera: cruzar del botón a la lista no debe cerrarla.
+  const cerrarLuego = () => {
+    clearTimeout(cierre.current);
+    cierre.current = setTimeout(() => setOpen(false), 140);
+  };
+
+  useEffect(() => () => clearTimeout(cierre.current), []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  return (
+    <div
+      ref={ref}
+      className="relative"
+      onPointerEnter={(e) => e.pointerType === "mouse" && abrir()}
+      onPointerLeave={(e) => e.pointerType === "mouse" && cerrarLuego()}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false);
+      }}
+    >
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-label={label}
+        aria-haspopup="true"
+        aria-expanded={open}
+        title={label}
+        className={`flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${
+          open
+            ? "border-acento-dorado/60 text-texto-claro"
+            : "border-borde-sutil text-stone-400 hover:border-acento-dorado/60 hover:text-texto-claro"
+        }`}
+      >
+        <GlobeIcon size={17} />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -6, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.97 }}
+            transition={{ duration: 0.16, ease: "easeOut" }}
+            // pt-2 = puente invisible entre el botón y la lista para el hover
+            className="absolute right-0 top-full origin-top-right pt-2"
+          >
+            <div
+              role="group"
+              aria-label={label}
+              className="w-40 overflow-hidden rounded-xl border border-borde-sutil bg-fondo-oscuro/95 p-1 shadow-2xl shadow-black/50 backdrop-blur-xl"
+            >
+              {LOCALES.map(({ code, label: corto, nombre }) => {
+                const actual = locale === code;
+                return (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => {
+                      setOpen(false);
+                      if (!actual) onSelect(code);
+                    }}
+                    aria-pressed={actual}
+                    className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                      actual ? "bg-acento-dorado/10 text-acento-dorado" : "text-stone-300 hover:bg-stone-800/60 hover:text-texto-claro"
+                    }`}
+                  >
+                    <span className="w-6 text-[11px] font-semibold tracking-wider text-stone-500">{corto}</span>
+                    <span className="flex-1">{nombre}</span>
+                    {actual && (
+                      <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -111,7 +242,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 z-50 w-full border-b border-borde-sutil bg-fondo-oscuro/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-4 md:px-6">
+      <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-4 md:px-6">
         {/* Logo */}
         <Link
           href="/"
@@ -128,7 +259,7 @@ export function Header() {
         </Link>
 
         {/* Nav — escritorio */}
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 md:flex">
           {NAV_LINKS.map(({ key, href }) => {
             const active = isActive(href);
             return (
@@ -155,14 +286,14 @@ export function Header() {
 
         {/* Selector de idioma + sesión + menú móvil */}
         <div className="flex shrink-0 items-center gap-2">
-          {/* Escritorio — sesión + pills de idioma siempre visibles */}
+          {/* Escritorio — solo íconos: sesión + idioma */}
           <div className="hidden items-center gap-2 md:flex">
             {authActiva && session && (
               <Link
                 href="/mis-personajes"
                 onClick={goTop}
                 title={session.user?.email ?? undefined}
-                className="flex items-center gap-1.5 rounded-full border border-borde-sutil px-2.5 py-1 text-xs font-medium text-stone-300 transition-colors hover:border-acento-dorado hover:text-texto-claro"
+                className="flex h-9 items-center gap-1.5 rounded-full border border-borde-sutil px-3 text-xs font-medium text-stone-300 transition-colors hover:border-acento-dorado hover:text-texto-claro"
               >
                 <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
                   <path
@@ -179,39 +310,17 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setLoginOpen(true)}
-                className="flex items-center gap-1.5 rounded-full border border-acento-dorado/40 bg-acento-dorado/10 px-2.5 py-1 text-xs font-medium text-acento-dorado transition-colors hover:bg-acento-dorado/20"
+                className="group flex h-9 items-center rounded-full border border-acento-dorado/40 bg-acento-dorado/10 px-[9px] text-sm font-medium text-acento-dorado transition-colors hover:bg-acento-dorado/20 focus-visible:bg-acento-dorado/20"
               >
-                <LockIcon size={14} />
-                <span>{t("ingresar")}</span>
+                <LockIcon size={16} />
+                {/* La palabra se despliega al pasar el mouse (o con foco de teclado) */}
+                <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 ease-out group-hover:ml-1.5 group-hover:max-w-[7rem] group-hover:opacity-100 group-focus-visible:ml-1.5 group-focus-visible:max-w-[7rem] group-focus-visible:opacity-100">
+                  {t("ingresar")}
+                </span>
               </button>
             )}
 
-            <div
-              className="flex items-center gap-0.5 rounded-lg border border-borde-sutil py-0.5 pl-1.5 pr-0.5"
-              role="group"
-              aria-label={t("idioma")}
-            >
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true" className="text-stone-600">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 21a9 9 0 100-18 9 9 0 000 18zM3.6 9h16.8M3.6 15h16.8M11.5 3a17 17 0 000 18M12.5 3a17 17 0 010 18"
-                />
-              </svg>
-              <span className="mx-1 h-3.5 w-px bg-borde-sutil" aria-hidden="true" />
-              {LOCALES.map(({ code, label }) => (
-                <button
-                  key={code}
-                  onClick={() => switchLocale(code)}
-                  aria-pressed={locale === code}
-                  className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
-                    locale === code ? "bg-stone-800 text-texto-claro" : "text-stone-500 hover:text-stone-300"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            <SelectorIdioma locale={locale} label={t("idioma")} onSelect={switchLocale} />
           </div>
 
           {/* Móvil — candado de ingreso, visible sin abrir el menú */}

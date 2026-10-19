@@ -11,7 +11,8 @@
     "abrir_menu": "Abrir menú",
     "cerrar_menu": "Cerrar menú",
     "ingresar": "Ingresar",
-    "cerrar": "Cerrar"
+    "cerrar": "Cerrar",
+    "cancelar": "Cancelar"
   },
   "home": {
     "hero": {
@@ -102,17 +103,13 @@
       "titulo": "Un pase, un camino",
       "scroll_hint": "Desplázate para seguir el pase",
       "ver_ficha": "Ver ficha completa",
-      "ir_a": "Ir a",
       "ver_foto": "Ver foto {n}",
-      "personaje": "Personaje",
       "finale_titulo": "El pase llega a su destino",
       "ruta_referencia": "Ruta de referencia · pendiente de verificación en campo",
       "ver_mas_pases": "Ver más pases",
       "calendario": "Cuándo es",
       "sugeridos": "Sigue con otro pase",
-      "dato_fecha": "Fecha",
-      "dato_ciudad": "Ciudad",
-      "dato_paradas": "Paradas"
+      "paradas": "{n, plural, one {# parada} other {# paradas}}"
     },
     "recorrido_visual_titulo": "Recorre el pase",
     "recorrido_visual_intro": "Desplázate para seguir el pase, parada por parada.",
