@@ -12,6 +12,8 @@
     "clean": "rm -rf .next out"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
     "@seres-del-pase/types": "workspace:*",
     "@seres-del-pase/ui": "workspace:*",
     "@supabase/supabase-js": "^2.45.0",
@@ -22,7 +24,8 @@
     "next": "15.5.18",
     "next-intl": "^3.26.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@seres-del-pase/config": "workspace:*",
@@ -31,6 +34,7 @@
     "@types/node": "^22.10.1",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
+    "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "^6.0.3",
     "autoprefixer": "^10.5.0",
     "eslint": "^9.16.0",

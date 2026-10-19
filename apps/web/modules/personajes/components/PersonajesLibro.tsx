@@ -156,7 +156,7 @@ export function PersonajesLibro({ personajes, autoAdvanceMs = AUTO_MS_DEFAULT }:
                   src={(p.imagenGrupo ?? p.imagenPortada) as string}
                   alt={p.nombre}
                   fill
-                  className={`hidden object-cover sm:block ${p.imagenGrupo ? "object-top" : "object-[50%_18%]"}`}
+                  className={`hidden object-cover sm:block ${p.imagenGrupo ? "object-center" : "object-[50%_18%]"}`}
                   sizes="420px"
                 />
               )}

@@ -401,6 +401,7 @@
     },
     "imagenBanner": "/headers/perro-banner.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/perro-inicio.webp",
+    "imagenGrupo": "/personajes/perro/perro-iman-cuatro-figuras.webp",
     "narrativa": {
       "leyenda": "El Allku guarda el umbral que ningún humano puede cruzar solo.",
       "palabrasClave": [
@@ -543,6 +544,15 @@
         "altText": "Imán artesanal del Perro con pelaje café y mameluco morado",
         "descripcion": "El imán del Perro · Allku, otra vista.",
         "orden": 13
+      },
+      {
+        "id": "perro-iman-cuatro-figuras",
+        "tipo": "imagen",
+        "url": "/personajes/perro/perro-iman-cuatro-figuras.webp",
+        "titulo": "proceso",
+        "altText": "Los cuatro imanes artesanales del Perro en fila: pelaje café, negro, dorado y negro",
+        "descripcion": "Cada imán del Perro se pinta a mano: ningún pelaje ni mameluco se repite.",
+        "orden": 14
       }
     ],
     "testimonios": [],
@@ -577,7 +587,7 @@
     },
     "imagenBanner": "/headers/diablos-de-lata-banner.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/diablos-lata-inicio.jpg",
-    "imagenGrupo": "/personajes/diablos-de-lata/diablos-de-lata-iman-cuatro-sobre-mesa.jpeg",
+    "imagenGrupo": "/personajes/diablos-de-lata/diablos-de-lata-iman-cuatro-figuras.webp",
     "narrativa": {
       "leyenda": "Tomaron el símbolo del miedo y lo convirtieron en el corazón de la fiesta.",
       "palabrasClave": [
@@ -741,22 +751,13 @@
         "orden": 13
       },
       {
-        "id": "diablos-de-lata-iman-cuatro-sobre-mesa",
+        "id": "diablos-de-lata-iman-cuatro-figuras",
         "tipo": "imagen",
-        "url": "/personajes/diablos-de-lata/diablos-de-lata-iman-cuatro-sobre-mesa.jpeg",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-iman-cuatro-figuras.webp",
         "titulo": "proceso",
-        "altText": "Los cuatro imanes de Diablo de lata alineados sobre la mesa del taller",
+        "altText": "Los cuatro imanes de Diablo de lata en fila, cada uno con su pechera de color distinta",
         "descripcion": "Cada imán se pinta a mano: no hay dos iguales.",
         "orden": 14
-      },
-      {
-        "id": "diablos-de-lata-iman-cuatro-vista-cenital",
-        "tipo": "imagen",
-        "url": "/personajes/diablos-de-lata/diablos-de-lata-iman-cuatro-vista-cenital.jpg",
-        "titulo": "proceso",
-        "altText": "Vista cenital de los cuatro imanes de Diablo de lata en la mesa del taller",
-        "descripcion": "Los cuatro diablos, vistos desde arriba.",
-        "orden": 15
       }
     ],
     "testimonios": [],
@@ -770,6 +771,7 @@
     "slug": "cucurucho",
     "experiencia": true,
     "nombre": "Cucurucho",
+    "nombreKichwa": "Chuku runa",
     "nombresAlt": [
       "Nazareno",
       "Penitente"

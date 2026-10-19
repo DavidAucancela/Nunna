@@ -81,10 +81,14 @@ export function conMarcaQr(pathname: string): string {
 export function useLlegadaPorQr(slug: string) {
   const [porQr, setPorQr] = useState(false);
   const [descartada, setDescartada] = useState(false);
+  // true solo en la carga que trajo `?origen=qr` (escaneo nuevo o vuelta del login);
+  // una visita posterior con la marca vigente en localStorage no es "recién llegada".
+  const [recien, setRecien] = useState(false);
 
   useEffect(() => {
     const url = new URL(window.location.href);
     if (url.searchParams.get(QR_PARAM) === QR_VALOR) {
+      setRecien(true);
       registrarLlegadaQr(slug);
       url.searchParams.delete(QR_PARAM);
       window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
@@ -98,5 +102,5 @@ export function useLlegadaPorQr(slug: string) {
     setDescartada(true);
   }, [slug]);
 
-  return { porQr, descartada, descartar };
+  return { porQr, descartada, descartar, recien };
 }
