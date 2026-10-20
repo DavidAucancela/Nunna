@@ -10,6 +10,8 @@ import { Footer } from "@/components/layout/Footer";
 import { MainContent } from "@/components/layout/MainContent";
 import { LenisProvider } from "@/components/ui/LenisProvider";
 import { ColeccionProvider } from "@/components/auth/ColeccionProvider";
+import { CarritoProvider } from "@/components/tienda/CarritoProvider";
+import { getEntrega, getProductos } from "@/lib/data";
 import "@/styles/globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -69,7 +71,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     notFound();
   }
 
-  const messages = await getMessages();
+  const [messages, productos, entrega] = await Promise.all([getMessages(), getProductos({ locale }), getEntrega()]);
 
   return (
     <html lang={locale} className={`dark ${fraunces.variable}`} suppressHydrationWarning>
@@ -82,10 +84,12 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         </a>
         <NextIntlClientProvider messages={messages}>
           <ColeccionProvider>
-            <LenisProvider>
-              <Header />
-              <MainContent footer={<Footer />}>{children}</MainContent>
-            </LenisProvider>
+            <CarritoProvider catalogo={productos} entrega={entrega}>
+              <LenisProvider>
+                <Header />
+                <MainContent footer={<Footer />}>{children}</MainContent>
+              </LenisProvider>
+            </CarritoProvider>
           </ColeccionProvider>
         </NextIntlClientProvider>
       </body>

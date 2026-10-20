@@ -106,6 +106,11 @@ NEXT_PUBLIC_SITE_URL=https://nunnaec-production.up.railway.app
 # Botón "Continuar con Google" en el login (el proveedor ya está activo en Supabase Auth).
 # ⚠ Va TAMBIÉN en Railway: NEXT_PUBLIC_* se incrusta al compilar y .env.local no se sube a git.
 NEXT_PUBLIC_AUTH_GOOGLE=1
+
+# Tienda — número de WhatsApp que recibe los pedidos, con código de país (ej. 593991234567).
+# ⚠ También en Railway y ANTES del build (NEXT_PUBLIC_* se incrusta al compilar). Sin ella, el
+# carrito muestra "Los pedidos en línea estarán disponibles pronto" en vez del botón de WhatsApp.
+NEXT_PUBLIC_WHATSAPP_PEDIDOS=
 ```
 
 No se necesitan variables de entorno para correr el frontend en desarrollo — los datos vienen del JSON.
@@ -130,6 +135,7 @@ apps/web/
 │   │   │                             (/mapa, /calendario y /pases/[slug] redirigen aquí)
 │   │   ├── login/page.tsx          → ingreso (Google + enlace mágico) — LoginForm/AuthOpciones
 │   │   ├── mis-personajes/page.tsx → ★ colección del usuario + progreso + logros
+│   │   ├── tienda/page.tsx         → ★ tienda (/shop en inglés): set de 6, imanes, figuras, entrega
 │   │   └── sobre/page.tsx
 │   └── api/health/route.ts         → healthcheck Railway
 ├── components/                     → SOLO compartidos entre módulos
@@ -160,7 +166,11 @@ apps/web/
 │   ├── coleccion/components/       → ★ GuardarPersonaje (sello + modal "Guarda a {nombre}" + auto-guardado
 │   │                                 + CentinelaGuardar), ColeccionClient, CertificadoColeccion, DespertarAnimation
 │   ├── auth/components/            → LoginForm, AuthOpciones (Google + enlace mágico, compartido)
+│   ├── tienda/components/          → ★ CarritoCajon (hoja móvil / panel lateral + pedido por WhatsApp),
+│   │                                 BotonAgregar, ProductoCard, MiniaturaProducto
 ├── lib/
+│   ├── tienda/                     → ★ carrito.ts (reducer + totales, puro), pedido-whatsapp.ts (mensaje
+│   │                                 + wa.me), config.ts (NEXT_PUBLIC_WHATSAPP_PEDIDOS)
 │   ├── qr-origen.ts                → ★ llegada por QR (`?origen=qr` → marca 24 h en localStorage)
 │   ├── supabase/client.ts          → ★ cliente Supabase browser (auth + colección; null si faltan envs)
 │   ├── data.ts                     → ★ barrel — re-exporta lib/services/*
@@ -704,8 +714,17 @@ Modo oscuro por defecto.
   `feat/pases-fotos-login-movil`, 2026-10-19): máximo 5 pases por provincia; paradas del recorrido como
   fotos que se encienden/apagan, cada foto avanza el recorrido; login como hoja inferior en móvil con
   varias salidas; ingresar/idioma solo con íconos en escritorio. Ver `docs/CHANGELOG.md` [0.13.0].
+- **Tienda — fase 1: carrito + pedido por WhatsApp** (`feat/tienda-fase-1`, 2026-10-19): `/tienda`
+  con set de 6 en caja de regalo ($20), imanes ($4) y figuras grandes en caja ($12); carrito global con
+  contador en el header; "Comprar · $4" en `/personajes`; botones en el inicio. Ver "Tienda" en decisiones
+  técnicas y `docs/CHANGELOG.md` [0.14.0].
 
 ### 🔄 Siguiente
+- **Tienda (rama `feat/tienda-fase-1`, sin PR — checklist en `docs/PLAN-TIENDA.md`) — antes de publicar:** poner `NEXT_PUBLIC_WHATSAPP_PEDIDOS` en Railway (y redeploy). Faltan
+  fotos de las **figuras grandes** y de la **caja de regalo** (hoy se ve la ilustración de la tarjeta /
+  un dibujo de caja) y confirmar que hay figura de los 6 (si no, `disponible: false` en `tienda.json`).
+  **Fase 2 (pago con tarjeta):** pendiente elegir pasarela (Payphone/Kushki/PayPal) y RUC — ver
+  "Tienda" en decisiones técnicas.
 - **Mergear PR #88** — antes: `NEXT_PUBLIC_AUTH_GOOGLE=1` en Railway y `https://nunna-ecu.com/**` en
   Supabase → Authentication → URL Configuration → Redirect URLs (y `http://localhost:3000/**` para
   local). En Google Cloud, el ID de cliente OAuth debe tener como URI de redirección
@@ -1161,6 +1180,31 @@ quichua como opción de UI** y la **feature de glosario** por completo.
 - **No reintroducir** un botón ni ruta de búsqueda. Si en el futuro se quiere buscar, replantear desde cero.
 - Supabase/pgvector quedan sin uso real; si no aparece otro caso de Fase 3 que los necesite, considerar retirarlos.
 
+### Tienda — fase 1: carrito + pedido por WhatsApp ★ (2026-10-19)
+Plan por fases decidido con el autor: **fase 1** sin pasarela (el pedido llega por WhatsApp y el pago y
+el costo de envío se acuerdan por chat); **fase 2** pago con tarjeta sobre el mismo carrito.
+- **Catálogo en `lib/data/tienda.json`** (`productos[]` + `entrega`). Tipos: `iman` ($4, uno por
+  personaje), `set` ($20 — la colección de 6 **es** la caja de regalo, un solo producto) y `figura`
+  ($12, figura grande en caja). Nombre (`tarjeta.nombre`) e imagen salen del personaje vía
+  `personajeSlug`; imán = `imagenPortada`; figura sin `imagen` propia → ilustración de la tarjeta.
+  `disponible: false` → "Próximamente", sin botón. Precios: editar el JSON.
+- **Entrega**: envío a todo Ecuador con costo **a convenir** + retiro en Quito (Mercado Artesanal La
+  Mariscal, Reina Victoria y Jorge Washington, locales 114, 107 y 103, 9:00–18:00) en `entrega.retiro[]`.
+- **Carrito** (`CarritoProvider`, montado en el layout dentro de `ColeccionProvider` y envolviendo al
+  `Header`): recibe el catálogo por prop desde el layout (server). Guarda `{id, cantidad}[]` en
+  `localStorage` `nunna:carrito` y lo lee **después de montar** (el SSG sale siempre con el carrito
+  vacío; el contador no aparece hasta `listo`). Ids que ya no existen se descartan solos.
+- **Cajón** (`CarritoCajon`): mismo patrón que `LoginModal` (portal, tocar fuera / Escape / ✕, asa en
+  móvil); en escritorio entra por la derecha. Lleva `data-lenis-prevent` para que su lista haga scroll.
+  El mensaje (`armarMensajePedido`) va en el idioma del sitio. Tras tocar "Enviar" pregunta si ya se
+  envió para vaciar el carrito (no se vacía solo: el usuario puede volver sin haber mandado nada).
+- **`/personajes`**: la tarjeta es un `<Link>`, así que "Comprar · $4" es un **hermano** posicionado
+  encima (un botón dentro de un enlace es HTML inválido), con `stopPropagation`.
+- La ficha del personaje **no** tiene botón de compra (decisión del autor en esta fase).
+- **Fase 2 (no implementada):** pasarela por decidir (Payphone es la más usada en Ecuador) + RUC; tabla
+  `pedidos` en Supabase creada solo desde el servidor; `app/api/checkout` + webhook de confirmación +
+  correo por Resend; "Pagar con tarjeta" junto a WhatsApp en el mismo cajón; actualizar `/privacidad`.
+
 ### Login y navbar — hoja inferior en móvil + íconos en escritorio (2026-10-19, PR #88)
 - **`LoginModal`** (portal a `<body>`): bajo `sm` es una **hoja que sube desde abajo** con franja de fondo
   visible arriba (`pt-16`). Salidas: tocar fuera (solo si el toque **empieza y termina** en el fondo —
@@ -1463,7 +1507,8 @@ pnpm --filter @seres-del-pase/web test
 pnpm --filter @seres-del-pase/web test -- pases.service
 ```
 
-Archivos de test hoy: `lib/services/{pases,personajes,provincias,recorrido}.service.test.ts` + `lib/qr-origen.test.ts` +
+Archivos de test hoy: `lib/services/{pases,personajes,provincias,recorrido,tienda}.service.test.ts` + `lib/qr-origen.test.ts` +
+`lib/tienda/carrito.test.ts` +
 `components/auth/ColeccionProvider.test.tsx`.
 
 ## graphify

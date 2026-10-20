@@ -12,7 +12,10 @@
     "cerrar_menu": "Close menu",
     "ingresar": "Sign in",
     "cerrar": "Close",
-    "cancelar": "Cancel"
+    "cancelar": "Cancel",
+    "tienda": "Shop",
+    "carrito": "Cart",
+    "carrito_con": "Cart, {n, plural, one {# item} other {# items}}"
   },
   "home": {
     "hero": {
@@ -21,7 +24,8 @@
       "cta_principal": "Awaken a character",
       "activar_sonido": "Turn on sound",
       "silenciar": "Mute",
-      "cta_login": "Already saved a character? Sign in"
+      "cta_login": "Already saved a character? Sign in",
+      "cta_tienda": "Buy magnets"
     },
     "intro": {
       "titulo": "A world of living symbols",
@@ -41,7 +45,8 @@
     "proyecto": {
       "titulo": "Behind every magnet, a story",
       "texto": "Nunna documents the characters of Ecuador's traditional festivals. Learn why this project exists.",
-      "cta": "Learn about the project"
+      "cta": "Learn about the project",
+      "cta_tienda": "Visit the shop"
     },
     "producto": {
       "eyebrow": "The product",
@@ -275,5 +280,73 @@
     "cerrar": "Close",
     "anterior": "Previous photo",
     "siguiente": "Next photo"
+  },
+  "tienda": {
+    "titulo": "Shop",
+    "meta_titulo": "Shop — magnets and collectible figures",
+    "meta_descripcion": "Buy magnets of the characters from Ecuador's popular festivities, the full collection in a gift box and the large figures. Shipping across Ecuador or pick-up in Quito.",
+    "eyebrow": "Handmade in Ecuador",
+    "intro": "Every magnet comes with its card and the QR code that opens the character's story.",
+    "pasos": {
+      "uno": "Pick your pieces",
+      "dos": "Send your order on WhatsApp",
+      "tres": "We agree on payment and delivery"
+    },
+    "set": {
+      "eyebrow": "Full collection",
+      "titulo": "All 6 magnets in a gift box",
+      "texto": "The six characters with their cards, in a box ready to give.",
+      "ahorro": "You save {monto} compared with buying them separately"
+    },
+    "imanes": {
+      "titulo": "Magnets",
+      "texto": "One character with its illustrated card and QR code."
+    },
+    "figuras": {
+      "titulo": "Collectible figures",
+      "texto": "The characters in a large size, each in its own box."
+    },
+    "entrega": {
+      "titulo": "Delivery",
+      "envio_titulo": "Shipping across Ecuador",
+      "envio_texto": "We ship to any city in the country. We agree on the shipping cost on WhatsApp, depending on your city.",
+      "retiro_titulo": "Pick-up in Quito",
+      "locales": "Stalls {locales}",
+      "horario": "Hours: {horario}"
+    },
+    "tipo": {
+      "iman": "Magnet",
+      "figura": "Large figure",
+      "set": "Full collection"
+    },
+    "agregar": "Add",
+    "agregar_a": "Add {nombre} to cart",
+    "comprar": "Buy",
+    "agotado": "Coming soon",
+    "ver_ficha": "See its story",
+    "carrito": {
+      "titulo": "Your cart",
+      "vacio": "Your cart is empty.",
+      "ver_tienda": "Visit the shop",
+      "seguir": "Keep shopping",
+      "subtotal": "Subtotal",
+      "nota_envio": "Shipping cost is agreed on WhatsApp.",
+      "entrega": "How do you want it?",
+      "opcion_envio": "Shipping across Ecuador",
+      "opcion_envio_detalle": "Cost to be agreed",
+      "opcion_retiro": "Pick-up at {lugar}",
+      "tus_datos": "Your details (optional)",
+      "nombre": "Name",
+      "ciudad": "City",
+      "enviar": "Send order on WhatsApp",
+      "pronto": "Online orders will be available soon.",
+      "menos": "Remove one",
+      "mas": "Add one",
+      "quitar": "Remove {nombre}",
+      "cantidad": "Quantity",
+      "enviado_pregunta": "Did you send your order?",
+      "vaciar": "Yes, empty the cart",
+      "mantener": "Not yet"
+    }
   }
 }

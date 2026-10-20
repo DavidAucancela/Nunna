@@ -2,6 +2,41 @@
 
 ---
 
+## [0.14.0] — 2026-10-19 — Tienda (fase 1: pedido por WhatsApp)
+
+Rama `feat/tienda-fase-1`. Plan por fases decidido con el autor: primero carrito + pedido por WhatsApp
+(sin pasarela); el pago con tarjeta queda para la fase 2.
+
+### Agregado
+- **Página `/tienda`** (`/shop` en inglés):
+  - Colección completa de 6 imanes en caja de regalo **$20**, con el ahorro frente a sueltos.
+  - Imanes **$4**.
+  - Figuras grandes en caja **$12**.
+  - Entrega: envío a todo Ecuador (costo a convenir) o retiro en el Mercado Artesanal La Mariscal, Quito.
+- **Catálogo en `lib/data/tienda.json`** + `tienda.service.ts` (`getProductos`, `getEntrega`). Nombre e
+  imagen salen del personaje (`personajeSlug`). `validate-data` revisa ids, slugs, precios e imágenes.
+- **Carrito** (`components/tienda/CarritoProvider.tsx`):
+  - Contexto global; se guarda en `localStorage` `nunna:carrito`.
+  - Se abre en un cajón (`CarritoCajon.tsx`): hoja inferior en móvil, panel lateral en escritorio.
+  - Botón "Enviar pedido por WhatsApp" con el mensaje armado (`lib/tienda/pedido-whatsapp.ts`).
+  - El número sale de `NEXT_PUBLIC_WHATSAPP_PEDIDOS`; sin él, el cajón dice "pedidos disponibles pronto".
+- **Accesos a la compra:**
+  - "Tienda" en el navbar y en el footer.
+  - Ícono de carrito con contador en el header (escritorio y móvil).
+  - Píldora "Comprar · $4" en cada tarjeta de `/personajes`.
+  - "Comprar imanes" en el hero del inicio e "Ir a la tienda" en el cierre del inicio.
+- Tests: `lib/tienda/carrito.test.ts` y `lib/services/tienda.service.test.ts`.
+
+### Corregido
+- Botones del hero del inicio: los enlaces de `MagneticButton` eran inline y, apilados en móvil, se
+  encimaban. Ahora son `inline-block`.
+
+### Pendiente
+- `NEXT_PUBLIC_WHATSAPP_PEDIDOS` en Railway (antes del build).
+- Fotos de las figuras grandes y de la caja de regalo (hoy se muestra la ilustración de la tarjeta).
+
+---
+
 ## [0.13.0] — 2026-10-19 — Recorrido con fotos en el mapa, login móvil y navbar con íconos
 
 PR #88 (`feat/pases-fotos-login-movil`).

@@ -118,7 +118,7 @@ function MagneticButton({
   }
   function onMouseLeave() { x.set(0); y.set(0); }
 
-  const base = "rounded-full px-10 py-4 text-base font-semibold transition-colors";
+  const base = "inline-block rounded-full px-10 py-4 text-base font-semibold transition-colors";
   const cls =
     variant === "primary"
       ? "bg-acento-rojo text-white shadow-lg shadow-acento-rojo/30 hover:bg-red-700 hover:shadow-acento-rojo/50"
@@ -128,7 +128,7 @@ function MagneticButton({
     <div ref={ref} onMouseMove={onMouseMove} onMouseLeave={onMouseLeave}>
       <motion.div style={{ x: sx, y: sy }}>
         {href ? (
-          <Link href={href as "/personajes" | "/pases" | "/sobre"} className={`${base} ${cls}`}>{children}</Link>
+          <Link href={href as "/personajes" | "/pases" | "/sobre" | "/tienda"} className={`${base} ${cls}`}>{children}</Link>
         ) : (
           <button type="button" onClick={onClick} className={`${base} ${cls}`}>{children}</button>
         )}
@@ -251,6 +251,9 @@ export function HeroSection() {
         >
           <MagneticButton href="/personajes" variant="primary">
             {t("hero.cta_principal")}
+          </MagneticButton>
+          <MagneticButton href="/tienda" variant="secondary">
+            {t("hero.cta_tienda")}
           </MagneticButton>
         </motion.div>
 

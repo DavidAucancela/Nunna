@@ -137,6 +137,44 @@ export interface PersonajeListItem
   leyenda?: string;
 }
 
+// ── Tienda ───────────────────────────────────────────────────────────────────
+
+/** iman = imán suelto con su tarjeta · set = la colección completa en caja de regalo · figura = figura grande en caja. */
+export type TipoProducto = "iman" | "set" | "figura";
+
+/** Producto de la tienda ya resuelto contra personajes.json (nombre e imagen salen del personaje). */
+export interface Producto {
+  id: string;
+  tipo: TipoProducto;
+  /** Precio en dólares. */
+  precio: number;
+  disponible: boolean;
+  /** Nombre del personaje tal como está impreso en la tarjeta (vacío para el set). */
+  nombre: string;
+  /** Personaje del producto (imán / figura). */
+  personajeSlug?: string;
+  /** Foto del producto; si falta, la UI usa la ilustración de la tarjeta. */
+  imagen?: string;
+  /** Ilustración de la tarjeta del personaje (fallback visual). */
+  ilustracion?: string;
+  /** Personajes que trae el set. */
+  incluye?: string[];
+}
+
+export interface PuntoRetiro {
+  id: string;
+  ciudad: string;
+  lugar: string;
+  direccion: string;
+  locales?: string;
+  horario?: string;
+}
+
+export interface EntregaTienda {
+  envio: { cobertura: string; costo: "a-convenir" | number };
+  retiro: PuntoRetiro[];
+}
+
 // ── Variante regional ────────────────────────────────────────────────────────
 
 export interface VariantePersonaje {

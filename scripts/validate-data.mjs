@@ -10,12 +10,13 @@
  * Uso:  node scripts/validate-data.mjs
  * Sale con código 1 si encuentra errores (bloquea el build en CI).
  */
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = resolve(__dirname, "../apps/web/lib/data");
+const PUBLIC_DIR = resolve(__dirname, "../apps/web/public");
 
 async function loadJson(name) {
   const raw = await readFile(resolve(DATA_DIR, name), "utf-8");
@@ -36,11 +37,12 @@ async function loadJsonOptional(name) {
   }
 }
 
-const [personajes, pases, recorrido, provincias] = await Promise.all([
+const [personajes, pases, recorrido, provincias, tienda] = await Promise.all([
   loadJson("personajes.json"),
   loadJson("pases.json"),
   loadJson("recorrido.json"),
   loadJson("provincias.json"),
+  loadJson("tienda.json"),
 ]);
 
 // Generado por scripts/build-provincias-geojson.mjs — puede no existir aún.
@@ -135,6 +137,32 @@ if (provinciasGeo) {
   }
 }
 
+// ── tienda.json ─────────────────────────────────────────────────────────────
+{
+  const TIPOS = new Set(["iman", "set", "figura"]);
+  const seen = new Set();
+  for (const pr of tienda.productos ?? []) {
+    const ref = `tienda.json: producto "${pr.id ?? "?"}"`;
+    if (!pr.id) err("tienda.json: producto sin id");
+    if (seen.has(pr.id)) err(`tienda.json: id duplicado "${pr.id}"`);
+    seen.add(pr.id);
+    if (!TIPOS.has(pr.tipo)) err(`${ref} tiene tipo desconocido "${pr.tipo}"`);
+    if (!(typeof pr.precio === "number" && pr.precio > 0)) err(`${ref} necesita un precio > 0`);
+    if (pr.tipo !== "set" && !personajeSlugs.has(pr.personajeSlug))
+      err(`${ref} apunta a un personajeSlug inexistente "${pr.personajeSlug}"`);
+    for (const slug of pr.incluye ?? [])
+      if (!personajeSlugs.has(slug)) err(`${ref} incluye un personaje inexistente "${slug}"`);
+    if (pr.imagen) {
+      try {
+        await access(resolve(PUBLIC_DIR, pr.imagen.replace(/^\//, "")));
+      } catch {
+        err(`${ref}: la imagen "${pr.imagen}" no existe en public/`);
+      }
+    }
+  }
+  if (!Array.isArray(tienda.entrega?.retiro)) err("tienda.json: falta entrega.retiro (lista, puede ir vacía)");
+}
+
 if (warnings.length > 0) {
   console.warn(`⚠ validate-data: ${warnings.length} advertencia(s)\n`);
   for (const w of warnings) console.warn(`  - ${w}`);
@@ -149,6 +177,7 @@ if (errors.length > 0) {
 
 console.log(
   `✓ validate-data: ${personajes.length} personajes, ${pases.length} pases, ` +
-    `${recorrido.pases?.length ?? 0} recorridos, ${provincias.length} provincias` +
+    `${recorrido.pases?.length ?? 0} recorridos, ${provincias.length} provincias, ` +
+    `${tienda.productos?.length ?? 0} productos` +
     `${provinciasGeo ? "" : " (sin provincias.geo.json)"} — sin errores`,
 );

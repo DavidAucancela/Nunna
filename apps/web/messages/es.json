@@ -12,7 +12,10 @@
     "cerrar_menu": "Cerrar menú",
     "ingresar": "Ingresar",
     "cerrar": "Cerrar",
-    "cancelar": "Cancelar"
+    "cancelar": "Cancelar",
+    "tienda": "Tienda",
+    "carrito": "Carrito",
+    "carrito_con": "Carrito, {n, plural, one {# producto} other {# productos}}"
   },
   "home": {
     "hero": {
@@ -21,7 +24,8 @@
       "cta_principal": "Despierta a un personaje",
       "activar_sonido": "Activar sonido",
       "silenciar": "Silenciar",
-      "cta_login": "¿Ya guardaste un personaje? Inicia sesión"
+      "cta_login": "¿Ya guardaste un personaje? Inicia sesión",
+      "cta_tienda": "Comprar imanes"
     },
     "intro": {
       "titulo": "Un mundo de símbolos vivos",
@@ -41,7 +45,8 @@
     "proyecto": {
       "titulo": "Detrás de cada personaje hay una historia",
       "texto": "Nunna documenta a los personajes de las fiestas populares del Ecuador. Conoce por qué nació este proyecto.",
-      "cta": "Conoce el proyecto"
+      "cta": "Conoce el proyecto",
+      "cta_tienda": "Ir a la tienda"
     },
     "producto": {
       "eyebrow": "El producto",
@@ -275,5 +280,73 @@
     "cerrar": "Cerrar",
     "anterior": "Foto anterior",
     "siguiente": "Foto siguiente"
+  },
+  "tienda": {
+    "titulo": "Tienda",
+    "meta_titulo": "Tienda — imanes y figuras de colección",
+    "meta_descripcion": "Compra los imanes de los personajes de las fiestas populares del Ecuador, la colección completa en caja de regalo y las figuras grandes. Envío a todo el país o retiro en Quito.",
+    "eyebrow": "Hecho a mano en Ecuador",
+    "intro": "Cada imán trae su tarjeta con el código QR que abre la historia del personaje.",
+    "pasos": {
+      "uno": "Elige tus piezas",
+      "dos": "Envía tu pedido por WhatsApp",
+      "tres": "Acordamos el pago y la entrega"
+    },
+    "set": {
+      "eyebrow": "Colección completa",
+      "titulo": "Los 6 imanes en caja de regalo",
+      "texto": "Los seis personajes con sus tarjetas, en una caja lista para regalar.",
+      "ahorro": "Ahorras {monto} frente a comprarlos sueltos"
+    },
+    "imanes": {
+      "titulo": "Imanes",
+      "texto": "Un personaje con su tarjeta ilustrada y su QR."
+    },
+    "figuras": {
+      "titulo": "Figuras de colección",
+      "texto": "Los personajes en tamaño grande, cada uno en su caja."
+    },
+    "entrega": {
+      "titulo": "Entrega",
+      "envio_titulo": "Envío a todo Ecuador",
+      "envio_texto": "Enviamos a cualquier ciudad del país. El costo del envío lo acordamos por WhatsApp según tu ciudad.",
+      "retiro_titulo": "Retiro en Quito",
+      "locales": "Locales {locales}",
+      "horario": "Horario: {horario}"
+    },
+    "tipo": {
+      "iman": "Imán",
+      "figura": "Figura grande",
+      "set": "Colección completa"
+    },
+    "agregar": "Agregar",
+    "agregar_a": "Agregar {nombre} al carrito",
+    "comprar": "Comprar",
+    "agotado": "Próximamente",
+    "ver_ficha": "Ver su historia",
+    "carrito": {
+      "titulo": "Tu carrito",
+      "vacio": "Tu carrito está vacío.",
+      "ver_tienda": "Ver la tienda",
+      "seguir": "Seguir comprando",
+      "subtotal": "Subtotal",
+      "nota_envio": "El costo de envío se acuerda por WhatsApp.",
+      "entrega": "¿Cómo lo recibes?",
+      "opcion_envio": "Envío a todo Ecuador",
+      "opcion_envio_detalle": "Costo a convenir",
+      "opcion_retiro": "Retiro en {lugar}",
+      "tus_datos": "Tus datos (opcional)",
+      "nombre": "Nombre",
+      "ciudad": "Ciudad",
+      "enviar": "Enviar pedido por WhatsApp",
+      "pronto": "Los pedidos en línea estarán disponibles pronto.",
+      "menos": "Quitar uno",
+      "mas": "Agregar uno",
+      "quitar": "Quitar {nombre}",
+      "cantidad": "Cantidad",
+      "enviado_pregunta": "¿Ya enviaste tu pedido?",
+      "vaciar": "Sí, vaciar el carrito",
+      "mantener": "Todavía no"
+    }
   }
 }

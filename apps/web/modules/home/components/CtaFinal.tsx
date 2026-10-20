@@ -77,7 +77,13 @@ export function CtaFinal() {
         </FadeUp>
 
         <FadeUp delay={0.2}>
-          <div className="mt-10 flex justify-center">
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              href="/tienda"
+              className="inline-flex items-center gap-2 rounded-full border border-stone-600 px-10 py-4 text-sm font-semibold text-stone-200 transition hover:border-acento-dorado/60 hover:text-texto-claro focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acento-dorado"
+            >
+              {t("cta_tienda")}
+            </Link>
             <Link
               href="/sobre"
               className="inline-flex items-center gap-2 rounded-full bg-acento-rojo px-10 py-4 text-sm font-semibold text-white shadow-lg shadow-acento-rojo/30 transition hover:bg-acento-rojo/90 hover:shadow-acento-rojo/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acento-dorado"

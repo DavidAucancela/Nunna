@@ -27,6 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...personajes.map((p) =>
       entry({ pathname: "/personajes/[slug]", params: { slug: p.slug } }, 0.8),
     ),
+    entry("/tienda", 0.8),
     entry("/pases", 0.7),
     entry("/sobre", 0.5),
     entry("/privacidad", 0.2),

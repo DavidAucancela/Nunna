@@ -1,0 +1,119 @@
+{
+  "moneda": "USD",
+  "productos": [
+    {
+      "id": "set-coleccion",
+      "tipo": "set",
+      "precio": 20,
+      "incluye": [
+        "aya-uma",
+        "diablos-de-lata",
+        "cucurucho",
+        "perro",
+        "danzante-yaruquies",
+        "payaso"
+      ],
+      "disponible": true
+    },
+    {
+      "id": "iman-aya-uma",
+      "tipo": "iman",
+      "personajeSlug": "aya-uma",
+      "precio": 4,
+      "disponible": true
+    },
+    {
+      "id": "iman-diablos-de-lata",
+      "tipo": "iman",
+      "personajeSlug": "diablos-de-lata",
+      "precio": 4,
+      "disponible": true
+    },
+    {
+      "id": "iman-cucurucho",
+      "tipo": "iman",
+      "personajeSlug": "cucurucho",
+      "precio": 4,
+      "disponible": true
+    },
+    {
+      "id": "iman-perro",
+      "tipo": "iman",
+      "personajeSlug": "perro",
+      "precio": 4,
+      "disponible": true
+    },
+    {
+      "id": "iman-danzante-yaruquies",
+      "tipo": "iman",
+      "personajeSlug": "danzante-yaruquies",
+      "precio": 4,
+      "disponible": true
+    },
+    {
+      "id": "iman-payaso",
+      "tipo": "iman",
+      "personajeSlug": "payaso",
+      "precio": 4,
+      "disponible": true
+    },
+    {
+      "id": "figura-aya-uma",
+      "tipo": "figura",
+      "personajeSlug": "aya-uma",
+      "precio": 12,
+      "disponible": true
+    },
+    {
+      "id": "figura-diablos-de-lata",
+      "tipo": "figura",
+      "personajeSlug": "diablos-de-lata",
+      "precio": 12,
+      "disponible": true
+    },
+    {
+      "id": "figura-cucurucho",
+      "tipo": "figura",
+      "personajeSlug": "cucurucho",
+      "precio": 12,
+      "disponible": true
+    },
+    {
+      "id": "figura-perro",
+      "tipo": "figura",
+      "personajeSlug": "perro",
+      "precio": 12,
+      "disponible": true
+    },
+    {
+      "id": "figura-danzante-yaruquies",
+      "tipo": "figura",
+      "personajeSlug": "danzante-yaruquies",
+      "precio": 12,
+      "disponible": true
+    },
+    {
+      "id": "figura-payaso",
+      "tipo": "figura",
+      "personajeSlug": "payaso",
+      "precio": 12,
+      "disponible": true
+    }
+  ],
+  "entrega": {
+    "envio": {
+      "cobertura": "Ecuador",
+      "costo": "a-convenir"
+    },
+    "retiro": [
+      {
+        "id": "quito-la-mariscal",
+        "ciudad": "Quito",
+        "lugar": "Mercado Artesanal La Mariscal",
+        "direccion": "Reina Victoria y Jorge Washington",
+        "locales": "114, 107 y 103",
+        "horario": "9:00 – 18:00"
+      }
+    ]
+  }
+}

@@ -8,10 +8,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useColeccion } from "@/components/auth/ColeccionProvider";
 import { NunnaLogoAnimado } from "@/components/ui/NunnaLogoAnimado";
 import { LoginModal } from "@/modules/auth/components/LoginModal";
+import { useCarrito } from "@/components/tienda/CarritoProvider";
+import { IconoCarrito } from "@/modules/tienda/components/BotonAgregar";
 
 const NAV_LINKS = [
   { key: "personajes", href: "/personajes" },
   { key: "pases",      href: "/pases" },
+  { key: "tienda",     href: "/tienda" },
 ] as const;
 
 const MOBILE_NAV_LINKS = [
@@ -34,6 +37,8 @@ function NavIcon({ name, className }: { name: NavKey; className?: string }) {
       "M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z",
     pases:
       "M3 4.5l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.711l3.114-.733a48.524 48.524 0 01-.005 10.499l-3.109.732a9 9 0 01-6.086-.711l-.108-.054a9 9 0 00-6.208-.682L3 15m0-10.5v18",
+    tienda:
+      "M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z",
   };
 
   return (
@@ -49,6 +54,38 @@ function NavIcon({ name, className }: { name: NavKey; className?: string }) {
     >
       <path strokeLinecap="round" strokeLinejoin="round" d={paths[name]} />
     </svg>
+  );
+}
+
+/** Ícono del carrito con contador; abre el cajón del carrito. */
+function BotonCarrito({ etiqueta, etiquetaCon }: { etiqueta: string; etiquetaCon: (n: number) => string }) {
+  const { unidades, listo, abrir } = useCarrito();
+  const n = listo ? unidades : 0;
+  return (
+    <button
+      type="button"
+      onClick={abrir}
+      aria-label={n > 0 ? etiquetaCon(n) : etiqueta}
+      title={etiqueta}
+      className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-borde-sutil text-stone-300 transition-colors hover:border-acento-dorado hover:text-texto-claro md:rounded-full"
+    >
+      <IconoCarrito className="h-[18px] w-[18px]" />
+      <AnimatePresence>
+        {n > 0 && (
+          <motion.span
+            key={n}
+            initial={{ scale: 0.4, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.4, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 500, damping: 22 }}
+            className="absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-acento-rojo px-1 text-[10px] font-bold tabular-nums text-white"
+            aria-hidden="true"
+          >
+            {n > 99 ? "99+" : n}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </button>
   );
 }
 
@@ -286,6 +323,9 @@ export function Header() {
 
         {/* Selector de idioma + sesión + menú móvil */}
         <div className="flex shrink-0 items-center gap-2">
+          {/* Carrito — escritorio y móvil */}
+          <BotonCarrito etiqueta={t("carrito")} etiquetaCon={(n) => t("carrito_con", { n })} />
+
           {/* Escritorio — solo íconos: sesión + idioma */}
           <div className="hidden items-center gap-2 md:flex">
             {authActiva && session && (
