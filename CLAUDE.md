@@ -867,6 +867,24 @@ archivos se borraron.
 - **`/pases/[slug]` se retiró** (redirect 308 a `/pases` en `next.config.ts`, es y en). No hay URL por
   provincia ni por pase: el estado vive en `useState`.
 
+### Escenas ancladas al scroll — "un gesto = un paso" ★ (2026-10-22)
+`lib/scroll-por-pasos.ts` (`usePasosAnclados`). Las escenas que cambian según el progreso de una pista alta con
+escena `sticky` — **Historia** de la ficha (`HistoriaPresentacion`), **"Cómo funciona"** del inicio (escritorio,
+`ProductoSection`) y el **recorrido de `/pases`** (`RecorridoScrollytelling`) — se saltaban pasos con un scroll
+rápido (fling, trackpad): el paso visible era solo "cuánto de la pista recorriste".
+- Cada paso tiene un **ancla** (progreso 0–1, mismo cálculo que la escena: −top / (alto − ventana)). El scroll del
+  usuario no cruza más de un ancla por gesto: si lo intenta, se **frena** en la siguiente (`lenis.scrollTo(…,
+  {immediate})` — corta también la animación de Lenis) y el freno se mantiene el resto del gesto (inercia de la
+  rueda tragada en captura antes de que la vea Lenis; arrastre del dedo con `preventDefault`; momentum corregido
+  hasta que pare). Gesto nuevo = rueda tras 200 ms de pausa o con empuje creciente, o dedo en la pantalla.
+- Antes del primer paso y después del último la página se mueve normal.
+- Solo frena scroll del usuario (rueda, arrastre, flechas/espacio/AvPág en los últimos 2,5 s). Clic, barra de
+  scroll, Inicio/Fin y saltos por programa (`irAPaso` del recorrido, `scrollTo`) pasan sin frenar.
+- `LenisProvider` expone `getLenis()` para esto.
+- Para una escena nueva: `usePasosAnclados(trackRef, anclasDeEscenas(n))` si cambia con `floor(progreso · n)`.
+- ⚠ Probado con Playwright (rueda con inercia + gesto táctil con fling de Chromium); **falta confirmarlo en un
+  iPhone real** — en iOS el momentum podría pelear con el `scrollTo` del freno.
+
 ### `PersonajesLibro` — estantería horizontal de "lomos" (2026-09-18, fix 2026-09-21)
 `modules/personajes/components/PersonajesLibro.tsx`. Una fila con los 6 personajes como lomos de libro:
 los colapsados muestran solo el nombre en vertical (`writing-mode: vertical-rl`, mín. 44 px); el **activo** se

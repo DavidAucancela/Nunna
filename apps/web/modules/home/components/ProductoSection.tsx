@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion, useSpring } from "framer-motion";
 import { useTranslations } from "next-intl";
+import { anclasDeEscenas, usePasosAnclados } from "@/lib/scroll-por-pasos";
 import {
   CirculoColeccion,
   ordenTarjeta,
@@ -223,6 +224,8 @@ function EscenasScroll({ tarjetas }: VisualProps) {
   const t = useTranslations("home.producto");
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
+  // Un gesto = un paso: un scroll rápido no se salta escenas.
+  usePasosAnclados(trackRef, anclasDeEscenas(ESCENAS));
 
   useEffect(() => {
     const onScroll = () => {
