@@ -932,6 +932,14 @@ Reemplaza al desbloqueo por código (sección siguiente, que queda como historia
     enlace mágico es la ficha con `?origen=qr`, así funciona aunque el correo se abra en otro dispositivo.
   - Tras guardar: `DespertarAnimation` → tarjeta de éxito → certificado del personaje
     (`CertificadoColeccion` con `tipo: "personaje"`). Si ya está guardado: sello en la ficha.
+- **Modal con 3 opciones** (2026-10-21): Google · "Continuar con correo" · "Ahora no, leer la ficha". El campo
+    de correo y "Enviar enlace" solo aparecen al elegir el correo (`AuthOpciones correoPlegado`; sin Google activo
+    el formulario sale directo). `/login` no cambia.
+  - **Escanear desde la ficha** (2026-10-21): quien llega sin `?origen=qr` (desde la web, o la marca venció) y no
+    tiene al personaje ve "¿Tienes el imán de {nombre}? · Escanear QR" (`EscanerQr.tsx`, `html5-qrcode` en carga
+    diferida, cámara trasera). QR de este personaje → `marcarEscaneo()` (misma marca de 24 h) → animación →
+    el mismo modal (o auto-guardado si hay sesión). QR de otro personaje → abre su ficha con `?origen=qr`.
+    Acepta también tarjetas viejas sin marcador. Probado con Playwright + cámara falsa con el QR real.
 - **Cuenta**: `AuthOpciones` (Google + enlace mágico), compartido por el modal y `/login`. El botón de Google
   solo aparece con `NEXT_PUBLIC_AUTH_GOOGLE=1` (requiere el proveedor Google activo en Supabase Auth).
 - **Supabase**: `user_unlocks` se conserva (la colección); RPC nueva `save_personaje(p_slug)` (SECURITY

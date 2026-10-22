@@ -11,6 +11,7 @@ import type { Origen } from "@/lib/origen-styles";
 import { AuthOpciones } from "@/modules/auth/components/AuthOpciones";
 import { CertificadoColeccion, type CertificadoLogro } from "./CertificadoColeccion";
 import { DespertarAnimation } from "./DespertarAnimation";
+import { EscanerQr, type QrPersonaje } from "./EscanerQr";
 import type { PersonajeLite } from "../types";
 
 /** Evento que emite el centinela al final de la ficha (la ficha es server; esto evita un contexto). */
@@ -69,7 +70,7 @@ export function GuardarPersonaje({
   const t = useTranslations("guardar");
   const { authActiva, ready, session, coleccion, guardarPersonaje } = useColeccion();
   const enColeccion = useEnColeccion(slug);
-  const { porQr, descartada, descartar, recien } = useLlegadaPorQr(slug);
+  const { porQr, descartada, descartar, recien, marcarEscaneo } = useLlegadaPorQr(slug);
 
   const [modalAbierto, setModalAbierto] = useState(false);
   const [celebrando, setCelebrando] = useState(false);
@@ -79,8 +80,28 @@ export function GuardarPersonaje({
   const aperturaRef = useRef(false);
   const [certificado, setCertificado] = useState<CertificadoLogro | null>(null);
   const autoGuardadoRef = useRef(false);
+  const [escaneando, setEscaneando] = useState(false);
 
   const puedeGuardar = authActiva && porQr && !enColeccion;
+  // Llegó sin el QR (desde la web, o la marca ya venció): puede escanear la tarjeta aquí mismo.
+  const puedeEscanear = authActiva && ready && !porQr && !enColeccion;
+
+  const cerrarEscaner = useCallback(() => setEscaneando(false), []);
+
+  const onQrDetectado = useCallback(
+    (qr: QrPersonaje) => {
+      setEscaneando(false);
+      if (qr.slug !== slug) {
+        // Tarjeta de otro personaje: se abre su ficha como si se hubiera escaneado desde la cámara.
+        window.location.assign(conMarcaQr(qr.pathname));
+        return;
+      }
+      marcarEscaneo();
+      // Con sesión el auto-guardado se encarga; sin sesión, mismo camino que un escaneo nuevo.
+      if (!session) setAbriendo(true);
+    },
+    [slug, session, marcarEscaneo],
+  );
 
   // Auto-guardado: sesión + llegada por QR vigente + aún no está en la colección.
   useEffect(() => {
@@ -157,21 +178,41 @@ export function GuardarPersonaje({
             </Link>
           </span>
         </div>
+      ) : puedeGuardar && ready && !session && descartada ? (
+        <button
+          type="button"
+          onClick={() => setModalAbierto(true)}
+          className="mt-4 text-sm underline underline-offset-2 transition-colors hover:text-acento-dorado"
+          style={{ color: accentColor }}
+        >
+          {t("guardar_enlace", { nombre })}
+        </button>
       ) : (
-        puedeGuardar &&
-        ready &&
-        !session &&
-        descartada && (
-          <button
-            type="button"
-            onClick={() => setModalAbierto(true)}
-            className="mt-4 text-sm underline underline-offset-2 transition-colors hover:text-acento-dorado"
-            style={{ color: accentColor }}
+        puedeEscanear && (
+          <div
+            className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-xl border px-4 py-3"
+            style={{ borderColor: `${accentColor}40`, backgroundColor: `${accentColor}0D` }}
           >
-            {t("guardar_enlace", { nombre })}
-          </button>
+            <span className="flex-none" style={{ color: accentColor }} aria-hidden="true">
+              <IconoQr />
+            </span>
+            <span className="min-w-0 flex-1 text-sm">
+              <span className="block font-medium text-texto-claro">{t("escanear_titulo", { nombre })}</span>
+              <span className="block text-stone-400">{t("escanear_texto")}</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setEscaneando(true)}
+              className="w-full flex-none rounded-full px-5 py-2.5 text-sm font-semibold text-fondo-oscuro transition-transform hover:scale-[1.02] sm:w-auto"
+              style={{ backgroundColor: accentColor }}
+            >
+              {t("escanear_boton")}
+            </button>
+          </div>
         )
       )}
+
+      {escaneando && <EscanerQr open onClose={cerrarEscaner} onDetectado={onQrDetectado} />}
 
       <AnimatePresence>
         {modalAbierto && (
@@ -320,17 +361,29 @@ function InvitacionGuardarModal({
         </ul>
 
         <div className="mt-6">
-          <AuthOpciones redirectPath={redirectPath} idPrefix="guardar" />
+          <AuthOpciones redirectPath={redirectPath} idPrefix="guardar" correoPlegado />
         </div>
 
         <button
           type="button"
           onClick={onClose}
-          className="mt-4 w-full py-2 text-sm text-stone-500 transition-colors hover:text-stone-300"
+          className="mt-3 w-full py-3 text-sm text-stone-400 underline-offset-2 transition-colors hover:text-texto-claro hover:underline"
         >
-          {t("ahora_no")}
+          {t("omitir_leer")}
         </button>
       </motion.div>
     </motion.div>
+  );
+}
+
+function IconoQr() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden="true">
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <path strokeLinecap="round" d="M14 14h3v3M21 14v.01M14 21h3M21 17v4h-1" />
+      <path strokeLinecap="round" d="M6 6.5v.01M17.5 6.5v.01M6 17.5v.01" />
+    </svg>
   );
 }
