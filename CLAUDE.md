@@ -340,6 +340,13 @@ falta, `primeraFrase()` (`page.tsx`) deriva el gancho cortando en el primer `.`/
 que gancho + ficha de datos se lean como una sola escena en el primer scroll (antes el resumen solo
 ya llenaba el viewport completo en móvil).
 
+**Anatomía por pasos (2026-10-22):** ya no avanza con el scroll — un elemento a la vez en una tarjeta con
+borde completo, sin desplazamiento vertical (antes el texto se cortaba bajo el header/la foto sticky). Se pasa con
+‹ › (en móvil a los lados de la foto, en escritorio bajo la tarjeta), deslizando la tarjeta, con los pines, los
+chips o las flechas del teclado. Paso -1 = personaje completo ("Empezar"); tras el último, "Ver completo" vuelve
+a él. Un molde invisible con todas las tarjetas en la misma celda de grid reserva el alto de la más alta → la
+página no salta. Textos nuevos en `anatomia` (`inicio_*`, `empezar`, `anterior`, `siguiente`, `ver_completo`).
+
 **Anatomía — cámara y pines (2026-10-15):** el escenario tiene la proporción exacta de la foto (se lee
 en `onLoad`), así los `x,y` % de los hotspots caen sobre la figura — antes `object-contain` en otra caja los
 descuadraba. Cada elemento activo mueve la "cámara" (zoom 1.7–1.8 hacia el punto, desplazamiento limitado para

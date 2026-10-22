@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "framer-motion";
 import { useTranslations } from "next-intl";
 import type { Hotspot } from "@seres-del-pase/types";
 
@@ -29,45 +29,40 @@ function loadVisited(slug: string, total: number): Set<number> {
   }
 }
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+/** Distancia mínima (px) del gesto horizontal para pasar de elemento. */
+const UMBRAL_SWIPE = 50;
+
 /**
- * "Anatomía": diagrama interactivo del personaje — el corazón del premio de
- * desbloquear el imán. Visual sticky con pines numerados; al desplazarse, cada
- * elemento se activa en secuencia (IntersectionObserver, robusto en iOS). En
- * escritorio los pines son clicables (saltan a su bloque); en móvil la
- * secuencia avanza con el scroll. Cada card trae un close-up del elemento
- * (recorte ampliado de la misma foto) y un spotlight ilumina la figura en el
- * punto activo. El progreso de descubrimiento se guarda en localStorage y al
- * completar todos los elementos se revela un sello final. Respeta reduced-motion.
+ * "Anatomía": diagrama del personaje por pasos. Un elemento a la vez — sin scroll
+ * vertical: se pasa con las flechas ‹ ›, deslizando la tarjeta (móvil), con los
+ * pines de la foto o con los chips. Paso -1 = el personaje completo (al entrar y al
+ * terminar). La "cámara" hace zoom hacia el elemento activo y un spotlight lo
+ * ilumina; la tarjeta trae un close-up (recorte ampliado de la misma foto). Las
+ * tarjetas se apilan en la misma celda de grid → la sección mide lo que la más
+ * alta y no salta al cambiar. Progreso en localStorage. Respeta reduced-motion.
  */
 export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, embedded = false }: AnatomiaSectionProps) {
   const reduced = useReducedMotion();
   const t = useTranslations("anatomia");
-  // -1 = ningún elemento: se ve el personaje completo (al entrar y al terminar).
+  const total = hotspots.length;
+  // -1 = ningún elemento: se ve el personaje completo.
   const [activeIdx, setActiveIdx] = useState(-1);
+  // Sentido del último cambio (1 avanza, -1 retrocede) para la dirección de la transición.
+  const [sentido, setSentido] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
   const [aspecto, setAspecto] = useState(0.62);
-  const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const chipsRef = useRef<HTMLDivElement>(null);
   const chipRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  // Arranca vacío en ambos entornos (SSR-safe) — se hidrata desde localStorage
-  // en un efecto más abajo. Necesario porque este componente SÍ puede
-  // server-renderizarse cuando el gating está apagado (useDesbloqueo resuelve
-  // `resolved=true` de inmediato si no hay Supabase configurado), así que leer
-  // localStorage en el inicializador de useState causaría mismatch de hidratación.
+  // Arranca vacío (SSR-safe) y se hidrata desde localStorage; se re-sincroniza si
+  // cambia el personaje sin desmontar. Va ANTES del efecto que marca visitados.
   const [visited, setVisited] = useState<Set<number>>(() => new Set());
-  // Carga el progreso guardado (client-only) y se re-sincroniza si el usuario
-  // navega de un personaje a otro sin que el componente llegue a desmontarse
-  // (el `slug` cambiaría de prop pero el estado `visited` seguiría siendo el
-  // del personaje anterior sin este efecto). Debe declararse ANTES del efecto
-  // que marca `activeIdx` como visitado: React corre los efectos de un mismo
-  // commit en orden de declaración, así que este `setVisited(loaded)`
-  // (reemplazo completo) se aplica antes que el `setVisited(prev => ...)`
-  // (suma funcional) del siguiente efecto — sin perder el elemento activo.
   useEffect(() => {
-    setVisited(loadVisited(slug, hotspots.length));
-  }, [slug, hotspots.length]);
+    setVisited(loadVisited(slug, total));
+    setActiveIdx(-1);
+  }, [slug, total]);
 
-  // En el layout apilado (<lg) el visual va sticky arriba; en escritorio es de 2 columnas.
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 1023px)");
     const update = () => setIsMobile(mq.matches);
@@ -76,47 +71,30 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  // Activación secuencial: una línea del viewport decide qué bloque está activo.
-  // Antes del primero o después del último no hay ninguno → personaje completo.
-  // En móvil la línea va más abajo (≈66%) para que el texto activo caiga DEBAJO
-  // del visual sticky.
-  useEffect(() => {
-    const onScroll = () => {
-      const linea = window.innerHeight * (isMobile ? 0.66 : 0.5);
-      let idx = -1;
-      stepRefs.current.forEach((el, i) => {
-        if (!el) return;
-        const r = el.getBoundingClientRect();
-        if (r.top <= linea && r.bottom > linea) idx = i;
+  const irA = useCallback(
+    (i: number) => {
+      const destino = Math.max(-1, Math.min(total - 1, i));
+      setActiveIdx((actual) => {
+        if (destino !== actual) setSentido(destino > actual ? 1 : -1);
+        return destino;
       });
-      setActiveIdx(idx);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, [hotspots.length, isMobile]);
+    },
+    [total],
+  );
+  const siguiente = () => (activeIdx >= total - 1 ? irA(-1) : irA(activeIdx + 1));
+  const anterior = () => irA(activeIdx - 1);
 
-  // En móvil, mantener visible el chip activo dentro del mini-nav de scroll
-  // horizontal — pero no en el mount inicial: si el usuario aún no llegó a esta
-  // sección (vive muy por debajo del fold), `scrollIntoView({block:"nearest"})`
-  // secuestraría el scroll de toda la ventana para revelar el chip.
-  const chipScrollArmado = useRef(false);
+  // Chip activo visible dentro de su fila (scroll horizontal del contenedor, nunca
+  // de la ventana — scrollIntoView movería la página).
   useEffect(() => {
-    if (!isMobile || activeIdx < 0) return;
-    if (!chipScrollArmado.current) {
-      chipScrollArmado.current = true;
-      return;
-    }
-    chipRefs.current[activeIdx]?.scrollIntoView({
+    const fila = chipsRef.current;
+    const chip = chipRefs.current[activeIdx];
+    if (!fila || !chip || fila.scrollWidth <= fila.clientWidth) return;
+    fila.scrollTo({
+      left: chip.offsetLeft - (fila.clientWidth - chip.clientWidth) / 2,
       behavior: reduced ? "auto" : "smooth",
-      inline: "center",
-      block: "nearest",
     });
-  }, [activeIdx, isMobile, reduced]);
+  }, [activeIdx, reduced]);
 
   // Descubrimiento: marca el elemento activo como visitado y persiste el progreso.
   useEffect(() => {
@@ -133,12 +111,20 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
     });
   }, [activeIdx, slug]);
 
-  function goTo(i: number) {
-    stepRefs.current[i]?.scrollIntoView({
-      behavior: reduced ? "auto" : "smooth",
-      block: "center",
-    });
-  }
+  const onSwipe = (_: unknown, info: PanInfo) => {
+    if (info.offset.x <= -UMBRAL_SWIPE) siguiente();
+    else if (info.offset.x >= UMBRAL_SWIPE && activeIdx > -1) anterior();
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      siguiente();
+    } else if (e.key === "ArrowLeft" && activeIdx > -1) {
+      e.preventDefault();
+      anterior();
+    }
+  };
 
   const activo = hotspots[activeIdx];
   // Cámara: zoom hacia el elemento activo, que queda al centro del escenario.
@@ -150,14 +136,98 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
   const tx = reduced ? 0 : mover(activo?.x ?? 50);
   const ty = reduced ? 0 : mover(activo?.y ?? 50);
   /** Posición en pantalla de un punto de la foto, con la cámara aplicada. */
-  const enPantalla = (p: number, t: number) => 50 + zoom * (p - 50) + t;
+  const enPantalla = (p: number, d: number) => 50 + zoom * (p - 50) + d;
   const Wrapper = embedded ? "div" : "section";
+  const enUltimo = activeIdx === total - 1;
+
+  /** Contenido de una tarjeta: -1 = el personaje completo, i = elemento i. */
+  const contenido = (i: number) => {
+    const h = hotspots[i];
+    if (!h) {
+      return (
+        <>
+          <span className="font-sans text-xs font-medium tracking-wide" style={{ color: accentColor }}>
+            {t("inicio_kicker")}
+          </span>
+          <h3 className="mt-1 font-display text-[clamp(1.5rem,4.5vw,2.5rem)] leading-[1.05] text-texto-claro">
+            {nombre}
+          </h3>
+          <div className="mt-4 h-px w-10 sm:mt-5" style={{ backgroundColor: accentColor }} />
+          <p className="mt-4 text-base leading-relaxed text-stone-300 sm:mt-5 sm:text-lg">
+            {t("inicio_texto", { nombre, total })}
+          </p>
+        </>
+      );
+    }
+    return (
+      <>
+        <div className="flex items-center gap-4 sm:items-start sm:gap-5">
+          {/* Lupa: recorte ampliado de la misma foto, centrado en el elemento */}
+          <div
+            aria-hidden="true"
+            className="h-[60px] w-[60px] flex-none overflow-hidden rounded-full border-2 bg-stone-900 sm:h-[88px] sm:w-[88px]"
+            style={{
+              borderColor: `${accentColor}70`,
+              backgroundImage: `url(${imagen.url})`,
+              backgroundSize: "420%",
+              backgroundPosition: `${h.x}% ${h.y}%`,
+              boxShadow: `0 0 0 4px ${accentColor}15`,
+            }}
+          />
+          <div className="min-w-0">
+            <span className="font-sans text-xs font-medium tracking-wide" style={{ color: accentColor }}>
+              {t("contador", { n: i + 1, total })}
+            </span>
+            <h3 className="mt-1 font-display text-[clamp(1.5rem,4.5vw,2.5rem)] leading-[1.05] text-texto-claro">
+              {h.titulo}
+            </h3>
+          </div>
+        </div>
+        <div className="mt-4 h-px w-10 sm:mt-5" style={{ backgroundColor: accentColor }} />
+        <p className="mt-4 text-base leading-relaxed text-stone-300 sm:mt-5 sm:text-lg">{h.cuerpo}</p>
+        {(h.material || h.artesano) && (
+          <dl className="mt-5 space-y-3 border-t border-borde-sutil pt-4 sm:mt-6 sm:space-y-4 sm:pt-5">
+            {h.material && (
+              <div>
+                <dt className="text-[10px] uppercase tracking-[0.22em] text-stone-500">{t("material")}</dt>
+                <dd className="mt-1 text-sm text-stone-300">{h.material}</dd>
+              </div>
+            )}
+            {h.artesano && (
+              <div>
+                <dt className="text-[10px] uppercase tracking-[0.22em] text-stone-500">{t("artesano")}</dt>
+                <dd className="mt-1 text-sm italic text-stone-400">{h.artesano}</dd>
+              </div>
+            )}
+          </dl>
+        )}
+      </>
+    );
+  };
+
+  const puntos = (
+    <div className="flex items-center gap-1.5" aria-hidden="true">
+      {hotspots.map((h, i) => (
+        <span
+          key={h.id}
+          className="h-1.5 rounded-full transition-all duration-300"
+          style={{
+            width: i === activeIdx ? 20 : 6,
+            backgroundColor: i === activeIdx || visited.has(i) ? accentColor : "rgb(var(--borde-sutil))",
+            opacity: i === activeIdx ? 1 : visited.has(i) ? 0.5 : 1,
+          }}
+        />
+      ))}
+    </div>
+  );
+
+  const etiquetaSiguiente = activeIdx === -1 ? t("empezar") : enUltimo ? t("ver_completo") : t("siguiente");
 
   return (
     <Wrapper className={embedded ? "" : "border-t border-borde-sutil py-16 sm:py-24"}>
       <div className="mx-auto max-w-6xl px-5 sm:px-6">
         {/* Encabezado */}
-        <div className="mb-10 sm:mb-14">
+        <div className="mb-8 sm:mb-12">
           <span className="block text-[11px] uppercase tracking-[0.32em]" style={{ color: accentColor }}>
             {t("eyebrow")}
           </span>
@@ -166,17 +236,36 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
           </h2>
           <p className="mt-3 text-base text-stone-400">{t("hint")}</p>
           <div className="mt-3 flex items-center gap-2.5">
-            <ProgressRing value={visited.size} total={hotspots.length} accentColor={accentColor} />
-            <p className="text-sm text-stone-400">
-              {t("descubiertos", { n: visited.size, total: hotspots.length })}
-            </p>
+            <ProgressRing value={visited.size} total={total} accentColor={accentColor} />
+            <p className="text-sm text-stone-400">{t("descubiertos", { n: visited.size, total })}</p>
           </div>
         </div>
 
-        <div className="lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
-          {/* ── Visual sticky con pines ── */}
-          <div className="sticky top-16 z-10 -mx-5 mb-2 self-start bg-fondo-oscuro px-5 pb-4 pt-2 sm:mx-0 sm:px-0 lg:top-24 lg:bg-transparent lg:pb-0">
-            <div className="relative mx-auto flex h-[38vh] w-full justify-center sm:h-[40vh] lg:h-[56vh]">
+        <div
+          className="lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-12"
+          role="group"
+          aria-roledescription="carrusel"
+          aria-label={t("eyebrow")}
+          onKeyDown={onKeyDown}
+        >
+          {/* ── Visual con pines ── */}
+          <div>
+            <div className="relative mx-auto flex h-[36vh] w-full items-center justify-center sm:h-[42vh] lg:h-[60vh]">
+              {/* Móvil: flechas a los lados de la foto — siempre a mano mientras se mira la figura */}
+              <div className="absolute left-0 top-1/2 z-20 -translate-y-1/2 lg:hidden">
+                <BotonPaso onClick={anterior} disabled={activeIdx === -1} etiqueta={t("anterior")} accentColor={accentColor}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 6l-6 6 6 6" />
+                </BotonPaso>
+              </div>
+              <div className="absolute right-0 top-1/2 z-20 -translate-y-1/2 lg:hidden">
+                <BotonPaso onClick={siguiente} etiqueta={etiquetaSiguiente} accentColor={accentColor} lleno pulso={activeIdx === -1}>
+                  {enUltimo ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 6l6 6-6 6" />
+                  )}
+                </BotonPaso>
+              </div>
               {/* Escenario con la proporción exacta de la foto: así los % de los pines
                   caen sobre la figura (con object-contain en otra caja no cuadraban). */}
               <div
@@ -187,12 +276,8 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
                 <motion.div
                   className="absolute inset-0"
                   style={{ transformOrigin: "50% 50%" }}
-                  animate={{
-                    scale: zoom,
-                    x: `${tx}%`,
-                    y: `${ty}%`,
-                  }}
-                  transition={{ duration: reduced ? 0 : 0.9, ease: [0.22, 1, 0.36, 1] }}
+                  animate={{ scale: zoom, x: `${tx}%`, y: `${ty}%` }}
+                  transition={{ duration: reduced ? 0 : 0.9, ease: EASE }}
                 >
                   <Image
                     src={imagen.url}
@@ -216,11 +301,10 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
                     opacity: activo ? 1 : 0,
                     background: `radial-gradient(circle at ${enPantalla(activo?.x ?? 50, tx)}% ${enPantalla(activo?.y ?? 50, ty)}%, rgba(15,14,12,0) 0%, rgba(15,14,12,0) 26%, rgba(15,14,12,0.55) 70%)`,
                   }}
-                  transition={{ duration: reduced ? 0 : 0.9, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: reduced ? 0 : 0.9, ease: EASE }}
                 />
 
-                {/* Pines: fuera de la cámara para que no crezcan con el zoom; su posición
-                    en pantalla = 50 + zoom·(p − activo). */}
+                {/* Pines: fuera de la cámara para que no crezcan con el zoom. */}
                 {hotspots.map((h, i) => {
                   const isActive = i === activeIdx;
                   const isVisited = visited.has(i);
@@ -228,22 +312,20 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
                     <motion.button
                       key={h.id}
                       type="button"
-                      onClick={() => goTo(i)}
-                      className="absolute z-10 -translate-x-1/2 -translate-y-1/2 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                      onClick={() => irA(i)}
+                      className="absolute z-10 -translate-x-1/2 -translate-y-1/2 rounded-full p-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
                       initial={false}
-                      animate={{
-                        left: `${enPantalla(h.x, tx)}%`,
-                        top: `${enPantalla(h.y, ty)}%`,
-                      }}
-                      transition={{ duration: reduced ? 0 : 0.9, ease: [0.22, 1, 0.36, 1] }}
+                      animate={{ left: `${enPantalla(h.x, tx)}%`, top: `${enPantalla(h.y, ty)}%` }}
+                      transition={{ duration: reduced ? 0 : 0.9, ease: EASE }}
                       aria-label={h.titulo}
                       aria-current={isActive}
                     >
-                      {isActive && !reduced &&
+                      {isActive &&
+                        !reduced &&
                         [0, 0.6].map((delay) => (
                           <motion.span
                             key={delay}
-                            className="absolute inset-0 rounded-full"
+                            className="absolute inset-2 rounded-full"
                             style={{ border: `2px solid ${accentColor}` }}
                             animate={{ scale: [1, 2.4], opacity: [0.9, 0] }}
                             transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut", delay }}
@@ -255,7 +337,7 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
                           width: isActive ? 32 : 24,
                           height: isActive ? 32 : 24,
                           fontSize: isActive ? 13 : 11,
-                          backgroundColor: isActive ? accentColor : isVisited ? `${accentColor}` : "rgba(15,14,12,0.85)",
+                          backgroundColor: isActive || isVisited ? accentColor : "rgba(15,14,12,0.85)",
                           color: isActive || isVisited ? "#0F0E0C" : "white",
                           opacity: isActive ? 1 : 0.85,
                         }}
@@ -272,16 +354,15 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
                   );
                 })}
               </div>
-
-              {/* Degradado inferior — evita que el texto se transluzca bajo el sticky en móvil */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 -bottom-4 h-8 bg-gradient-to-b from-transparent to-fondo-oscuro lg:hidden"
-              />
             </div>
 
-            {/* Mini-nav de elementos (debajo del visual) — fila con scroll en móvil */}
-            <div className="mt-3 flex snap-x gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:mt-5 lg:flex-wrap lg:justify-center lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden">
+            <div className="mt-3 flex justify-center lg:hidden">{puntos}</div>
+
+            {/* Chips de elementos — fila con scroll horizontal en móvil */}
+            <div
+              ref={chipsRef}
+              className="mt-3 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:mt-5 lg:flex-wrap lg:justify-center lg:overflow-visible lg:pb-0 [&::-webkit-scrollbar]:hidden"
+            >
               {hotspots.map((h, i) => (
                 <button
                   key={h.id}
@@ -289,8 +370,9 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
                   ref={(el) => {
                     chipRefs.current[i] = el;
                   }}
-                  onClick={() => goTo(i)}
-                  className="flex-none snap-center whitespace-nowrap rounded-full border px-3 py-1 text-[11px] transition-colors"
+                  onClick={() => irA(i)}
+                  aria-current={i === activeIdx}
+                  className="flex-none whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] transition-colors"
                   style={{
                     borderColor: i === activeIdx ? `${accentColor}60` : "rgb(var(--borde-sutil))",
                     color: i === activeIdx ? accentColor : "rgb(var(--stone-500))",
@@ -304,86 +386,112 @@ export function AnatomiaSection({ slug, imagen, hotspots, accentColor, nombre, e
             </div>
           </div>
 
-          {/* ── Bloques de texto (uno por elemento) ── */}
-          <div>
-            {hotspots.map((h, i) => (
-              <div
-                key={h.id}
-                data-idx={i}
-                ref={(el) => {
-                  stepRefs.current[i] = el;
-                }}
-                className="flex min-h-[42vh] flex-col justify-center py-5 sm:py-6 lg:min-h-[56vh]"
-              >
+          {/* ── Tarjeta del elemento + navegación ── */}
+          <div className="mt-4 lg:mt-0">
+            <motion.div
+              drag={reduced ? false : "x"}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.18}
+              dragSnapToOrigin
+              onDragEnd={onSwipe}
+              className="relative grid touch-pan-y overflow-hidden rounded-2xl border border-borde-sutil bg-fondo-oscuro/60"
+              aria-live="polite"
+            >
+              {/* Molde invisible: todas las tarjetas en la misma celda → alto de la más alta, sin saltos */}
+              {[-1, ...hotspots.map((_, i) => i)].map((i) => (
+                <div key={`molde-${i}`} aria-hidden="true" className="invisible col-start-1 row-start-1 p-5 sm:p-7">
+                  {contenido(i)}
+                </div>
+              ))}
+              <AnimatePresence initial={false} custom={sentido}>
                 <motion.div
-                  initial={reduced ? false : { opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.4 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  animate={{ opacity: i === activeIdx ? 1 : 0.4 }}
+                  key={activeIdx}
+                  custom={sentido}
+                  variants={{
+                    entra: (d: number) => ({ opacity: 0, x: reduced ? 0 : d * 40 }),
+                    centro: { opacity: 1, x: 0 },
+                    sale: (d: number) => ({ opacity: 0, x: reduced ? 0 : d * -40 }),
+                  }}
+                  initial="entra"
+                  animate="centro"
+                  exit="sale"
+                  transition={{ duration: reduced ? 0 : 0.4, ease: EASE }}
+                  className="col-start-1 row-start-1 p-5 sm:p-7"
                 >
-                  <div className="flex items-start gap-4 sm:gap-5">
-                    {/* Lupa: recorte ampliado de la misma foto, centrado en el elemento */}
-                    <motion.div
-                      aria-hidden="true"
-                      initial={reduced ? false : { opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true, amount: 0.6 }}
-                      transition={{ duration: 0.45, ease: "easeOut" }}
-                      className="h-[68px] w-[68px] flex-none overflow-hidden rounded-full border-2 bg-stone-900 sm:h-[92px] sm:w-[92px]"
-                      style={{
-                        borderColor: `${accentColor}70`,
-                        backgroundImage: `url(${imagen.url})`,
-                        backgroundSize: "420%",
-                        backgroundPosition: `${h.x}% ${h.y}%`,
-                        boxShadow: `0 0 0 4px ${accentColor}15`,
-                      }}
-                    />
-                    <div className="min-w-0">
-                      <span className="font-sans text-xs font-medium tracking-wide" style={{ color: accentColor }}>
-                        {t("contador", { n: i + 1, total: hotspots.length })}
-                      </span>
-                      <h3 className="mt-1 font-display text-[clamp(1.6rem,4.5vw,2.5rem)] leading-[1.05] text-texto-claro">
-                        {h.titulo}
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="mt-5 h-px w-10" style={{ backgroundColor: accentColor }} />
-                  <p className="mt-5 text-base leading-relaxed text-stone-300 sm:text-lg">{h.cuerpo}</p>
-
-                  {(h.material || h.artesano) && (
-                    <dl className="mt-7 space-y-4 border-t border-borde-sutil pt-6">
-                      {h.material && (
-                        <div>
-                          <dt
-                            className="text-[10px] uppercase tracking-[0.22em] text-stone-500"
-                          >
-                            {t("material")}
-                          </dt>
-                          <dd className="mt-1 text-sm text-stone-300">{h.material}</dd>
-                        </div>
-                      )}
-                      {h.artesano && (
-                        <div>
-                          <dt className="text-[10px] uppercase tracking-[0.22em] text-stone-500">
-                            {t("artesano")}
-                          </dt>
-                          <dd className="mt-1 text-sm italic text-stone-400">{h.artesano}</dd>
-                        </div>
-                      )}
-                    </dl>
-                  )}
+                  {contenido(activeIdx)}
                 </motion.div>
-              </div>
-            ))}
+              </AnimatePresence>
+            </motion.div>
 
-            {/* Cierre: al pasar el último elemento la cámara vuelve al personaje completo */}
-            <div aria-hidden="true" className="h-[12vh] lg:h-[50vh]" />
+            {/* Escritorio: ‹ · puntos · › bajo la tarjeta */}
+            <div className="mt-4 hidden items-center justify-between gap-3 lg:flex">
+              <BotonPaso onClick={anterior} disabled={activeIdx === -1} etiqueta={t("anterior")} accentColor={accentColor}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 6l-6 6 6 6" />
+              </BotonPaso>
+              {puntos}
+              {activeIdx === -1 || enUltimo ? (
+                <button
+                  type="button"
+                  onClick={siguiente}
+                  className="flex h-11 items-center gap-2 rounded-full px-5 text-sm font-semibold text-fondo-oscuro transition-transform hover:scale-[1.03]"
+                  style={{ backgroundColor: accentColor }}
+                >
+                  {etiquetaSiguiente}
+                  {activeIdx === -1 && (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 6l6 6-6 6" />
+                    </svg>
+                  )}
+                </button>
+              ) : (
+                <BotonPaso onClick={siguiente} etiqueta={etiquetaSiguiente} accentColor={accentColor} lleno>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 6l6 6-6 6" />
+                </BotonPaso>
+              )}
+            </div>
           </div>
         </div>
       </div>
     </Wrapper>
+  );
+}
+
+function BotonPaso({
+  onClick,
+  disabled = false,
+  etiqueta,
+  accentColor,
+  lleno = false,
+  pulso = false,
+  children,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+  etiqueta: string;
+  accentColor: string;
+  lleno?: boolean;
+  /** Halo que late para invitar a empezar. */
+  pulso?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={etiqueta}
+      title={etiqueta}
+      className={`flex h-11 w-11 flex-none items-center justify-center rounded-full border bg-fondo-oscuro/70 backdrop-blur-sm transition-all hover:scale-[1.05] disabled:pointer-events-none disabled:opacity-30 ${pulso ? "motion-safe:animate-pulse" : ""}`}
+      style={
+        lleno
+          ? { backgroundColor: accentColor, borderColor: accentColor, color: "#0F0E0C" }
+          : { borderColor: "rgb(var(--borde-sutil))", color: "rgb(var(--stone-300))" }
+      }
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} aria-hidden="true">
+        {children}
+      </svg>
+    </button>
   );
 }
 

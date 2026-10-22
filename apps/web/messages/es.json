@@ -180,11 +180,17 @@
   "anatomia": {
     "eyebrow": "Anatomía del personaje",
     "titulo": "Cada pieza cuenta algo",
-    "hint": "Desplázate para recorrer cada elemento del traje.",
+    "hint": "Usa las flechas, desliza o toca un punto para recorrer cada elemento del traje.",
     "contador": "Elemento {n} de {total}",
     "material": "Material",
     "artesano": "Quién lo hace",
-    "descubiertos": "{n} de {total} descubiertos"
+    "descubiertos": "{n} de {total} descubiertos",
+    "inicio_kicker": "El personaje completo",
+    "inicio_texto": "{nombre} lleva {total} piezas con significado. Recórrelas una por una.",
+    "empezar": "Empezar",
+    "anterior": "Anterior",
+    "siguiente": "Siguiente",
+    "ver_completo": "Ver completo"
   },
   "coleccion": {
     "titulo": "Mis personajes",
