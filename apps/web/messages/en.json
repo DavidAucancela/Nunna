@@ -180,11 +180,17 @@
   "anatomia": {
     "eyebrow": "Anatomy of the character",
     "titulo": "Every piece tells a story",
-    "hint": "Scroll to explore each part of the costume.",
+    "hint": "Use the arrows, swipe or tap a dot to go through each element of the costume.",
     "contador": "Element {n} of {total}",
     "material": "Material",
     "artesano": "Who makes it",
-    "descubiertos": "{n} of {total} discovered"
+    "descubiertos": "{n} of {total} discovered",
+    "inicio_kicker": "The whole character",
+    "inicio_texto": "{nombre} wears {total} meaningful pieces. Go through them one by one.",
+    "empezar": "Start",
+    "anterior": "Previous",
+    "siguiente": "Next",
+    "ver_completo": "See it whole"
   },
   "coleccion": {
     "titulo": "My characters",
