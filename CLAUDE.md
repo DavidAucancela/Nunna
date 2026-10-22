@@ -1175,7 +1175,11 @@ quichua como opción de UI** y la **feature de glosario** por completo.
 - `imagenPortada` → retrato portrait, para tarjetas pequeñas y el lomo activo en móvil (`PersonajesLibro`)
 - `imagenGrupo` → foto landscape de los 4 imanes juntos; el lomo activo de `PersonajesLibro` la usa
   desde `sm` (ver "PersonajesLibro" en decisiones técnicas). Opcional: sin ella cae al retrato
-- `imagenBanner` → landscape 1376×768 con texto de marca, para hero grande
+- `imagenBanner` → foto **real** de pase, landscape, a pantalla completa en el hero (2026-10-22: Aya Uma, Payaso,
+  Perro y Diablo de lata dejaron los banners generados de `public/headers/` — filas de copias del imán — por una
+  foto de su galería; Cucurucho y Danzante ya tenían foto real en `headers/`). Su `altText` sale de la misma foto en
+  `multimedia`. `imagenBannerPosicion` (opcional, CSS object-position, p. ej. `"30% 50%"`) fija el foco cuando el
+  sujeto no está al centro — en el celular el recorte vertical es estrecho (Payaso y Diablo de lata lo usan).
 - `ParallaxHero` usa `imagenBanner ?? imagen` (banner primero, retrato como fallback)
 - Personajes sin `imagenBanner` muestran `OrigenPlaceholder` artístico en el hero
 

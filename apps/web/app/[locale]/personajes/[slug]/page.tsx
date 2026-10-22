@@ -73,8 +73,15 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   if (!personaje) notFound();
 
   const imagenPortada = personaje.multimedia.find((m) => m.tipo === "imagen");
+  // Foto real de pase a pantalla completa; su altText sale de la misma foto en `multimedia`.
   const imagenBanner = personaje.imagenBanner
-    ? { url: personaje.imagenBanner, altText: `${personaje.nombre} — Nunna` }
+    ? {
+        url: personaje.imagenBanner,
+        altText:
+          personaje.multimedia.find((m) => m.url === personaje.imagenBanner)?.altText ??
+          `${personaje.nombre} — Nunna`,
+        ...(personaje.imagenBannerPosicion ? { posicion: personaje.imagenBannerPosicion } : {}),
+      }
     : undefined;
   const style = getOrigenStyle(personaje.origen);
 

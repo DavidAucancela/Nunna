@@ -24,7 +24,8 @@ interface HeroDespertarProps {
   nombresAlt: string[];
   origen?: TipoOrigen | undefined;
   imagen?: { url: string; altText: string } | undefined;
-  imagenBanner?: { url: string; altText: string } | undefined;
+  /** `posicion` = foco de la foto (CSS object-position). */
+  imagenBanner?: { url: string; altText: string; posicion?: string } | undefined;
   origenLabel: string;
   accentColor: string;
   audioAmbiente?: string | undefined;
@@ -58,7 +59,7 @@ export function HeroDespertar({
 
   const [soundOn, setSoundOn] = useState(false);
 
-  const fuente = imagenBanner ?? imagen;
+  const fuente: { url: string; altText: string; posicion?: string } | undefined = imagenBanner ?? imagen;
 
   // 12 puntos de luz (los 12 cuernos del Aya Uma; genérico para el resto)
   const { canvasRef } = useParticleCanvas({
@@ -142,6 +143,7 @@ export function HeroDespertar({
             aria-hidden="true"
             fill
             className="scale-125 object-cover blur-2xl brightness-50"
+            style={{ objectPosition: fuente.posicion }}
             priority
             sizes="100vw"
           />
@@ -166,6 +168,7 @@ export function HeroDespertar({
               alt={fuente.altText}
               fill
               className="object-cover"
+              style={{ objectPosition: fuente.posicion }}
               priority
               sizes="100vw"
             />
