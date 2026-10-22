@@ -113,7 +113,15 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
   // de la narrativa para que la ficha funcione ya, antes de tener los assets.
   // El fallback reutiliza las imágenes existentes del personaje como visual de
   // cada beat (rota entre ellas); sin imágenes cae al placeholder por origen.
-  const imagenesBeat = personaje.multimedia.filter((m) => m.tipo === "imagen");
+  // Solo fotos reales de pase (por `orden`, sin afiches con texto): la historia se cuenta
+  // con la fiesta, no con el imán — el imán ya está en el hero y en la anatomía. Si un
+  // personaje aún no tiene fotos de pase, cae a sus demás imágenes.
+  const imagenesPase = personaje.multimedia
+    .filter((m) => m.tipo === "imagen" && m.titulo === "en-pase" && !/afiche/i.test(m.id))
+    .sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+  const imagenesBeat = imagenesPase.length
+    ? imagenesPase
+    : personaje.multimedia.filter((m) => m.tipo === "imagen");
   const presentacionBeats: PresentacionBeat[] = personaje.presentacion?.length
     ? personaje.presentacion
     : (personaje.narrativa?.capitulos ?? []).map((c, i) => {

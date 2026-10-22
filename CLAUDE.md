@@ -272,7 +272,10 @@ menos de 3 de pase completa con el resto (sin la portada). Textos en el namespac
 
 La galería es **una sola grilla** (sin pestañas, `GaleriaSection.tsx`): combina todas las fotos del
 personaje. Las de pase (`titulo:"en-pase"`) van **primero** (protagonismo a la festividad), luego el
-resto por `orden`. El `titulo` ya no crea pestañas — solo define el **rank** de aparición y qué fotos
+resto por `orden`.
+> **Beats de "Descubre su historia" (2026-10-22):** sin `presentacion[]`, cada capítulo toma una foto
+> `en-pase` por `orden` (sin afiches) — antes tomaba `multimedia` en bruto y el primer beat de los 6
+> personajes era la foto del imán (`imagenPortada`). Solo si no hay fotos de pase cae a las demás. El `titulo` ya no crea pestañas — solo define el **rank** de aparición y qué fotos
 alimentan el recorrido (`en-pase`). Las 3 primeras imágenes también alimentan los beats del modo
 presentación (fallback), así que basta con cargar fotos reales de pase para actualizar galería +
 presentación + recorrido a la vez.
