@@ -248,7 +248,9 @@
     "error_rate_limited": "We've sent too many links in a short time. Wait a few minutes and try again.",
     "boton_google": "Continue with Google",
     "separador_o": "or with your email",
-    "error_google": "Couldn't sign in with Google. Try your email instead."
+    "error_google": "Couldn't sign in with Google. Try your email instead.",
+    "boton_correo": "Continue with email",
+    "otras_opciones": "Other ways to sign in"
   },
   "guardar": {
     "eyebrow": "Your collection",
@@ -256,7 +258,6 @@
     "beneficio_coleccion": "It goes to My characters, with your achievements by origin.",
     "beneficio_certificado": "You get {nombre}'s certificate to download or share.",
     "beneficio_sello": "Every time you scan it you'll see it's yours.",
-    "ahora_no": "Not now",
     "guardar_enlace": "Save {nombre} to my collection",
     "sello": "{nombre} is part of your collection",
     "ver_certificado": "View my certificate",
@@ -265,7 +266,11 @@
     "exito_titulo": "{nombre} is yours",
     "exito_texto": "We saved it to your collection. Keep reading its page.",
     "seguir_leyendo": "Keep reading",
-    "certificado_descripcion": "Part of your collection of beings from Ecuador's popular festivals."
+    "certificado_descripcion": "Part of your collection of beings from Ecuador's popular festivals.",
+    "omitir_leer": "Not now, read the page",
+    "escanear_titulo": "Do you have the {nombre} magnet?",
+    "escanear_texto": "Scan the QR on its card to save it to your collection.",
+    "escanear_boton": "Scan QR"
   },
   "galeria": {
     "titulo": "At the festival",
@@ -275,5 +280,14 @@
     "cerrar": "Close",
     "anterior": "Previous photo",
     "siguiente": "Next photo"
+  },
+  "escaner": {
+    "titulo": "Point at the card's QR",
+    "ayuda": "Keep the code inside the frame.",
+    "cerrar": "Close",
+    "no_reconocido": "This QR isn't from a Nunna card.",
+    "error_permiso": "We need permission to use the camera. Enable it in your browser.",
+    "error_sin_camara": "We couldn't find a camera on this device.",
+    "error_generico": "We couldn't open the camera. Try again."
   }
 }

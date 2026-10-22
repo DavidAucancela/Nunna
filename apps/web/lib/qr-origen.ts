@@ -102,5 +102,12 @@ export function useLlegadaPorQr(slug: string) {
     setDescartada(true);
   }, [slug]);
 
-  return { porQr, descartada, descartar, recien };
+  /** Escaneo hecho dentro de la ficha (lector de la cámara): cuenta como una llegada por QR nueva. */
+  const marcarEscaneo = useCallback(() => {
+    registrarLlegadaQr(slug);
+    setPorQr(true);
+    setDescartada(false);
+  }, [slug]);
+
+  return { porQr, descartada, descartar, recien, marcarEscaneo };
 }
