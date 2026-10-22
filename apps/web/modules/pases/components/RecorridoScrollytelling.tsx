@@ -20,6 +20,7 @@ import type { Recorridos, RecorridoWaypoint } from "@/lib/data";
 import type { PaseListItem } from "@seres-del-pase/types";
 import { TILE_STYLE } from "@/lib/map/tile-style";
 import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
+import { usePasosAnclados } from "@/lib/scroll-por-pasos";
 
 // Scroll (en vh) que ocupa cada tramo entre dos fotos.
 const VH_POR_TRAMO = 50;
@@ -339,6 +340,14 @@ export function RecorridoScrollytelling({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paseSlug]);
+
+  // Un gesto = un paso: inicio + cada foto + cierre. El ancla va justo pasado el
+  // nudo de la foto (como `irAPaso`), así el punto rojo ya llegó a la parada.
+  const tramosTotales = nudos.length - 1;
+  usePasosAnclados(containerRef, [
+    0,
+    ...Array.from({ length: FIN + 1 }, (_, j) => 0.04 + (0.92 * (j + 1 + 0.15)) / tramosTotales),
+  ]);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,

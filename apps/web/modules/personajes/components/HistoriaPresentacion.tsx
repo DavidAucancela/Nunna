@@ -8,6 +8,7 @@ import type { PresentacionBeat } from "@seres-del-pase/types";
 import { OrigenPlaceholder } from "@/components/ui/OrigenPlaceholder";
 import { renderConTerminos } from "../kichwaGlosario";
 import { SecretoRitual } from "./SecretoRitual";
+import { anclasDeEscenas, usePasosAnclados } from "@/lib/scroll-por-pasos";
 
 interface HistoriaPresentacionProps {
   beats: PresentacionBeat[];
@@ -40,6 +41,8 @@ export function HistoriaPresentacion({
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
   const escenas = beats.length;
+  // Un gesto = un paso: un scroll rápido no se salta beats.
+  usePasosAnclados(trackRef, anclasDeEscenas(escenas));
 
   useEffect(() => {
     const onScroll = () => {
