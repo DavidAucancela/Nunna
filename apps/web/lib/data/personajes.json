@@ -23,7 +23,7 @@
       "icono": "/personajes/aya-uma/aya-uma-tarjeta-icono.png",
       "color": "#6184B6"
     },
-    "imagenBanner": "/headers/aya-uma-banner.webp",
+    "imagenBanner": "/personajes/aya-uma/aya-uma-pase-desfile-centro-riobamba.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/diablo-huma-inicio.png",
     "imagenGrupo": "/personajes/aya-uma/aya-uma-iman-cuatro-colores.webp",
     "narrativa": {
@@ -221,7 +221,8 @@
       "color": "#B69334",
       "llena": true
     },
-    "imagenBanner": "/headers/payaso-banner.webp",
+    "imagenBanner": "/personajes/payaso/payaso-pase-mascara-de-nariz-verde.jpg",
+    "imagenBannerPosicion": "30% 50%",
     "imagenIngreso": "/personajes/personaje_ingreso/payaso-inicio.jpg",
     "imagenGrupo": "/personajes/payaso/payaso-iman-cuatro-colores.png",
     "narrativa": {
@@ -399,7 +400,7 @@
       "color": "#8E3C2B",
       "llena": true
     },
-    "imagenBanner": "/headers/perro-banner.webp",
+    "imagenBanner": "/personajes/perro/perro-pase-mascara-blanca-con-huevo-de-pan.webp",
     "imagenIngreso": "/personajes/personaje_ingreso/perro-inicio.webp",
     "imagenGrupo": "/personajes/perro/perro-iman-cuatro-figuras.webp",
     "narrativa": {
@@ -585,7 +586,8 @@
       "color": "#C60D0D",
       "llena": true
     },
-    "imagenBanner": "/headers/diablos-de-lata-banner.webp",
+    "imagenBanner": "/personajes/diablos-de-lata/diablos-de-lata-pase-mascara-roja-de-perfil.jpg",
+    "imagenBannerPosicion": "30% 50%",
     "imagenIngreso": "/personajes/personaje_ingreso/diablos-lata-inicio.jpg",
     "imagenGrupo": "/personajes/diablos-de-lata/diablos-de-lata-iman-cuatro-figuras.webp",
     "narrativa": {

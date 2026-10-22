@@ -15,7 +15,7 @@ interface ParallaxHeroProps {
   nombresAlt: string[];
   origen?: TipoOrigen | undefined;
   imagen?: { url: string; altText: string } | undefined;
-  imagenBanner?: { url: string; altText: string } | undefined;
+  imagenBanner?: { url: string; altText: string; posicion?: string } | undefined;
   origenLabel: string;
   accentColor: string;
 }
@@ -65,6 +65,7 @@ export function ParallaxHero({
             alt={(imagenBanner ?? imagen)!.altText}
             fill
             className="object-cover"
+            style={{ objectPosition: imagenBanner?.posicion }}
             priority
             sizes="100vw"
           />

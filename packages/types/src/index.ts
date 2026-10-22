@@ -98,6 +98,8 @@ export interface Personaje {
   simbolismo?: string;
   origen?: TipoOrigen;
   imagenBanner?: string;
+  /** Foco de la foto del hero (CSS object-position, p. ej. "30% 50%") — en el celular el recorte vertical es estrecho. */
+  imagenBannerPosicion?: string;
   tarjeta?: TarjetaArte;
   /** Foto de escena (landscape) para el hero de /desbloquear/[slug] — distinta del banner de la ficha. */
   imagenIngreso?: string;
