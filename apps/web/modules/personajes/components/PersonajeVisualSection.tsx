@@ -5,6 +5,7 @@ import type { Hotspot, Media } from "@seres-del-pase/types";
 import { RevealText } from "@/components/ui/RevealText";
 import { AnatomiaSection } from "./AnatomiaSection";
 import { GaleriaSection } from "./GaleriaSection";
+import { RanuraEscanear } from "@/modules/coleccion/components/GuardarPersonaje";
 
 interface PersonajeVisualSectionProps {
   slug: string;
@@ -81,6 +82,9 @@ export function PersonajeVisualSection({
           />
         </div>
       )}
+
+      {/* Tarjeta "¿Tienes el imán?" — la pinta GuardarPersonaje solo si puede escanear. */}
+      <RanuraEscanear className="mx-auto mt-12 max-w-3xl px-5 sm:mt-16 sm:px-6" />
 
       {/* ── Movimiento II: galería ── */}
       <div className="mt-12 sm:mt-16">

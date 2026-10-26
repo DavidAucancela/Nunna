@@ -292,8 +292,9 @@
     "ayuda": "Mantén el código dentro del recuadro.",
     "cerrar": "Cerrar",
     "no_reconocido": "Este QR no corresponde a una tarjeta Nunna.",
-    "error_permiso": "Necesitamos permiso para usar la cámara. Habilítalo en tu navegador.",
+    "error_permiso": "Para escanear, permite el uso de la cámara en tu navegador (ícono junto a la dirección) e intenta de nuevo.",
     "error_sin_camara": "No encontramos una cámara en este dispositivo.",
-    "error_generico": "No pudimos abrir la cámara. Intenta de nuevo."
+    "error_generico": "No pudimos abrir la cámara. Intenta de nuevo.",
+    "reintentar": "Intentar de nuevo"
   }
 }

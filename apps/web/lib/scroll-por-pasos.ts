@@ -28,6 +28,7 @@ const FRENO_MS = 450;
 const GESTO_NUEVO_MS = 200;
 /** Ventana tras el último input del usuario en la que su scroll puede frenarse (ms). */
 const VENTANA_USUARIO_MS = 2500;
+const SIN_INPUT = Number.NEGATIVE_INFINITY;
 
 /**
  * Siguiente estado dado el último paso asentado (`prev`: -1 = antes de la sección,
@@ -98,7 +99,9 @@ export function usePasosAnclados(trackRef: RefObject<HTMLElement | null>, anclas
   useEffect(() => {
     let paso = -1;
     let freno: { y: number; hasta: number } | null = null;
-    let ultimoInput = 0;
+    // "Sin input" = -Infinity, no 0: performance.now() empieza en 0 al cargar, y con 0 el scroll
+    // restaurado por el navegador en los primeros 2,5 s se tomaría como gesto del usuario.
+    let ultimoInput = SIN_INPUT;
     let ultimaRueda = 0;
     let ultimoDelta = 0;
     let tocando = false;
@@ -186,15 +189,15 @@ export function usePasosAnclados(trackRef: RefObject<HTMLElement | null>, anclas
         ultimoInput = performance.now();
         freno = null;
       } else if (e.key === "Home" || e.key === "End") {
-        ultimoInput = 0;
+        ultimoInput = SIN_INPUT;
       }
     };
     // Clic / arrastre de la barra: lo que siga es scroll por programa o deliberado.
     const onPointerDown = () => {
-      if (!tocando) ultimoInput = 0;
+      if (!tocando) ultimoInput = SIN_INPUT;
     };
     const onClick = () => {
-      ultimoInput = 0;
+      ultimoInput = SIN_INPUT;
     };
 
     const opts = { capture: true, passive: false } as const;

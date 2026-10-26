@@ -881,6 +881,9 @@ rápido (fling, trackpad): el paso visible era solo "cuánto de la pista recorri
 - Solo frena scroll del usuario (rueda, arrastre, flechas/espacio/AvPág en los últimos 2,5 s). Clic, barra de
   scroll, Inicio/Fin y saltos por programa (`irAPaso` del recorrido, `scrollTo`) pasan sin frenar.
 - `LenisProvider` expone `getLenis()` para esto.
+- ⚠ "Sin input" es `-Infinity`, no `0` (fix 2026-10-26): `performance.now()` arranca en 0 al cargar, así que con 0
+  el scroll restaurado por el navegador (recarga a media ficha) en los primeros 2,5 s se frenaba como si fuera
+  del usuario y devolvía la página a la Historia.
 - Para una escena nueva: `usePasosAnclados(trackRef, anclasDeEscenas(n))` si cambia con `floor(progreso · n)`.
 - ⚠ Probado con Playwright (rueda con inercia + gesto táctil con fling de Chromium); **falta confirmarlo en un
   iPhone real** — en iOS el momentum podría pelear con el `scrollTo` del freno.
@@ -968,6 +971,13 @@ Reemplaza al desbloqueo por código (sección siguiente, que queda como historia
     diferida, cámara trasera). QR de este personaje → `marcarEscaneo()` (misma marca de 24 h) → animación →
     el mismo modal (o auto-guardado si hay sesión). QR de otro personaje → abre su ficha con `?origen=qr`.
     Acepta también tarjetas viejas sin marcador. Probado con Playwright + cámara falsa con el QR real.
+    **Ubicación (2026-10-26):** la tarjeta va entre la Anatomía y "En el pase" (`RanuraEscanear` en
+    `PersonajeVisualSection`); `GuardarPersonaje` la pinta ahí por portal, así el estado sigue en un solo lugar.
+    ⚠ **Permiso de cámara denegado tumbaba la ficha** ("Application error", bug real en producción): `stop()` de
+    html5-qrcode lanza de forma síncrona si la cámara no arrancó, y ese throw en la limpieza del efecto rompía
+    React. Ahora `apagar()` solo llama `stop()` si `isScanning` y va en try/catch. Además la librería no rechaza
+    con el `DOMException` sino con un texto ("Error getting userMedia, error = NotAllowedError…") —
+    `tipoErrorCamara()` lo clasifica (salía siempre el error genérico). El error trae "Intentar de nuevo".
 - **Cuenta**: `AuthOpciones` (Google + enlace mágico), compartido por el modal y `/login`. El botón de Google
   solo aparece con `NEXT_PUBLIC_AUTH_GOOGLE=1` (requiere el proveedor Google activo en Supabase Auth).
 - **Supabase**: `user_unlocks` se conserva (la colección); RPC nueva `save_personaje(p_slug)` (SECURITY
