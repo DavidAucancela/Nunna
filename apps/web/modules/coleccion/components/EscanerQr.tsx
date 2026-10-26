@@ -36,6 +36,43 @@ export function leerQrPersonaje(texto: string): QrPersonaje | null {
   return null;
 }
 
+export type ErrorCamara = "permiso" | "sin_camara" | "generico";
+
+/**
+ * Clasifica el fallo al abrir la cámara. html5-qrcode no rechaza con el DOMException:
+ * lo envuelve en un texto ("Error getting userMedia, error = NotAllowedError: …"),
+ * así que se mira tanto `name` como el texto.
+ */
+export function tipoErrorCamara(err: unknown): ErrorCamara {
+  const name = (err as { name?: string } | null)?.name ?? "";
+  const texto = `${name} ${String(err)}`;
+  if (/NotAllowed|Permission|denied|SecurityError/i.test(texto)) return "permiso";
+  if (/NotFound|DevicesNotFound|Requested device not found|OverconstrainedError/i.test(texto)) {
+    return "sin_camara";
+  }
+  return "generico";
+}
+
+/**
+ * Apaga el lector sin lanzar nunca: `stop()` de html5-qrcode lanza de forma SÍNCRONA si
+ * la cámara no llegó a arrancar (p. ej. permiso denegado), y un throw en la limpieza de
+ * un efecto tumba toda la página.
+ */
+function apagar(scanner: import("html5-qrcode").Html5Qrcode) {
+  try {
+    if (scanner.isScanning) {
+      scanner
+        .stop()
+        .then(() => scanner.clear())
+        .catch(() => {});
+    } else {
+      scanner.clear();
+    }
+  } catch {
+    /* ya estaba apagado */
+  }
+}
+
 /**
  * Lector del QR de la tarjeta con la cámara trasera (html5-qrcode, carga diferida).
  * Un QR que no es de Nunna muestra un aviso sin cortar el escaneo.
@@ -51,7 +88,9 @@ export function EscanerQr({
 }) {
   const t = useTranslations("escaner");
   const scannerRef = useRef<import("html5-qrcode").Html5Qrcode | null>(null);
-  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [cameraError, setCameraError] = useState<ErrorCamara | null>(null);
+  // Sube con "Intentar de nuevo" para relanzar la cámara (p. ej. tras dar el permiso).
+  const [intento, setIntento] = useState(0);
   const [hint, setHint] = useState<string | null>(null);
   const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // El callback cambia en cada render del padre; el efecto de la cámara no debe reiniciarse.
@@ -94,16 +133,11 @@ export function EscanerQr({
             /* fallo por frame — silencioso */
           },
         );
+        // Se cerró mientras la cámara arrancaba: la limpieza ya pasó, hay que apagarla aquí.
+        if (cancelled) apagar(scanner);
       } catch (err) {
         if (cancelled) return;
-        const name = (err as { name?: string })?.name;
-        setCameraError(
-          name === "NotAllowedError"
-            ? t("error_permiso")
-            : name === "NotFoundError"
-              ? t("error_sin_camara")
-              : t("error_generico"),
-        );
+        setCameraError(tipoErrorCamara(err));
       }
     })();
 
@@ -112,13 +146,9 @@ export function EscanerQr({
       if (hintTimer.current) clearTimeout(hintTimer.current);
       const s = scannerRef.current;
       scannerRef.current = null;
-      if (s) {
-        s.stop()
-          .then(() => s.clear())
-          .catch(() => {});
-      }
+      if (s) apagar(s);
     };
-  }, [open, t]);
+  }, [open, t, intento]);
 
   useEffect(() => {
     if (!open) return;
@@ -173,7 +203,14 @@ export function EscanerQr({
 
               {cameraError && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-stone-950/90 px-6 text-center">
-                  <p className="text-sm leading-relaxed text-stone-300">{cameraError}</p>
+                  <p className="text-sm leading-relaxed text-stone-300">{t(`error_${cameraError}`)}</p>
+                  <button
+                    type="button"
+                    onClick={() => setIntento((n) => n + 1)}
+                    className="rounded-full border border-borde-sutil px-4 py-2 text-xs font-semibold text-texto-claro transition hover:bg-white/10"
+                  >
+                    {t("reintentar")}
+                  </button>
                 </div>
               )}
 

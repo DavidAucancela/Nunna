@@ -292,8 +292,9 @@
     "ayuda": "Keep the code inside the frame.",
     "cerrar": "Close",
     "no_reconocido": "This QR isn't from a Nunna card.",
-    "error_permiso": "We need permission to use the camera. Enable it in your browser.",
+    "error_permiso": "To scan, allow camera access in your browser (icon next to the address bar) and try again.",
     "error_sin_camara": "We couldn't find a camera on this device.",
-    "error_generico": "We couldn't open the camera. Try again."
+    "error_generico": "We couldn't open the camera. Try again.",
+    "reintentar": "Try again"
   }
 }
