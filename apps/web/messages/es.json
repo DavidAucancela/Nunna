@@ -12,7 +12,8 @@
     "cerrar_menu": "Cerrar menú",
     "ingresar": "Ingresar",
     "cerrar": "Cerrar",
-    "cancelar": "Cancelar"
+    "cancelar": "Cancelar",
+    "contacto": "Escríbenos"
   },
   "home": {
     "hero": {
@@ -67,7 +68,10 @@
     "filtro_origen": "Filtrar por origen",
     "ver_detalle": "Conocer este personaje",
     "sin_resultados": "No se encontraron personajes con ese criterio.",
-    "proximamente": "Más personajes, próximamente"
+    "proximamente": "Más personajes, próximamente",
+    "escribenos": "Escríbenos",
+    "escribenos_aria": "Escríbenos para conseguir a {nombre}",
+    "en_coleccion": "En tu colección"
   },
   "pases": {
     "titulo": "Pases y Festividades",
@@ -226,7 +230,9 @@
     "tarjeta_falta": "{nombre}: te falta",
     "sin_guardar": "Sin guardar",
     "en_coleccion": "En tu colección",
-    "recorrido_bloqueado": "Te faltan {n} para desbloquear el recorrido del pase en primera persona."
+    "recorrido_bloqueado": "Te faltan {n} para desbloquear el recorrido del pase en primera persona.",
+    "escribenos_titulo": "¿Aún no tienes a {nombre}?",
+    "escribenos_enlace": "Escríbenos"
   },
   "logros": {
     "origen_completo": "Maestro {origen}",
@@ -276,7 +282,9 @@
     "omitir_leer": "Ahora no, leer la ficha",
     "escanear_titulo": "¿Tienes el imán de {nombre}?",
     "escanear_texto": "Escanea el QR de su tarjeta para guardarlo en tu colección.",
-    "escanear_boton": "Escanear QR"
+    "escanear_boton": "Escanear QR",
+    "escribenos_titulo": "¿Aún no tienes a {nombre}?",
+    "escribenos_enlace": "Escríbenos"
   },
   "galeria": {
     "titulo": "En el pase",
@@ -296,5 +304,47 @@
     "error_sin_camara": "No encontramos una cámara en este dispositivo.",
     "error_generico": "No pudimos abrir la cámara. Intenta de nuevo.",
     "reintentar": "Intentar de nuevo"
+  },
+  "contacto": {
+    "meta_titulo": "Escríbenos | Nunna",
+    "meta_descripcion": "Imanes de los personajes de Nunna: $4 cada uno, 3 por $10 y la colección completa por $20. Pide por WhatsApp.",
+    "eyebrow": "Escríbenos",
+    "titulo": "¿Quieres llevarte un personaje?",
+    "intro": "Elige tus personajes y escríbenos por WhatsApp. Te respondemos con la disponibilidad, la entrega y la forma de pago.",
+    "personajes_titulo": "Elige tus personajes",
+    "personajes_ayuda": "Cada imán viene con su tarjeta ilustrada y el QR a su ficha.",
+    "boton": "Escribir por WhatsApp",
+    "boton_ayuda": "Se abre WhatsApp con tu mensaje listo. Puedes cambiarlo antes de enviarlo.",
+    "pronto": "Muy pronto podrás escribirnos desde aquí.",
+    "entrega_titulo": "Entrega",
+    "envio_titulo": "Envío a todo Ecuador",
+    "envio_texto": "Te dejamos el mensaje listo con tu pedido: completa tus datos y te confirmamos el costo de envío.",
+    "retiro_titulo": "Retiro en Quito",
+    "retiro_lugar": "Mercado Artesanal La Mariscal",
+    "retiro_direccion": "Reina Victoria y Jorge Washington, Quito",
+    "retiro_locales": "Locales 114, 107 y 103",
+    "retiro_horario": "De 9:00 a 18:00",
+    "elegir_todos": "Elegir los {n}",
+    "quitar_todos": "Quitar todos",
+    "resumen_titulo": "Tu pedido · {n, plural, one {# imán} other {# imanes}}",
+    "precio_unidad": "${precio} por unidad",
+    "total": "Total",
+    "sin_envio": "Sin envío",
+    "linea_coleccion": "Colección completa · {n} × ${precio}",
+    "linea_trio": "Promo {n} × ${precio}",
+    "linea_suelto": "{n, plural, one {# imán} other {# imanes}} × ${precio}",
+    "promo_trio": "¡Promo {n} × ${precio}!",
+    "promo_coleccion": "¡Colección completa {n} × ${precio}!",
+    "ahorro": "Ahorras ${monto}",
+    "falta_trio": "{faltan, plural, one {Elige # más} other {Elige # más}} y llévate {n} por ${precio}.",
+    "falta_coleccion": "{faltan, plural, one {Te falta # para} other {Te faltan # para}} la colección completa por ${precio}.",
+    "completar": "Completar los {n} · ${precio}",
+    "envio_boton": "Pedir con envío",
+    "pago_titulo": "Pago en línea",
+    "pago_badge": "Próximamente",
+    "pago_texto": "Podrás pagar con tarjeta desde la web, con el costo de envío calculado para tu ciudad.",
+    "pago_boton": "Pagar en línea",
+    "retiro_mapa_aria": "Mapa: Mercado Artesanal La Mariscal, Reina Victoria y Jorge Washington, Quito",
+    "retiro_como_llegar": "Cómo llegar"
   }
 }

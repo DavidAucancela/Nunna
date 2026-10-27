@@ -11,7 +11,8 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
+import { hrefContacto } from "@/lib/contacto/whatsapp";
 import { getOrigenStyle } from "@/lib/origen-styles";
 import type { PersonajeLite } from "../types";
 
@@ -223,6 +224,18 @@ export function ColeccionVitrina({
         >
           {t("ver_personaje")}
         </button>
+
+        {!guardado && (
+          <p className="mt-4 text-sm text-stone-400">
+            {t("escribenos_titulo", { nombre: p.nombre })}{" "}
+            <Link
+              href={hrefContacto(slug)}
+              className="font-semibold text-acento-dorado underline underline-offset-4 transition-colors hover:text-texto-claro"
+            >
+              {t("escribenos_enlace")} →
+            </Link>
+          </p>
+        )}
 
         {(guardado || (origen?.earned ?? false) || fullCollection) && (
           <div className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs font-medium">

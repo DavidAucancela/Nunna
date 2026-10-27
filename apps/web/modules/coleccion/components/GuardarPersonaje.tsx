@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { useColeccion, useEnColeccion } from "@/components/auth/ColeccionProvider";
+import { hrefContacto } from "@/lib/contacto/whatsapp";
 import { conMarcaQr, llegadaQrVigente, useLlegadaPorQr } from "@/lib/qr-origen";
 import type { Origen } from "@/lib/origen-styles";
 import { AuthOpciones } from "@/modules/auth/components/AuthOpciones";
@@ -100,6 +101,8 @@ export function GuardarPersonaje({
   const puedeGuardar = authActiva && porQr && !enColeccion;
   // Llegó sin el QR (desde la web, o la marca ya venció): puede escanear la tarjeta aquí mismo.
   const puedeEscanear = authActiva && ready && !porQr && !enColeccion;
+  // Tarjeta antes de "En el pase": escanear (si hay cuentas) + "Escríbenos". Quien llegó por QR ya tiene el imán.
+  const mostrarTarjeta = ready && !porQr && !enColeccion;
 
   const cerrarEscaner = useCallback(() => setEscaneando(false), []);
 
@@ -204,34 +207,54 @@ export function GuardarPersonaje({
         </button>
       ) : null}
 
-      {puedeEscanear &&
+      {mostrarTarjeta &&
         ranura &&
         createPortal(
           <div
-            className="flex flex-col items-center gap-4 rounded-2xl border px-5 py-6 text-center sm:flex-row sm:gap-5 sm:px-6 sm:text-left"
+            className="rounded-2xl border px-5 py-6 sm:px-6"
             style={{ borderColor: `${accentColor}40`, backgroundColor: `${accentColor}0D` }}
           >
-            <span
-              className="flex h-12 w-12 flex-none items-center justify-center rounded-full"
-              style={{ color: accentColor, backgroundColor: `${accentColor}1A` }}
-              aria-hidden="true"
+            {puedeEscanear && (
+              <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-5 sm:text-left">
+                <span
+                  className="flex h-12 w-12 flex-none items-center justify-center rounded-full"
+                  style={{ color: accentColor, backgroundColor: `${accentColor}1A` }}
+                  aria-hidden="true"
+                >
+                  <IconoQr />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-serif text-lg font-bold text-texto-claro">
+                    {t("escanear_titulo", { nombre })}
+                  </span>
+                  <span className="mt-1 block text-sm text-stone-400">{t("escanear_texto")}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setEscaneando(true)}
+                  className="w-full flex-none rounded-full px-5 py-2.5 text-sm font-semibold text-fondo-oscuro transition-transform hover:scale-[1.02] sm:w-auto"
+                  style={{ backgroundColor: accentColor }}
+                >
+                  {t("escanear_boton")}
+                </button>
+              </div>
+            )}
+            {/* Quien aún no tiene el imán: invitación a escribir (lleva a /contacto con el personaje marcado). */}
+            <p
+              className={`flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-sm text-stone-400 sm:justify-start sm:text-left ${
+                puedeEscanear ? "mt-5 border-t pt-4" : ""
+              }`}
+              style={puedeEscanear ? { borderColor: `${accentColor}26` } : undefined}
             >
-              <IconoQr />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block font-serif text-lg font-bold text-texto-claro">
-                {t("escanear_titulo", { nombre })}
-              </span>
-              <span className="mt-1 block text-sm text-stone-400">{t("escanear_texto")}</span>
-            </span>
-            <button
-              type="button"
-              onClick={() => setEscaneando(true)}
-              className="w-full flex-none rounded-full px-5 py-2.5 text-sm font-semibold text-fondo-oscuro transition-transform hover:scale-[1.02] sm:w-auto"
-              style={{ backgroundColor: accentColor }}
-            >
-              {t("escanear_boton")}
-            </button>
+              {t("escribenos_titulo", { nombre })}
+              <Link
+                href={hrefContacto(slug)}
+                className="font-semibold underline underline-offset-4 transition-colors hover:text-acento-dorado"
+                style={{ color: accentColor }}
+              >
+                {t("escribenos_enlace")} →
+              </Link>
+            </p>
           </div>,
           ranura,
         )}

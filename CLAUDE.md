@@ -102,6 +102,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<JWT>
 # URL canónica (OG/sitemap/robots — lib/site-url.ts). Opcional: si falta, cae
 # al dominio de Railway. Cuando haya dominio propio, cambiarla aquí y en Railway.
 NEXT_PUBLIC_SITE_URL=https://nunnaec-production.up.railway.app
+
+# Número de WhatsApp de /contacto (con código de país, ej. 593991234567). Se incrusta al
+# compilar: en Railway ponerla ANTES del build. Sin ella, /contacto muestra "muy pronto".
+NEXT_PUBLIC_WHATSAPP_CONTACTO=
 ```
 
 No se necesitan variables de entorno para correr el frontend en desarrollo — los datos vienen del JSON.
@@ -126,6 +130,7 @@ apps/web/
 │   │   │                             (/mapa, /calendario y /pases/[slug] redirigen aquí)
 │   │   ├── login/page.tsx          → ingreso (Google + enlace mágico) — LoginForm/AuthOpciones
 │   │   ├── mis-personajes/page.tsx → ★ colección del usuario + progreso + logros
+│   │   ├── contacto/page.tsx       → "Escríbenos": personajes + precio/promos + WhatsApp + entrega (envío · pago próx. · retiro con mapa)
 │   │   └── sobre/page.tsx
 │   └── api/health/route.ts         → healthcheck Railway
 ├── components/                     → SOLO compartidos entre módulos
@@ -157,6 +162,8 @@ apps/web/
 │   │                                 + CentinelaGuardar), ColeccionClient, CertificadoColeccion, DespertarAnimation
 │   ├── auth/components/            → LoginForm, AuthOpciones (Google + enlace mágico, compartido)
 ├── lib/
+│   ├── contacto/whatsapp.ts        → número (NEXT_PUBLIC_WHATSAPP_CONTACTO), mensajes de pedido/envío, wa.me, hrefContacto()
+│   │                                 (+ precios.ts: $4 · 3×$10 · 6×$20; retiro.ts: coords del retiro)
 │   ├── qr-origen.ts                → ★ llegada por QR (`?origen=qr` → marca 24 h en localStorage)
 │   ├── supabase/client.ts          → ★ cliente Supabase browser (auth + colección; null si faltan envs)
 │   ├── data.ts                     → ★ barrel — re-exporta lib/services/*
@@ -706,6 +713,8 @@ Modo oscuro por defecto.
   `docs/CHANGELOG.md` [0.12.0].
 
 ### 🔄 Siguiente
+- **"Escríbenos" por WhatsApp** (`feat/contacto-whatsapp`, 2026-10-26): poner `NEXT_PUBLIC_WHATSAPP_CONTACTO`
+  en Railway antes del deploy; borrar la rama vieja `feat/tienda-fase-1`. Ver `docs/CHANGELOG.md` [0.13.1].
 - **Mergear PR #85** cuando el build del CI pase. Revisar en un iPhone real: la animación del logo en el
   header (Safari) y el ícono al "Agregar a pantalla de inicio".
 - **Logo — pendientes:** la imagen para compartir de la ficha (`opengraph-image.tsx`) y la OG por defecto
@@ -785,6 +794,26 @@ Modo oscuro por defecto.
 ---
 
 ## Decisiones técnicas clave
+
+### Contacto por WhatsApp — precios visibles, sin carrito ★ (2026-10-26, precios 2026-10-27)
+No hay carrito ni pago en el sitio (la rama `feat/tienda-fase-1` con carrito se descartó). Para conseguir un imán:
+**"Escríbenos"** → `/contacto` → WhatsApp con el pedido ya escrito.
+- **Precios** (decisión del autor, 2026-10-27, `lib/contacto/precios.ts`): $4 por imán, promo 3 × $10, colección
+  completa 6 × $20. `cotizar(n)` arma el mejor precio (colecciones de 6 → grupos de 3 → sueltos): 4 = $14, 5 = $18.
+- `/contacto` (`FormularioContacto`): se eligen personajes con el nombre y el ícono de línea del reverso de la
+  tarjeta (`tarjeta.icono` sobre la placa crema, como `CirculoColeccion`; botón "Elegir los 6");
+  al elegir aparece `ResumenPedido` con total, precio tachado y sello animado al llegar a 3 y a 6 (chispas, apagadas
+  con `prefers-reduced-motion`). `?personaje=<slug>` lo marca; se lee con `window.location` (página SSG). La sección
+  "Qué te interesa" (imán / colección / figura grande) se retiró: la figura grande ya no se ofrece en la web.
+- Mensajes (`lib/contacto/whatsapp.ts`): `armarMensajePedido` (lista + total "sin envío") y `armarMensajeEnvio`
+  (pedido + plantilla Nombre/Ciudad/Dirección/Teléfono, botón de la tarjeta "Envío a todo Ecuador").
+- **Entrega** (`EntregaContacto`): Envío (WhatsApp con plantilla) · **Pago en línea — Próximamente** (pasarela +
+  costo de envío por ciudad, aún sin implementar) · Retiro en La Mariscal con mapa (`MapaRetiro`, MapLibre fijo,
+  coords OSM en `lib/contacto/retiro.ts`) + "Cómo llegar" a Google Maps.
+- "Escríbenos" aparece solo para quien **no tiene guardado** al personaje: ficha (tarjeta de escaneo, oculto si
+  llegó por QR), `/personajes` (`EscribenosPersonaje`, hermano del `<Link>` de la tarjeta — sin sesión sale en
+  los 6) y la vitrina de `/mis-personajes`. Todos usan `hrefContacto(slug)`.
+- **No reintroducir** carrito ni botones "Comprar" sin una decisión explícita del autor.
 
 ### `/pases` — ventana única de tres vistas ★ (2026-10-13)
 Reemplaza al explorador con scroll (mapa + secciones Recorrido/Calendario/Información apiladas). Las
