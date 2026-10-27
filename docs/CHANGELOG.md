@@ -2,6 +2,35 @@
 
 ---
 
+## [0.13.2] — 2026-10-27 — `/contacto` con precios, envío por WhatsApp y mapa del retiro
+
+### Cambiado
+- Se retiró la sección "Qué te interesa" (imán / colección / figura grande).
+- Al elegir personajes aparece "Tu pedido": $4 por unidad, promo 3 × $10 y colección completa 6 × $20 (4 = $14,
+  5 = $18), con precio tachado, sello animado y chispas al llegar a 3 y a 6, y aviso de cuántos faltan para la
+  próxima promo. Botón "Elegir los 6". El mensaje de WhatsApp lleva la lista y el total ("sin envío").
+- Entrega en tres partes: **Envío a todo Ecuador** abre WhatsApp con el pedido y una plantilla de datos de envío ·
+  **Pago en línea** (Próximamente: pasarela y costo de envío por ciudad) · **Retiro en Quito** con mapa del
+  Mercado Artesanal La Mariscal y enlace "Cómo llegar".
+
+## [0.13.1] — 2026-10-26 — "Escríbenos": contacto por WhatsApp, sin tienda
+
+Rama `feat/contacto-whatsapp`. Reemplaza a `feat/tienda-fase-1` (carrito + precios, nunca mergeada): el autor
+no quiere carrito ni precios, solo invitaciones a escribir por WhatsApp.
+
+### Agregado
+- Página `/contacto` (`/contact` en inglés), en menú, footer y sitemap: qué se puede pedir (imán con su tarjeta,
+  colección de 6 en caja de regalo, figura grande — sin precios), los 6 personajes para marcar, botón
+  "Escribir por WhatsApp" con el mensaje ya escrito, y entrega (envío a todo Ecuador / retiro en La Mariscal, Quito).
+- "Escríbenos" para quien no tiene al personaje guardado, siempre hacia `/contacto?personaje=<slug>` (llega marcado):
+  - Ficha: en la tarjeta "¿Tienes el imán? Escanear QR" (no aparece si llegó por QR).
+  - `/personajes`: candado + "Escríbenos" en la esquina de cada tarjeta (sin sesión, en las 6); "✓ En tu colección" si ya lo tiene.
+  - `/mis-personajes`: bajo "Ver personaje" en los que están "Sin guardar".
+- Variable `NEXT_PUBLIC_WHATSAPP_CONTACTO` (número con código de país). Sin ella, `/contacto` dice "muy pronto".
+- `lib/contacto/whatsapp.ts` (+ test) y `components/ui/IconoWhatsApp.tsx` (compartido con `WhatsAppShare`).
+
+---
+
 ## [0.12.0] — 2026-10-19 — Logo de Nunna y política de privacidad
 
 PR #85 (`feat/privacidad-google-oauth`).

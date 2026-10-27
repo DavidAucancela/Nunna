@@ -12,7 +12,8 @@
     "cerrar_menu": "Close menu",
     "ingresar": "Sign in",
     "cerrar": "Close",
-    "cancelar": "Cancel"
+    "cancelar": "Cancel",
+    "contacto": "Contact us"
   },
   "home": {
     "hero": {
@@ -67,7 +68,10 @@
     "filtro_origen": "Filter by origin",
     "ver_detalle": "Learn about this character",
     "sin_resultados": "No characters found with that criteria.",
-    "proximamente": "More characters coming soon"
+    "proximamente": "More characters coming soon",
+    "escribenos": "Contact us",
+    "escribenos_aria": "Contact us to get {nombre}",
+    "en_coleccion": "In your collection"
   },
   "pases": {
     "titulo": "Celebrations & Festivities",
@@ -226,7 +230,9 @@
     "tarjeta_falta": "{nombre}: still missing",
     "sin_guardar": "Not saved",
     "en_coleccion": "In your collection",
-    "recorrido_bloqueado": "{n} to go to unlock the first-person walk through the parade."
+    "recorrido_bloqueado": "{n} to go to unlock the first-person walk through the parade.",
+    "escribenos_titulo": "Don't have {nombre} yet?",
+    "escribenos_enlace": "Contact us"
   },
   "logros": {
     "origen_completo": "{origen} Master",
@@ -276,7 +282,9 @@
     "omitir_leer": "Not now, read the page",
     "escanear_titulo": "Do you have the {nombre} magnet?",
     "escanear_texto": "Scan the QR on its card to save it to your collection.",
-    "escanear_boton": "Scan QR"
+    "escanear_boton": "Scan QR",
+    "escribenos_titulo": "Don't have {nombre} yet?",
+    "escribenos_enlace": "Contact us"
   },
   "galeria": {
     "titulo": "At the festival",
@@ -296,5 +304,47 @@
     "error_sin_camara": "We couldn't find a camera on this device.",
     "error_generico": "We couldn't open the camera. Try again.",
     "reintentar": "Try again"
+  },
+  "contacto": {
+    "meta_titulo": "Contact us | Nunna",
+    "meta_descripcion": "Nunna character magnets: $4 each, 3 for $10 and the full collection for $20. Order on WhatsApp.",
+    "eyebrow": "Contact us",
+    "titulo": "Want to take a character home?",
+    "intro": "Pick your characters and message us on WhatsApp. We'll reply with availability, delivery and payment options.",
+    "personajes_titulo": "Pick your characters",
+    "personajes_ayuda": "Each magnet comes with its illustrated card and the QR to its page.",
+    "boton": "Message us on WhatsApp",
+    "boton_ayuda": "WhatsApp opens with your message ready. You can edit it before sending.",
+    "pronto": "Soon you'll be able to message us from here.",
+    "entrega_titulo": "Delivery",
+    "envio_titulo": "Shipping across Ecuador",
+    "envio_texto": "We prepare the message with your order: fill in your details and we'll confirm the shipping cost.",
+    "retiro_titulo": "Pick-up in Quito",
+    "retiro_lugar": "Mercado Artesanal La Mariscal",
+    "retiro_direccion": "Reina Victoria y Jorge Washington, Quito",
+    "retiro_locales": "Stalls 114, 107 and 103",
+    "retiro_horario": "9:00 to 18:00",
+    "elegir_todos": "Pick all {n}",
+    "quitar_todos": "Clear all",
+    "resumen_titulo": "Your order · {n, plural, one {# magnet} other {# magnets}}",
+    "precio_unidad": "${precio} each",
+    "total": "Total",
+    "sin_envio": "Shipping not included",
+    "linea_coleccion": "Full collection · {n} × ${precio}",
+    "linea_trio": "{n} × ${precio} deal",
+    "linea_suelto": "{n, plural, one {# magnet} other {# magnets}} × ${precio}",
+    "promo_trio": "{n} × ${precio} deal!",
+    "promo_coleccion": "Full collection {n} × ${precio}!",
+    "ahorro": "You save ${monto}",
+    "falta_trio": "Pick {faltan} more and get {n} for ${precio}.",
+    "falta_coleccion": "{faltan, plural, one {# more} other {# more}} for the full collection at ${precio}.",
+    "completar": "Complete all {n} · ${precio}",
+    "envio_boton": "Order with shipping",
+    "pago_titulo": "Online payment",
+    "pago_badge": "Coming soon",
+    "pago_texto": "You'll be able to pay by card on the site, with shipping calculated for your city.",
+    "pago_boton": "Pay online",
+    "retiro_mapa_aria": "Map: Mercado Artesanal La Mariscal, Reina Victoria y Jorge Washington, Quito",
+    "retiro_como_llegar": "Get directions"
   }
 }

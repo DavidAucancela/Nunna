@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { getPersonajes } from "@/lib/data";
 import { localeAlternates } from "@/lib/seo";
+import { EscribenosPersonaje } from "@/modules/personajes/components/EscribenosPersonaje";
 
 interface PersonajesPageProps {
   params: Promise<{ locale: string }>;
@@ -59,7 +60,7 @@ export default async function PersonajesPage({ params }: PersonajesPageProps) {
           const titulo = p.tarjeta?.nombre ?? p.nombre;
           const subtitulo = SUBTITULO[p.slug] ?? p.nombreKichwa;
           return (
-            <li key={p.slug} className="min-h-0">
+            <li key={p.slug} className="relative min-h-0">
               <Link
                 href={{ pathname: "/personajes/[slug]", params: { slug: p.slug } }}
                 className="group relative block h-full overflow-hidden rounded-lg bg-stone-900 ring-1 ring-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento-dorado"
@@ -91,6 +92,7 @@ export default async function PersonajesPage({ params }: PersonajesPageProps) {
                   </span>
                 </div>
               </Link>
+              <EscribenosPersonaje slug={p.slug} nombre={titulo} />
             </li>
           );
         })}
