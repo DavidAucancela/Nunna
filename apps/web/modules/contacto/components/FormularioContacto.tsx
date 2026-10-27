@@ -1,18 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { IconoWhatsApp } from "@/components/ui/IconoWhatsApp";
+import { useColeccion } from "@/components/auth/ColeccionProvider";
 import { TARJETA } from "@/modules/personajes/components/TarjetaNunna";
 import {
   WHATSAPP_CONTACTO,
   armarMensajeEnvio,
-  armarMensajePedido,
+  armarMensajeRetiro,
   urlWhatsApp,
 } from "@/lib/contacto/whatsapp";
-import { EntregaContacto } from "./EntregaContacto";
+import { EntregaContacto, type AccesoEntrega } from "./EntregaContacto";
 import { ResumenPedido } from "./ResumenPedido";
 
 export interface PersonajeContacto {
@@ -28,7 +28,10 @@ function alternar<T>(lista: T[], valor: T): T[] {
     : [...lista, valor];
 }
 
-/** Personajes → resumen con precio → botón de WhatsApp con el pedido → entrega. */
+/**
+ * Personajes → resumen con precio → entrega (envío · pago próx. · retiro). La entrega aparece al
+ * elegir el primer personaje y sus botones de WhatsApp piden sesión (si Supabase está activo).
+ */
 export function FormularioContacto({
   personajes,
 }: {
@@ -36,13 +39,17 @@ export function FormularioContacto({
 }) {
   const t = useTranslations("contacto");
   const locale = useLocale();
+  const { authActiva, ready, user } = useColeccion();
   const [elegidos, setElegidos] = useState<string[]>([]);
 
-  // ?personaje=<slug> llega desde "Escríbenos" (ficha, /personajes, Mis personajes).
-  // Se lee con window.location para que la página siga siendo estática.
+  // ?personaje=<slug> llega desde "Escríbenos" (ficha, /personajes, Mis personajes);
+  // ?personajes=a,b vuelve del login con la selección que había. Se lee con window.location
+  // para que la página siga siendo estática.
   useEffect(() => {
-    const slug = new URLSearchParams(window.location.search).get("personaje");
-    if (slug && personajes.some((p) => p.slug === slug)) setElegidos([slug]);
+    const q = new URLSearchParams(window.location.search);
+    const pedidos = [q.get("personaje"), ...(q.get("personajes") ?? "").split(",")];
+    const validos = personajes.map((p) => p.slug).filter((s) => pedidos.includes(s));
+    if (validos.length > 0) setElegidos(validos);
   }, [personajes]);
 
   // En el orden de la tarjeta, no en el orden en que se tocaron.
@@ -52,18 +59,22 @@ export function FormularioContacto({
   const todos = elegidos.length === personajes.length;
   const elegirTodos = () => setElegidos(personajes.map((p) => p.slug));
 
-  const pedidoHref = WHATSAPP_CONTACTO
-    ? urlWhatsApp(
-        WHATSAPP_CONTACTO,
-        armarMensajePedido({ personajes: nombres, locale }),
-      )
-    : null;
-  const envioHref = WHATSAPP_CONTACTO
-    ? urlWhatsApp(
-        WHATSAPP_CONTACTO,
-        armarMensajeEnvio({ personajes: nombres, locale }),
-      )
-    : null;
+  // Sin Supabase (dev) no hay cuentas: los botones quedan libres, igual que el resto del sitio.
+  const acceso: AccesoEntrega = !authActiva ? "listo" : !ready ? "cargando" : user ? "listo" : "login";
+  const correo = user?.email ?? null;
+  // Google trae el nombre en los metadatos; con enlace mágico solo hay correo.
+  const meta = user?.user_metadata as { full_name?: string; name?: string } | undefined;
+  const nombre = meta?.full_name ?? meta?.name ?? null;
+  const href = (mensaje: string) => (WHATSAPP_CONTACTO ? urlWhatsApp(WHATSAPP_CONTACTO, mensaje) : null);
+  const envioHref = href(armarMensajeEnvio({ personajes: nombres, locale, nombre, correo }));
+  const retiroHref = href(armarMensajeRetiro({ personajes: nombres, locale, nombre, correo }));
+
+  // Al volver del login (Google o enlace mágico) la selección sigue marcada.
+  const seleccion = personajes.filter((p) => elegidos.includes(p.slug)).map((p) => p.slug);
+  const redirectPath =
+    typeof window === "undefined"
+      ? undefined
+      : `${window.location.pathname}?personajes=${seleccion.join(",")}#contacto-entrega`;
 
   return (
     <div className="space-y-10">
@@ -151,30 +162,24 @@ export function FormularioContacto({
             onCompletar={elegirTodos}
           />
         )}
-      </AnimatePresence>
-
-      <div className="rounded-2xl border border-borde-sutil bg-stone-900/40 p-5 text-center sm:p-6">
-        {pedidoHref ? (
-          <>
-            <a
-              href={pedidoHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[#1FA855] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-[#1FA855]/20 transition hover:bg-[#1B964C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acento-dorado sm:w-auto"
-            >
-              <IconoWhatsApp className="h-5 w-5" />
-              {t("boton")}
-            </a>
-            <p className="mt-3 text-sm text-stone-500">{t("boton_ayuda")}</p>
-          </>
-        ) : (
-          <p className="text-stone-400">{t("pronto")}</p>
+        {elegidos.length > 0 && (
+          <motion.div
+            key="entrega"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+          >
+            <EntregaContacto
+              envioHref={envioHref}
+              retiroHref={retiroHref}
+              acceso={acceso}
+              cuenta={nombre ?? correo}
+              redirectPath={redirectPath}
+            />
+          </motion.div>
         )}
-      </div>
-
-      <div className="pt-6">
-        <EntregaContacto envioHref={envioHref} />
-      </div>
+      </AnimatePresence>
     </div>
   );
 }

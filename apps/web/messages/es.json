@@ -310,11 +310,9 @@
     "meta_descripcion": "Imanes de los personajes de Nunna: $4 cada uno, 3 por $10 y la colección completa por $20. Pide por WhatsApp.",
     "eyebrow": "Escríbenos",
     "titulo": "¿Quieres llevarte un personaje?",
-    "intro": "Elige tus personajes y escríbenos por WhatsApp. Te respondemos con la disponibilidad, la entrega y la forma de pago.",
+    "intro": "Elige tus personajes y cómo quieres recibirlos. Te respondemos por WhatsApp con la disponibilidad y la forma de pago.",
     "personajes_titulo": "Elige tus personajes",
     "personajes_ayuda": "Cada imán viene con su tarjeta ilustrada y el QR a su ficha.",
-    "boton": "Escribir por WhatsApp",
-    "boton_ayuda": "Se abre WhatsApp con tu mensaje listo. Puedes cambiarlo antes de enviarlo.",
     "pronto": "Muy pronto podrás escribirnos desde aquí.",
     "entrega_titulo": "Entrega",
     "envio_titulo": "Envío a todo Ecuador",
@@ -345,6 +343,10 @@
     "pago_texto": "Podrás pagar con tarjeta desde la web, con el costo de envío calculado para tu ciudad.",
     "pago_boton": "Pagar en línea",
     "retiro_mapa_aria": "Mapa: Mercado Artesanal La Mariscal, Reina Victoria y Jorge Washington, Quito",
-    "retiro_como_llegar": "Cómo llegar"
+    "retiro_como_llegar": "Cómo llegar",
+    "entrega_ayuda": "Elige cómo recibir tu pedido. Se abre WhatsApp con tu mensaje listo; puedes cambiarlo antes de enviarlo.",
+    "retiro_boton": "Coordinar retiro",
+    "acceso_texto": "Inicia sesión para enviar tu pedido por WhatsApp a tu nombre. Volverás aquí con tus personajes elegidos.",
+    "cuenta_como": "Pedido a nombre de {cuenta}"
   }
 }

@@ -8,17 +8,21 @@ import { AuthOpciones } from "./AuthOpciones";
 /**
  * Módulo de ingreso — pantalla dedicada a iniciar sesión con una cuenta ya
  * existente (Google o enlace mágico). El redirect tras el login lo resuelve
- * ColeccionProvider (`setPendingLoginOnly` → `/mis-personajes`).
+ * ColeccionProvider (`setPendingLoginOnly` → `/mis-personajes`), salvo que se pase
+ * `redirectPath`: entonces vuelve a esa página (p. ej. /contacto con el pedido elegido).
  */
-export function LoginForm({ autoFocus = true }: { autoFocus?: boolean } = {}) {
+export function LoginForm({
+  autoFocus = true,
+  redirectPath,
+}: { autoFocus?: boolean; redirectPath?: string | undefined } = {}) {
   const router = useRouter();
   const { ready, session } = useColeccion();
   const [errorInicial, setErrorInicial] = useState<string | null>(null);
 
   // Ya hay sesión activa: no tiene sentido loguearse de nuevo.
   useEffect(() => {
-    if (ready && session) router.replace("/mis-personajes");
-  }, [ready, session, router]);
+    if (ready && session && !redirectPath) router.replace("/mis-personajes");
+  }, [ready, session, router, redirectPath]);
 
   // Detectar error en el hash de la URL (ej. otp_expired al volver del magic-link).
   useEffect(() => {
@@ -35,7 +39,8 @@ export function LoginForm({ autoFocus = true }: { autoFocus?: boolean } = {}) {
     <AuthOpciones
       key={errorInicial ?? "ok"}
       initialErrorKey={errorInicial}
-      onBeforeAuth={setPendingLoginOnly}
+      onBeforeAuth={redirectPath ? undefined : setPendingLoginOnly}
+      redirectPath={redirectPath}
       autoFocus={autoFocus}
       idPrefix="login"
     />

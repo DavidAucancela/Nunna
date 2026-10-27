@@ -13,6 +13,8 @@ export function LoginCard({
   autoFocus = true,
   className = "rounded-3xl pb-8",
   pie,
+  redirectPath,
+  subtitulo,
 }: {
   titleId?: string;
   /** El modal lo apaga en táctil: abrir el teclado al instante tapa la pantalla. */
@@ -21,6 +23,10 @@ export function LoginCard({
   className?: string;
   /** Contenido extra bajo el formulario (p. ej. "Cancelar" en el modal). */
   pie?: ReactNode;
+  /** A dónde vuelve tras entrar; sin él va a /mis-personajes. */
+  redirectPath?: string | undefined;
+  /** Reemplaza el subtítulo genérico ("ver los personajes que ya guardaste"). */
+  subtitulo?: string | undefined;
 }) {
   const t = useTranslations("login");
 
@@ -43,10 +49,10 @@ export function LoginCard({
         <h1 id={titleId} className="mt-2 font-serif text-2xl font-bold text-texto-claro sm:text-3xl">
           {t("titulo")}
         </h1>
-        <p className="mx-auto mt-2 max-w-xs text-sm text-stone-400">{t("subtitulo")}</p>
+        <p className="mx-auto mt-2 max-w-xs text-sm text-stone-400">{subtitulo ?? t("subtitulo")}</p>
       </div>
 
-      <LoginForm autoFocus={autoFocus} />
+      <LoginForm autoFocus={autoFocus} redirectPath={redirectPath} />
       {pie}
     </div>
   );
