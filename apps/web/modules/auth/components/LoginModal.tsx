@@ -10,14 +10,21 @@ import { LoginCard } from "./LoginCard";
 const MQ_MOVIL = "(max-width: 639px)";
 
 /**
- * Ventana de ingreso sobre la página actual (botón del candado en el navbar).
+ * Ventana de ingreso sobre la página actual (botón del candado en el navbar y
+ * "Iniciar sesión" de la entrega en /contacto, que pasa `redirectPath` para volver ahí).
  * Va en un portal a <body>: el header usa `backdrop-filter`, que ancla los
  * descendientes `fixed` al propio header en vez de al viewport.
  *
  * Formas de cerrarla: tocar fuera, ✕, Escape y, en móvil, "Cancelar" o
  * deslizar la hoja hacia abajo desde su asa.
  */
-export function LoginModal({ onClose }: { onClose: () => void }) {
+export function LoginModal({
+  onClose,
+  redirectPath,
+}: {
+  onClose: () => void;
+  redirectPath?: string | undefined;
+}) {
   const t = useTranslations("nav");
   const reduced = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
@@ -109,6 +116,7 @@ export function LoginModal({ onClose }: { onClose: () => void }) {
         <LoginCard
           titleId="login-modal-titulo"
           autoFocus={punteroFino}
+          redirectPath={redirectPath}
           className="max-w-none rounded-t-3xl border-b-0 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:max-w-md sm:rounded-3xl sm:border-b sm:pb-8"
           pie={
             <button

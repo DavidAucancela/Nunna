@@ -1,5 +1,5 @@
 // Contacto por WhatsApp: no hay carrito ni pago en el sitio. La persona elige sus personajes en
-// /contacto, ve el precio y se abre un chat con el pedido ya escrito.
+// /contacto, ve el precio, elige la entrega (envío o retiro) y se abre un chat con el pedido ya escrito.
 
 import { PRECIOS, TAMANO_COLECCION, TAMANO_TRIO, cotizar } from "./precios";
 
@@ -24,12 +24,14 @@ const TEXTOS = {
   es: {
     saludo: "¡Hola Nunna!",
     generico: "Quiero saber más sobre los imanes de los personajes.",
-    pedir: "Quiero pedir estos imanes:",
+    retirar: "Quiero retirar estos imanes en el Mercado Artesanal La Mariscal (Quito):",
     imanes: (n: number) => (n === 1 ? "1 imán" : `${n} imanes`),
     coleccion: `colección completa ${TAMANO_COLECCION} × $${PRECIOS.coleccion}`,
     trio: `promo ${TAMANO_TRIO} × $${PRECIOS.trio}`,
-    total: (t: number) => `total $${t}, sin envío.`,
-    cierre: "¿Me cuentan cómo pagar y la entrega?",
+    total: (t: number) => `total $${t}`,
+    sinEnvio: ", sin envío",
+    cuenta: (c: string) => `Mi cuenta Nunna: ${c}`,
+    retiroCierre: "¿Cuándo puedo pasar a retirarlos y cómo pago?",
     envio: "Quiero que me envíen mi pedido:",
     envioGenerico: "Quiero saber cuánto cuesta el envío a mi ciudad.",
     datos: "Mis datos para el envío:",
@@ -39,12 +41,14 @@ const TEXTOS = {
   en: {
     saludo: "Hi Nunna!",
     generico: "I'd like to know more about the character magnets.",
-    pedir: "I'd like to order these magnets:",
+    retirar: "I'd like to pick up these magnets at Mercado Artesanal La Mariscal (Quito):",
     imanes: (n: number) => (n === 1 ? "1 magnet" : `${n} magnets`),
     coleccion: `full collection ${TAMANO_COLECCION} × $${PRECIOS.coleccion}`,
     trio: `${TAMANO_TRIO} × $${PRECIOS.trio} deal`,
-    total: (t: number) => `total $${t}, shipping not included.`,
-    cierre: "How do I pay and get them?",
+    total: (t: number) => `total $${t}`,
+    sinEnvio: ", shipping not included",
+    cuenta: (c: string) => `My Nunna account: ${c}`,
+    retiroCierre: "When can I pick them up, and how do I pay?",
     envio: "I'd like my order shipped:",
     envioGenerico: "I'd like to know how much shipping to my city costs.",
     datos: "My shipping details:",
@@ -59,35 +63,44 @@ function textos(locale: string): Textos {
   return TEXTOS[locale === "en" ? "en" : "es"];
 }
 
-/** "3 imanes (promo 3 × $10): total $10, sin envío." */
-export function lineaPrecio(cantidad: number, locale: string): string {
+/** "3 imanes (promo 3 × $10): total $10, sin envío." — sin la coletilla del envío para el retiro. */
+export function lineaPrecio(cantidad: number, locale: string, { envio = true }: { envio?: boolean } = {}): string {
   const t = textos(locale);
   const c = cotizar(cantidad);
   const partes: string[] = [];
   if (c.colecciones > 0) partes.push(c.colecciones > 1 ? `${c.colecciones} × ${t.coleccion}` : t.coleccion);
   if (c.trios > 0) partes.push(c.trios > 1 ? `${c.trios} × ${t.trio}` : t.trio);
   if (c.sueltos > 0) partes.push(`${c.sueltos} × $${PRECIOS.unidad}`);
-  return `${t.imanes(c.cantidad)} (${partes.join(" + ")}): ${t.total(c.total)}`;
+  return `${t.imanes(c.cantidad)} (${partes.join(" + ")}): ${t.total(c.total)}${envio ? t.sinEnvio : ""}.`;
 }
 
 function listaPersonajes(personajes: readonly string[]): string[] {
   return personajes.map((p) => `• ${p}`);
 }
 
-/** Mensaje del botón principal: el pedido con sus personajes y el total. */
-export function armarMensajePedido({ personajes, locale }: { personajes: readonly string[]; locale: string }): string {
+interface DatosMensaje {
+  personajes: readonly string[];
+  locale: string;
+  /** Correo de la cuenta con la que se pide (los botones de entrega exigen sesión). */
+  correo?: string | null | undefined;
+}
+
+/** Mensaje de "Retiro en Quito": el pedido para pasar a recogerlo al mercado. */
+export function armarMensajeRetiro({ personajes, locale, correo }: DatosMensaje): string {
   const t = textos(locale);
   if (personajes.length === 0) return `${t.saludo} ${t.generico}`;
   return [
-    `${t.saludo} ${t.pedir}`,
+    `${t.saludo} ${t.retirar}`,
     ...listaPersonajes(personajes),
-    lineaPrecio(personajes.length, locale),
-    t.cierre,
+    lineaPrecio(personajes.length, locale, { envio: false }),
+    ...(correo ? [t.cuenta(correo)] : []),
+    "",
+    t.retiroCierre,
   ].join("\n");
 }
 
 /** Mensaje de "Envío a todo Ecuador": el pedido + la plantilla de datos para enviarlo. */
-export function armarMensajeEnvio({ personajes, locale }: { personajes: readonly string[]; locale: string }): string {
+export function armarMensajeEnvio({ personajes, locale, correo }: DatosMensaje): string {
   const t = textos(locale);
   if (personajes.length === 0) {
     return [`${t.saludo} ${t.envioGenerico}`, t.campos[1]].join("\n");
@@ -96,6 +109,7 @@ export function armarMensajeEnvio({ personajes, locale }: { personajes: readonly
     `${t.saludo} ${t.envio}`,
     ...listaPersonajes(personajes),
     lineaPrecio(personajes.length, locale),
+    ...(correo ? [t.cuenta(correo)] : []),
     "",
     t.datos,
     ...t.campos,

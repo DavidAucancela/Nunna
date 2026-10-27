@@ -310,11 +310,9 @@
     "meta_descripcion": "Nunna character magnets: $4 each, 3 for $10 and the full collection for $20. Order on WhatsApp.",
     "eyebrow": "Contact us",
     "titulo": "Want to take a character home?",
-    "intro": "Pick your characters and message us on WhatsApp. We'll reply with availability, delivery and payment options.",
+    "intro": "Pick your characters and how you'd like to get them. We'll reply on WhatsApp with availability and payment options.",
     "personajes_titulo": "Pick your characters",
     "personajes_ayuda": "Each magnet comes with its illustrated card and the QR to its page.",
-    "boton": "Message us on WhatsApp",
-    "boton_ayuda": "WhatsApp opens with your message ready. You can edit it before sending.",
     "pronto": "Soon you'll be able to message us from here.",
     "entrega_titulo": "Delivery",
     "envio_titulo": "Shipping across Ecuador",
@@ -345,6 +343,13 @@
     "pago_texto": "You'll be able to pay by card on the site, with shipping calculated for your city.",
     "pago_boton": "Pay online",
     "retiro_mapa_aria": "Map: Mercado Artesanal La Mariscal, Reina Victoria y Jorge Washington, Quito",
-    "retiro_como_llegar": "Get directions"
+    "retiro_como_llegar": "Get directions",
+    "entrega_ayuda": "Choose how to get your order. WhatsApp opens with your message ready; you can edit it before sending.",
+    "retiro_boton": "Arrange pick-up",
+    "acceso_titulo": "Sign in to arrange your delivery",
+    "acceso_texto": "That way your order is under your name and we recognise you on WhatsApp. When you come back, your characters stay selected.",
+    "acceso_boton": "Sign in to order",
+    "cuenta_como": "Ordering as {correo}",
+    "acceso_iniciar": "Sign in"
   }
 }

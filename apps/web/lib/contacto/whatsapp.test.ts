@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { cotizar, siguientePromo } from "./precios";
 import {
   armarMensajeEnvio,
-  armarMensajePedido,
+  armarMensajeRetiro,
   hrefContacto,
   lineaPrecio,
   normalizarNumero,
@@ -64,18 +64,25 @@ describe("lineaPrecio", () => {
   });
 });
 
-describe("armarMensajePedido", () => {
-  it("sin selección: saludo genérico", () => {
-    expect(armarMensajePedido({ personajes: [], locale: "es" })).toBe(
-      "¡Hola Nunna! Quiero saber más sobre los imanes de los personajes.",
+describe("lineaPrecio sin envío", () => {
+  it("el retiro no menciona el envío", () => {
+    expect(lineaPrecio(3, "es", { envio: false })).toBe("3 imanes (promo 3 × $10): total $10.");
+  });
+});
+
+describe("armarMensajeRetiro", () => {
+  it("con personajes: lista, total y cuenta", () => {
+    expect(
+      armarMensajeRetiro({ personajes: ["Diablo Huma", "Payaso", "Perro"], locale: "es", correo: "ana@correo.ec" }),
+    ).toBe(
+      "¡Hola Nunna! Quiero retirar estos imanes en el Mercado Artesanal La Mariscal (Quito):\n" +
+        "• Diablo Huma\n• Payaso\n• Perro\n3 imanes (promo 3 × $10): total $10.\n" +
+        "Mi cuenta Nunna: ana@correo.ec\n\n¿Cuándo puedo pasar a retirarlos y cómo pago?",
     );
   });
 
-  it("con personajes: lista y total", () => {
-    expect(armarMensajePedido({ personajes: ["Diablo Huma", "Payaso", "Perro"], locale: "es" })).toBe(
-      "¡Hola Nunna! Quiero pedir estos imanes:\n• Diablo Huma\n• Payaso\n• Perro\n" +
-        "3 imanes (promo 3 × $10): total $10, sin envío.\n¿Me cuentan cómo pagar y la entrega?",
-    );
+  it("sin correo no agrega la línea de la cuenta", () => {
+    expect(armarMensajeRetiro({ personajes: ["Perro"], locale: "en" })).not.toContain("account");
   });
 });
 
@@ -83,6 +90,9 @@ describe("armarMensajeEnvio", () => {
   it("con pedido: plantilla de datos de envío", () => {
     const m = armarMensajeEnvio({ personajes: ["Payaso"], locale: "es" });
     expect(m).toContain("Quiero que me envíen mi pedido:\n• Payaso\n1 imán");
+    expect(armarMensajeEnvio({ personajes: ["Payaso"], locale: "es", correo: "a@b.ec" })).toContain(
+      "sin envío.\nMi cuenta Nunna: a@b.ec\n",
+    );
     expect(m).toContain("Mis datos para el envío:\nNombre:\nCiudad y provincia:\nDirección:\nTeléfono:");
     expect(m.endsWith("¿Cuánto cuesta el envío a mi ciudad?")).toBe(true);
   });
