@@ -805,16 +805,18 @@ No hay carrito ni pago en el sitio (la rama `feat/tienda-fase-1` con carrito se 
   al elegir aparece `ResumenPedido` con total, precio tachado y sello animado al llegar a 3 y a 6 (chispas, apagadas
   con `prefers-reduced-motion`). `?personaje=<slug>` lo marca; se lee con `window.location` (página SSG). La sección
   "Qué te interesa" (imán / colección / figura grande) se retiró: la figura grande ya no se ofrece en la web.
-- Mensajes (`lib/contacto/whatsapp.ts`): `armarMensajeEnvio` (pedido + plantilla Nombre/Ciudad/Dirección/Teléfono)
-  y `armarMensajeRetiro` (pedido para pasar al mercado, total sin la coletilla del envío); ambos añaden
-  "Mi cuenta Nunna: {correo}" si hay sesión.
+- Mensajes (`lib/contacto/whatsapp.ts`): `armarMensajeEnvio` (pedido + plantilla Ciudad/Dirección/Teléfono) y
+  `armarMensajeRetiro` (pedido para pasar al mercado). Tono natural: "¡Hola Nunna! Soy {nombre}." con el nombre de
+  la cuenta de Google (`user_metadata.full_name`/`name`; con nombre no se pide "Nombre:" en la plantilla); con
+  enlace mágico no hay nombre → "Te escribo desde mi cuenta {correo}." Precio: "Serían 3 imanes con la promo
+  3 × $10: $10 más el envío." (retiro: "… $10 en total.").
 - **Entrega** (`EntregaContacto`, 2026-10-27): **solo aparece al elegir el primer personaje** (debajo del resumen). Es
   el único lugar con botones de WhatsApp — el bloque "Escribir por WhatsApp" que había encima se quitó por duplicado.
-  Envío (WhatsApp con plantilla) · **Pago en línea — Próximamente** · Retiro en La Mariscal con mapa (`MapaRetiro`,
-  coords OSM en `lib/contacto/retiro.ts`) + "Cómo llegar" + "Coordinar retiro" (WhatsApp).
-- **Los botones de WhatsApp exigen sesión** (si Supabase está activo; sin envs quedan libres, como el resto del sitio):
-  sin sesión salen como "Inicia sesión para pedir" y arriba hay un aviso con "Iniciar sesión"; ambos abren la misma
-  ventana del candado del navbar (`LoginModal`), con `redirectPath` → vuelve a `/contacto?personajes=a,b#contacto-entrega`
+  Envío ("Pedir con envío") · **Pago en línea — Próximamente** · Retiro en La Mariscal con mapa (`MapaRetiro`,
+  coords OSM en `lib/contacto/retiro.ts`) + "Cómo llegar" + "Coordinar retiro".
+- **Los botones de WhatsApp verifican la sesión al tocarlos** (si Supabase está activo; sin envs van directo): se ven
+  siempre verdes, pero sin sesión el clic hace `preventDefault` y abre la ventana del candado del navbar
+  (`LoginModal` con `redirectPath` + `subtitulo` propio) → vuelve a `/contacto?personajes=a,b#contacto-entrega`
   con la selección intacta (sin `redirectPath`, `LoginForm` sigue mandando a `/mis-personajes`).
 - "Escríbenos" aparece solo para quien **no tiene guardado** al personaje: ficha (tarjeta de escaneo, oculto si
   llegó por QR), `/personajes` (`EscribenosPersonaje`, hermano del `<Link>` de la tarjeta — sin sesión sale en

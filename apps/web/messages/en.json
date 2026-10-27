@@ -346,10 +346,7 @@
     "retiro_como_llegar": "Get directions",
     "entrega_ayuda": "Choose how to get your order. WhatsApp opens with your message ready; you can edit it before sending.",
     "retiro_boton": "Arrange pick-up",
-    "acceso_titulo": "Sign in to arrange your delivery",
-    "acceso_texto": "That way your order is under your name and we recognise you on WhatsApp. When you come back, your characters stay selected.",
-    "acceso_boton": "Sign in to order",
-    "cuenta_como": "Ordering as {correo}",
-    "acceso_iniciar": "Sign in"
+    "acceso_texto": "Sign in to send your order on WhatsApp under your name. You'll come back here with your characters selected.",
+    "cuenta_como": "Ordering as {cuenta}"
   }
 }

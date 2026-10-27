@@ -21,9 +21,12 @@ const MQ_MOVIL = "(max-width: 639px)";
 export function LoginModal({
   onClose,
   redirectPath,
+  subtitulo,
 }: {
   onClose: () => void;
   redirectPath?: string | undefined;
+  /** Texto bajo el título cuando se abre por algo concreto (p. ej. enviar el pedido). */
+  subtitulo?: string | undefined;
 }) {
   const t = useTranslations("nav");
   const reduced = useReducedMotion();
@@ -117,6 +120,7 @@ export function LoginModal({
           titleId="login-modal-titulo"
           autoFocus={punteroFino}
           redirectPath={redirectPath}
+          subtitulo={subtitulo}
           className="max-w-none rounded-t-3xl border-b-0 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:max-w-md sm:rounded-3xl sm:border-b sm:pb-8"
           pie={
             <button

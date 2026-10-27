@@ -346,10 +346,7 @@
     "retiro_como_llegar": "Cómo llegar",
     "entrega_ayuda": "Elige cómo recibir tu pedido. Se abre WhatsApp con tu mensaje listo; puedes cambiarlo antes de enviarlo.",
     "retiro_boton": "Coordinar retiro",
-    "acceso_titulo": "Inicia sesión para coordinar tu entrega",
-    "acceso_texto": "Así tu pedido queda a tu nombre y te reconocemos en WhatsApp. Al volver, tus personajes siguen elegidos.",
-    "acceso_boton": "Inicia sesión para pedir",
-    "cuenta_como": "Pedido a nombre de {correo}",
-    "acceso_iniciar": "Iniciar sesión"
+    "acceso_texto": "Inicia sesión para enviar tu pedido por WhatsApp a tu nombre. Volverás aquí con tus personajes elegidos.",
+    "cuenta_como": "Pedido a nombre de {cuenta}"
   }
 }

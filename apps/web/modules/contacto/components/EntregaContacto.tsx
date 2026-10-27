@@ -15,7 +15,8 @@ interface EntregaContactoProps {
   envioHref: string | null;
   retiroHref: string | null;
   acceso: AccesoEntrega;
-  correo: string | null;
+  /** Nombre (Google) o correo de la cuenta con sesión, para "Pedido a nombre de …". */
+  cuenta: string | null;
   /** A dónde vuelve el login: /contacto con la selección actual. */
   redirectPath?: string | undefined;
 }
@@ -23,45 +24,38 @@ interface EntregaContactoProps {
 const CLASE_WHATSAPP =
   "mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-[#1FA855] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1B964C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acento-dorado";
 
-function IconoCandado({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
-      <rect x="4.5" y="10.5" width="15" height="10" rx="2" />
-      <path strokeLinecap="round" d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
-    </svg>
-  );
-}
-
 /**
  * Entrega del pedido: envío (WhatsApp con plantilla) · pago en línea (próximamente) · retiro con
- * mapa (WhatsApp para coordinar). Aparece al elegir personajes; los botones exigen sesión.
+ * mapa (WhatsApp para coordinar). Aparece al elegir personajes.
+ *
+ * Los botones de WhatsApp se ven siempre, pero antes de abrir el chat se verifica la sesión: sin
+ * ella se abre la ventana de ingreso (la del candado del navbar) en vez de WhatsApp.
  */
-export function EntregaContacto({ envioHref, retiroHref, acceso, correo, redirectPath }: EntregaContactoProps) {
+export function EntregaContacto({ envioHref, retiroHref, acceso, cuenta, redirectPath }: EntregaContactoProps) {
   const t = useTranslations("contacto");
   // La misma ventana de ingreso del candado del navbar; vuelve a /contacto con el pedido.
   const [loginAbierto, setLoginAbierto] = useState(false);
-  const irAlLogin = () => setLoginAbierto(true);
 
-  // Mismo lugar para los dos botones de WhatsApp: libre, bloqueado o "muy pronto" sin número.
+  // Verificación al tocar: con sesión sigue el enlace a WhatsApp; sin ella, ventana de ingreso.
+  // Mientras la sesión aún se está leyendo (un instante al cargar) el toque no hace nada.
+  const verificarSesion = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (acceso === "listo") return;
+    e.preventDefault();
+    if (acceso === "login") setLoginAbierto(true);
+  };
+
+  // Los dos botones de WhatsApp (envío y retiro); "muy pronto" si falta el número.
   const accion = (hrefWa: string | null, etiqueta: string) => {
     if (!hrefWa) return <p className="mt-4 text-sm text-stone-500">{t("pronto")}</p>;
-    if (acceso === "cargando") {
-      return <span aria-hidden="true" className="mt-4 block h-11 animate-pulse rounded-full bg-stone-800/70" />;
-    }
-    if (acceso === "login") {
-      return (
-        <button
-          type="button"
-          onClick={irAlLogin}
-          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border border-borde-sutil px-5 py-3 text-sm font-semibold text-stone-300 transition-colors hover:border-acento-dorado hover:text-acento-dorado"
-        >
-          <IconoCandado className="h-4 w-4" />
-          {t("acceso_boton")}
-        </button>
-      );
-    }
     return (
-      <a href={hrefWa} target="_blank" rel="noopener noreferrer" className={CLASE_WHATSAPP}>
+      <a
+        href={hrefWa}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={verificarSesion}
+        aria-haspopup={acceso === "login" ? "dialog" : undefined}
+        className={CLASE_WHATSAPP}
+      >
         <IconoWhatsApp className="h-4 w-4" />
         {etiqueta}
       </a>
@@ -77,34 +71,18 @@ export function EntregaContacto({ envioHref, retiroHref, acceso, correo, redirec
           </h2>
           <p className="mt-1 text-sm text-stone-400">{t("entrega_ayuda")}</p>
         </div>
-        {acceso === "listo" && correo && (
-          <p className="text-sm text-stone-500">{t("cuenta_como", { correo })}</p>
+        {acceso === "listo" && cuenta && (
+          <p className="text-sm text-stone-500">{t("cuenta_como", { cuenta })}</p>
         )}
       </div>
 
-      {acceso === "login" && (envioHref || retiroHref) && (
-        <div className="mt-5 flex flex-col gap-4 rounded-2xl border border-acento-dorado/40 bg-acento-dorado/[0.06] p-4 sm:flex-row sm:items-center sm:p-5">
-          <span className="hidden h-10 w-10 flex-none items-center justify-center rounded-full bg-acento-dorado/15 text-acento-dorado sm:inline-flex">
-            <IconoCandado className="h-5 w-5" />
-          </span>
-          <div className="flex-1">
-            <h3 className="font-serif text-lg font-bold text-texto-claro">{t("acceso_titulo")}</h3>
-            <p className="mt-1 text-sm leading-relaxed text-stone-400">{t("acceso_texto")}</p>
-          </div>
-          <button
-            type="button"
-            onClick={irAlLogin}
-            className="inline-flex flex-none items-center justify-center gap-2 rounded-full bg-acento-dorado px-6 py-3 text-sm font-semibold text-fondo-oscuro transition-transform hover:scale-[1.02] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acento-dorado"
-          >
-            <IconoCandado className="h-4 w-4" />
-            {t("acceso_iniciar")}
-          </button>
-        </div>
-      )}
-
       <AnimatePresence>
         {loginAbierto && acceso === "login" && (
-          <LoginModal onClose={() => setLoginAbierto(false)} redirectPath={redirectPath} />
+          <LoginModal
+            onClose={() => setLoginAbierto(false)}
+            redirectPath={redirectPath}
+            subtitulo={t("acceso_texto")}
+          />
         )}
       </AnimatePresence>
 

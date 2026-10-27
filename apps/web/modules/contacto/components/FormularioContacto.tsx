@@ -62,9 +62,12 @@ export function FormularioContacto({
   // Sin Supabase (dev) no hay cuentas: los botones quedan libres, igual que el resto del sitio.
   const acceso: AccesoEntrega = !authActiva ? "listo" : !ready ? "cargando" : user ? "listo" : "login";
   const correo = user?.email ?? null;
+  // Google trae el nombre en los metadatos; con enlace mágico solo hay correo.
+  const meta = user?.user_metadata as { full_name?: string; name?: string } | undefined;
+  const nombre = meta?.full_name ?? meta?.name ?? null;
   const href = (mensaje: string) => (WHATSAPP_CONTACTO ? urlWhatsApp(WHATSAPP_CONTACTO, mensaje) : null);
-  const envioHref = href(armarMensajeEnvio({ personajes: nombres, locale, correo }));
-  const retiroHref = href(armarMensajeRetiro({ personajes: nombres, locale, correo }));
+  const envioHref = href(armarMensajeEnvio({ personajes: nombres, locale, nombre, correo }));
+  const retiroHref = href(armarMensajeRetiro({ personajes: nombres, locale, nombre, correo }));
 
   // Al volver del login (Google o enlace mágico) la selección sigue marcada.
   const seleccion = personajes.filter((p) => elegidos.includes(p.slug)).map((p) => p.slug);
@@ -171,7 +174,7 @@ export function FormularioContacto({
               envioHref={envioHref}
               retiroHref={retiroHref}
               acceso={acceso}
-              correo={correo}
+              cuenta={nombre ?? correo}
               redirectPath={redirectPath}
             />
           </motion.div>
