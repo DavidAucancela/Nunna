@@ -800,8 +800,7 @@ No hay carrito ni pago en el sitio (la rama `feat/tienda-fase-1` con carrito se 
 - **/contacto se fusionó dentro de `/personajes` (2026-10-28)** — `PersonajesColeccion.tsx`, una sola ventana con
   dos modos sobre los mismos círculos del reverso de la tarjeta (opción 3 del lienzo de diseño):
   **Colección** (por defecto: cada círculo abre la ficha, los guardados con anillo dorado + ✓) y **Compra** (botón
-  fijo abajo "Conseguir imanes": aparecen candados en los que no tienes, cada círculo se elige con "+ Elegir"/"✓ Elegido",
-  pasos 1 Elige · 2 Tu pedido · 3 Entrega, y "Continuar · n imanes · $X" baja al pedido). `?comprar=1`,
+  fijo abajo "Conseguir imanes" → el **proceso de compra por pasos**, abajo). `?comprar=1`,
   `?personaje=<slug>` o `?personajes=a,b` abren en compra. `/es/contacto` y `/en/contact` → 308 a
   `/personajes?comprar=1` (`next.config.ts`); se borraron la página, `FormularioContacto` y `EscribenosPersonaje`, y
   "Escríbenos" salió del navbar (el footer lleva "Consigue tus imanes"). Lo de abajo describe el flujo, ahora dentro
@@ -816,14 +815,20 @@ No hay carrito ni pago en el sitio (la rama `feat/tienda-fase-1` con carrito se 
   la cuenta de Google (`user_metadata.full_name`/`name`; con nombre no se pide "Nombre:" en la plantilla); con
   enlace mágico no hay nombre → "Te escribo desde mi cuenta {correo}." Precio: "Serían 3 imanes con la promo
   3 × $10: $10 más el envío." (retiro: "… $10 en total.").
-- **Entrega** (`EntregaContacto`, 2026-10-27): **solo aparece al elegir el primer personaje** (debajo del resumen). Es
-  el único lugar con botones de WhatsApp — el bloque "Escribir por WhatsApp" que había encima se quitó por duplicado.
-  Envío ("Pedir con envío") · **Pago en línea — Próximamente** · Retiro en La Mariscal con mapa (`MapaRetiro`,
-  coords OSM en `lib/contacto/retiro.ts`) + "Cómo llegar" + "Coordinar retiro".
-- **Los botones de WhatsApp verifican la sesión al tocarlos** (si Supabase está activo; sin envs van directo): se ven
-  siempre verdes, pero sin sesión el clic hace `preventDefault` y abre la ventana del candado del navbar
-  (`LoginModal` con `redirectPath` + `subtitulo` propio) → vuelve a `/personajes?personajes=a,b#contacto-entrega`
-  con la selección intacta (sin `redirectPath`, `LoginForm` sigue mandando a `/mis-personajes`).
+- **Proceso de compra por pasos** ★ (decisión del autor, 2026-10-29): en el modo compra se ve **un paso a la vez**, con
+  indicador real (los pasos hechos se pueden tocar) y una barra fija abajo con **Atrás + la acción del paso**:
+  1. **Elige** — los círculos ("+ Elegir"/"✓ Elegido", candado en los que no tienes, "Elegir los 6"). Acción:
+     "Continuar · n imanes · $X" (deshabilitada sin elegidos). Atrás = volver a la colección.
+  2. **Pedido** — chips de los elegidos (quitar con ×, "+ Agregar más" vuelve al paso 1) + `ResumenPedido` (promos).
+  3. **Entrega** (`PasoEntrega`) — se elige **una**: Envío a todo Ecuador (los datos se completan en el mensaje de
+     WhatsApp) o Retiro en Quito (al elegirlo se despliega `MapaRetiro` + locales/horario + "Cómo llegar"). Pago en
+     línea se ve como "Próximamente", no seleccionable. "Continuar" deshabilitado hasta elegir.
+  4. **Enviar** (`PasoEnviar`) — resumen: personajes, total (+ "más el envío" o "sin envío"), entrega y a nombre de
+     quién, con "Cambiar" para volver al paso. Acción: **"Enviar por WhatsApp"** con el mensaje de la entrega elegida
+     o, sin sesión (Supabase activo), **"Inicia sesión para enviar"** → `LoginModal` con `redirectPath`
+     `/personajes?comprar=1&personajes=a,b&entrega=…&paso=4`: al volver se cae otra vez en "Enviar" con todo elegido.
+     Solo aquí se pide sesión; elegir y armar el pedido no la necesita. Sin número de WhatsApp: "muy pronto".
+  `EntregaContacto` (las tres tarjetas a la vez, cada una con su botón) se borró.
 - "Escríbenos" aparece solo para quien **no tiene guardado** al personaje: ficha (tarjeta de escaneo, oculto si
   llegó por QR) y la vitrina de `/mis-personajes`. Ambos usan `hrefContacto(slug)` → `/personajes?personaje=<slug>`
   (modo compra con el personaje ya elegido). En `/personajes` el candado aparece solo en modo compra.
