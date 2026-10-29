@@ -13,7 +13,7 @@
     "ingresar": "Ingresar",
     "cerrar": "Cerrar",
     "cancelar": "Cancelar",
-    "contacto": "Escríbenos"
+    "comprar": "Consigue tus imanes"
   },
   "home": {
     "hero": {
@@ -65,13 +65,30 @@
   "personajes": {
     "titulo": "Los Personajes",
     "descripcion": "Cada personaje lleva siglos de historia, simbolismo y transformación cultural.",
-    "filtro_origen": "Filtrar por origen",
     "ver_detalle": "Conocer este personaje",
-    "sin_resultados": "No se encontraron personajes con ese criterio.",
     "proximamente": "Más personajes, próximamente",
-    "escribenos": "Escríbenos",
-    "escribenos_aria": "Escríbenos para conseguir a {nombre}",
-    "en_coleccion": "En tu colección"
+    "en_coleccion": "En tu colección",
+    "eyebrow": "La colección",
+    "lema": "Escanea, descubre y colecciona",
+    "progreso": "{n} de {total} en tu colección",
+    "no_coleccion": "Aún no está en tu colección",
+    "conseguir": "Conseguir imanes",
+    "compra_eyebrow": "Consigue tus imanes",
+    "compra_titulo": "Elige tus personajes",
+    "compra_precios": "${unidad} c/u · {trio} × ${precioTrio} · los {coleccion} × ${precioColeccion}",
+    "pasos_aria": "Pasos de compra",
+    "paso_elige": "Elige",
+    "paso_pedido": "Tu pedido",
+    "paso_entrega": "Entrega",
+    "elegir": "Elegir",
+    "elegido": "Elegido",
+    "elegir_aria": "Elegir a {nombre} (aún no está en tu colección)",
+    "elegir_aria_guardado": "Elegir a {nombre} (ya está en tu colección)",
+    "elegir_todos": "Elegir los {n} · ${precio}",
+    "quitar_todos": "Quitar todos",
+    "volver_coleccion": "Colección",
+    "elige_uno": "Elige al menos uno",
+    "continuar": "Continuar · {n, plural, one {# imán} other {# imanes}} · ${total}"
   },
   "pases": {
     "titulo": "Pases y Festividades",
@@ -304,13 +321,6 @@
     "reintentar": "Intentar de nuevo"
   },
   "contacto": {
-    "meta_titulo": "Escríbenos | Nunna",
-    "meta_descripcion": "Imanes de los personajes de Nunna: $4 cada uno, 3 por $10 y la colección completa por $20. Pide por WhatsApp.",
-    "eyebrow": "Escríbenos",
-    "titulo": "¿Quieres llevarte un personaje?",
-    "intro": "Elige tus personajes y cómo quieres recibirlos. Te respondemos por WhatsApp con la disponibilidad y la forma de pago.",
-    "personajes_titulo": "Elige tus personajes",
-    "personajes_ayuda": "Cada imán viene con su tarjeta ilustrada y el QR a su ficha.",
     "pronto": "Muy pronto podrás escribirnos desde aquí.",
     "entrega_titulo": "Entrega",
     "envio_titulo": "Envío a todo Ecuador",
@@ -320,8 +330,6 @@
     "retiro_direccion": "Reina Victoria y Jorge Washington, Quito",
     "retiro_locales": "Locales 114, 107 y 103",
     "retiro_horario": "De 9:00 a 18:00",
-    "elegir_todos": "Elegir los {n}",
-    "quitar_todos": "Quitar todos",
     "resumen_titulo": "Tu pedido · {n, plural, one {# imán} other {# imanes}}",
     "precio_unidad": "${precio} por unidad",
     "total": "Total",

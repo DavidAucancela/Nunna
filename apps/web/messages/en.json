@@ -13,7 +13,7 @@
     "ingresar": "Sign in",
     "cerrar": "Close",
     "cancelar": "Cancel",
-    "contacto": "Contact us"
+    "comprar": "Get your magnets"
   },
   "home": {
     "hero": {
@@ -65,13 +65,30 @@
   "personajes": {
     "titulo": "The Characters",
     "descripcion": "Each character carries centuries of history, symbolism, and cultural transformation.",
-    "filtro_origen": "Filter by origin",
     "ver_detalle": "Learn about this character",
-    "sin_resultados": "No characters found with that criteria.",
     "proximamente": "More characters coming soon",
-    "escribenos": "Contact us",
-    "escribenos_aria": "Contact us to get {nombre}",
-    "en_coleccion": "In your collection"
+    "en_coleccion": "In your collection",
+    "eyebrow": "The collection",
+    "lema": "Scan, discover and collect",
+    "progreso": "{n} of {total} in your collection",
+    "no_coleccion": "Not in your collection yet",
+    "conseguir": "Get magnets",
+    "compra_eyebrow": "Get your magnets",
+    "compra_titulo": "Choose your characters",
+    "compra_precios": "${unidad} each · {trio} × ${precioTrio} · all {coleccion} × ${precioColeccion}",
+    "pasos_aria": "Order steps",
+    "paso_elige": "Choose",
+    "paso_pedido": "Your order",
+    "paso_entrega": "Delivery",
+    "elegir": "Add",
+    "elegido": "Added",
+    "elegir_aria": "Add {nombre} (not in your collection yet)",
+    "elegir_aria_guardado": "Add {nombre} (already in your collection)",
+    "elegir_todos": "Add all {n} · ${precio}",
+    "quitar_todos": "Remove all",
+    "volver_coleccion": "Collection",
+    "elige_uno": "Choose at least one",
+    "continuar": "Continue · {n, plural, one {# magnet} other {# magnets}} · ${total}"
   },
   "pases": {
     "titulo": "Celebrations & Festivities",
@@ -304,13 +321,6 @@
     "reintentar": "Try again"
   },
   "contacto": {
-    "meta_titulo": "Contact us | Nunna",
-    "meta_descripcion": "Nunna character magnets: $4 each, 3 for $10 and the full collection for $20. Order on WhatsApp.",
-    "eyebrow": "Contact us",
-    "titulo": "Want to take a character home?",
-    "intro": "Pick your characters and how you'd like to get them. We'll reply on WhatsApp with availability and payment options.",
-    "personajes_titulo": "Pick your characters",
-    "personajes_ayuda": "Each magnet comes with its illustrated card and the QR to its page.",
     "pronto": "Soon you'll be able to message us from here.",
     "entrega_titulo": "Delivery",
     "envio_titulo": "Shipping across Ecuador",
@@ -320,8 +330,6 @@
     "retiro_direccion": "Reina Victoria y Jorge Washington, Quito",
     "retiro_locales": "Stalls 114, 107 and 103",
     "retiro_horario": "9:00 to 18:00",
-    "elegir_todos": "Pick all {n}",
-    "quitar_todos": "Clear all",
     "resumen_titulo": "Your order · {n, plural, one {# magnet} other {# magnets}}",
     "precio_unidad": "${precio} each",
     "total": "Total",

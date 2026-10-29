@@ -11,7 +11,7 @@ const MQ_MOVIL = "(max-width: 639px)";
 
 /**
  * Ventana de ingreso sobre la página actual (botón del candado en el navbar y
- * "Iniciar sesión" de la entrega en /contacto, que pasa `redirectPath` para volver ahí).
+ * "Iniciar sesión" de la entrega en el modo compra de /personajes, que pasa `redirectPath` para volver ahí).
  * Va en un portal a <body>: el header usa `backdrop-filter`, que ancla los
  * descendientes `fixed` al propio header en vez de al viewport.
  *

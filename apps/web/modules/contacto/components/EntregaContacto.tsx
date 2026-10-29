@@ -17,7 +17,7 @@ interface EntregaContactoProps {
   acceso: AccesoEntrega;
   /** Nombre (Google) o correo de la cuenta con sesión, para "Pedido a nombre de …". */
   cuenta: string | null;
-  /** A dónde vuelve el login: /contacto con la selección actual. */
+  /** A dónde vuelve el login: /personajes con la selección actual. */
   redirectPath?: string | undefined;
 }
 
@@ -33,7 +33,7 @@ const CLASE_WHATSAPP =
  */
 export function EntregaContacto({ envioHref, retiroHref, acceso, cuenta, redirectPath }: EntregaContactoProps) {
   const t = useTranslations("contacto");
-  // La misma ventana de ingreso del candado del navbar; vuelve a /contacto con el pedido.
+  // La misma ventana de ingreso del candado del navbar; vuelve a /personajes con el pedido.
   const [loginAbierto, setLoginAbierto] = useState(false);
 
   // Verificación al tocar: con sesión sigue el enlace a WhatsApp; sin ella, ventana de ingreso.

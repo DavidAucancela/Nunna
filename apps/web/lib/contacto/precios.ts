@@ -1,4 +1,4 @@
-// Precios de los imanes en /contacto. No hay carrito ni pago en el sitio: el precio se muestra
+// Precios de los imanes (modo compra de /personajes). No hay carrito ni pago en el sitio: el precio se muestra
 // para que la persona sepa cuánto cuesta y viaja en el mensaje de WhatsApp.
 
 export const PRECIOS = { unidad: 4, trio: 10, coleccion: 20 } as const;
