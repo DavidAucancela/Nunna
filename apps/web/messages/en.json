@@ -13,7 +13,9 @@
     "ingresar": "Sign in",
     "cerrar": "Close",
     "cancelar": "Cancel",
-    "comprar": "Get your magnets"
+    "comprar": "Get your magnets",
+    "cerrar_sesion": "Sign out",
+    "cuenta": "Your account"
   },
   "home": {
     "hero": {

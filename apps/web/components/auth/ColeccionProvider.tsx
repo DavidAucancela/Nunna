@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -59,6 +60,9 @@ const ColeccionContext = createContext<ColeccionContextValue | null>(null);
 // ── Cache local (evita parpadeo del nav antes de que responda Supabase) ────────
 
 const CACHE_KEY = "nunna:coleccion";
+
+// useLayoutEffect en el cliente (antes de pintar), useEffect en el servidor (sin warning de SSR).
+const useLayoutEffectCliente = typeof window === "undefined" ? useEffect : useLayoutEffect;
 const LOGIN_ONLY_KEY = "nunna:pending_login_only";
 const WELCOME_KEY = "nunna:bienvenida_vista";
 
@@ -95,10 +99,15 @@ export function buildRedirectUrl(path?: string): string | undefined {
 // ── Provider ───────────────────────────────────────────────────────────────────
 
 export function ColeccionProvider({ children }: { children: React.ReactNode }) {
-  // Hidratar desde cache solo cuando el gating está activo; si no, set vacío estable.
-  const [coleccion, setColeccion] = useState<Set<string>>(() =>
-    supabaseEnabled ? new Set(readCache()) : new Set(),
-  );
+  // Arranca vacío igual que el HTML del servidor (si leyera la cache aquí, el primer render del
+  // cliente no coincidiría → error de hidratación, p. ej. "Has guardado 4 de 6" vs "0 de 6").
+  // La cache se aplica justo después de hidratar y antes de pintar: sin parpadeo.
+  const [coleccion, setColeccion] = useState<Set<string>>(() => new Set());
+  useLayoutEffectCliente(() => {
+    if (!supabaseEnabled) return;
+    const cache = readCache();
+    if (cache.length > 0) setColeccion((prev) => (prev.size > 0 ? prev : new Set(cache)));
+  }, []);
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(!supabaseEnabled);
   const [showWelcome, setShowWelcome] = useState(false);

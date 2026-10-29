@@ -13,7 +13,9 @@
     "ingresar": "Ingresar",
     "cerrar": "Cerrar",
     "cancelar": "Cancelar",
-    "comprar": "Consigue tus imanes"
+    "comprar": "Consigue tus imanes",
+    "cerrar_sesion": "Cerrar sesión",
+    "cuenta": "Tu cuenta"
   },
   "home": {
     "hero": {
