@@ -263,13 +263,29 @@
     "meta_texto": "When all {total} dance with you, the first-person walk of the pase opens.",
     "meta_texto_completa": "Your comparsa arrived complete: the first-person walk of the pase is yours.",
     "ver_recorrido": "See the walk",
-    "faltan": "{n, plural, one {# to go} other {# to go}}"
+    "meta_comparsa": "Your full comparsa",
+    "meta_progreso": "{n} of {total} in your comparsa",
+    "meta_premio": "Reward: the first-person walk of the pase",
+    "meta_conseguir": "{n, plural, one {Get the one missing} other {Get the # missing}}",
+    "cert_guardian_boton": "Your Guardian certificate",
+    "logros_titulo": "Your achievements",
+    "logro_falta": "Missing: {nombres}",
+    "cert_personaje_eyebrow": "Collection certificate",
+    "cert_origen_eyebrow": "Collection achievement",
+    "cert_guardian_eyebrow": "Certificate of honor",
+    "cert_pertenece": "Belongs to",
+    "cert_otorgado": "Awarded to",
+    "cert_se_unio": "Joined your comparsa on {fecha}",
+    "cert_completado": "Achieved on {fecha}",
+    "cert_numero": "No. {n} of {total}",
+    "cert_sello": "NUNNA · COLLECTION · ECUADOR · ",
+    "cert_sello_guardian": "GUARDIAN OF THE PASE · NUNNA · 6/6 · "
   },
   "logros": {
     "origen_completo": "{origen} Master",
     "origen_completo_desc": "You gathered every being of {origen} origin.",
     "coleccion_completa": "Guardian of the pase",
-    "coleccion_completa_desc": "You awakened all {total} beings. The collection is complete.",
+    "coleccion_completa_desc": "You gathered all {total} beings of the pase and opened its first-person walk.",
     "progreso_origen": "{n}/{total} {origen}"
   },
   "login": {

@@ -59,12 +59,12 @@ function Plaza({ className }: { className?: string }) {
 }
 
 /** Tramo curvo que llega a una parada desde la anterior (dos trazados: móvil y `sm`+). */
-function Conector({ i, hecho }: { i: number; hecho: boolean }) {
+function Conector({ i, hecho, alCentro = false }: { i: number; hecho: boolean; alCentro?: boolean }) {
   const izq = i % 2 === 0;
   const trazos = (["movil", "sm"] as const).map((k) => {
     const [cIzq, cDer] = CENTROS[k];
     const desde = i === 0 ? 50 : izq ? cDer : cIzq;
-    return { k, d: curva(desde, izq ? cIzq : cDer) };
+    return { k, d: curva(desde, alCentro ? 50 : izq ? cIzq : cDer) };
   });
   return (
     <>
@@ -267,101 +267,168 @@ export function ColeccionSerpentina({
           );
         })}
 
-        {/* Meta: la plaza */}
+        {/* Meta: la plaza — el gran final, centrado y destacado. */}
         <li className="flex flex-col">
-          <Conector i={paradas.length} hecho={fullCollection} />
-          <div className={`flex ${paradas.length % 2 === 0 ? "justify-start" : "justify-end"}`}>
-            <motion.div
-              {...aparece(paradas.length)}
-              className={`flex w-[86%] items-center gap-4 rounded-[22px] px-4 py-4 sm:w-[58%] sm:gap-[18px] ${
+          <Conector i={paradas.length} hecho={fullCollection} alCentro />
+          <motion.section
+            {...aparece(paradas.length)}
+            aria-labelledby="meta-guardian"
+            className={`relative mx-auto w-full max-w-2xl overflow-hidden rounded-[28px] border-2 px-5 pb-6 pt-7 text-center sm:px-10 sm:pb-8 sm:pt-9 ${
+              fullCollection
+                ? "border-[#F0D98A] bg-[radial-gradient(ellipse_at_top,rgba(200,155,60,0.32),#15110A_70%)] shadow-[0_0_0_8px_rgba(240,217,138,0.08),0_30px_80px_-30px_rgba(200,155,60,0.7)]"
+                : "border-acento-dorado/45 bg-[radial-gradient(ellipse_at_top,rgba(200,155,60,0.14),#121010_70%)]"
+            }`}
+          >
+            <motion.span
+              aria-hidden="true"
+              animate={fullCollection && !reducir ? { scale: [1, 1.06, 1] } : { scale: 1 }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+              className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full sm:h-24 sm:w-24 ${
                 fullCollection
-                  ? "border-2 border-[#F0D98A] bg-acento-dorado/[0.14]"
-                  : "border-[1.5px] border-dashed border-stone-600 bg-[#121010]"
+                  ? "border-[3px] border-[#F0D98A] bg-acento-dorado text-fondo-oscuro"
+                  : "border-2 border-acento-dorado/60 bg-fondo-oscuro text-acento-dorado"
               }`}
             >
-              <span
-                className={`flex h-[72px] w-[72px] flex-none items-center justify-center rounded-full sm:h-[84px] sm:w-[84px] ${
-                  fullCollection
-                    ? "border-[3px] border-[#F0D98A] bg-acento-dorado text-fondo-oscuro"
-                    : "border-2 border-dashed border-stone-500 bg-stone-900 text-stone-400"
-                }`}
-              >
-                <Plaza className="h-8 w-8 sm:h-9 sm:w-9" />
-              </span>
-              <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
-                <span
-                  className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${
-                    fullCollection ? "text-[#F0D98A]" : "text-stone-400"
-                  }`}
+              <Plaza className="h-9 w-9 sm:h-11 sm:w-11" />
+            </motion.span>
+            <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-acento-dorado">{t("meta")}</p>
+            <h2 id="meta-guardian" className="mt-1 font-serif text-4xl font-bold text-[#F0D98A] sm:text-5xl">
+              {tl("coleccion_completa")}
+            </h2>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-stone-300 sm:text-base">
+              {fullCollection ? t("meta_texto_completa") : t("meta_texto", { total: personajes.length })}
+            </p>
+
+            {/* La comparsa completa: los que bailan contigo y los puestos libres. */}
+            <ul className="mx-auto mt-6 grid max-w-lg grid-cols-6 items-end gap-1 sm:gap-2" aria-label={t("meta_comparsa")}>
+              {[...personajes]
+                .sort((a, b) => (a.tarjeta?.orden ?? 99) - (b.tarjeta?.orden ?? 99))
+                .map((p) => {
+                  const tiene = guardados.has(p.slug);
+                  const img = p.imagenIman ?? p.imagenPortada;
+                  return (
+                    <li key={p.slug} className="flex h-16 items-end justify-center sm:h-24" title={p.tarjeta?.nombre ?? p.nombre}>
+                      {img && (
+                        <Image
+                          src={img}
+                          alt={tiene ? p.tarjeta?.nombre ?? p.nombre : ""}
+                          width={120}
+                          height={160}
+                          sizes="64px"
+                          className={`h-auto max-h-full w-auto max-w-full object-contain ${
+                            tiene ? "drop-shadow-[0_8px_8px_rgba(0,0,0,0.7)]" : "opacity-[0.16] brightness-0 invert"
+                          }`}
+                        />
+                      )}
+                    </li>
+                  );
+                })}
+            </ul>
+            <div className="mx-auto mt-3 h-1.5 max-w-lg overflow-hidden rounded-full bg-stone-800">
+              <div className="h-full rounded-full bg-acento-dorado" style={{ width: `${(n / personajes.length) * 100}%` }} />
+            </div>
+            <p className="mt-2 text-xs text-stone-400">{t("meta_progreso", { n, total: personajes.length })}</p>
+
+            {fullCollection ? (
+              <div className="mt-6 flex flex-wrap justify-center gap-2">
+                <a
+                  href="#recorrido-premio"
+                  className="inline-flex h-11 items-center rounded-full bg-acento-dorado px-5 text-sm font-semibold text-fondo-oscuro"
                 >
-                  {t("meta")}
-                </span>
-                <h3
-                  className={`font-serif text-[19px] font-bold leading-tight sm:text-2xl ${
-                    fullCollection ? "text-[#F0D98A]" : "text-stone-300"
-                  }`}
+                  {t("ver_recorrido")}
+                </a>
+                <button
+                  type="button"
+                  onClick={onCertificadoColeccion}
+                  className="inline-flex h-11 items-center rounded-full border border-[#F0D98A]/70 px-5 text-sm font-semibold text-[#F0D98A] transition-colors hover:bg-acento-dorado/15"
                 >
-                  {tl("coleccion_completa")}
-                </h3>
-                <p className="text-sm leading-relaxed text-stone-400">
-                  {fullCollection ? t("meta_texto_completa") : t("meta_texto", { total: personajes.length })}
-                </p>
-                <div className="mt-1.5 flex flex-wrap gap-2">
-                  {fullCollection ? (
-                    <>
-                      <a
-                        href="#recorrido-premio"
-                        className="inline-flex h-9 items-center rounded-full bg-acento-dorado px-3.5 text-xs font-semibold text-fondo-oscuro"
-                      >
-                        {t("ver_recorrido")}
-                      </a>
-                      <button
-                        type="button"
-                        onClick={onCertificadoColeccion}
-                        className="inline-flex h-9 items-center rounded-full px-2 text-xs font-semibold text-acento-dorado underline-offset-2 hover:underline"
-                      >
-                        {t("certificado")}
-                      </button>
-                    </>
-                  ) : (
-                    <span className="inline-flex h-9 items-center rounded-full border border-acento-dorado/60 px-3.5 text-xs font-semibold text-acento-dorado">
-                      {t("faltan", { n: faltan })}
-                    </span>
-                  )}
-                </div>
+                  {t("cert_guardian_boton")}
+                </button>
               </div>
-            </motion.div>
-          </div>
+            ) : (
+              <>
+                <p className="mx-auto mt-5 flex max-w-md items-center justify-center gap-2 rounded-full border border-borde-sutil px-4 py-2 text-xs text-stone-300 sm:text-sm">
+                  <Candado />
+                  {t("meta_premio")}
+                </p>
+                <div className="mt-5 flex flex-wrap justify-center gap-2">
+                  <Link
+                    href={{ pathname: "/personajes", query: { personajes: libres.map((p) => p.slug).join(",") } }}
+                    className="inline-flex h-11 items-center rounded-full bg-acento-dorado px-5 text-sm font-semibold text-fondo-oscuro"
+                  >
+                    {t("meta_conseguir", { n: faltan })}
+                  </Link>
+                </div>
+              </>
+            )}
+          </motion.section>
         </li>
       </ol>
 
-      {/* Logros: los conseguidos abren su certificado */}
-      <ul className="mt-10 flex flex-wrap justify-center gap-2">
-        {origenes.map((o) => {
-          const label = tc(`origen.${o.origen}` as "origen.prehispanico");
-          const texto = o.earned
-            ? tl("origen_completo", { origen: label })
-            : `${tl("origen_completo", { origen: label })} · ${o.got}/${o.total}`;
-          return (
-            <li key={o.origen}>
-              {o.earned ? (
-                <button
-                  type="button"
-                  onClick={() => onCertificadoOrigen(o.origen)}
-                  aria-label={`${texto} — ${t("ver_certificado")}`}
-                  className="inline-flex h-9 items-center rounded-full border border-acento-dorado bg-acento-dorado/15 px-3.5 text-xs font-medium text-[#E7C97A] transition-colors hover:bg-acento-dorado/25"
+      {/* Logros: una medalla por origen; las conseguidas abren su certificado. */}
+      <section aria-labelledby="tus-logros" className="mt-14">
+        <h2 id="tus-logros" className="text-center font-serif text-2xl font-bold text-texto-claro sm:text-3xl">
+          {t("logros_titulo")}
+        </h2>
+        <ul className="mx-auto mt-6 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
+          {origenes.map((o) => {
+            const label = tc(`origen.${o.origen}` as "origen.prehispanico");
+            const del = personajes.filter((p) => p.origen === o.origen);
+            const faltanDel = del.filter((p) => !guardados.has(p.slug)).map((p) => p.tarjeta?.nombre ?? p.nombre);
+            return (
+              <li
+                key={o.origen}
+                className={`flex flex-col items-center gap-2 rounded-2xl border p-4 text-center ${
+                  o.earned ? "border-acento-dorado/60 bg-acento-dorado/[0.08]" : "border-borde-sutil bg-[#121010]"
+                }`}
+              >
+                <span
+                  aria-hidden="true"
+                  className={`flex h-14 w-14 items-center justify-center rounded-full ${
+                    o.earned ? "bg-acento-dorado text-fondo-oscuro shadow-[0_0_0_5px_rgba(200,155,60,0.2)]" : "border-2 border-dashed border-stone-600 text-stone-500"
+                  }`}
                 >
-                  {texto}
-                </button>
-              ) : (
-                <span className="inline-flex h-9 items-center rounded-full border border-borde-sutil px-3.5 text-xs font-medium text-stone-400">
-                  {texto}
+                  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinejoin="round">
+                    <path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z" />
+                  </svg>
                 </span>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+                <span className={`font-serif text-base font-bold leading-tight ${o.earned ? "text-texto-claro" : "text-stone-300"}`}>
+                  {tl("origen_completo", { origen: label })}
+                </span>
+                <span className="flex h-9 items-end justify-center gap-1">
+                  {del.map((p) => {
+                    const img = p.imagenIman ?? p.imagenPortada;
+                    const tiene = guardados.has(p.slug);
+                    return img ? (
+                      <Image
+                        key={p.slug}
+                        src={img}
+                        alt=""
+                        width={60}
+                        height={80}
+                        sizes="28px"
+                        className={`h-9 w-auto object-contain ${tiene ? "" : "opacity-[0.16] brightness-0 invert"}`}
+                      />
+                    ) : null;
+                  })}
+                </span>
+                {o.earned ? (
+                  <button
+                    type="button"
+                    onClick={() => onCertificadoOrigen(o.origen)}
+                    aria-label={`${tl("origen_completo", { origen: label })} — ${t("ver_certificado")}`}
+                    className="mt-auto inline-flex h-9 items-center rounded-full border border-acento-dorado px-3.5 text-xs font-semibold text-acento-dorado transition-colors hover:bg-acento-dorado hover:text-fondo-oscuro"
+                  >
+                    {t("ver_certificado")}
+                  </button>
+                ) : (
+                  <span className="mt-auto text-xs leading-snug text-stone-400">{t("logro_falta", { nombres: faltanDel.join(", ") })}</span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </section>
     </div>
   );
 }

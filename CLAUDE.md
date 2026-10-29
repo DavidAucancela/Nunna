@@ -1247,8 +1247,21 @@ opción **F1 · Serpentina con imanes de pie**). `ColeccionSerpentina.tsx` reemp
 - Cada parada pone **de pie el imán real** (`imagenIman ?? imagenPortada`, PNG/WebP transparente) saliendo por encima de la
   tarjeta, con halo del color de la placa (`tarjeta.color`). Los que faltan: silueta clara (`brightness-0 invert` al 16 %)
   + candado + "Conseguir su imán" (`hrefContacto`). Guardados: "Ver su ficha" + "Certificado".
-- Logros por origen como chips debajo (los conseguidos abren su certificado). Con la colección completa la plaza ofrece
-  "Ver el recorrido" (ancla `#recorrido-premio`, el `PaseCameraSection` que ya existía) y el certificado de la colección.
+- **La plaza es el gran final** (2026-10-29): tarjeta centrada y destacada (la última curva va al centro) con
+  "Guardián del pase", los 6 imanes en fila (silueta los que faltan), barra n/6 y el premio. Incompleta: candado
+  "Premio: el recorrido…" + "Conseguir los N que faltan" (`/personajes?personajes=…` → compra con esos elegidos).
+  Completa: brillo dorado, "Ver el recorrido" (ancla `#recorrido-premio`, el `PaseCameraSection`) y "Tu certificado
+  de Guardián".
+- **"Tus logros"**: una medalla por origen con sus imanes (silueta los que faltan); conseguida → "Ver certificado",
+  si no → "Te falta: …".
+- **Certificados** (`CertificadoColeccion`, canvas 1080×1350, 4:5 para compartir desde el teléfono), tres plantillas:
+  **personaje** (la tarjeta impresa: café + doble filete dorado, imán de pie con halo de su color, placa crema con el
+  nombre, "Nº n de 6", leyenda), **Maestro de un origen** (paleta del origen, sus imanes juntos) y **Guardián del
+  pase** (dorado, sello circular "GUARDIÁN DEL PASE · 6/6", los 6 en desfile en arco). Todas llevan **titular**
+  ("Pertenece a / Otorgado a" + nombre de la cuenta; con enlace mágico, el correo sin dominio — lo lee el propio
+  componente de `useColeccion`) y la **fecha real** (`unlocked_at`; la de un logro = la del último personaje que lo
+  completó; si falta, hoy). Archivo `nunna-<titulo>.png`. `GuardarPersonaje` (ficha) usa la misma plantilla de
+  personaje con los datos que tiene.
 - Probado con Playwright (sesión de prueba + respuesta de Supabase simulada); falta verlo con una cuenta real.
 
 ### Navbar — botón de sesión = tu colección (2026-10-28)

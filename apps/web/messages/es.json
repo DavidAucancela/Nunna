@@ -263,13 +263,29 @@
     "meta_texto": "Cuando los {total} bailen contigo, se abre el recorrido del pase en primera persona.",
     "meta_texto_completa": "Tu comparsa llegó completa: el recorrido del pase en primera persona es tuyo.",
     "ver_recorrido": "Ver el recorrido",
-    "faltan": "{n, plural, one {Falta #} other {Faltan #}}"
+    "meta_comparsa": "Tu comparsa completa",
+    "meta_progreso": "{n} de {total} en tu comparsa",
+    "meta_premio": "Premio: el recorrido del pase en primera persona",
+    "meta_conseguir": "{n, plural, one {Conseguir el que falta} other {Conseguir los # que faltan}}",
+    "cert_guardian_boton": "Tu certificado de Guardián",
+    "logros_titulo": "Tus logros",
+    "logro_falta": "Te falta: {nombres}",
+    "cert_personaje_eyebrow": "Certificado de colección",
+    "cert_origen_eyebrow": "Logro de la colección",
+    "cert_guardian_eyebrow": "Certificado de honor",
+    "cert_pertenece": "Pertenece a",
+    "cert_otorgado": "Otorgado a",
+    "cert_se_unio": "Se unió a tu comparsa el {fecha}",
+    "cert_completado": "Logrado el {fecha}",
+    "cert_numero": "Nº {n} de {total}",
+    "cert_sello": "NUNNA · COLECCIÓN · ECUADOR · ",
+    "cert_sello_guardian": "GUARDIÁN DEL PASE · NUNNA · 6/6 · "
   },
   "logros": {
     "origen_completo": "Maestro {origen}",
     "origen_completo_desc": "Reuniste todos los seres de origen {origen}.",
     "coleccion_completa": "Guardián del pase",
-    "coleccion_completa_desc": "Despertaste a los {total} seres. La colección está completa.",
+    "coleccion_completa_desc": "Reuniste a los {total} seres del pase y abriste su recorrido en primera persona.",
     "progreso_origen": "{n}/{total} {origen}"
   },
   "login": {

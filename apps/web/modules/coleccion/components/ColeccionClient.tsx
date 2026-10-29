@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence } from "framer-motion";
-import { getOrigenStyle, type Origen } from "@/lib/origen-styles";
+import type { Origen } from "@/lib/origen-styles";
 import { useColeccion } from "@/components/auth/ColeccionProvider";
 import { ColeccionSerpentina } from "./ColeccionSerpentina";
 import { CertificadoColeccion, type CertificadoLogro } from "./CertificadoColeccion";
@@ -23,6 +23,7 @@ export function ColeccionClient({
   const t = useTranslations("coleccion");
   const tl = useTranslations("logros");
   const tg = useTranslations("guardar");
+  const tc = useTranslations("comun");
   const { ready, has } = useColeccion();
   const fechas = useFechasColeccion();
   const [certificado, setCertificado] = useState<CertificadoLogro | null>(null);
@@ -42,15 +43,28 @@ export function ColeccionClient({
   // Evita parpadeo: hasta resolver, no afirmamos "vacío".
   const empty = ready && unlockedCount === 0;
 
+  // Datos de cada personaje para los certificados: el imán recortado, el color de su placa y su nombre impreso.
+  const paraCertificado = (p: PersonajeLite) => ({
+    nombre: p.tarjeta?.nombre ?? p.nombre,
+    imagenPortada: p.imagenPortada,
+    imagenIman: p.imagenIman ?? null,
+    color: p.tarjeta?.color ?? null,
+  });
+  // La fecha de un logro es la del último personaje que lo completó.
+  const ultimaFecha = (lista: PersonajeLite[]) => {
+    const ts = lista.map((p) => fechas.get(p.slug)?.getTime()).filter((x): x is number => x !== undefined);
+    return ts.length === lista.length && ts.length > 0 ? new Date(Math.max(...ts)) : null;
+  };
+
   function abrirCertificadoOrigen(slug: string) {
-    const style = getOrigenStyle(slug);
     const grupo = personajes.filter((p) => p.origen === slug && has(p.slug));
     setCertificado({
       tipo: "origen",
       origen: slug as Origen,
-      titulo: tl("origen_completo", { origen: style.label }),
-      descripcion: tl("origen_completo_desc", { origen: style.label }),
-      personajes: grupo.map((p) => ({ nombre: p.nombre, imagenPortada: p.imagenPortada })),
+      titulo: tl("origen_completo", { origen: tc(`origen.${slug}` as "origen.prehispanico") }),
+      descripcion: tl("origen_completo_desc", { origen: tc(`origen.${slug}` as "origen.prehispanico").toLowerCase() }),
+      personajes: grupo.map(paraCertificado),
+      fecha: ultimaFecha(grupo),
     });
   }
 
@@ -58,9 +72,12 @@ export function ColeccionClient({
     setCertificado({
       tipo: "personaje",
       ...(p.origen ? { origen: p.origen as Origen } : {}),
-      titulo: p.nombre,
+      titulo: p.tarjeta?.nombre ?? p.nombre,
       descripcion: tg("certificado_descripcion", { nombre: p.nombre }),
-      personajes: [{ nombre: p.nombre, imagenPortada: p.imagenPortada }],
+      personajes: [paraCertificado(p)],
+      fecha: fechas.get(p.slug) ?? null,
+      numero: p.tarjeta?.orden ? t("cert_numero", { n: p.tarjeta.orden, total }) : null,
+      leyenda: p.leyenda ?? null,
     });
   }
 
@@ -69,7 +86,8 @@ export function ColeccionClient({
       tipo: "coleccion",
       titulo: tl("coleccion_completa"),
       descripcion: tl("coleccion_completa_desc", { total }),
-      personajes: personajes.map((p) => ({ nombre: p.nombre, imagenPortada: p.imagenPortada })),
+      personajes: [...personajes].sort((a, b) => (a.tarjeta?.orden ?? 99) - (b.tarjeta?.orden ?? 99)).map(paraCertificado),
+      fecha: ultimaFecha(personajes),
     });
   }
 
