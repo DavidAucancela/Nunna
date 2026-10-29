@@ -133,6 +133,8 @@ export interface PersonajeListItem
   imagenIngreso?: string;
   /** Foto de los 4 imanes juntos (landscape) — usada en la estantería horizontal donde el retrato se ve muy recortado. */
   imagenGrupo?: string;
+  /** Imán recortado con fondo transparente (PNG/WebP) cuando `imagenPortada` trae fondo — /mis-personajes lo pone "de pie". */
+  imagenIman?: string;
   tarjeta?: TarjetaArte;
   totalPases: number;
   /** Frase de la narrativa — texto de relación en el escenario de cross-sell. */

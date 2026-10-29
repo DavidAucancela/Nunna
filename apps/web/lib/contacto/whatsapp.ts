@@ -1,5 +1,5 @@
 // Contacto por WhatsApp: no hay carrito ni pago en el sitio. La persona elige sus personajes en
-// /contacto, ve el precio, elige la entrega (envío o retiro) y se abre un chat con el pedido ya escrito.
+// /personajes (modo compra), ve el precio, elige la entrega (envío o retiro) y se abre un chat con el pedido ya escrito.
 
 import { PRECIOS, TAMANO_COLECCION, TAMANO_TRIO, cotizar } from "./precios";
 
@@ -12,7 +12,7 @@ export function normalizarNumero(numero: string | undefined): string | null {
 /**
  * Número que recibe los mensajes, con código de país (ej. 593991234567).
  * NEXT_PUBLIC_* se incrusta al compilar: en Railway hay que ponerla ANTES del build.
- * Si falta, /contacto muestra "muy pronto" en vez de los botones de WhatsApp.
+ * Si falta, el modo compra de /personajes muestra "muy pronto" en vez de los botones de WhatsApp.
  */
 export const WHATSAPP_CONTACTO = normalizarNumero(process.env.NEXT_PUBLIC_WHATSAPP_CONTACTO);
 
@@ -145,9 +145,9 @@ export function armarMensajeEnvio({ personajes, locale, nombre, correo }: DatosM
   ].join("\n");
 }
 
-/** Enlace a /contacto con el personaje ya marcado. */
+/** Enlace a /personajes en modo compra, con el personaje ya elegido. */
 export function hrefContacto(slug?: string) {
   return slug
-    ? ({ pathname: "/contacto", query: { personaje: slug } } as const)
-    : ({ pathname: "/contacto" } as const);
+    ? ({ pathname: "/personajes", query: { personaje: slug } } as const)
+    : ({ pathname: "/personajes", query: { comprar: "1" } } as const);
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { usePathname } from "next/navigation";
@@ -28,16 +28,13 @@ interface HeroDespertarProps {
   imagenBanner?: { url: string; altText: string; posicion?: string } | undefined;
   origenLabel: string;
   accentColor: string;
-  audioAmbiente?: string | undefined;
 }
-
-const AMBIENT_VOLUME = 0.32;
 
 /**
  * Fase 1 — "Despertar": hero inmersivo del destino del QR.
  * Empieza con pantalla negra; al primer gesto (tap/scroll/tecla) la máscara
  * emerge en capas con parallax (scroll + mouse) y el nombre aparece letra a
- * letra. Audio ambiente con toggle de silencio muy visible y SIN autoplay.
+ * letra. Sin audio: el botón de sonido ambiente se retiró (2026-10-27).
  * Respeta prefers-reduced-motion y funciona en tema claro y oscuro.
  */
 export function HeroDespertar({
@@ -49,15 +46,11 @@ export function HeroDespertar({
   imagenBanner,
   origenLabel,
   accentColor,
-  audioAmbiente,
 }: HeroDespertarProps) {
   const ref = useRef<HTMLElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const reduced = useReducedMotion();
   const pathname = usePathname();
   const t = useTranslations("experiencia");
-
-  const [soundOn, setSoundOn] = useState(false);
 
   const fuente: { url: string; altText: string; posicion?: string } | undefined = imagenBanner ?? imagen;
 
@@ -103,27 +96,6 @@ export function HeroDespertar({
     mx.set((e.clientX - rect.left) / rect.width - 0.5);
     my.set((e.clientY - rect.top) / rect.height - 0.5);
   }
-
-  // ── Audio ambiente: opt-in, con fade suave al activar ──
-  function toggleSound() {
-    const el = audioRef.current;
-    if (!el) return;
-    if (soundOn) {
-      el.pause();
-      setSoundOn(false);
-    } else {
-      el.volume = AMBIENT_VOLUME;
-      el.play().then(() => setSoundOn(true)).catch(() => setSoundOn(false));
-    }
-  }
-
-  // Si abandonan el hero/ruta, detén el audio.
-  useEffect(() => {
-    const el = audioRef.current;
-    return () => {
-      if (el) el.pause();
-    };
-  }, [pathname]);
 
   return (
     <section
@@ -214,47 +186,6 @@ export function HeroDespertar({
           Todos los personajes
         </Link>
       </div>
-
-      {/* Toggle de sonido — muy visible, opt-in */}
-      {audioAmbiente && (
-        <div className="absolute right-5 top-20 z-30 sm:right-6">
-          <audio ref={audioRef} src={audioAmbiente} loop preload="none" />
-          {/* Ondas del sonido ambiente — solo mientras suena */}
-          {soundOn &&
-            !reduced &&
-            [0, 0.9].map((delay) => (
-              <motion.span
-                key={delay}
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 rounded-full border"
-                style={{ borderColor: accentColor }}
-                animate={{ scale: [1, 1.45], opacity: [0.55, 0] }}
-                transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut", delay }}
-              />
-            ))}
-          <button
-            type="button"
-            onClick={toggleSound}
-            aria-pressed={soundOn}
-            aria-label={soundOn ? t("silenciar") : t("activar_sonido")}
-            className="relative flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3.5 py-2 text-xs text-white backdrop-blur-md transition-colors hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento-dorado/70"
-          >
-            {soundOn ? (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M11 5 6 9H2v6h4l5 4z" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7" />
-                <path d="M18.5 5.5a9 9 0 0 1 0 13" />
-              </svg>
-            ) : (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M11 5 6 9H2v6h4l5 4z" />
-                <path d="m23 9-6 6M17 9l6 6" />
-              </svg>
-            )}
-            <span className="hidden sm:inline">{soundOn ? t("silenciar") : t("activar_sonido")}</span>
-          </button>
-        </div>
-      )}
 
       {/* Contenido del hero */}
       <motion.div

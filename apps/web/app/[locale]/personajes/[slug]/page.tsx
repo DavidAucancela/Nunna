@@ -148,7 +148,7 @@ export default async function PersonajePage({ params }: PersonajePageProps) {
 
       {/* ── 1. Hero — Despertar inmersivo si el personaje tiene experiencia v2 ── */}
       {personaje.experiencia ? (
-        <HeroDespertar {...heroProps} audioAmbiente={personaje.audioAmbiente} />
+        <HeroDespertar {...heroProps} />
       ) : (
         <ParallaxHero {...heroProps} />
       )}

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useParams, usePathname as useRawPathname, useRouter as useNextRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useColeccion } from "@/components/auth/ColeccionProvider";
 import { NunnaLogoAnimado } from "@/components/ui/NunnaLogoAnimado";
@@ -12,7 +12,6 @@ import { LoginModal } from "@/modules/auth/components/LoginModal";
 const NAV_LINKS = [
   { key: "personajes", href: "/personajes" },
   { key: "pases",      href: "/pases" },
-  { key: "contacto",   href: "/contacto" },
 ] as const;
 
 const MOBILE_NAV_LINKS = [
@@ -35,8 +34,6 @@ function NavIcon({ name, className }: { name: NavKey; className?: string }) {
       "M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z",
     pases:
       "M3 4.5l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.711l3.114-.733a48.524 48.524 0 01-.005 10.499l-3.109.732a9 9 0 01-6.086-.711l-.108-.054a9 9 0 00-6.208-.682L3 15m0-10.5v18",
-    contacto:
-      "M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z",
   };
 
   return (
@@ -62,6 +59,18 @@ function LockIcon({ size = 16 }: { size?: number }) {
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+      />
+    </svg>
+  );
+}
+
+function UserIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} fill="none" stroke="currentColor" strokeWidth={1.9} viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
       />
     </svg>
   );
@@ -198,6 +207,141 @@ function SelectorIdioma({
   );
 }
 
+function LogoutIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+      />
+    </svg>
+  );
+}
+
+/** Nombre (Google) y correo de la cuenta, para el menú de cuenta. */
+function DatosCuenta({ nombre, correo }: { nombre: string | null; correo: string | null }) {
+  return (
+    <div className="min-w-0 px-3 py-2.5">
+      <p className="truncate text-sm font-medium text-texto-claro">{nombre ?? correo}</p>
+      {nombre && correo && <p className="truncate text-xs text-stone-500">{correo}</p>}
+    </div>
+  );
+}
+
+/**
+ * Con sesión (escritorio y móvil): el ícono de persona abre con un clic la cuenta — nombre/correo,
+ * "Mis personajes" y "Cerrar sesión". Se cierra al tocar fuera, con Escape o al elegir una opción.
+ */
+function CuentaMenu({
+  activo,
+  nombre,
+  correo,
+  labelCuenta,
+  labelColeccion,
+  labelCerrar,
+  className,
+  iconSize,
+  onNavegar,
+  onCerrarSesion,
+}: {
+  activo: boolean;
+  nombre: string | null;
+  correo: string | null;
+  labelCuenta: string;
+  labelColeccion: string;
+  labelCerrar: string;
+  /** Forma del botón (redondo en escritorio, cuadrado redondeado en móvil, como el candado). */
+  className: string;
+  iconSize: number;
+  onNavegar: () => void;
+  onCerrarSesion: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-label={labelCuenta}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title={nombre ?? correo ?? labelCuenta}
+        className={`flex h-9 w-9 items-center justify-center border text-acento-dorado transition-colors ${className} ${
+          activo || open
+            ? "border-acento-dorado bg-acento-dorado/20"
+            : "border-acento-dorado/40 bg-acento-dorado/10 hover:bg-acento-dorado/20"
+        }`}
+      >
+        <UserIcon size={iconSize} />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -6, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.97 }}
+            transition={{ duration: 0.16, ease: "easeOut" }}
+            className="absolute right-0 top-full z-10 origin-top-right pt-2"
+          >
+            <div
+              role="menu"
+              aria-label={labelCuenta}
+              className="w-60 max-w-[calc(100vw-2.5rem)] overflow-hidden rounded-xl border border-borde-sutil bg-fondo-oscuro/95 p-1 shadow-2xl shadow-black/50 backdrop-blur-xl"
+            >
+              <DatosCuenta nombre={nombre} correo={correo} />
+              <div className="mx-2 border-t border-borde-sutil" />
+              <Link
+                href="/mis-personajes"
+                role="menuitem"
+                onClick={() => {
+                  setOpen(false);
+                  onNavegar();
+                }}
+                className="mt-1 flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-stone-300 transition-colors hover:bg-stone-800/60 hover:text-texto-claro"
+              >
+                <UserIcon size={16} />
+                {labelColeccion}
+              </Link>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setOpen(false);
+                  onCerrarSesion();
+                }}
+                className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm text-stone-300 transition-colors hover:bg-acento-rojo/15 hover:text-red-300"
+              >
+                <LogoutIcon size={16} />
+                {labelCerrar}
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export function Header() {
   const t = useTranslations("nav");
   const pathname = usePathname();
@@ -208,8 +352,14 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [loginOpen, setLoginOpen] = useState(false);
-  const { authActiva, ready, session } = useColeccion();
+  const { authActiva, ready, session, user, signOut } = useColeccion();
+  const router = useRouter();
   const sinCuenta = authActiva && ready && !session;
+  // Con sesión, el botón del candado pasa a ser el de tu colección (no hay pestaña aparte).
+  const conCuenta = authActiva && !!session;
+  const meta = user?.user_metadata as { full_name?: string; name?: string } | undefined;
+  const nombreCuenta = meta?.full_name ?? meta?.name ?? null;
+  const correoCuenta = user?.email ?? session?.user?.email ?? null;
 
   const switchLocale = (code: string) => {
     const segments = rawPathname.split("/");
@@ -218,6 +368,14 @@ export function Header() {
   };
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.includes(href));
+
+  // Si estabas en tu colección, al salir no queda nada que ver ahí: vuelve al inicio.
+  const cerrarSesion = async () => {
+    setMenuOpen(false);
+    const enColeccion = isActive("/mis-personajes");
+    await signOut();
+    if (enColeccion) router.replace("/");
+  };
 
   const closeMenu = () => setMenuOpen(false);
   const goTop = () => window.scrollTo({ top: 0, behavior: "instant" });
@@ -291,24 +449,6 @@ export function Header() {
         <div className="flex shrink-0 items-center gap-2">
           {/* Escritorio — solo íconos: sesión + idioma */}
           <div className="hidden items-center gap-2 md:flex">
-            {authActiva && session && (
-              <Link
-                href="/mis-personajes"
-                onClick={goTop}
-                title={session.user?.email ?? undefined}
-                className="flex h-9 items-center gap-1.5 rounded-full border border-borde-sutil px-3 text-xs font-medium text-stone-300 transition-colors hover:border-acento-dorado hover:text-texto-claro"
-              >
-                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                  />
-                </svg>
-                <span>{t("mis_personajes")}</span>
-              </Link>
-            )}
-
             {sinCuenta && (
               <button
                 type="button"
@@ -321,6 +461,21 @@ export function Header() {
                   {t("ingresar")}
                 </span>
               </button>
+            )}
+
+            {conCuenta && (
+              <CuentaMenu
+                activo={isActive("/mis-personajes")}
+                nombre={nombreCuenta}
+                correo={correoCuenta}
+                labelCuenta={t("cuenta")}
+                labelColeccion={t("mis_personajes")}
+                labelCerrar={t("cerrar_sesion")}
+                className="rounded-full"
+                iconSize={16}
+                onNavegar={goTop}
+                onCerrarSesion={cerrarSesion}
+              />
             )}
 
             <SelectorIdioma locale={locale} label={t("idioma")} onSelect={switchLocale} />
@@ -338,7 +493,28 @@ export function Header() {
             </button>
           )}
 
-          {/* Móvil — botón único que unifica navegación + idioma + sesión */}
+          {/* Móvil — con sesión, la cuenta en el lugar del candado */}
+          {conCuenta && (
+            <div className="md:hidden">
+              <CuentaMenu
+                activo={isActive("/mis-personajes")}
+                nombre={nombreCuenta}
+                correo={correoCuenta}
+                labelCuenta={t("cuenta")}
+                labelColeccion={t("mis_personajes")}
+                labelCerrar={t("cerrar_sesion")}
+                className="rounded-xl"
+                iconSize={18}
+                onNavegar={() => {
+                  closeMenu();
+                  goTop();
+                }}
+                onCerrarSesion={cerrarSesion}
+              />
+            </div>
+          )}
+
+          {/* Móvil — botón único que unifica navegación + idioma */}
           <div ref={menuRef} className="relative md:hidden">
             <button
               onClick={() => setMenuOpen((o) => !o)}
@@ -416,31 +592,6 @@ export function Header() {
                       );
                     })}
                   </motion.nav>
-
-                  {authActiva && session && (
-                    <>
-                      <div className="mx-3 border-t border-borde-sutil" />
-                      <div className="p-2">
-                        <Link
-                          href="/mis-personajes"
-                          onClick={() => {
-                            closeMenu();
-                            goTop();
-                          }}
-                          className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-stone-300 transition-colors hover:bg-stone-800/60 hover:text-texto-claro"
-                        >
-                          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true" className="text-stone-500">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                            />
-                          </svg>
-                          <span>{t("mis_personajes")}</span>
-                        </Link>
-                      </div>
-                    </>
-                  )}
 
                   <div className="mx-3 border-t border-borde-sutil" />
                   <div className="flex items-center gap-2 p-3" role="group" aria-label={t("idioma")}>

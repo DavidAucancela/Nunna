@@ -112,7 +112,7 @@ describe("armarMensajeEnvio", () => {
 
 describe("hrefContacto", () => {
   it("lleva el personaje en la query", () => {
-    expect(hrefContacto("payaso")).toEqual({ pathname: "/contacto", query: { personaje: "payaso" } });
-    expect(hrefContacto()).toEqual({ pathname: "/contacto" });
+    expect(hrefContacto("payaso")).toEqual({ pathname: "/personajes", query: { personaje: "payaso" } });
+    expect(hrefContacto()).toEqual({ pathname: "/personajes", query: { comprar: "1" } });
   });
 });

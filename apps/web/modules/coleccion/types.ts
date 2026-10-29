@@ -10,6 +10,8 @@ export interface PersonajeLite {
   imagenBanner?: string | null;
   /** Foto de los 4 imanes juntos — usada por PersonajesLibro en /mis-personajes. */
   imagenGrupo?: string | null;
+  /** Imán recortado (fondo transparente) si `imagenPortada` trae fondo. */
+  imagenIman?: string | null;
   /** Frase corta (leyenda) — usada por PersonajesLibro en /mis-personajes. */
   leyenda?: string | null;
   /** Arte de la tarjeta impresa — los círculos de la colección. */

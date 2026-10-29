@@ -17,6 +17,7 @@ function toListItem(p: PersonajeRaw): PersonajeListItem {
   if (p.imagenBanner) item.imagenBanner = p.imagenBanner;
   if ("imagenIngreso" in p && p.imagenIngreso) item.imagenIngreso = p.imagenIngreso as string;
   if ("imagenGrupo" in p && p.imagenGrupo) item.imagenGrupo = p.imagenGrupo as string;
+  if ("imagenIman" in p && p.imagenIman) item.imagenIman = p.imagenIman as string;
   if (p.tarjeta) item.tarjeta = p.tarjeta as TarjetaArte;
   if (p.narrativa?.leyenda) item.leyenda = p.narrativa.leyenda;
   return item;

@@ -9,7 +9,7 @@ import { AuthOpciones } from "./AuthOpciones";
  * Módulo de ingreso — pantalla dedicada a iniciar sesión con una cuenta ya
  * existente (Google o enlace mágico). El redirect tras el login lo resuelve
  * ColeccionProvider (`setPendingLoginOnly` → `/mis-personajes`), salvo que se pase
- * `redirectPath`: entonces vuelve a esa página (p. ej. /contacto con el pedido elegido).
+ * `redirectPath`: entonces vuelve a esa página (p. ej. /personajes con el pedido elegido).
  */
 export function LoginForm({
   autoFocus = true,

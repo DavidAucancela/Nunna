@@ -90,6 +90,13 @@ const nextConfig: NextConfig = {
       { source: "/en/unlock/:slug", destination: "/en/characters/:slug", permanent: true },
     ];
 
+    // /contacto se fusionó dentro de /personajes (2026-10-28): el modo compra va en la misma
+    // ventana. La query (?personaje=) pasa sola al destino.
+    const contactoRedirects = [
+      { source: "/es/contacto", destination: "/es/personajes?comprar=1", permanent: true },
+      { source: "/en/contact", destination: "/en/characters?comprar=1", permanent: true },
+    ];
+
     return [
       ...slugRedirects,
       ...mapaRedirects,
@@ -97,6 +104,7 @@ const nextConfig: NextConfig = {
       ...paseDetalleRedirects,
       ...quRedirects,
       ...desbloquearRedirects,
+      ...contactoRedirects,
     ];
   },
   async headers() {
