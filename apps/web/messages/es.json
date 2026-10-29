@@ -177,9 +177,7 @@
   "experiencia": {
     "preludio": "Has despertado a",
     "despertar": "Despertar a {nombre}",
-    "toca_para_despertar": "Toca para despertar",
-    "activar_sonido": "Activar sonido",
-    "silenciar": "Silenciar"
+    "toca_para_despertar": "Toca para despertar"
   },
   "anatomia": {
     "eyebrow": "Anatomía del personaje",

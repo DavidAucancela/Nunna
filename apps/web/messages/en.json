@@ -177,9 +177,7 @@
   "experiencia": {
     "preludio": "You have awakened",
     "despertar": "Awaken {nombre}",
-    "toca_para_despertar": "Tap to awaken",
-    "activar_sonido": "Enable sound",
-    "silenciar": "Mute"
+    "toca_para_despertar": "Tap to awaken"
   },
   "anatomia": {
     "eyebrow": "Anatomy of the character",
