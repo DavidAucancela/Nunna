@@ -103,8 +103,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<JWT>
 # al dominio de Railway. Cuando haya dominio propio, cambiarla aquí y en Railway.
 NEXT_PUBLIC_SITE_URL=https://nunnaec-production.up.railway.app
 
-# Número de WhatsApp de /contacto (con código de país, ej. 593991234567). Se incrusta al
-# compilar: en Railway ponerla ANTES del build. Sin ella, /contacto muestra "muy pronto".
+# Número de WhatsApp del modo compra de /personajes (con código de país, ej. 593991234567). Se incrusta al
+# compilar: en Railway ponerla ANTES del build. Sin ella, el modo compra muestra "muy pronto".
 NEXT_PUBLIC_WHATSAPP_CONTACTO=
 ```
 
@@ -122,15 +122,15 @@ apps/web/
 │   │   ├── layout.tsx              → usa MainContent
 │   │   ├── page.tsx                → Landing
 │   │   ├── personajes/
-│   │   │   ├── page.tsx            → ★ Una sola pantalla: grilla 3×2 (2×3 móvil) con foto real de pase
-│   │   │   │                         de cada personaje (`FOTO_PASE`) + "Más personajes, próximamente" (2026-10-15)
+│   │   │   ├── page.tsx            → ★ Colección + compra en una sola ventana (`PersonajesColeccion`): los 6
+│   │   │   │                         círculos del reverso; botón de abajo "Conseguir imanes" → candados, elegir,
+│   │   │   │                         pedido y entrega por WhatsApp (absorbió a /contacto, 2026-10-28)
 │   │   │   └── [slug]/page.tsx     → ★★ DESTINO QR — ficha completa con historia
 │   │   ├── pases/
 │   │   │   └── page.tsx            → ★ ventana fija: mapa nacional → provincia → recorrido de un pase
 │   │   │                             (/mapa, /calendario y /pases/[slug] redirigen aquí)
 │   │   ├── login/page.tsx          → ingreso (Google + enlace mágico) — LoginForm/AuthOpciones
-│   │   ├── mis-personajes/page.tsx → ★ colección del usuario + progreso + logros
-│   │   ├── contacto/page.tsx       → "Escríbenos": personajes + precio/promos + WhatsApp + entrega (envío · pago próx. · retiro con mapa)
+│   │   ├── mis-personajes/page.tsx → ★ colección como serpentina de la comparsa (`ColeccionSerpentina`, 2026-10-29)
 │   │   └── sobre/page.tsx
 │   └── api/health/route.ts         → healthcheck Railway
 ├── components/                     → SOLO compartidos entre módulos
@@ -162,7 +162,7 @@ apps/web/
 │   │                                 + CentinelaGuardar), ColeccionClient, CertificadoColeccion, DespertarAnimation
 │   ├── auth/components/            → LoginForm, AuthOpciones (Google + enlace mágico, compartido)
 ├── lib/
-│   ├── contacto/whatsapp.ts        → número (NEXT_PUBLIC_WHATSAPP_CONTACTO), mensajes de pedido/envío, wa.me, hrefContacto()
+│   ├── contacto/whatsapp.ts        → número (NEXT_PUBLIC_WHATSAPP_CONTACTO), mensajes de pedido/envío, wa.me, hrefContacto() (→ /personajes en modo compra)
 │   │                                 (+ precios.ts: $4 · 3×$10 · 6×$20; retiro.ts: coords del retiro)
 │   ├── qr-origen.ts                → ★ llegada por QR (`?origen=qr` → marca 24 h en localStorage)
 │   ├── supabase/client.ts          → ★ cliente Supabase browser (auth + colección; null si faltan envs)
@@ -261,12 +261,12 @@ Ejemplo: `/personajes/aya-uma/aya-uma-pase-desfile-centro-riobamba.webp` → `id
 > Comprimido a 960×540 CRF 30 (6 MB, 2026-07-03) — **trae audio propio** (pista AAC 96k, no un
 > `<audio>` separado). El `<video>` arranca `muted` (exigencia de autoplay del navegador) y el botón
 > grande de sonido (`HeroSection.tsx`, esquina inferior derecha) alterna `video.muted` con el primer
-> gesto del usuario — mismo patrón que el toggle de audio ambiente en `HeroDespertar`. Si se reemplaza
+> gesto del usuario. Si se reemplaza
 > el video, mantener el presupuesto (~6 MB) y preservar la pista de audio al comprimir con ffmpeg
 > (`-c:a aac -b:a 96k`, no omitir `-c:a`).
-> **Audio del hero v2**: `public/audio/[slug]-ambiente.mp3` (referenciado por `audioAmbiente` en
-> `personajes.json`). Opt-in, sin autoplay; si falta el archivo, el botón aparece pero no suena.
-> Ver `public/audio/README.md` para los nombres exactos esperados.
+> **Audio del hero v2 — retirado (2026-10-27):** la ficha ya no tiene botón de sonido (`HeroDespertar` sin
+> `<audio>` ni toggle). El campo `audioAmbiente` sigue en `personajes.json`/tipos pero nadie lo lee; los
+> `.mp3` nunca se subieron. No reintroducir el botón sin decisión del autor.
 > No usar carpetas con espacios en `public/` — rompen las URLs.
 
 ### Galería "En el pase" — mosaico + visor (2026-10-15)
@@ -463,8 +463,6 @@ etiquetadas en la card). Solo se renderiza si el personaje tiene `experiencia: t
   "preludio": "Has despertado a",
   "despertar": "Despertar a {nombre}",
   "toca_para_despertar": "Toca para despertar",
-  "activar_sonido": "Activar sonido",
-  "silenciar": "Silenciar",
   "descubrir": "Descubrir"
 }
 ```
@@ -722,8 +720,8 @@ Modo oscuro por defecto.
   pantalla completa (hoy solo en el header, una vez por carga); versión monocroma del isotipo (sello,
   grabado, empaque) y versión para la tarjeta impresa; el verde del logo (`#2F7A63`) es más claro que el
   jade del sitio (`#1F4D3F`) a propósito — decidir si se suma a la paleta como token.
-- **Trabajo de colección sin commitear** (de otra sesión): `ColeccionVitrina.tsx` nuevo, cambios en
-  `ColeccionClient.tsx` y `messages/{es,en}.json` — terminar y commitear en su propia rama.
+- **Trabajo de colección**: `ColeccionVitrina.tsx` se retiró (2026-10-29), reemplazada por `ColeccionSerpentina` — ver
+  "/mis-personajes — la comparsa en serpentina".
 - **Pendientes de esa tanda:** ilustraciones de la tarjeta en alta (hoy 183–434 px); texto del zamarro
   (Aya Uma) redactado por Claude — validar con el artesano; foto `payaso-pase-plaza-de-la-alcaldia.jpg`
   lleva el logo "Corazón Riobambeño" (¿sacarla de la galería?); punto de "aberturas de los ojos" del
@@ -764,7 +762,6 @@ Modo oscuro por defecto.
   confirme.
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
 - Fotografías reales "En el pase" (`titulo: "en-pase"`) y del imán físico (`titulo: "proceso"`) para la galería
-- **Audios reales** del hero v2 en `public/audio/` (6 archivos: `[slug]-ambiente.mp3` por personaje con `experiencia: true` — cucurucho y danzante-yaruquies también los necesitan)
 - **Recorrido — datos reales** de Mercado Santa Rosa y Niño Rey de la Paz: coords ancla exactas, personajes que
   desfilan, fotos propias. Tras editar coords en `recorrido.json`: `node scripts/build-route.mjs`
 - **Verificar en campo las 5 rutas demo** (`demo: true` en `recorrido.json`: Cotopaxi, Tungurahua,
@@ -797,10 +794,19 @@ Modo oscuro por defecto.
 
 ### Contacto por WhatsApp — precios visibles, sin carrito ★ (2026-10-26, precios 2026-10-27)
 No hay carrito ni pago en el sitio (la rama `feat/tienda-fase-1` con carrito se descartó). Para conseguir un imán:
-**"Escríbenos"** → `/contacto` → WhatsApp con el pedido ya escrito.
+**"Conseguir imanes"** (modo compra de `/personajes`) → WhatsApp con el pedido ya escrito.
 - **Precios** (decisión del autor, 2026-10-27, `lib/contacto/precios.ts`): $4 por imán, promo 3 × $10, colección
   completa 6 × $20. `cotizar(n)` arma el mejor precio (colecciones de 6 → grupos de 3 → sueltos): 4 = $14, 5 = $18.
-- `/contacto` (`FormularioContacto`): se eligen personajes con el nombre y el ícono de línea del reverso de la
+- **/contacto se fusionó dentro de `/personajes` (2026-10-28)** — `PersonajesColeccion.tsx`, una sola ventana con
+  dos modos sobre los mismos círculos del reverso de la tarjeta (opción 3 del lienzo de diseño):
+  **Colección** (por defecto: cada círculo abre la ficha, los guardados con anillo dorado + ✓) y **Compra** (botón
+  fijo abajo "Conseguir imanes": aparecen candados en los que no tienes, cada círculo se elige con "+ Elegir"/"✓ Elegido",
+  pasos 1 Elige · 2 Tu pedido · 3 Entrega, y "Continuar · n imanes · $X" baja al pedido). `?comprar=1`,
+  `?personaje=<slug>` o `?personajes=a,b` abren en compra. `/es/contacto` y `/en/contact` → 308 a
+  `/personajes?comprar=1` (`next.config.ts`); se borraron la página, `FormularioContacto` y `EscribenosPersonaje`, y
+  "Escríbenos" salió del navbar (el footer lleva "Consigue tus imanes"). Lo de abajo describe el flujo, ahora dentro
+  del modo compra.
+- Antes, `/contacto` (`FormularioContacto`): se eligen personajes con el nombre y el ícono de línea del reverso de la
   tarjeta (`tarjeta.icono` sobre la placa crema, como `CirculoColeccion`; botón "Elegir los 6");
   al elegir aparece `ResumenPedido` con total, precio tachado y sello animado al llegar a 3 y a 6 (chispas, apagadas
   con `prefers-reduced-motion`). `?personaje=<slug>` lo marca; se lee con `window.location` (página SSG). La sección
@@ -816,11 +822,11 @@ No hay carrito ni pago en el sitio (la rama `feat/tienda-fase-1` con carrito se 
   coords OSM en `lib/contacto/retiro.ts`) + "Cómo llegar" + "Coordinar retiro".
 - **Los botones de WhatsApp verifican la sesión al tocarlos** (si Supabase está activo; sin envs van directo): se ven
   siempre verdes, pero sin sesión el clic hace `preventDefault` y abre la ventana del candado del navbar
-  (`LoginModal` con `redirectPath` + `subtitulo` propio) → vuelve a `/contacto?personajes=a,b#contacto-entrega`
+  (`LoginModal` con `redirectPath` + `subtitulo` propio) → vuelve a `/personajes?personajes=a,b#contacto-entrega`
   con la selección intacta (sin `redirectPath`, `LoginForm` sigue mandando a `/mis-personajes`).
 - "Escríbenos" aparece solo para quien **no tiene guardado** al personaje: ficha (tarjeta de escaneo, oculto si
-  llegó por QR), `/personajes` (`EscribenosPersonaje`, hermano del `<Link>` de la tarjeta — sin sesión sale en
-  los 6) y la vitrina de `/mis-personajes`. Todos usan `hrefContacto(slug)`.
+  llegó por QR) y la vitrina de `/mis-personajes`. Ambos usan `hrefContacto(slug)` → `/personajes?personaje=<slug>`
+  (modo compra con el personaje ya elegido). En `/personajes` el candado aparece solo en modo compra.
 - **No reintroducir** carrito ni botones "Comprar" sin una decisión explícita del autor.
 
 ### `/pases` — ventana única de tres vistas ★ (2026-10-13)
@@ -1130,8 +1136,7 @@ Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling
   Campos nuevos en `@seres-del-pase/types` (`experiencia`, `audioAmbiente`) y mapeados en `personajes.service.ts`.
 - **Stack:** `framer-motion` + Lenis (ya instalados). **No se agregó GSAP** — choca con el monorepo
   (Turbopack ya desactivado por `typedRoutes`) y hoy nada lo justifica.
-- **Audio opt-in, sin autoplay** (`public/audio/[slug]-ambiente.mp3`): toggle de silencio muy visible;
-  volumen fijo 0.32 al activar. Si falta el archivo el botón aparece pero no suena.
+- ~~Audio opt-in con toggle de silencio~~ — **retirado 2026-10-27** (botón quitado de la ficha a pedido del autor).
 - **Ambos temas:** los tokens `fondo-oscuro`/`fondo-claro` se **invierten** vía CSS vars en `.dark`
   (`fondo-oscuro` = bg de la página en ambos temas), así el gradiente del hero funde a la página sin banda.
 - **Reduce motion:** `useReducedMotion()` apaga parallax (scroll y mouse), rotaciones y pulsos.
@@ -1225,6 +1230,33 @@ quichua como opción de UI** y la **feature de glosario** por completo.
 - **No reintroducir** un botón ni ruta de búsqueda. Si en el futuro se quiere buscar, replantear desde cero.
 - Supabase/pgvector quedan sin uso real; si no aparece otro caso de Fase 3 que los necesite, considerar retirarlos.
 
+### /mis-personajes — la comparsa en serpentina ★ (2026-10-29)
+Elegida por el autor entre varias rondas de diseño (lienzo "Mis personajes": https://claude.ai/artifact/UaQL4E49x6kw9FR1WhyZ15,
+opción **F1 · Serpentina con imanes de pie**). `ColeccionSerpentina.tsx` reemplazó a la vitrina 3D (`ColeccionVitrina`, borrada).
+- Arriba un **estandarte** "n/6 bailan contigo"; debajo, una **serpentina** de paradas que alternan izquierda/derecha unidas
+  por curvas SVG (dorado sólido lo recorrido, gris punteado lo que falta; dos trazados, móvil y `sm`+, porque los centros de
+  las tarjetas cambian: 43/57 % y 29/71 %). Al final la **plaza** = "Guardián del pase".
+- Orden: primero los guardados **por fecha real** (`user_unlocks.unlocked_at`, leída por `useFechasColeccion` — solo esta
+  página la necesita, por eso no vive en `ColeccionProvider`), luego los que faltan por orden de tarjeta.
+  Etiqueta: "Parada 1 · se unió el 3 oct" (o "en tu comparsa" mientras carga la fecha).
+- Cada parada pone **de pie el imán real** (`imagenIman ?? imagenPortada`, PNG/WebP transparente) saliendo por encima de la
+  tarjeta, con halo del color de la placa (`tarjeta.color`). Los que faltan: silueta clara (`brightness-0 invert` al 16 %)
+  + candado + "Conseguir su imán" (`hrefContacto`). Guardados: "Ver su ficha" + "Certificado".
+- Logros por origen como chips debajo (los conseguidos abren su certificado). Con la colección completa la plaza ofrece
+  "Ver el recorrido" (ancla `#recorrido-premio`, el `PaseCameraSection` que ya existía) y el certificado de la colección.
+- Probado con Playwright (sesión de prueba + respuesta de Supabase simulada); falta verlo con una cuenta real.
+
+### Navbar — botón de sesión = tu colección (2026-10-28)
+Un solo botón de sesión a la derecha del header (escritorio y móvil): **sin sesión**, el candado que abre
+`LoginModal`; **con sesión**, un ícono de persona (`CuentaMenu`) que **con un clic** (no hover, también en móvil)
+despliega la cuenta: nombre/correo · "Mis personajes" · "Cerrar sesión". Se cierra al tocar fuera o con Escape; salir
+estando en `/mis-personajes` vuelve al inicio. Cerrar sesión **solo** vive ahí: no hay tarjeta de cuenta en
+`/mis-personajes` ni fila de cuenta en el menú hamburguesa, y ya no hay pestaña "Mis personajes" en el nav.
+Mientras la sesión se lee no se muestra ni el candado ni el ícono.
+- ⚠ **Hidratación** (fix 2026-10-28): `ColeccionProvider` arranca con la colección vacía, igual que el HTML del
+  servidor, y aplica la cache de localStorage (`nunna:coleccion`) en un `useLayoutEffect` (antes de pintar). Leerla en
+  el `useState` inicial rompía la hidratación ("Has guardado 4 de 6" vs "0 de 6" en `/mis-personajes`).
+
 ### Navbar — 3 secciones visibles en móvil (2026-06-21)
 - El navbar móvil muestra **las 3 secciones inline** (Pases, Calendario, Glosario) — ya no hay menú hamburguesa.
 - El selector de idioma en móvil es un **botón compacto** (`locale` actual + chevron) que abre un popover; en escritorio son pills siempre visibles.
@@ -1256,6 +1288,8 @@ quichua como opción de UI** y la **feature de glosario** por completo.
 
 ### Imágenes — `imagenBanner` vs `imagenPortada`
 - `imagenPortada` → retrato portrait, para tarjetas pequeñas y el lomo activo en móvil (`PersonajesLibro`)
+- `imagenIman` (opcional) → imán recortado con **fondo transparente** cuando `imagenPortada` trae fondo (hoy solo el
+  Danzante: su portada es un webp de 224 px con fondo negro). Lo usa `/mis-personajes`; si falta, cae a `imagenPortada`.
 - `imagenGrupo` → foto landscape de los 4 imanes juntos; el lomo activo de `PersonajesLibro` la usa
   desde `sm` (ver "PersonajesLibro" en decisiones técnicas). Opcional: sin ella cae al retrato
 - `imagenBanner` → foto **real** de pase, landscape, a pantalla completa en el hero (2026-10-22: Aya Uma, Payaso,
