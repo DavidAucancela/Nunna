@@ -331,7 +331,11 @@
     "escanear_texto": "Escanea el QR de su tarjeta para guardarlo en tu colección.",
     "escanear_boton": "Escanear QR",
     "escribenos_titulo": "¿Aún no tienes a {nombre}?",
-    "escribenos_enlace": "Escríbenos"
+    "escribenos_enlace": "Escríbenos",
+    "error_guardar": "No pudimos guardar a {nombre} en tu colección. Revisa tu conexión.",
+    "reintentar": "Intentar de nuevo",
+    "guardando": "Guardando…",
+    "cerrar": "Cerrar"
   },
   "galeria": {
     "titulo": "En el pase",

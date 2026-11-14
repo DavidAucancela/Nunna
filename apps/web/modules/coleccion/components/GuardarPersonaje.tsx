@@ -46,6 +46,9 @@ export function CentinelaGuardar({ slug }: { slug: string }) {
 
 const RANURA_ESCANEAR_ID = "nunna-ranura-escanear";
 
+/** Esperas entre reintentos del guardado automático (fallo de red o JWT aún no válido tras el login). */
+const REINTENTOS_MS = [1500, 4000];
+
 /**
  * Lugar de la tarjeta "¿Tienes el imán?" dentro de la ficha (entre la anatomía y las
  * fotos del pase). `GuardarPersonaje` la pinta aquí por portal: el estado (sesión,
@@ -121,18 +124,49 @@ export function GuardarPersonaje({
     [slug, session, marcarEscaneo],
   );
 
+  // Guardado con reintentos + aviso visible si al final falla. Es el momento de más valor del
+  // embudo (la persona acaba de crear su cuenta): un fallo silencioso la deja sin su personaje.
+  const [guardando, setGuardando] = useState(false);
+  const [fallo, setFallo] = useState(false);
+  const [avisoFallo, setAvisoFallo] = useState(false);
+  const montadoRef = useRef(true);
+  useEffect(() => {
+    montadoRef.current = true;
+    return () => {
+      montadoRef.current = false;
+    };
+  }, []);
+
+  const guardarConAviso = useCallback(async () => {
+    setFallo(false);
+    setAvisoFallo(false);
+    setGuardando(true);
+    let status = await guardarPersonaje(slug);
+    for (const espera of REINTENTOS_MS) {
+      // "error" = red/RPC; "not_authenticated" = JWT recién emitido que aún no valida tras el login.
+      if (status !== "error" && status !== "not_authenticated") break;
+      await new Promise((r) => setTimeout(r, espera));
+      if (!montadoRef.current) return;
+      status = await guardarPersonaje(slug);
+    }
+    if (!montadoRef.current) return;
+    setGuardando(false);
+    if (status === "ok") {
+      setModalAbierto(false);
+      setCelebrando(true);
+    } else if (status !== "already_yours") {
+      setFallo(true);
+      setAvisoFallo(true);
+    }
+  }, [slug, guardarPersonaje]);
+
   // Auto-guardado: sesión + llegada por QR vigente + aún no está en la colección.
   useEffect(() => {
     if (autoGuardadoRef.current || !ready || !session || !porQr || coleccion.has(slug)) return;
     if (!llegadaQrVigente(slug)) return;
     autoGuardadoRef.current = true;
-    void guardarPersonaje(slug).then((status) => {
-      if (status === "ok") {
-        setModalAbierto(false);
-        setCelebrando(true);
-      }
-    });
-  }, [ready, session, porQr, coleccion, slug, guardarPersonaje]);
+    void guardarConAviso();
+  }, [ready, session, porQr, coleccion, slug, guardarConAviso]);
 
   // Escaneo recién llegado, sin sesión: animación de apertura → invitación a guardar.
   useEffect(() => {
@@ -196,6 +230,17 @@ export function GuardarPersonaje({
             </Link>
           </span>
         </div>
+      ) : fallo && session ? (
+        // El aviso de abajo se cerró (o la persona siguió leyendo): queda este acceso para reintentar.
+        <button
+          type="button"
+          onClick={() => void guardarConAviso()}
+          disabled={guardando}
+          className="mt-4 text-sm underline underline-offset-2 transition-colors hover:text-acento-dorado disabled:opacity-60"
+          style={{ color: accentColor }}
+        >
+          {guardando ? t("guardando") : t("guardar_enlace", { nombre })}
+        </button>
       ) : puedeGuardar && ready && !session && descartada ? (
         <button
           type="button"
@@ -260,6 +305,38 @@ export function GuardarPersonaje({
         )}
 
       {escaneando && <EscanerQr open onClose={cerrarEscaner} onDetectado={onQrDetectado} />}
+
+      {/* Aviso fijo: al volver del login la persona está arriba de la ficha y no vería el sello. */}
+      <AnimatePresence>
+        {avisoFallo && !enColeccion && (
+          <motion.div
+            role="alert"
+            initial={{ y: 24, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 24, opacity: 0 }}
+            className="fixed inset-x-4 bottom-4 z-[80] mx-auto flex max-w-md items-center gap-3 rounded-2xl border border-acento-rojo/40 bg-stone-950/95 px-4 py-3 text-sm text-texto-claro shadow-2xl backdrop-blur"
+          >
+            <span className="min-w-0 flex-1">{t("error_guardar", { nombre })}</span>
+            <button
+              type="button"
+              onClick={() => void guardarConAviso()}
+              disabled={guardando}
+              className="flex-none rounded-full px-4 py-2 text-xs font-semibold text-fondo-oscuro disabled:opacity-60"
+              style={{ backgroundColor: accentColor }}
+            >
+              {guardando ? t("guardando") : t("reintentar")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setAvisoFallo(false)}
+              aria-label={t("cerrar")}
+              className="flex-none p-1 text-stone-400 transition-colors hover:text-texto-claro"
+            >
+              ✕
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {modalAbierto && (

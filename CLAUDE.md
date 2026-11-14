@@ -35,7 +35,7 @@ Implicaciones técnicas:
 
 | Capa | Tecnología | Ubicación |
 |------|-----------|-----------|
-| Frontend | Next.js 15.5 (App Router) + TypeScript | `apps/web/` |
+| Frontend | Next.js 15.5.29 (App Router) + TypeScript | `apps/web/` |
 | Estilos | Tailwind CSS v3 + PostCSS | `apps/web/tailwind.config.js` |
 | i18n | next-intl v3 (es / en) | `apps/web/i18n/` + `apps/web/messages/` |
 | Datos | JSON estático en repo | `apps/web/lib/data/` |
@@ -136,11 +136,10 @@ apps/web/
 ├── components/                     → SOLO compartidos entre módulos
 │   ├── auth/                       → ColeccionProvider (sesión + colección Supabase, useColeccion/useEnColeccion, guardarPersonaje)
 │   ├── layout/                     → Header, Footer, MainContent (wrapper pt-16 + footer)
-│   └── ui/                         → FadeUp, AnimatedCounter, ScrollProgress, ScrollToTop,
-│                                     WhatsAppShare, OrigenPlaceholder, LenisProvider
+│   └── ui/                         → FadeUp, RevealText, ScrollToTop, WhatsAppShare, IconoWhatsApp,
+│                                     OrigenPlaceholder, LenisProvider, NunnaLogo, NunnaLogoAnimado
 ├── modules/                        → ★ Componentes por feature
-│   ├── home/components/            → HeroSection, PersonajesShowcase,
-│   │                                 ProductoSection, OrigenesSection, StatsSection, CtaFinal
+│   ├── home/components/            → HeroSection, ProductoSection, CtaFinal
 │   ├── pases/components/           → ★ PasesExplorador (ventana fija de 3 vistas: país → provincia →
 │   │                                 pase), MapaEcuador (★★ única instancia MapLibre, no interactiva,
 │   │                                 zoom por fitBounds + rutas de la provincia), ListaPaginada (lista
@@ -151,13 +150,15 @@ apps/web/
 │   │                                 en /personajes, cross-sell de la ficha y /mis-personajes; reemplazó
 │   │                                 a PersonajesGrid/PersonajeCard/PersonajesEscenario, borrados 2026-09-18),
 │   │                                 ParallaxHero, HeroDespertar (★ hero v2 inmersivo),
-│   │                                 HeroGated/AnatomiaGated (★ gating por desbloqueo),
 │   │                                 AnatomiaSection (★ Fase 4 — hotspots scroll-driven),
 │   │                                 GaleriaSection (grilla única — imán + en-pase combinados),
 │   │                                 HistoriaPresentacion (★ modo presentación — beats visuales),
-│   │                                 PersonajeVisualSection (★ fusión Anatomía+Galería), NarrativaSection (sin uso),
-│   │                                 kichwaGlosario (helper compartido), PersonajesCarrusel (sin uso),
-│   │                                 HotspotsViewer (superseded por AnatomiaSection), SimbolismoSection (sin uso)
+│   │                                 PersonajeVisualSection (★ fusión Anatomía+Galería), QuoteRevelacion,
+│   │                                 SecretoRitual, TarjetaNunna, PersonajesColeccion, ArtesanoSection,
+│   │                                 ColeccionCounter; kichwaGlosario (helper compartido, en modules/personajes/).
+│   │                                 Código muerto borrado el 2026-11-14 (recuperable con git): NarrativaSection,
+│   │                                 PersonajesCarrusel, PersonajeCardProximo, StatsAnimados + useTilt3D,
+│   │                                 y del inicio PersonajesShowcase, OrigenesSection, StatsSection + AnimatedCounter
 │   ├── coleccion/components/       → ★ GuardarPersonaje (sello + modal "Guarda a {nombre}" + auto-guardado
 │   │                                 + CentinelaGuardar), ColeccionClient, CertificadoColeccion, DespertarAnimation
 │   ├── auth/components/            → LoginForm, AuthOpciones (Google + enlace mágico, compartido)
@@ -335,8 +336,8 @@ presentación + recorrido a la vez.
 > `recorridoDePersonaje()`, `CuandoVerloSection`, el namespace i18n `pase_inmersivo` y el campo
 > `defaultPaseSlug` de `recorrido.json`. La ficha ya no importa nada de MapLibre.
 
-★ = rediseño 2026-07-13. ★★ = mejoras de enganche 2026-07-15. `NarrativaSection.tsx` queda en el
-repo pero **ya no se usa** en la ficha (su helper kichwa se extrajo a
+★ = rediseño 2026-07-13. ★★ = mejoras de enganche 2026-07-15. `NarrativaSection.tsx` dejó de usarse y
+se borró el 2026-11-14 (su helper kichwa se había extraído a
 `modules/personajes/kichwaGlosario.tsx`, compartido con `HistoriaPresentacion`).
 `AnatomiaSection`/`GaleriaSection` ganaron un prop `embedded` (sin `<section>`/header propio) para
 componerse dentro de `PersonajeVisualSection`.
@@ -725,7 +726,7 @@ Modo oscuro por defecto.
 - **Pendientes de esa tanda:** ilustraciones de la tarjeta en alta (hoy 183–434 px); texto del zamarro
   (Aya Uma) redactado por Claude — validar con el artesano; foto `payaso-pase-plaza-de-la-alcaldia.jpg`
   lleva el logo "Corazón Riobambeño" (¿sacarla de la galería?); punto de "aberturas de los ojos" del
-  Cucurucho algo a la derecha; `StatsAnimados.tsx` sin uso (borrar); el nombre "Diablo Huma" va primero
+  Cucurucho algo a la derecha; el nombre "Diablo Huma" va primero
   en `/personajes` pero las fichas siguen con "Aya Uma" (decidir si se cambia en todo el sitio y la regla
   de "nombre originario primero"); el video del hero sigue pixelado (960×540) — reexportar en 1080p si
   aparece el original; Cucurucho no tiene `nombreKichwa` en el JSON ("Chuku runa" solo en `/personajes`).
@@ -742,7 +743,8 @@ Modo oscuro por defecto.
 - **⚠ Cerrar el despliegue del QR único** (`docs/PLAN-QR-UNICO.md` Fase 9). Verificado en Supabase el
   2026-10-14: `save_personaje` **ya está aplicada**; la migración destructiva **no** — siguen
   `redeem_code`, `check_code_valid`, `check_code_status` y la tabla `unlock_codes` (renombrarla a
-  `unlock_codes_archivo`). Hacerlo solo con confirmación del autor. Falta también activar Google
+  `unlock_codes_archivo`). Hacerlo solo con confirmación del autor. Re-verificado el 2026-11-12: sigue
+  pendiente y `anon` puede ejecutar esas 3 RPC; ese día se revocó `anon` en `save_personaje`. Falta también activar Google
   (OAuth en Google Cloud + proveedor en Supabase Auth + `NEXT_PUBLIC_AUTH_GOOGLE=1` en Railway) y
   ~~reimprimir las tarjetas con `?origen=qr`~~ — **hecho**: las tarjetas V2 impresas ya llevan
   `https://nunna-ecu.com/es/personajes/<slug>?origen=qr` (los 12 QR del pliego decodificados y verificados, 2026-10-15).
@@ -1009,6 +1011,10 @@ Reemplaza al desbloqueo por código (sección siguiente, que queda como historia
   - **Auto-guardado**: sesión + llegada QR vigente + no guardado → `guardarPersonaje(slug)` (RPC
     `save_personaje`). Cubre "escaneo con sesión" y "vuelta del login": el `redirectTo` de Google y del
     enlace mágico es la ficha con `?origen=qr`, así funciona aunque el correo se abra en otro dispositivo.
+    **Reintentos + aviso (2026-11-12):** ante `error` o `not_authenticated` (JWT recién emitido que aún no
+    valida tras el login) reintenta a los 1,5 s y 4 s (`REINTENTOS_MS`); si aun así falla, aviso fijo abajo
+    (`role="alert"`, "Intentar de nuevo") y, si se cierra, un enlace junto al sello. Antes el fallo era
+    silencioso. Test: `GuardarPersonaje.test.tsx`.
   - Tras guardar: `DespertarAnimation` → tarjeta de éxito → certificado del personaje
     (`CertificadoColeccion` con `tipo: "personaje"`). Si ya está guardado: sello en la ficha.
 - **Modal con 3 opciones** (2026-10-21): Google · "Continuar con correo" · "Ahora no, leer la ficha". El campo
@@ -1145,8 +1151,8 @@ Rediseño de la ficha `/personajes/[slug]` (destino del QR) hacia scrollytelling
 - **Ambos temas:** los tokens `fondo-oscuro`/`fondo-claro` se **invierten** vía CSS vars en `.dark`
   (`fondo-oscuro` = bg de la página en ambos temas), así el gradiente del hero funde a la página sin banda.
 - **Reduce motion:** `useReducedMotion()` apaga parallax (scroll y mouse), rotaciones y pulsos.
-- **Reutilizable para fases siguientes (ya en el repo, dormido):** `HotspotsViewer.tsx` (Fase 4 — aya-uma
-  ya tiene `hotspots`), `AnimatedCounter.tsx` (Fase 5), `SimbolismoSection` + campo `simbolismo` (Fase 3).
+- **Reutilizable para fases siguientes (ya en el repo, dormido):** ya no queda nada — `HotspotsViewer`,
+  `SimbolismoSection` y `AnimatedCounter` se borraron (este último el 2026-11-14); el campo `simbolismo` sigue en el JSON.
 - ⚠ Cadenas kichwa del namespace `experiencia` son **tentativas** — revisar con hablante nativo.
 
 ### Calendario — solo meses con pases (2026-06-22)
@@ -1513,8 +1519,8 @@ mapas independientes:
 > genérico para el próximo personaje: `docs/AGREGAR-PERSONAJE.md`.
 
 > **Retirados hasta tener imágenes** (2026-06-29): Curiquingue, Sacha Runa, Rey Moro, Capitán y Ángel
-> se sacaron de `personajes.json` (su narrativa está en el historial de git). El grid muestra sus cards
-> "próximamente" (`PersonajeCardProximo`, lista `PROXIMOS` en `personajes/page.tsx`). Al reincorporarlos,
+> se sacaron de `personajes.json` (su narrativa está en el historial de git). Ya no se muestran como
+> "próximamente" (`PersonajeCardProximo` se borró el 2026-11-14; rehacerlo con el diseño actual si vuelven). Al reincorporarlos,
 > reutilizar los **mismos slugs** (contrato QR) y devolverles su `personajeSlug` en `pases.json`.
 
 > **Experiencia v2** = flag `experiencia: true` en el JSON → usa `HeroDespertar` (Fase 1) + `AnatomiaSection`

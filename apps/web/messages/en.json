@@ -331,7 +331,11 @@
     "escanear_texto": "Scan the QR on its card to save it to your collection.",
     "escanear_boton": "Scan QR",
     "escribenos_titulo": "Don't have {nombre} yet?",
-    "escribenos_enlace": "Contact us"
+    "escribenos_enlace": "Contact us",
+    "error_guardar": "We couldn't save {nombre} to your collection. Check your connection.",
+    "reintentar": "Try again",
+    "guardando": "Saving…",
+    "cerrar": "Close"
   },
   "galeria": {
     "titulo": "At the festival",

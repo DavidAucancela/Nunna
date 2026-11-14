@@ -10,8 +10,8 @@
 --
 -- Historia: hasta 2026-10 cada tarjeta traía un código de 6 caracteres que se canjeaba
 -- (`unlock_codes` + `redeem_code`/`check_code_valid`/`check_code_status`). Se retiró al
--- pasar a un QR único por personaje (docs/PLAN-QR-UNICO.md). La tabla vieja quedó
--- renombrada a `unlock_codes_archivo` como respaldo (ver migración al pie).
+-- pasar a un QR único por personaje (docs/PLAN-QR-UNICO.md). La tabla vieja se
+-- renombrará a `unlock_codes_archivo` como respaldo (migración al pie, aún pendiente).
 --
 -- Seguridad: el único camino de escritura de la colección es la RPC `save_personaje`
 -- (SECURITY DEFINER). "Solo por QR" se decide en el cliente — no es una garantía server-side.
@@ -81,6 +81,9 @@ end;
 $$;
 
 revoke all on function public.save_personaje(text) from public;
+-- `from public` no quita el EXECUTE que Supabase concede a `anon` por defecto en el
+-- esquema public: hay que revocarlo explícito (aplicado en prod 2026-11-12).
+revoke execute on function public.save_personaje(text) from anon;
 grant execute on function public.save_personaje(text) to authenticated;
 
 -- ── RPC de contador anónimo ───────────────────────────────────────────────────
@@ -101,7 +104,9 @@ revoke all on function public.count_collectors(text) from public;
 grant execute on function public.count_collectors(text) to anon;
 grant execute on function public.count_collectors(text) to authenticated;
 
--- ── Migración desde el sistema de códigos (una sola vez, ya aplicada en prod) ─
+-- ── Migración desde el sistema de códigos (una sola vez) ─────────────────────
+-- ⚠ PENDIENTE en prod (verificado 2026-11-12): `unlock_codes` y las 3 RPC siguen
+-- existiendo y `anon` puede ejecutarlas. Aplicar solo con confirmación del autor.
 -- Se corre DESPUÉS de desplegar el front que ya no llama a estas RPC.
 -- La tabla se renombra (no se borra) para conservar el historial de canjes.
 --
