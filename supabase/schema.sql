@@ -10,8 +10,8 @@
 --
 -- Historia: hasta 2026-10 cada tarjeta traía un código de 6 caracteres que se canjeaba
 -- (`unlock_codes` + `redeem_code`/`check_code_valid`/`check_code_status`). Se retiró al
--- pasar a un QR único por personaje (docs/PLAN-QR-UNICO.md). La tabla vieja se
--- renombrará a `unlock_codes_archivo` como respaldo (migración al pie, aún pendiente).
+-- pasar a un QR único por personaje (docs/PLAN-QR-UNICO.md). La tabla vieja quedó
+-- renombrada a `unlock_codes_archivo` como respaldo (migración al pie, aplicada 2026-11-14).
 --
 -- Seguridad: el único camino de escritura de la colección es la RPC `save_personaje`
 -- (SECURITY DEFINER). "Solo por QR" se decide en el cliente — no es una garantía server-side.
@@ -105,12 +105,13 @@ grant execute on function public.count_collectors(text) to anon;
 grant execute on function public.count_collectors(text) to authenticated;
 
 -- ── Migración desde el sistema de códigos (una sola vez) ─────────────────────
--- ⚠ PENDIENTE en prod (verificado 2026-11-12): `unlock_codes` y las 3 RPC siguen
--- existiendo y `anon` puede ejecutarlas. Aplicar solo con confirmación del autor.
--- Se corre DESPUÉS de desplegar el front que ya no llama a estas RPC.
--- La tabla se renombra (no se borra) para conservar el historial de canjes.
---
--- drop function if exists public.redeem_code(text, text);
--- drop function if exists public.check_code_valid(text, text);
--- drop function if exists public.check_code_status(text, text);
--- alter table if exists public.unlock_codes rename to unlock_codes_archivo;
+-- ✅ Aplicada en prod el 2026-11-14 (migración `retirar_sistema_codigos`, con
+-- confirmación del autor). La tabla se renombró (no se borró) para conservar los
+-- 219 códigos y su historial de canjes; queda sin acceso desde la API (RLS sin
+-- policies + sin grants a anon/authenticated). Idempotente: se puede re-correr.
+
+drop function if exists public.redeem_code(text, text);
+drop function if exists public.check_code_valid(text, text);
+drop function if exists public.check_code_status(text, text);
+alter table if exists public.unlock_codes rename to unlock_codes_archivo;
+revoke all on table public.unlock_codes_archivo from anon, authenticated;

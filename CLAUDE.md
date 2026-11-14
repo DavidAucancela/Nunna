@@ -51,7 +51,7 @@ Implicaciones técnicas:
 | Servicio | Plataforma | Notas |
 |---------|------------|-------|
 | Frontend (Next.js) | Railway | Único servicio activo |
-| Auth + colección | Supabase | **Activo** desde 2026-06-24 (desbloqueo de imanes) — magic-link + tablas `unlock_codes`/`user_unlocks` |
+| Auth + colección | Supabase | **Activo** desde 2026-06-24 — magic-link (+ Google) + tabla `user_unlocks` y RPC `save_personaje`/`count_collectors` (`unlock_codes_archivo` = respaldo del sistema de códigos retirado) |
 
 **Todo en Railway.** No usar Vercel — decisión tomada para centralizar infraestructura.
 **Supabase ya no está "solo reservado":** lo usa el desbloqueo de imanes (auth + colección). El contenido
@@ -740,11 +740,10 @@ Modo oscuro por defecto.
 - Decidir qué hacer con archivos sueltos sin commitear: `danzante-yaruquies-iman.png`,
   `danzante_yaruquies_iman_prinicpal.png` (errata en el nombre) y `public/personajes/otros/` (IMG_8134, IMG_8638,
   `crt_frontal_*`) — ningún JSON los referencia.
-- **⚠ Cerrar el despliegue del QR único** (`docs/PLAN-QR-UNICO.md` Fase 9). Verificado en Supabase el
-  2026-10-14: `save_personaje` **ya está aplicada**; la migración destructiva **no** — siguen
-  `redeem_code`, `check_code_valid`, `check_code_status` y la tabla `unlock_codes` (renombrarla a
-  `unlock_codes_archivo`). Hacerlo solo con confirmación del autor. Re-verificado el 2026-11-12: sigue
-  pendiente y `anon` puede ejecutar esas 3 RPC; ese día se revocó `anon` en `save_personaje`. Falta también activar Google
+- **Cerrar el despliegue del QR único** (`docs/PLAN-QR-UNICO.md` Fase 9). ✅ Migración de Supabase
+  **aplicada el 2026-11-14** (con confirmación del autor): se borraron `redeem_code`, `check_code_valid` y
+  `check_code_status`, y `unlock_codes` quedó como `unlock_codes_archivo` (219 códigos, sin acceso desde la
+  API). El 2026-11-12 se había revocado `anon` en `save_personaje`. Falta activar Google
   (OAuth en Google Cloud + proveedor en Supabase Auth + `NEXT_PUBLIC_AUTH_GOOGLE=1` en Railway) y
   ~~reimprimir las tarjetas con `?origen=qr`~~ — **hecho**: las tarjetas V2 impresas ya llevan
   `https://nunna-ecu.com/es/personajes/<slug>?origen=qr` (los 12 QR del pliego decodificados y verificados, 2026-10-15).
@@ -1036,7 +1035,7 @@ Reemplaza al desbloqueo por código (sección siguiente, que queda como historia
   solo aparece con `NEXT_PUBLIC_AUTH_GOOGLE=1` (requiere el proveedor Google activo en Supabase Auth).
 - **Supabase**: `user_unlocks` se conserva (la colección); RPC nueva `save_personaje(p_slug)` (SECURITY
   DEFINER, solo `authenticated`, valida formato del slug). `count_collectors` sin cambios. `unlock_codes` y
-  sus RPC se retiran (la tabla queda renombrada `unlock_codes_archivo`). Ver `supabase/schema.sql`.
+  sus RPC se retiraron el 2026-11-14 (la tabla quedó renombrada `unlock_codes_archivo`). Ver `supabase/schema.sql`.
 - `ColeccionProvider`: `gatingActive` → `authActiva`; `useDesbloqueo` → `useEnColeccion`; fuera
   `redeemCode`/`checkCode*`; nuevos `guardarPersonaje`, `signInWithGoogle`, `buildRedirectUrl`.
 - `PersonajesLibro`: todos los lomos llevan a la ficha; los guardados muestran "✓ En tu colección".
