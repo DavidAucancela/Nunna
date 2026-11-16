@@ -176,7 +176,7 @@ La ficha es abierta (sin códigos desde 2026-10-06, ver `docs/PLAN-QR-UNICO.md`)
 ```bash
 # QR de imprenta (uno por personaje) → https://nunna-ecu.com/es/personajes/[slug]?origen=qr
 node scripts/generate-qr.mjs
-#   → apps/web/public/qr/qr-[slug].png
+#   → recursos/qr-imprenta/qr-[slug].png (fuera de public/: no se publica)
 ```
 
 El marcador `?origen=qr` es lo que habilita "guardar en mi colección"; no lo quites del QR. Escanea el PNG

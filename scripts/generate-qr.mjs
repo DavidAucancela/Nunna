@@ -15,7 +15,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import QRCode from "qrcode";
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -25,10 +25,14 @@ const REPO_ROOT = path.resolve(__dirname, "..");
 // Los QR impresos codifican el dominio propio: si se cambiara de hosting, el QR
 // sigue funcionando. Override con NEXT_PUBLIC_SITE_URL solo para pruebas.
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://nunna-ecu.com";
-const OUT_DIR = path.join(REPO_ROOT, "apps/web/public/qr");
+// Fuera de `public/` a propósito: si se publicaran, cualquiera podría escanear desde la
+// pantalla el QR real (con `?origen=qr`) y guardar el personaje sin tener el imán.
+// El reverso de la tarjeta en la web usa `public/qr/qr-muestra.png`, que lleva a la portada.
+const OUT_DIR = path.join(REPO_ROOT, "recursos/qr-imprenta");
 const PERSONAJES_PATH = path.join(REPO_ROOT, "apps/web/lib/data/personajes.json");
 
 const personajes = JSON.parse(await readFile(PERSONAJES_PATH, "utf-8"));
+await mkdir(OUT_DIR, { recursive: true });
 
 for (const { slug } of personajes) {
   const url = `${SITE_URL}/es/personajes/${slug}?origen=qr`;
