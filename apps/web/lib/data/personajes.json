@@ -717,6 +717,15 @@
         "orden": 7
       },
       {
+        "id": "diablos-de-lata-pase-mascaras-de-lata-y-lentejuelas",
+        "tipo": "imagen",
+        "url": "/personajes/diablos-de-lata/diablos-de-lata-pase-mascaras-de-lata-y-lentejuelas.webp",
+        "titulo": "en-pase",
+        "altText": "Máscaras de hojalata plateada y de lentejuelas azules y doradas, con melenas de fibra de colores",
+        "descripcion": "Hojalata, lentejuelas y fibra de colores: las máscaras esperan su turno de salir al pase.",
+        "orden": 8
+      },
+      {
         "id": "diablos-de-lata-escenario-cuatro-imanes-chimborazo",
         "tipo": "imagen",
         "url": "/personajes/diablos-de-lata/diablos-de-lata-escenario-cuatro-imanes-chimborazo.webp",

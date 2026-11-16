@@ -138,7 +138,7 @@ Correr:
 node scripts/generate-qr.mjs
 ```
 
-Esto regenera los PNG en `apps/web/public/qr/` con el dominio correcto y a resolución de imprenta
+Esto regenera los PNG en `recursos/qr-imprenta/` (desde 2026-11-14; antes `apps/web/public/qr/`) con el dominio correcto y a resolución de imprenta
 (1024px, corrección de errores alta — importante porque el QR va en una tarjeta física que se
 roza/dobla). Borra los dos PNG viejos que apuntan a Railway antes de mandar a imprimir.
 

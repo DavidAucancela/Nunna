@@ -188,7 +188,8 @@ apps/web/
 ├── public/
 │   ├── personajes/                 → ★ una carpeta por slug: [slug]/[slug]-[seccion]-[desc].[ext]
 │   │                                 (seccion = hero | iman | taller | escenario | pase);
-│   │                                 `otros/` = figuras sin ficha + material sin clasificar
+│   │                                 `personaje_ingreso/` = fotos de `imagenIngreso`
+│   ├── proyecto/                   → Fotos de la página /sobre
 │   ├── informacion_pases/          → Imágenes de los pases (antes public/pases/, movidas 2026-06-14)
 │   ├── pases-videos/               → Video de fondo del hero (main-header.mp4, 4.4 MB comprimido)
 │   └── audio/                      → Audio ambiente del hero v2 ([slug]-ambiente.mp3) — ver README
@@ -244,13 +245,14 @@ public/personajes/[slug]/[slug]-[seccion]-[descripcion].[ext]
 El `id` de cada `Media` es el nombre del archivo sin extensión — así el JSON y el disco se leen igual.
 Ejemplo: `/personajes/aya-uma/aya-uma-pase-desfile-centro-riobamba.webp` → `id: "aya-uma-pase-desfile-centro-riobamba"`.
 
-> **`public/personajes/otros/`** guarda imágenes que **no** pertenecen a ningún personaje publicado:
-> figuras sin ficha (`cucurucho-*` fue el ejemplo hasta 2026-09-10 — Cucurucho ya tiene ficha propia
-> y su carpeta `cucurucho/`, así que su asset viejo en `otros/` se retiró) y material sin clasificar
-> (`sin-clasificar-*`). Nada de esa carpeta se referencia desde el JSON — es un buzón, no una sección.
+> **`recursos/` (raíz del repo, fuera de `public/` → no se publica)** ★ (2026-11-14): material del autor que no
+> usa el sitio. `qr-imprenta/` (los QR reales de las tarjetas — salida de `generate-qr.mjs`; en `public/` cualquiera
+> podía escanearlos desde la pantalla y guardar sin el imán), `arte-tarjetas/` (arte V2 de las tarjetas) y
+> `fotos-sin-usar/` (afiches, fotos de baja resolución, referencias). Reemplaza al viejo buzón
+> `public/personajes/otros/`. **Todo lo que esté en `public/` se sirve en nunna-ecu.com** — lo que no se use va aquí.
 
-> ⚠ **Los banners siguen en `public/headers/[slug]-banner.webp`**, fuera de la carpeta del personaje
-> (`imagenBanner`). No se movieron.
+> ⚠ **Los banners de Cucurucho y Danzante siguen en `public/headers/[slug]-banner.webp`**, fuera de la carpeta
+> del personaje (`imagenBanner`). Los de los otros 4 (generados) se borraron el 2026-11-14.
 
 > ⚠ **Nunca renombres una carpeta de personaje**: su nombre es el `slug`, y el slug es el contrato
 > permanente del QR impreso (ver "QR — contrato de URL permanente"). Los **archivos** dentro sí se
@@ -730,16 +732,14 @@ Modo oscuro por defecto.
   en `/personajes` pero las fichas siguen con "Aya Uma" (decidir si se cambia en todo el sitio y la regla
   de "nombre originario primero"); el video del hero sigue pixelado (960×540) — reexportar en 1080p si
   aparece el original; Cucurucho no tiene `nombreKichwa` en el JSON ("Chuku runa" solo en `/personajes`).
-- **Archivos sueltos del autor sin commitear:** `public/personajes/imagenes tarjetas /` (origen del arte
-  de la tarjeta, con espacios — no usar en URLs), `otros/` y dos PNG del danzante.
 - **Fotos de los 4 imanes** (`imagenGrupo` + galería): las 5 fotos miden ~1000 px y se muestran a ~950 px en
   un lomo panorámico 2.5:1 (`object-top` recorta ~46 % de abajo; en retina se estiran al doble). Idea
   pendiente: foto propia del lomo (~2400×960) distinta de la de la galería. También pesan de más el PNG del
   Payaso (454 KB), el JPEG de Diablos (260 KB) y `diablos-de-lata-iman-cuatro-vista-cenital.jpg` (522 KB) — pasar
   a WebP. Requiere los originales en alta resolución.
-- Decidir qué hacer con archivos sueltos sin commitear: `danzante-yaruquies-iman.png`,
-  `danzante_yaruquies_iman_prinicpal.png` (errata en el nombre) y `public/personajes/otros/` (IMG_8134, IMG_8638,
-  `crt_frontal_*`) — ningún JSON los referencia.
+- **Material en `recursos/fotos-sin-usar/`** (movido de `public/` el 2026-11-14; repartido el 2026-11-16 — ver
+  `recursos/README.md`): la pintura grupal solo se publica con el nombre y el permiso de quien la pintó. Pendiente
+  también `public/personajes/nuevos/` (4 imanes sin fondo, sin commitear).
 - **Cerrar el despliegue del QR único** (`docs/PLAN-QR-UNICO.md` Fase 9). ✅ Migración de Supabase
   **aplicada el 2026-11-14** (con confirmación del autor): se borraron `redeem_code`, `check_code_valid` y
   `check_code_status`, y `unlock_codes` quedó como `unlock_codes_archivo` (219 códigos, sin acceso desde la
@@ -1507,7 +1507,7 @@ mapas independientes:
 > `narrativa.secreto` de ambos **verificado con fuentes reales** (ministerio de cultura, prensa —
 > ver `docs/PLAN-CUCURUCHO-DANZANTE.md` §1 para las citas). Portadas: la de Cucurucho se recortó
 > para llenar el cuadro 3:4; la del Danzante usa el imán físico real (no una foto de persona). Sin
-> audio de hero todavía. QR de imprenta generados (`public/qr/qr-cucurucho.png`,
+> audio de hero todavía. QR de imprenta generados (hoy en `recursos/qr-imprenta/qr-cucurucho.png`,
 > `qr-danzante-yaruquies.png`) pero **la decisión de si el QR va directo a la ficha o a
 > `/es/personajes` genérico sigue abierta** — no se tocó `generate-qr.mjs` para los 4 personajes
 > existentes. Hay códigos de **prueba** ya sembrados en Supabase (`batch: prueba-2026-09`, 3 por
@@ -1559,6 +1559,7 @@ pnpm --filter @seres-del-pase/web lint               # next lint (eslint-config-
 node scripts/build-route.mjs
 
 # QR de imprenta — uno por personaje, codifica https://nunna-ecu.com/es/personajes/<slug>?origen=qr
+# Salen a recursos/qr-imprenta/ (fuera de public/: no se publican en el sitio)
 node scripts/generate-qr.mjs
 
 # Integridad de datos — referencias huérfanas entre personajes.json/pases.json/recorrido.json.

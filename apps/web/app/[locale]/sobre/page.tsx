@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { localeAlternates } from "@/lib/seo";
 
@@ -38,6 +39,20 @@ export default function SobrePage() {
           Al escanearlo, el comprador accede a la ficha completa del ser: su historia, simbolismo,
           traje y su lugar en la cosmovisión kichwa andina.
         </p>
+
+        <figure className="my-12">
+          <Image
+            src="/proyecto/estante-de-mascaras-de-los-pases.webp"
+            alt="Estante de madera con máscaras de los pases: diablos rojos con cuernos, un payaso, caras verdes, zorros y perros"
+            width={1200}
+            height={900}
+            sizes="(min-width: 768px) 768px, 100vw"
+            className="w-full rounded-lg"
+          />
+          <figcaption className="mt-3 text-sm text-stone-500">
+            Diablos, payasos, perros y zorros: las máscaras de los pases, hechas a mano.
+          </figcaption>
+        </figure>
 
         <p>
           El proyecto nace de la convicción de que las tradiciones culturales no se preservan
