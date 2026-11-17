@@ -420,162 +420,208 @@
       "paseSlug": "nino-rey-de-la-paz",
       "paseNombre": "Niño Rey de la Paz",
       "centro": [
-        -78.654,
-        -1.6678
+        -78.6516,
+        -1.6717
       ],
-      "zoom": 14.6,
+      "zoom": 15.2,
+      "anclas": [
+        [
+          -78.64965,
+          -1.67405
+        ],
+        [
+          -78.65377,
+          -1.67045
+        ],
+        [
+          -78.654437,
+          -1.669003
+        ],
+        [
+          -78.653279,
+          -1.669856
+        ],
+        [
+          -78.64873,
+          -1.673849
+        ],
+        [
+          -78.649195,
+          -1.674447
+        ],
+        [
+          -78.64965,
+          -1.67405
+        ]
+      ],
       "ruta": [
         [
-          -78.658402,
-          -1.665185
+          -78.64965,
+          -1.67405
         ],
         [
-          -78.658402,
-          -1.665185
+          -78.649773,
+          -1.673942
         ],
         [
-          -78.658553,
-          -1.664945
+          -78.650009,
+          -1.673736
         ],
         [
-          -78.658644,
-          -1.664811
+          -78.650328,
+          -1.673479
         ],
         [
-          -78.65831,
-          -1.664458
+          -78.650898,
+          -1.67296
         ],
         [
-          -78.657834,
-          -1.663934
+          -78.651445,
+          -1.672482
         ],
         [
-          -78.656784,
-          -1.664829
+          -78.652003,
+          -1.671994
         ],
         [
-          -78.656061,
-          -1.665468
+          -78.652574,
+          -1.671501
         ],
         [
-          -78.655488,
-          -1.665968
+          -78.653143,
+          -1.671007
         ],
         [
-          -78.655359,
-          -1.666076
+          -78.65377,
+          -1.67045
         ],
         [
-          -78.655279,
-          -1.666146
+          -78.653771,
+          -1.670449
         ],
         [
-          -78.654917,
-          -1.666467
+          -78.654325,
+          -1.669983
         ],
         [
-          -78.65476,
-          -1.666608
+          -78.654846,
+          -1.669527
         ],
         [
-          -78.65476,
-          -1.666608
+          -78.654687,
+          -1.669335
         ],
         [
-          -78.654455,
-          -1.666871
+          -78.654437,
+          -1.669003
         ],
         [
-          -78.654381,
-          -1.666929
+          -78.654437,
+          -1.669003
         ],
         [
-          -78.653893,
-          -1.667362
+          -78.654437,
+          -1.669003
         ],
         [
-          -78.65348,
-          -1.667722
+          -78.653505,
+          -1.66978
         ],
         [
-          -78.65345,
-          -1.667748
+          -78.653341,
+          -1.669928
         ],
         [
-          -78.65345,
-          -1.667748
+          -78.653279,
+          -1.669856
         ],
         [
-          -78.652872,
-          -1.668257
+          -78.653279,
+          -1.669856
         ],
         [
-          -78.652859,
-          -1.668267
+          -78.652913,
+          -1.670192
         ],
         [
-          -78.652313,
-          -1.668746
+          -78.652658,
+          -1.670421
         ],
         [
-          -78.652781,
-          -1.669304
+          -78.652088,
+          -1.670908
         ],
         [
-          -78.652423,
-          -1.669618
+          -78.651507,
+          -1.671411
         ],
         [
-          -78.652175,
-          -1.669833
+          -78.650969,
+          -1.671889
         ],
         [
-          -78.651595,
-          -1.670336
+          -78.650921,
+          -1.671829
         ],
         [
-          -78.651024,
-          -1.670832
+          -78.650857,
+          -1.67188
         ],
         [
-          -78.650499,
-          -1.671307
+          -78.65041,
+          -1.672257
         ],
         [
-          -78.650431,
-          -1.671366
+          -78.650358,
+          -1.6723
         ],
         [
-          -78.64999,
-          -1.671751
+          -78.650419,
+          -1.672372
         ],
         [
-          -78.649935,
-          -1.671799
+          -78.649829,
+          -1.672876
         ],
         [
-          -78.649438,
-          -1.671226
+          -78.649294,
+          -1.673363
         ],
         [
-          -78.648978,
-          -1.67067
+          -78.64873,
+          -1.673849
         ],
         [
-          -78.64956,
-          -1.670157
+          -78.64873,
+          -1.673849
+        ],
+        [
+          -78.64873,
+          -1.673849
+        ],
+        [
+          -78.649195,
+          -1.674447
+        ],
+        [
+          -78.649195,
+          -1.674447
+        ],
+        [
+          -78.64965,
+          -1.67405
         ]
       ],
       "waypoints": [
         {
           "progress": 0.1,
           "coord": [
-            -78.658402,
-            -1.665185
+            -78.650905,
+            -1.672954
           ],
           "personajeSlug": "aya-uma",
-          "calle": "Nuestra Señora de La Merced",
-          "dato": "Encabeza la procesión hacia el Niño.",
+          "calle": "Guayaquil",
+          "dato": "Sale de La Merced abriendo paso al Niño.",
           "imagen": "/personajes/aya-uma/aya-uma-pase-mascara-lana-y-zamarro.avif",
           "imagenesExtra": [
             "/personajes/aya-uma/aya-uma-pase-traje-rojo-con-humo-verde.webp"
@@ -585,11 +631,11 @@
         {
           "progress": 0.37,
           "coord": [
-            -78.65476,
-            -1.666608
+            -78.654303,
+            -1.670002
           ],
           "personajeSlug": "diablos-de-lata",
-          "calle": "Av. Daniel León Borja",
+          "calle": "Guayaquil y Juan Lavalle",
           "dato": "Irrumpe con su estruendo entre los devotos.",
           "imagen": "/personajes/diablos-de-lata/diablos-de-lata-pase-comparsa-en-calle-empedrada.webp",
           "imagenesExtra": [
@@ -600,27 +646,27 @@
         {
           "progress": 0.63,
           "coord": [
-            -78.65345,
-            -1.667748
+            -78.652217,
+            -1.670797
           ],
           "personajeSlug": "payaso",
-          "calle": "Guayaquil",
-          "dato": "Anima la bajada con su danza incansable.",
+          "calle": "10 de Agosto",
+          "dato": "Anima la vuelta con su danza incansable.",
           "imagen": "/personajes/payaso/payaso-pase-mascara-de-nariz-verde.jpg",
           "imagenesExtra": [
-            "/personajes/payaso/payaso-pase-plaza-de-la-alcaldia.jpg"
+            "/personajes/payaso/payaso-pase-gorro-conico-rojo.webp"
           ],
           "label": "Payaso"
         },
         {
           "progress": 0.9,
           "coord": [
-            -78.64956,
-            -1.670157
+            -78.648962,
+            -1.673649
           ],
           "personajeSlug": "perro",
-          "calle": "10 de Agosto",
-          "dato": "Custodia la llegada del Niño Rey de la Paz.",
+          "calle": "10 de Agosto y 5 de Junio",
+          "dato": "Custodia el regreso del Niño Rey de la Paz a La Merced.",
           "imagen": "/personajes/perro/perro-pase-mascara-negra-manos-en-alto.webp",
           "imagenesExtra": [
             "/personajes/perro/perro-pase-mascara-blanca-con-huevo-de-pan.webp"
@@ -780,6 +826,1516 @@
           "calle": "García Moreno y Chile",
           "dato": "Cierra el cortejo en el Oratorio de Santa Rosa.",
           "imagen": "/personajes/perro/perro-pase-mascara-blanca-con-huevo-de-pan.webp",
+          "imagenesExtra": [
+            "/personajes/perro/perro-pase-mascara-en-primer-plano.webp"
+          ],
+          "label": "Perro"
+        }
+      ]
+    },
+    {
+      "paseSlug": "nino-abyayala",
+      "paseNombre": "Niño Abyayala",
+      "centro": [
+        -78.6516,
+        -1.6717
+      ],
+      "zoom": 15.2,
+      "anclas": [
+        [
+          -78.64965,
+          -1.67405
+        ],
+        [
+          -78.65377,
+          -1.67045
+        ],
+        [
+          -78.654437,
+          -1.669003
+        ],
+        [
+          -78.653279,
+          -1.669856
+        ],
+        [
+          -78.64873,
+          -1.673849
+        ],
+        [
+          -78.649195,
+          -1.674447
+        ],
+        [
+          -78.64965,
+          -1.67405
+        ]
+      ],
+      "ruta": [
+        [
+          -78.64965,
+          -1.67405
+        ],
+        [
+          -78.649773,
+          -1.673942
+        ],
+        [
+          -78.650009,
+          -1.673736
+        ],
+        [
+          -78.650328,
+          -1.673479
+        ],
+        [
+          -78.650898,
+          -1.67296
+        ],
+        [
+          -78.651445,
+          -1.672482
+        ],
+        [
+          -78.652003,
+          -1.671994
+        ],
+        [
+          -78.652574,
+          -1.671501
+        ],
+        [
+          -78.653143,
+          -1.671007
+        ],
+        [
+          -78.65377,
+          -1.67045
+        ],
+        [
+          -78.653771,
+          -1.670449
+        ],
+        [
+          -78.654325,
+          -1.669983
+        ],
+        [
+          -78.654846,
+          -1.669527
+        ],
+        [
+          -78.654687,
+          -1.669335
+        ],
+        [
+          -78.654437,
+          -1.669003
+        ],
+        [
+          -78.654437,
+          -1.669003
+        ],
+        [
+          -78.654437,
+          -1.669003
+        ],
+        [
+          -78.653505,
+          -1.66978
+        ],
+        [
+          -78.653341,
+          -1.669928
+        ],
+        [
+          -78.653279,
+          -1.669856
+        ],
+        [
+          -78.653279,
+          -1.669856
+        ],
+        [
+          -78.652913,
+          -1.670192
+        ],
+        [
+          -78.652658,
+          -1.670421
+        ],
+        [
+          -78.652088,
+          -1.670908
+        ],
+        [
+          -78.651507,
+          -1.671411
+        ],
+        [
+          -78.650969,
+          -1.671889
+        ],
+        [
+          -78.650921,
+          -1.671829
+        ],
+        [
+          -78.650857,
+          -1.67188
+        ],
+        [
+          -78.65041,
+          -1.672257
+        ],
+        [
+          -78.650358,
+          -1.6723
+        ],
+        [
+          -78.650419,
+          -1.672372
+        ],
+        [
+          -78.649829,
+          -1.672876
+        ],
+        [
+          -78.649294,
+          -1.673363
+        ],
+        [
+          -78.64873,
+          -1.673849
+        ],
+        [
+          -78.64873,
+          -1.673849
+        ],
+        [
+          -78.64873,
+          -1.673849
+        ],
+        [
+          -78.649195,
+          -1.674447
+        ],
+        [
+          -78.649195,
+          -1.674447
+        ],
+        [
+          -78.64965,
+          -1.67405
+        ]
+      ],
+      "waypoints": [
+        {
+          "progress": 0.1,
+          "coord": [
+            -78.650905,
+            -1.672954
+          ],
+          "personajeSlug": "aya-uma",
+          "calle": "Guayaquil",
+          "dato": "Abre la tarde frente a La Merced.",
+          "imagen": "/personajes/aya-uma/aya-uma-pase-tocado-de-cuernos-colores.webp",
+          "imagenesExtra": [
+            "/personajes/aya-uma/aya-uma-pase-danza-con-banda.jpg"
+          ],
+          "label": "Aya Uma"
+        },
+        {
+          "progress": 0.37,
+          "coord": [
+            -78.654303,
+            -1.670002
+          ],
+          "personajeSlug": "diablos-de-lata",
+          "calle": "Guayaquil y Juan Lavalle",
+          "dato": "Hace sonar la lata por la avenida.",
+          "imagen": "/personajes/diablos-de-lata/diablos-de-lata-pase-mascara-roja-y-melena.webp",
+          "imagenesExtra": [
+            "/personajes/diablos-de-lata/diablos-de-lata-pase-grupo-en-plaza.webp"
+          ],
+          "label": "Diablos"
+        },
+        {
+          "progress": 0.63,
+          "coord": [
+            -78.652217,
+            -1.670797
+          ],
+          "personajeSlug": "payaso",
+          "calle": "10 de Agosto",
+          "dato": "Juega con el público en cada esquina.",
+          "imagen": "/personajes/payaso/payaso-pase-gorro-dorado-y-peluche.jpeg",
+          "imagenesExtra": [
+            "/personajes/payaso/payaso-pase-titeres-en-calle.jpeg"
+          ],
+          "label": "Payaso"
+        },
+        {
+          "progress": 0.9,
+          "coord": [
+            -78.648962,
+            -1.673649
+          ],
+          "personajeSlug": "perro",
+          "calle": "10 de Agosto y 5 de Junio",
+          "dato": "Cierra la vuelta de regreso a La Merced.",
+          "imagen": "/personajes/perro/perro-pase-mascara-negra-entre-flores-doradas.webp",
+          "imagenesExtra": [
+            "/personajes/perro/perro-pase-mascara-en-primer-plano.webp"
+          ],
+          "label": "Perro"
+        }
+      ]
+    },
+    {
+      "paseSlug": "nino-disco-jockey",
+      "paseNombre": "Niño Disck Jockey",
+      "centro": [
+        -78.6516,
+        -1.6717
+      ],
+      "zoom": 15.2,
+      "anclas": [
+        [
+          -78.64965,
+          -1.67405
+        ],
+        [
+          -78.65377,
+          -1.67045
+        ],
+        [
+          -78.654437,
+          -1.669003
+        ],
+        [
+          -78.653279,
+          -1.669856
+        ],
+        [
+          -78.64873,
+          -1.673849
+        ],
+        [
+          -78.649195,
+          -1.674447
+        ],
+        [
+          -78.64965,
+          -1.67405
+        ]
+      ],
+      "ruta": [
+        [
+          -78.64965,
+          -1.67405
+        ],
+        [
+          -78.649773,
+          -1.673942
+        ],
+        [
+          -78.650009,
+          -1.673736
+        ],
+        [
+          -78.650328,
+          -1.673479
+        ],
+        [
+          -78.650898,
+          -1.67296
+        ],
+        [
+          -78.651445,
+          -1.672482
+        ],
+        [
+          -78.652003,
+          -1.671994
+        ],
+        [
+          -78.652574,
+          -1.671501
+        ],
+        [
+          -78.653143,
+          -1.671007
+        ],
+        [
+          -78.65377,
+          -1.67045
+        ],
+        [
+          -78.653771,
+          -1.670449
+        ],
+        [
+          -78.654325,
+          -1.669983
+        ],
+        [
+          -78.654846,
+          -1.669527
+        ],
+        [
+          -78.654687,
+          -1.669335
+        ],
+        [
+          -78.654437,
+          -1.669003
+        ],
+        [
+          -78.654437,
+          -1.669003
+        ],
+        [
+          -78.654437,
+          -1.669003
+        ],
+        [
+          -78.653505,
+          -1.66978
+        ],
+        [
+          -78.653341,
+          -1.669928
+        ],
+        [
+          -78.653279,
+          -1.669856
+        ],
+        [
+          -78.653279,
+          -1.669856
+        ],
+        [
+          -78.652913,
+          -1.670192
+        ],
+        [
+          -78.652658,
+          -1.670421
+        ],
+        [
+          -78.652088,
+          -1.670908
+        ],
+        [
+          -78.651507,
+          -1.671411
+        ],
+        [
+          -78.650969,
+          -1.671889
+        ],
+        [
+          -78.650921,
+          -1.671829
+        ],
+        [
+          -78.650857,
+          -1.67188
+        ],
+        [
+          -78.65041,
+          -1.672257
+        ],
+        [
+          -78.650358,
+          -1.6723
+        ],
+        [
+          -78.650419,
+          -1.672372
+        ],
+        [
+          -78.649829,
+          -1.672876
+        ],
+        [
+          -78.649294,
+          -1.673363
+        ],
+        [
+          -78.64873,
+          -1.673849
+        ],
+        [
+          -78.64873,
+          -1.673849
+        ],
+        [
+          -78.64873,
+          -1.673849
+        ],
+        [
+          -78.649195,
+          -1.674447
+        ],
+        [
+          -78.649195,
+          -1.674447
+        ],
+        [
+          -78.64965,
+          -1.67405
+        ]
+      ],
+      "waypoints": [
+        {
+          "progress": 0.1,
+          "coord": [
+            -78.650905,
+            -1.672954
+          ],
+          "personajeSlug": "aya-uma",
+          "calle": "Guayaquil",
+          "dato": "Sale de La Merced al mediodía.",
+          "imagen": "/personajes/aya-uma/aya-uma-pase-desfile-centro-riobamba.webp",
+          "imagenesExtra": [
+            "/personajes/aya-uma/aya-uma-pase-grupo-mascaras-de-lana.webp"
+          ],
+          "label": "Aya Uma"
+        },
+        {
+          "progress": 0.37,
+          "coord": [
+            -78.654303,
+            -1.670002
+          ],
+          "personajeSlug": "diablos-de-lata",
+          "calle": "Guayaquil y Juan Lavalle",
+          "dato": "Marca el paso con el repique de la lata.",
+          "imagen": "/personajes/diablos-de-lata/diablos-de-lata-pase-mascara-roja-de-perfil.jpg",
+          "imagenesExtra": [
+            "/personajes/diablos-de-lata/diablos-de-lata-pase-danzante-de-espaldas.webp"
+          ],
+          "label": "Diablos"
+        },
+        {
+          "progress": 0.63,
+          "coord": [
+            -78.652217,
+            -1.670797
+          ],
+          "personajeSlug": "payaso",
+          "calle": "10 de Agosto",
+          "dato": "Reparte bromas entre los devotos.",
+          "imagen": "/personajes/payaso/payaso-pase-titeres-en-calle.jpeg",
+          "imagenesExtra": [
+            "/personajes/payaso/payaso-pase-gorro-conico-rojo.webp"
+          ],
+          "label": "Payaso"
+        },
+        {
+          "progress": 0.9,
+          "coord": [
+            -78.648962,
+            -1.673649
+          ],
+          "personajeSlug": "perro",
+          "calle": "10 de Agosto y 5 de Junio",
+          "dato": "Acompaña al Niño de vuelta a La Merced.",
+          "imagen": "/personajes/perro/perro-pase-traje-de-general-blanco-y-dorado.webp",
+          "imagenesExtra": [
+            "/personajes/perro/perro-pase-mascara-blanca-con-huevo-de-pan.webp"
+          ],
+          "label": "Perro"
+        }
+      ]
+    },
+    {
+      "paseSlug": "divinos-ninos",
+      "paseNombre": "Divinos Niños",
+      "centro": [
+        -78.6611,
+        -1.6785
+      ],
+      "zoom": 15.2,
+      "anclas": [
+        [
+          -78.660171,
+          -1.675611
+        ],
+        [
+          -78.659217,
+          -1.676668
+        ],
+        [
+          -78.66173,
+          -1.68041
+        ],
+        [
+          -78.660637,
+          -1.678274
+        ],
+        [
+          -78.662003,
+          -1.677031
+        ],
+        [
+          -78.66168,
+          -1.676656
+        ],
+        [
+          -78.662884,
+          -1.675564
+        ],
+        [
+          -78.660171,
+          -1.675611
+        ]
+      ],
+      "ruta": [
+        [
+          -78.660171,
+          -1.675611
+        ],
+        [
+          -78.659949,
+          -1.675842
+        ],
+        [
+          -78.659628,
+          -1.676199
+        ],
+        [
+          -78.659442,
+          -1.676394
+        ],
+        [
+          -78.659217,
+          -1.676668
+        ],
+        [
+          -78.659217,
+          -1.676668
+        ],
+        [
+          -78.659217,
+          -1.676668
+        ],
+        [
+          -78.659323,
+          -1.676737
+        ],
+        [
+          -78.659676,
+          -1.677121
+        ],
+        [
+          -78.659997,
+          -1.677476
+        ],
+        [
+          -78.660298,
+          -1.677854
+        ],
+        [
+          -78.660637,
+          -1.678274
+        ],
+        [
+          -78.660554,
+          -1.678343
+        ],
+        [
+          -78.660715,
+          -1.678542
+        ],
+        [
+          -78.660906,
+          -1.678875
+        ],
+        [
+          -78.66119,
+          -1.67941
+        ],
+        [
+          -78.661247,
+          -1.679514
+        ],
+        [
+          -78.661726,
+          -1.680407
+        ],
+        [
+          -78.661728,
+          -1.680411
+        ],
+        [
+          -78.661726,
+          -1.680407
+        ],
+        [
+          -78.661247,
+          -1.679514
+        ],
+        [
+          -78.66119,
+          -1.67941
+        ],
+        [
+          -78.660906,
+          -1.678875
+        ],
+        [
+          -78.660715,
+          -1.678542
+        ],
+        [
+          -78.660554,
+          -1.678343
+        ],
+        [
+          -78.660637,
+          -1.678274
+        ],
+        [
+          -78.660637,
+          -1.678274
+        ],
+        [
+          -78.661358,
+          -1.67762
+        ],
+        [
+          -78.661591,
+          -1.677387
+        ],
+        [
+          -78.662003,
+          -1.677031
+        ],
+        [
+          -78.662003,
+          -1.677031
+        ],
+        [
+          -78.662003,
+          -1.677031
+        ],
+        [
+          -78.66168,
+          -1.676656
+        ],
+        [
+          -78.66168,
+          -1.676656
+        ],
+        [
+          -78.66168,
+          -1.676656
+        ],
+        [
+          -78.662198,
+          -1.676191
+        ],
+        [
+          -78.662884,
+          -1.675564
+        ],
+        [
+          -78.662635,
+          -1.675557
+        ],
+        [
+          -78.662057,
+          -1.675604
+        ],
+        [
+          -78.661129,
+          -1.675798
+        ],
+        [
+          -78.660975,
+          -1.675823
+        ],
+        [
+          -78.660266,
+          -1.675669
+        ],
+        [
+          -78.660171,
+          -1.675611
+        ],
+        [
+          -78.660171,
+          -1.675611
+        ]
+      ],
+      "waypoints": [
+        {
+          "progress": 0.1,
+          "coord": [
+            -78.659305,
+            -1.676725
+          ],
+          "personajeSlug": "aya-uma",
+          "calle": "Av. Atahualpa",
+          "dato": "Arranca desde Jesús Obrero hacia la Atahualpa.",
+          "imagen": "/personajes/aya-uma/aya-uma-pase-danza-con-banda.jpg",
+          "imagenesExtra": [
+            "/personajes/aya-uma/aya-uma-pase-tocado-de-cuernos-colores.webp"
+          ],
+          "label": "Aya Uma"
+        },
+        {
+          "progress": 0.37,
+          "coord": [
+            -78.661538,
+            -1.680057
+          ],
+          "personajeSlug": "diablos-de-lata",
+          "calle": "Av. Atahualpa",
+          "dato": "Recorre la Atahualpa, ida y vuelta hasta el río Chibunga.",
+          "imagen": "/personajes/diablos-de-lata/diablos-de-lata-pase-grupo-mascaras-doradas.jpg",
+          "imagenesExtra": [
+            "/personajes/diablos-de-lata/diablos-de-lata-pase-mascara-roja-y-melena.webp"
+          ],
+          "label": "Diablos"
+        },
+        {
+          "progress": 0.63,
+          "coord": [
+            -78.661439,
+            -1.677539
+          ],
+          "personajeSlug": "payaso",
+          "calle": "San Andrés",
+          "dato": "Sube por San Andrés con la comparsa.",
+          "imagen": "/personajes/payaso/payaso-pase-gorro-conico-rojo.webp",
+          "imagenesExtra": [
+            "/personajes/payaso/payaso-pase-gorro-dorado-y-peluche.jpeg"
+          ],
+          "label": "Payaso"
+        },
+        {
+          "progress": 0.9,
+          "coord": [
+            -78.66165,
+            -1.675689
+          ],
+          "personajeSlug": "perro",
+          "calle": "Riobamba",
+          "dato": "Cierra la vuelta de regreso a Jesús Obrero.",
+          "imagen": "/personajes/perro/perro-pase-mascara-en-primer-plano.webp",
+          "imagenesExtra": [
+            "/personajes/perro/perro-pase-traje-de-general-blanco-y-dorado.webp"
+          ],
+          "label": "Perro"
+        }
+      ]
+    },
+    {
+      "paseSlug": "nino-emmanuel",
+      "paseNombre": "Niño Emmanuel",
+      "centro": [
+        -78.6526,
+        -1.667
+      ],
+      "zoom": 15.2,
+      "anclas": [
+        [
+          -78.65233,
+          -1.66668
+        ],
+        [
+          -78.650182,
+          -1.668577
+        ],
+        [
+          -78.65067,
+          -1.669176
+        ],
+        [
+          -78.655012,
+          -1.665403
+        ],
+        [
+          -78.654488,
+          -1.664781
+        ],
+        [
+          -78.65233,
+          -1.66668
+        ]
+      ],
+      "ruta": [
+        [
+          -78.652324,
+          -1.666673
+        ],
+        [
+          -78.65208,
+          -1.666894
+        ],
+        [
+          -78.651967,
+          -1.66699
+        ],
+        [
+          -78.651881,
+          -1.667063
+        ],
+        [
+          -78.65187,
+          -1.667084
+        ],
+        [
+          -78.651737,
+          -1.667197
+        ],
+        [
+          -78.651627,
+          -1.667293
+        ],
+        [
+          -78.651331,
+          -1.66757
+        ],
+        [
+          -78.650738,
+          -1.668091
+        ],
+        [
+          -78.650182,
+          -1.668577
+        ],
+        [
+          -78.65067,
+          -1.669176
+        ],
+        [
+          -78.65067,
+          -1.669176
+        ],
+        [
+          -78.651227,
+          -1.66869
+        ],
+        [
+          -78.65185,
+          -1.66817
+        ],
+        [
+          -78.6524,
+          -1.6677
+        ],
+        [
+          -78.652405,
+          -1.667697
+        ],
+        [
+          -78.652984,
+          -1.66717
+        ],
+        [
+          -78.653043,
+          -1.667116
+        ],
+        [
+          -78.653423,
+          -1.666793
+        ],
+        [
+          -78.653923,
+          -1.66635
+        ],
+        [
+          -78.653993,
+          -1.666309
+        ],
+        [
+          -78.654427,
+          -1.665903
+        ],
+        [
+          -78.655012,
+          -1.665403
+        ],
+        [
+          -78.655012,
+          -1.665403
+        ],
+        [
+          -78.654623,
+          -1.664937
+        ],
+        [
+          -78.654488,
+          -1.664781
+        ],
+        [
+          -78.654488,
+          -1.664781
+        ],
+        [
+          -78.6539,
+          -1.665255
+        ],
+        [
+          -78.653479,
+          -1.665648
+        ],
+        [
+          -78.652609,
+          -1.66642
+        ],
+        [
+          -78.652468,
+          -1.666545
+        ],
+        [
+          -78.652445,
+          -1.666564
+        ],
+        [
+          -78.652324,
+          -1.666673
+        ]
+      ],
+      "waypoints": [
+        {
+          "progress": 0.1,
+          "coord": [
+            -78.651354,
+            -1.667548
+          ],
+          "personajeSlug": "aya-uma",
+          "calle": "Argentinos",
+          "dato": "Sale de San Antonio de Padua, en la Loma de Quito.",
+          "imagen": "/personajes/aya-uma/aya-uma-pase-grupo-mascaras-de-lana.webp",
+          "imagenesExtra": [
+            "/personajes/aya-uma/aya-uma-pase-mascara-lana-y-zamarro.avif"
+          ],
+          "label": "Aya Uma"
+        },
+        {
+          "progress": 0.37,
+          "coord": [
+            -78.651581,
+            -1.668394
+          ],
+          "personajeSlug": "diablos-de-lata",
+          "calle": "Orozco",
+          "dato": "Ilumina la noche con el brillo de la lata.",
+          "imagen": "/personajes/diablos-de-lata/diablos-de-lata-pase-mascara-cuernos-dorados.webp",
+          "imagenesExtra": [
+            "/personajes/diablos-de-lata/diablos-de-lata-pase-danzante-de-espaldas.webp"
+          ],
+          "label": "Diablos"
+        },
+        {
+          "progress": 0.63,
+          "coord": [
+            -78.654147,
+            -1.666165
+          ],
+          "personajeSlug": "payaso",
+          "calle": "Orozco",
+          "dato": "Anima el paso por la Orozco.",
+          "imagen": "/personajes/payaso/payaso-pase-mascara-de-nariz-verde.jpg",
+          "imagenesExtra": [
+            "/personajes/payaso/payaso-pase-titeres-en-calle.jpeg"
+          ],
+          "label": "Payaso"
+        },
+        {
+          "progress": 0.9,
+          "coord": [
+            -78.653302,
+            -1.665805
+          ],
+          "personajeSlug": "perro",
+          "calle": "Argentinos",
+          "dato": "Acompaña al Niño de vuelta a la iglesia.",
+          "imagen": "/personajes/perro/perro-pase-mascara-blanca-con-huevo-de-pan.webp",
+          "imagenesExtra": [
+            "/personajes/perro/perro-pase-mascara-negra-manos-en-alto.webp"
+          ],
+          "label": "Perro"
+        }
+      ]
+    },
+    {
+      "paseSlug": "unidad-educativa-la-salle",
+      "paseNombre": "Unidad Educativa La Salle",
+      "centro": [
+        -78.6482,
+        -1.6684
+      ],
+      "zoom": 15.2,
+      "anclas": [
+        [
+          -78.647597,
+          -1.667875
+        ],
+        [
+          -78.649896,
+          -1.665829
+        ],
+        [
+          -78.651331,
+          -1.66757
+        ],
+        [
+          -78.647391,
+          -1.671051
+        ],
+        [
+          -78.644976,
+          -1.66815
+        ],
+        [
+          -78.645488,
+          -1.667693
+        ]
+      ],
+      "ruta": [
+        [
+          -78.647597,
+          -1.667875
+        ],
+        [
+          -78.647597,
+          -1.667875
+        ],
+        [
+          -78.647676,
+          -1.667804
+        ],
+        [
+          -78.648153,
+          -1.667377
+        ],
+        [
+          -78.648752,
+          -1.666831
+        ],
+        [
+          -78.649311,
+          -1.666331
+        ],
+        [
+          -78.649393,
+          -1.666274
+        ],
+        [
+          -78.649896,
+          -1.665829
+        ],
+        [
+          -78.649896,
+          -1.665829
+        ],
+        [
+          -78.650373,
+          -1.666451
+        ],
+        [
+          -78.650853,
+          -1.667013
+        ],
+        [
+          -78.651331,
+          -1.66757
+        ],
+        [
+          -78.651331,
+          -1.66757
+        ],
+        [
+          -78.651331,
+          -1.66757
+        ],
+        [
+          -78.650738,
+          -1.668091
+        ],
+        [
+          -78.650182,
+          -1.668577
+        ],
+        [
+          -78.649593,
+          -1.669099
+        ],
+        [
+          -78.649052,
+          -1.669585
+        ],
+        [
+          -78.64846,
+          -1.670061
+        ],
+        [
+          -78.647928,
+          -1.670561
+        ],
+        [
+          -78.647391,
+          -1.671051
+        ],
+        [
+          -78.647391,
+          -1.671051
+        ],
+        [
+          -78.647391,
+          -1.671051
+        ],
+        [
+          -78.647007,
+          -1.670603
+        ],
+        [
+          -78.6469,
+          -1.670468
+        ],
+        [
+          -78.646466,
+          -1.669918
+        ],
+        [
+          -78.646193,
+          -1.669594
+        ],
+        [
+          -78.645973,
+          -1.669338
+        ],
+        [
+          -78.645476,
+          -1.668762
+        ],
+        [
+          -78.644976,
+          -1.66815
+        ],
+        [
+          -78.644976,
+          -1.66815
+        ],
+        [
+          -78.644976,
+          -1.66815
+        ],
+        [
+          -78.645488,
+          -1.667693
+        ],
+        [
+          -78.645488,
+          -1.667693
+        ]
+      ],
+      "waypoints": [
+        {
+          "progress": 0.1,
+          "coord": [
+            -78.648714,
+            -1.666866
+          ],
+          "personajeSlug": "aya-uma",
+          "calle": "Venezuela",
+          "dato": "Sube por la Venezuela desde el colegio.",
+          "imagen": "/personajes/aya-uma/aya-uma-pase-traje-rojo-con-humo-verde.webp",
+          "imagenesExtra": [
+            "/personajes/aya-uma/aya-uma-pase-desfile-centro-riobamba.webp"
+          ],
+          "label": "Aya Uma"
+        },
+        {
+          "progress": 0.37,
+          "coord": [
+            -78.651154,
+            -1.667725
+          ],
+          "personajeSlug": "diablos-de-lata",
+          "calle": "Argentinos",
+          "dato": "Hace sonar la lata por la Argentinos.",
+          "imagen": "/personajes/diablos-de-lata/diablos-de-lata-pase-grupo-en-plaza.webp",
+          "imagenesExtra": [
+            "/personajes/diablos-de-lata/diablos-de-lata-pase-comparsa-en-calle-empedrada.webp"
+          ],
+          "label": "Diablos"
+        },
+        {
+          "progress": 0.63,
+          "coord": [
+            -78.648208,
+            -1.670298
+          ],
+          "personajeSlug": "payaso",
+          "calle": "Argentinos",
+          "dato": "Baja por la Argentinos con la comparsa.",
+          "imagen": "/personajes/payaso/payaso-pase-gorro-dorado-y-peluche.jpeg",
+          "imagenesExtra": [
+            "/personajes/payaso/payaso-pase-mascara-de-nariz-verde.jpg"
+          ],
+          "label": "Payaso"
+        },
+        {
+          "progress": 0.9,
+          "coord": [
+            -78.645495,
+            -1.668784
+          ],
+          "personajeSlug": "perro",
+          "calle": "Eugenio Espejo",
+          "dato": "Por la Espejo, rumbo a Colón y Nueva York.",
+          "imagen": "/personajes/perro/perro-pase-mascara-negra-manos-en-alto.webp",
+          "imagenesExtra": [
+            "/personajes/perro/perro-pase-mascara-negra-entre-flores-doradas.webp"
+          ],
+          "label": "Perro"
+        }
+      ]
+    },
+    {
+      "paseSlug": "nino-inti-huayra",
+      "paseNombre": "Niñito Inti Huayra",
+      "centro": [
+        -78.6586,
+        -1.6649
+      ],
+      "zoom": 15.2,
+      "anclas": [
+        [
+          -78.662753,
+          -1.661757
+        ],
+        [
+          -78.6602,
+          -1.66395
+        ],
+        [
+          -78.6575,
+          -1.66632
+        ],
+        [
+          -78.655448,
+          -1.668112
+        ],
+        [
+          -78.654455,
+          -1.666871
+        ],
+        [
+          -78.657834,
+          -1.663934
+        ]
+      ],
+      "ruta": [
+        [
+          -78.662753,
+          -1.661758
+        ],
+        [
+          -78.662143,
+          -1.662255
+        ],
+        [
+          -78.661604,
+          -1.662717
+        ],
+        [
+          -78.661555,
+          -1.662762
+        ],
+        [
+          -78.661009,
+          -1.663266
+        ],
+        [
+          -78.66082,
+          -1.663426
+        ],
+        [
+          -78.660432,
+          -1.663765
+        ],
+        [
+          -78.66021,
+          -1.663961
+        ],
+        [
+          -78.659704,
+          -1.664409
+        ],
+        [
+          -78.658987,
+          -1.665046
+        ],
+        [
+          -78.658883,
+          -1.665127
+        ],
+        [
+          -78.658781,
+          -1.665209
+        ],
+        [
+          -78.658516,
+          -1.665426
+        ],
+        [
+          -78.657973,
+          -1.6659
+        ],
+        [
+          -78.657619,
+          -1.666208
+        ],
+        [
+          -78.657497,
+          -1.666316
+        ],
+        [
+          -78.657105,
+          -1.666664
+        ],
+        [
+          -78.656426,
+          -1.667276
+        ],
+        [
+          -78.655943,
+          -1.667695
+        ],
+        [
+          -78.655961,
+          -1.667716
+        ],
+        [
+          -78.655507,
+          -1.66811
+        ],
+        [
+          -78.655475,
+          -1.66809
+        ],
+        [
+          -78.655448,
+          -1.668112
+        ],
+        [
+          -78.655382,
+          -1.668032
+        ],
+        [
+          -78.654922,
+          -1.667437
+        ],
+        [
+          -78.654455,
+          -1.666871
+        ],
+        [
+          -78.654455,
+          -1.666871
+        ],
+        [
+          -78.65476,
+          -1.666608
+        ],
+        [
+          -78.654917,
+          -1.666467
+        ],
+        [
+          -78.655279,
+          -1.666146
+        ],
+        [
+          -78.655359,
+          -1.666076
+        ],
+        [
+          -78.655488,
+          -1.665968
+        ],
+        [
+          -78.656061,
+          -1.665468
+        ],
+        [
+          -78.656784,
+          -1.664829
+        ],
+        [
+          -78.657834,
+          -1.663934
+        ],
+        [
+          -78.657834,
+          -1.663934
+        ]
+      ],
+      "waypoints": [
+        {
+          "progress": 0.1,
+          "coord": [
+            -78.661543,
+            -1.662773
+          ],
+          "personajeSlug": "aya-uma",
+          "calle": "Av. Daniel León Borja",
+          "dato": "Sale de la Santa Faz y baja por la Daniel León Borja.",
+          "imagen": "/personajes/aya-uma/aya-uma-pase-desfile-centro-riobamba.webp",
+          "imagenesExtra": [
+            "/personajes/aya-uma/aya-uma-pase-tocado-de-cuernos-colores.webp"
+          ],
+          "label": "Aya Uma"
+        },
+        {
+          "progress": 0.37,
+          "coord": [
+            -78.658334,
+            -1.665585
+          ],
+          "personajeSlug": "diablos-de-lata",
+          "calle": "Av. Daniel León Borja",
+          "dato": "Marca el paso por la avenida.",
+          "imagen": "/personajes/diablos-de-lata/diablos-de-lata-pase-mascara-roja-de-perfil.jpg",
+          "imagenesExtra": [
+            "/personajes/diablos-de-lata/diablos-de-lata-pase-grupo-mascaras-doradas.jpg"
+          ],
+          "label": "Diablos"
+        },
+        {
+          "progress": 0.63,
+          "coord": [
+            -78.655312,
+            -1.667941
+          ],
+          "personajeSlug": "payaso",
+          "calle": "Av. Miguel Ángel León",
+          "dato": "Gira por la Miguel Ángel León.",
+          "imagen": "/personajes/payaso/payaso-pase-titeres-en-calle.jpeg",
+          "imagenesExtra": [
+            "/personajes/payaso/payaso-pase-gorro-dorado-y-peluche.jpeg"
+          ],
+          "label": "Payaso"
+        },
+        {
+          "progress": 0.9,
+          "coord": [
+            -78.656634,
+            -1.664962
+          ],
+          "personajeSlug": "perro",
+          "calle": "Av. Veloz",
+          "dato": "Termina en la Veloz y Carlos Zambrano.",
+          "imagen": "/personajes/perro/perro-pase-traje-de-general-blanco-y-dorado.webp",
           "imagenesExtra": [
             "/personajes/perro/perro-pase-mascara-en-primer-plano.webp"
           ],

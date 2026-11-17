@@ -743,8 +743,8 @@ Modo oscuro por defecto.
 - **Cerrar el despliegue del QR único** (`docs/PLAN-QR-UNICO.md` Fase 9). ✅ Migración de Supabase
   **aplicada el 2026-11-14** (con confirmación del autor): se borraron `redeem_code`, `check_code_valid` y
   `check_code_status`, y `unlock_codes` quedó como `unlock_codes_archivo` (219 códigos, sin acceso desde la
-  API). El 2026-11-12 se había revocado `anon` en `save_personaje`. Falta activar Google
-  (OAuth en Google Cloud + proveedor en Supabase Auth + `NEXT_PUBLIC_AUTH_GOOGLE=1` en Railway) y
+  API). El 2026-11-12 se había revocado `anon` en `save_personaje`. ✅ Login con Google funcionando
+  (verificado por el autor el 2026-11-17) y
   ~~reimprimir las tarjetas con `?origen=qr`~~ — **hecho**: las tarjetas V2 impresas ya llevan
   `https://nunna-ecu.com/es/personajes/<slug>?origen=qr` (los 12 QR del pliego decodificados y verificados, 2026-10-15).
 - **`/pases` en un teléfono real**: el flujo se probó con Playwright emulando táctil, no en un dispositivo.
@@ -763,15 +763,21 @@ Modo oscuro por defecto.
   confirme.
 - Añadir `imagenBanner` y fotos a los 5 personajes sin imagen (Curiquingue, Sacha Runa, Rey Moro, Capitán, Ángel)
 - Fotografías reales "En el pase" (`titulo: "en-pase"`) y del imán físico (`titulo: "proceso"`) para la galería
-- **Recorrido — datos reales** de Mercado Santa Rosa y Niño Rey de la Paz: coords ancla exactas, personajes que
-  desfilan, fotos propias. Tras editar coords en `recorrido.json`: `node scripts/build-route.mjs`
+- **Recorridos de Riobamba trazados desde los afiches oficiales** (2026-11-17): Niño Rey de la Paz, Abyayala y
+  Disck Jockey (la misma "Ruta 22": vuelta desde La Merced), Divinos Niños, Niño Emmanuel, La Salle y el **Niñito
+  Inti Huayra** (pase nuevo) — 10 de 15 pases de Chimborazo con ruta. La calle sale del afiche; **qué personajes
+  desfilan en cada parada no está verificado** (son los 4 de siempre, con fotos variadas). El afiche de **La Salle
+  es de 2023** (20 de diciembre): confirmar la fecha de esta temporada. Falta Mercado Santa Rosa con datos de campo.
+- **Fechas de la temporada 2026–27**: las de diciembre/enero de Chimborazo son de los afiches 2025–26 (Ruta 22,
+  Divinos Niños, Emmanuel, Inti Huayra = enero 2026). Actualizar cuando la Alcaldía publique los nuevos.
 - **Verificar en campo las 5 rutas demo** (`demo: true` en `recorrido.json`: Cotopaxi, Tungurahua,
   Azuay, Imbabura, Pichincha) — coords ancla exactas, figuras que desfilan por punto, fotos reales.
   Al quitar `demo` y poner `personajeSlug` reales, se les cae el badge "ruta de referencia". Tras
   editar coords: `node scripts/build-route.mjs`. Ver `docs/AGREGAR-PROVINCIA.md`.
-- **Bolívar (Carnaval de Guaranda)** e **Inti Raymi** siguen sin `mes`/`provincia` en `pases.json` →
-  no aparecen en el mapa nacional ni tienen recorrido. Añadir esos campos para incluirlos.
-- Añadir los demás pases de Chimborazo al recorrido (hoy 4 de 15)
+- ~~Bolívar e Inti Raymi sin `mes`/`provincia`~~ — hecho (2026-11-17): Carnaval de Guaranda `mes: 2` (fecha
+  móvil), Inti Raymi en **Cayambe (Pichincha)** y San Juan en **Cotacachi** (decisiones del autor).
+- Añadir los 5 pases de Chimborazo que faltan al recorrido (hoy 10 de 15): CDI Gotitas de Dulzura, SAFPI, Fiestas
+  de Riobamba, Primer Grito y Aya Marcay Quilla (los 2 primeros tienen afiche con ruta).
 - **Experiencia v2** — Fases 2, 3, 5-12 del plan de 12 fases (Fases 1 y 4 ya implementadas)
 - **Danzante de Yaruquíes**: agregarlo como waypoint en `recorrido.json` cuando haya coordenadas de campo;
   recalibrar hotspots de Anatomía (Cucurucho y Danzante) si algún pin no coincide con la imagen.
@@ -849,7 +855,8 @@ archivos se borraron.
      color (`colorParaRuta`); al lado, una tarjeta por pase con fecha · ciudad · tipo (ahí se fundieron
      Calendario e Información). Pasar por una tarjeta resalta su ruta. Los pases **sin ruta trazada salen
      apagados** con "Próximamente" y no se puede entrar. Orden: primero los recorribles, luego por fecha.
-     **Máximo 5 pases por provincia** (2026-10-19, `limitarPasesPorProvincia` en `provincias.service.ts`,
+     **Máximo 10 pases por provincia** (5 desde 2026-10-19; 10 desde 2026-11-17, cuando Chimborazo llegó a 10
+     recorridos — `limitarPasesPorProvincia` en `provincias.service.ts`,
      aplicado en `pases/page.tsx`): ganan los que tienen más registros — ruta verificada > ruta de
      referencia > personaje > afiche; a igual peso, por fecha. El conteo de la tarjeta ya sale recortado.
   3. **Pase** — `RecorridoScrollytelling` ("Un pase, un camino"). **Es la única vista que usa el
@@ -1455,12 +1462,17 @@ mapas independientes:
 - **Agregar un pase al recorrido**: añadir un objeto a `pases[]` con `paseSlug` (debe existir en
   `pases.json`), `centro`/`zoom`, e waypoints con `coord` ancla por personaje. Luego correr el script
   de ruta (abajo) para generar la geometría.
-- **Ruta sobre calles reales**: `scripts/build-route.mjs` toma los `coord` de los waypoints, pide a
-  OSRM la ruta que los une, y hornea la geometría densa en `ruta` + alinea los `coord` de los pines a
-  la calle. Correr `node scripts/build-route.mjs` cuando cambien anclas/pases. Necesita red; producción
-  queda estática (cero llamadas en runtime, sigue SSG). ⚠ El demo OSRM público (`router.project-osrm.org`)
-  solo corre perfil **car**; el `/foot/` de la URL se ignora → la ruta sigue sentidos de auto. Para
-  ruta peatonal real, usar OpenRouteService/Valhalla.
+- **Ruta sobre calles reales**: `scripts/build-route.mjs` pide a OSRM la ruta y hornea la geometría densa en
+  `ruta`. Necesita red; producción queda estática (cero llamadas en runtime, sigue SSG). Dos modos:
+  - **Con `anclas`** (2026-11-17, recomendado): lista ordenada `[lon,lat]` del inicio, cada giro del afiche y
+    el fin — así la ruta sigue la vuelta exacta, también ida y vuelta por la misma calle. Los waypoints se
+    colocan sobre la ruta en su `progress`. Los cruces se sacan de OpenStreetMap (Overpass).
+  - Sin `anclas`: la ruta une los `coord` de los waypoints y pega cada pin a la calle (los pases viejos).
+  - `node scripts/build-route.mjs <slug…>` procesa solo esos pases (sin argumentos, todos).
+  - Router: OSRM peatonal de FOSSGIS (`routing.openstreetmap.de/routed-foot`, ignora sentidos de circulación;
+    override con `OSRM_BASE`). Antes era el demo `router.project-osrm.org`, que solo corre perfil **car**: los
+    pases trazados con él (Instituto, Mercado Santa Rosa, Niño de la Familia, las demo) siguen sentidos de auto
+    hasta que se vuelvan a hornear.
 - **Tiles**: `lib/map/tile-style.ts` exporta `TILE_STYLE` = **URL** de un estilo vector oscuro.
   Default: **OpenFreeMap** `https://tiles.openfreemap.org/styles/dark` — sin API key, sin límite de
   uso, atribución OSM ya incluida en el style JSON. Override con `NEXT_PUBLIC_MAP_STYLE_URL`.
@@ -1554,9 +1566,9 @@ pnpm build                                            # build completo
 pnpm --filter @seres-del-pase/web type-check         # verificar tipos
 pnpm --filter @seres-del-pase/web lint               # next lint (eslint-config-next core-web-vitals)
 
-# Recorrido del mapa — snap de rutas a calles (OSRM). Correr tras editar
-# coords ancla de waypoints en recorrido.json. Necesita red; no toca runtime.
-node scripts/build-route.mjs
+# Recorrido del mapa — snap de rutas a calles (OSRM peatonal). Correr tras editar
+# `anclas`/coords en recorrido.json. Necesita red; no toca runtime. Con slugs, solo esos pases.
+node scripts/build-route.mjs [slug…]
 
 # QR de imprenta — uno por personaje, codifica https://nunna-ecu.com/es/personajes/<slug>?origen=qr
 node scripts/generate-qr.mjs
