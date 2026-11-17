@@ -45,7 +45,7 @@ export async function getProvinciasConPases(
 }
 
 /** Máximo de pases que muestra cada provincia en `/pases`. */
-export const MAX_PASES_POR_PROVINCIA = 5;
+export const MAX_PASES_POR_PROVINCIA = 10;
 
 /**
  * Peso de un pase según cuánto material tiene ya cargado: primero los que se

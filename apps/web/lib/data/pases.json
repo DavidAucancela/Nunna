@@ -107,63 +107,100 @@
     "slug": "nino-rey-de-la-paz",
     "nombre": "Pase del Niño — Niño Rey de la Paz",
     "fechaTipo": "fija",
-    "fechaDescripcion": "12:00 · Nuestra Señora de La Merced → Av. Daniel León Borja → Guayaquil → 10 de Agosto → 5 de Junio → Juan Lavalle",
+    "fechaDescripcion": "12:00 · Vuelta desde Nuestra Señora de La Merced: Guayaquil → Juan Lavalle → Av. Daniel León Borja → 10 de Agosto → 5 de Junio → Guayaquil",
     "mes": 1,
     "dia": 17,
     "imagenPortada": "/informacion_pases/nino-rey-de-la-paz.jpg",
     "totalPersonajes": 1,
     "provincia": "chimborazo",
-    "ciudad": "Riobamba"
+    "ciudad": "Riobamba",
+    "horario": "12:00",
+    "ruta": "Nuestra Señora de La Merced → Guayaquil → Juan Lavalle → Av. Daniel León Borja → 10 de Agosto → 5 de Junio → Guayaquil",
+    "inicio": "Iglesia Nuestra Señora de La Merced",
+    "fin": "Iglesia Nuestra Señora de La Merced"
   },
   {
     "id": "nino-abyayala",
     "slug": "nino-abyayala",
     "nombre": "Pase del Niño — Niño Abyayala",
     "fechaTipo": "fija",
-    "fechaDescripcion": "16:00 · Nuestra Señora de La Merced → Av. Daniel León Borja → Guayaquil → 10 de Agosto → 5 de Junio → Juan Lavalle",
+    "fechaDescripcion": "16:00 · Vuelta desde Nuestra Señora de La Merced: Guayaquil → Juan Lavalle → Av. Daniel León Borja → 10 de Agosto → 5 de Junio → Guayaquil",
     "mes": 1,
     "dia": 17,
     "imagenPortada": "/informacion_pases/nino-abyayala.jpg",
     "totalPersonajes": 1,
     "provincia": "chimborazo",
-    "ciudad": "Riobamba"
+    "ciudad": "Riobamba",
+    "horario": "16:00",
+    "ruta": "Nuestra Señora de La Merced → Guayaquil → Juan Lavalle → Av. Daniel León Borja → 10 de Agosto → 5 de Junio → Guayaquil",
+    "inicio": "Iglesia Nuestra Señora de La Merced",
+    "fin": "Iglesia Nuestra Señora de La Merced"
   },
   {
     "id": "nino-disco-jockey",
     "slug": "nino-disco-jockey",
     "nombre": "Pase del Niño — Niño Disck Jockey",
     "fechaTipo": "fija",
-    "fechaDescripcion": "13:00 · Nuestra Señora de La Merced → Av. Daniel León Borja → Guayaquil → 10 de Agosto → 5 de Junio → Juan Lavalle",
+    "fechaDescripcion": "13:00 · Vuelta desde Nuestra Señora de La Merced: Guayaquil → Juan Lavalle → Av. Daniel León Borja → 10 de Agosto → 5 de Junio → Guayaquil",
     "mes": 1,
     "dia": 30,
     "imagenPortada": "/informacion_pases/nino-disco-jockey.jpg",
     "totalPersonajes": 1,
     "provincia": "chimborazo",
-    "ciudad": "Riobamba"
+    "ciudad": "Riobamba",
+    "horario": "13:00",
+    "ruta": "Nuestra Señora de La Merced → Guayaquil → Juan Lavalle → Av. Daniel León Borja → 10 de Agosto → 5 de Junio → Guayaquil",
+    "inicio": "Iglesia Nuestra Señora de La Merced",
+    "fin": "Iglesia Nuestra Señora de La Merced"
   },
   {
     "id": "divinos-ninos",
     "slug": "divinos-ninos",
     "nombre": "Pase del Niño — Divinos Niños",
     "fechaTipo": "fija",
-    "fechaDescripcion": "12:00 · Jesús Obrero La Primavera → Sibambe → Multitud → San Andrés → Av. Atahualpa → Colegio Chiriboga",
+    "fechaDescripcion": "12:00 · Vuelta de 1,68 km desde Jesús Obrero La Primavera: Av. 9 de Octubre → Av. Atahualpa → San Andrés → Multitud → Sibambe → Riobamba",
     "mes": 1,
     "dia": 31,
     "imagenPortada": "/informacion_pases/divinos-ninos.jpg",
     "totalPersonajes": 1,
     "provincia": "chimborazo",
-    "ciudad": "Riobamba"
+    "ciudad": "Riobamba",
+    "horario": "12:00",
+    "ruta": "Jesús Obrero La Primavera → Av. 9 de Octubre → Av. Atahualpa (hasta el puente del río Chibunga y de vuelta) → San Andrés → Multitud → Sibambe → Riobamba",
+    "inicio": "Iglesia Jesús Obrero, La Primavera",
+    "fin": "Iglesia Jesús Obrero, La Primavera"
   },
   {
     "id": "nino-emmanuel",
     "slug": "nino-emmanuel",
     "nombre": "Pase del Niño — Niño Emmanuel",
     "fechaTipo": "fija",
-    "fechaDescripcion": "19:00 · San Antonio de Padua, Loma de Quito → Orozco → Argentinos → Uruguay → Pichincha",
+    "fechaDescripcion": "19:00 · Vuelta desde San Antonio de Padua (Loma de Quito): Argentinos → Pichincha → Orozco → Uruguay → Argentinos",
     "mes": 1,
     "dia": 31,
     "imagenPortada": "/informacion_pases/nino-emmanuel.jpg",
     "totalPersonajes": 1,
+    "provincia": "chimborazo",
+    "ciudad": "Riobamba",
+    "horario": "19:00",
+    "ruta": "San Antonio de Padua → Argentinos → Pichincha → Orozco → Uruguay → Argentinos",
+    "inicio": "Iglesia San Antonio de Padua, Loma de Quito",
+    "fin": "Iglesia San Antonio de Padua, Loma de Quito"
+  },
+  {
+    "id": "nino-inti-huayra",
+    "slug": "nino-inti-huayra",
+    "nombre": "Pase del Niño — Niñito Inti Huayra",
+    "fechaTipo": "fija",
+    "fechaDescripcion": "11:00 · Santa Faz → Av. La Prensa → Av. Daniel León Borja → Av. Miguel Ángel León → Av. Veloz → Carlos Zambrano",
+    "mes": 1,
+    "dia": 31,
+    "imagenPortada": "/informacion_pases/inti-huayra.jpg",
+    "totalPersonajes": 1,
+    "horario": "11:00",
+    "ruta": "Av. La Prensa → Av. Daniel León Borja → Av. Miguel Ángel León → Av. Veloz → Carlos Zambrano",
+    "inicio": "Iglesia Santa Faz (Av. La Prensa)",
+    "fin": "Av. Veloz y Carlos Zambrano",
     "provincia": "chimborazo",
     "ciudad": "Riobamba"
   },
@@ -299,7 +336,8 @@
     "tipo": "Fiesta popular",
     "personaje": "Taita Carnaval",
     "provincia": "bolivar",
-    "ciudad": "Guaranda"
+    "ciudad": "Guaranda",
+    "mes": 2
   },
   {
     "id": "inti-raymi",
@@ -311,7 +349,9 @@
     "dia": 21,
     "imagenPortada": null,
     "totalPersonajes": 0,
-    "tipo": "Festividad ancestral andina"
+    "tipo": "Festividad ancestral andina",
+    "provincia": "pichincha",
+    "ciudad": "Cayambe"
   },
   {
     "id": "fiesta-san-juan-imbabura",
@@ -324,7 +364,8 @@
     "imagenPortada": null,
     "totalPersonajes": 0,
     "tipo": "Fiesta kichwa-andina",
-    "provincia": "imbabura"
+    "provincia": "imbabura",
+    "ciudad": "Cotacachi"
   },
   {
     "id": "fiesta-quito",

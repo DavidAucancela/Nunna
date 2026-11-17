@@ -129,11 +129,53 @@ el recorrido con scroll y "· ref." en los chips. Quítalo cuando la ruta esté 
 ## Paso 3 — Trazar la ruta sobre calles reales
 
 ```bash
-node scripts/build-route.mjs
+node scripts/build-route.mjs <paseSlug>     # solo ese pase (sin argumentos: todos)
 ```
 
-Toma los `coord` de los waypoints, le pide a OSRM la ruta que los une, y escribe la geometría
-densa en `ruta` alineando los pines a la calle. Necesita red; producción queda estática.
+Le pide la ruta a OSRM y escribe la geometría densa en `ruta`. Necesita red; producción queda estática.
+Usa el OSRM **peatonal** de FOSSGIS (`routing.openstreetmap.de/routed-foot`): ignora los sentidos de
+circulación, como un pase. Otra instancia: variable `OSRM_BASE`.
+
+### Con afiche oficial: `anclas` (recomendado, 2026-11-17)
+
+Cuando hay un afiche con el recorrido (las Alcaldías los publican), agrega al pase una lista `anclas`
+con los puntos por los que **tiene** que pasar, en orden: el inicio, cada giro del afiche y el fin.
+Así la ruta sigue la vuelta exacta, también ida y vuelta por la misma calle. Con `anclas`, los
+waypoints no se usan para trazar: el script los coloca **sobre la ruta** según su `progress` (0,1 ·
+0,37 · 0,63 · 0,9 reparte 4 personajes), así que su `coord` puede quedar en `[0, 0]`.
+
+```jsonc
+{
+  "paseSlug": "nino-emmanuel",
+  "anclas": [
+    [-78.65233, -1.66668],    // inicio: San Antonio de Padua (sobre Argentinos)
+    [-78.650182, -1.668577],  // Argentinos y Pichincha
+    [-78.65067, -1.669176],   // Pichincha y Orozco
+    [-78.655012, -1.665403],  // Orozco y Uruguay
+    [-78.654488, -1.664781],  // Uruguay y Argentinos
+    [-78.65233, -1.66668]     // fin = inicio (vuelta)
+  ],
+  "ruta": [],
+  "waypoints": [ … ]
+}
+```
+
+**Cómo sacar los cruces:** de OpenStreetMap con Overpass (`https://overpass-api.de/api/interpreter`,
+consulta `way["highway"]["name"](bbox);out geom tags;`). Dos calles se cruzan donde comparten un
+punto. ⚠ Overpass responde 406 si la petición no lleva `User-Agent` y `Accept: application/json`.
+Los nombres en OSM pueden diferir del afiche ("José de Orozco" = "Orozco", "José Veloz" = "Av. Veloz").
+
+**Revisa el resultado dibujado sobre las calles.** El router hace zigzags en cruces con redondel o
+doble calzada (pasó en Daniel León Borja y Carlos Zambrano): agrega un ancla antes y otra después del
+cruce. El script imprime el largo en km; compáralo con el del afiche si lo trae.
+
+**Qué es dato y qué no:** las calles salen del afiche. Qué personaje desfila en cada parada casi
+nunca lo dice el afiche: si no hay trabajo de campo, dilo así en el PR y en CLAUDE.md.
+
+### Sin afiche: modo original
+
+Sin `anclas`, toma los `coord` de los waypoints, une esos puntos y pega cada pin a la calle. Sirve
+para rutas de referencia (`demo: true`).
 
 ## Paso 4 — Validar
 

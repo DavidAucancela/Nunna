@@ -2,6 +2,39 @@
 
 ---
 
+## [0.14.0] — 2026-11-17 — Recorridos de Riobamba desde los afiches oficiales
+
+Rama `feat/pases-rutas-riobamba`.
+
+### Agregado
+- **Niñito Inti Huayra** (sábado 31 de enero, 11:00, desde la Santa Faz): pase nuevo con su recorrido.
+- Recorridos trazados calle por calle según el afiche de la Alcaldía de Riobamba:
+  - **Ruta 22**: Niño Rey de la Paz, Niño Abyayala y Niño Disck Jockey (vuelta desde La Merced, 1,85 km).
+  - **Divinos Niños**: vuelta desde Jesús Obrero, 1,70 km (el afiche dice 1,68 km).
+  - **Niño Emmanuel**: vuelta desde San Antonio de Padua, 1,45 km.
+  - **La Salle**: 1,67 km.
+- Chimborazo pasa de 4 a 10 pases con recorrido.
+- `scripts/build-route.mjs`:
+  - Acepta `anclas` por pase (inicio, giros y fin del afiche) para seguir la vuelta exacta.
+  - Puede trazar solo los pases que se le indiquen: `node scripts/build-route.mjs <slug…>`.
+  - Guía: `docs/AGREGAR-PROVINCIA.md`, paso 3.
+
+### Cambiado
+- El recorrido del Niño Rey de la Paz se volvió a trazar: el anterior no seguía su afiche.
+- Las rutas se calculan con el OSRM peatonal de FOSSGIS. El demo de project-osrm.org solo calculaba en auto y seguía los sentidos de las calles.
+- `/pases` muestra hasta **10** pases por provincia (antes 5).
+- Pases que no aparecían en el mapa:
+  - Carnaval de Guaranda: febrero, fecha móvil.
+  - Inti Raymi: Cayambe, Pichincha.
+  - San Juan: Cotacachi.
+
+### Pendiente
+- En los recorridos nuevos, qué personaje desfila en cada parada no está verificado: los afiches no lo dicen.
+- El afiche de La Salle es de 2023, así que hay que confirmar la fecha de esta temporada.
+- Las fechas de enero son de 2026: actualizarlas cuando se publiquen los afiches 2026–27.
+
+---
+
 ## [0.13.2] — 2026-10-27 — `/contacto` con precios, envío por WhatsApp y mapa del retiro
 
 ### Cambiado
