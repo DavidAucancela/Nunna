@@ -710,6 +710,10 @@ Modo oscuro por defecto.
   isotipo definitivo (concepto R1, ver "Marca" en decisiones técnicas) con entrada animada en el header;
   favicon/apple-touch-icon/manifest nuevos; página `/privacidad` (requisito de Google OAuth). Ver
   `docs/CHANGELOG.md` [0.12.0].
+- **Recorridos de Riobamba desde los afiches oficiales** (`feat/pases-rutas-riobamba`, 2026-11-17): Chimborazo
+  pasa de 4 a 10 recorridos (Ruta 22 ×3, Divinos Niños, Emmanuel, La Salle + Niñito Inti Huayra, pase nuevo);
+  `build-route.mjs` con `anclas` + OSRM peatonal; máx. 10 pases por provincia. Ver `docs/CHANGELOG.md` [0.14.0] y
+  `docs/AGREGAR-PROVINCIA.md` paso 3.
 
 ### 🔄 Siguiente
 - **"Escríbenos" por WhatsApp** (`feat/contacto-whatsapp`, 2026-10-26): poner `NEXT_PUBLIC_WHATSAPP_CONTACTO`
